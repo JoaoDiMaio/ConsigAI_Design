@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Portabilidade — ConsigAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --scale: 1.22;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+      --navy: #001851;
+      --blue: #2350c8;
+      --blue-2: #1844b8;
+      --blue-light: #e8eeff;
+      --blue-mid: #c2d0f8;
+
+      --text: #0f2057;
+      --muted: #7a8db8;
+      --line: #e4eaf8;
+
+      --green: #0a6640;
+      --green-soft: #3d6b52;
+      --green-bg: #e8f5ee;
+      --green-accent: #16a364;
+
+      --danger: #d94b4b;
+
+      --gold: #7a5200;
+      --gold-bg: #fffbf0;
+      --gold-line: #edddb0;
+      --gold-btn: #a87000;
+
+      --white: #fff;
+      --bg: #f4f7fd;
+
+      --r-card: 20px;
+      --shadow-card: 0 8px 28px rgba(0,24,81,.09);
+
+      --ibox-row-1: 18px;
+      --ibox-row-2: 22px;
+      --ibox-row-3: 12px;
+      --ibox-gap: 2px;
+
+      --hero-card-h: 132px;
+      --hero-row-1: 16px;
+      --hero-row-2: 18px;
+      --hero-row-3: 40px;
+      --hero-row-4: 16px;
+      --hero-gap: 4px;
+    }
+
+    body.large-font { --scale: 1.47; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      background: var(--bg);
+      font-family: var(--font);
+      color: var(--text);
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    .screen {
+      width: 100%;
+      min-height: 100vh;
+      background: #f4f7fd;
+    }
+
+    .header {
+      background: var(--navy);
+      padding: max(18px, env(safe-area-inset-top)) 20px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .fontbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .font-toggle {
+      display: flex;
+      gap: 2px;
+      padding: 3px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+
+    .font-toggle button {
+      border: 0;
+      background: transparent;
+      color: rgba(255,255,255,.55);
+      font: 500 calc(10px * var(--scale))/1 var(--font);
+      padding: 6px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: .15s ease;
+    }
+
+    .font-toggle button.active {
+      background: rgba(255,255,255,.14);
+      color: #fff;
+    }
+
+    .user {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-end;
+      gap: 12px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .hello {
+      font-size: calc(12px * var(--scale));
+      color: rgba(255,255,255,.72);
+      margin-bottom: 2px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .name {
+      font-size: calc(18px * var(--scale));
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.1;
+    }
+
+    .panel {
+      background: #f4f7fd;
+      border-radius: 26px 26px 0 0;
+      padding: 20px 18px calc(24px + env(safe-area-inset-bottom));
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--blue-light);
+      border-radius: 999px;
+      padding: 4px 12px 4px 8px;
+      margin-bottom: 16px;
+    }
+
+    .tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .tag span {
+      font-size: calc(10px * var(--scale));
+      font-weight: 700;
+      letter-spacing: .07em;
+      color: var(--blue);
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .choice {
+      padding: 14px 12px 12px;
+      border-radius: 16px;
+      background: #eaeff8;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: all .22s cubic-bezier(.4,0,.2,1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+    }
+
+    .choice.active {
+      background: var(--blue);
+      border-color: var(--blue-2);
+      box-shadow: 0 8px 24px rgba(35,80,200,.28);
+      transform: translateY(-1px);
+    }
+
+    .bars {
+      display: flex;
+      gap: 3px;
+      align-items: flex-end;
+      height: 14px;
+      justify-content: center;
+    }
+
+    .bar {
+      width: 9px;
+      border-radius: 3px;
+      background: var(--blue);
+      opacity: .35;
+      transition: .22s ease;
+    }
+
+    .choice.active .bar {
+      background: #fff;
+      opacity: 1;
+    }
+
+    .choice.active .bar.dim {
+      opacity: 1;
+    }
+
+    .bar-eco-1 { height: 14px; }
+    .bar-eco-2 { height: 11px; }
+    .bar-eco-3 { height: 8px; }
+    .bar-eco-4 { height: 6px; }
+    .bar-eco-5 { height: 4px; }
+    .bar-parc-1, .bar-parc-2, .bar-parc-3, .bar-parc-4, .bar-parc-5 { height: 8px; }
+
+    .choice .title {
+      font-size: calc(12.5px * var(--scale));
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .choice .sub {
+      font-size: calc(10px * var(--scale));
+      font-weight: 500;
+      color: var(--muted);
+      line-height: 1.2;
+    }
+
+    .choice.active .title { color: #fff; }
+    .choice.active .sub { color: rgba(255,255,255,.68); }
+
+    .offer-card {
+      background: #fff;
+      border-radius: var(--r-card);
+      border: 1px solid #e6ecf8;
+      box-shadow: var(--shadow-card);
+      padding: 16px;
+      margin-bottom: 22px;
+    }
+
+    .compare {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: #f7f9fe;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+
+    .compare-row-lbl {
+      display: grid;
+      grid-template-columns: 1fr 34px 1fr;
+    }
+
+    .compare-row-val {
+      display: grid;
+      grid-template-columns: 1fr 34px 1fr;
+      align-items: center;
+    }
+
+    .lbl {
+      font-size: calc(9.5px * var(--scale));
+      font-weight: 600;
+      letter-spacing: .03em;
+      color: var(--muted);
+      text-transform: uppercase;
+      line-height: 1.25;
+    }
+
+    .val {
+      font-size: calc(22px * var(--scale));
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -.02em;
+      white-space: nowrap;
+    }
+
+    .val.old {
+      color: var(--danger);
+      text-decoration: line-through;
+      text-decoration-color: rgba(217, 75, 75, .55);
+    }
+
+    .val.new {
+      color: var(--green-accent);
+    }
+
+    .arrow-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9eaccf;
+      font-size: calc(20px * var(--scale));
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .state-shell {
+      margin-bottom: 14px;
+      transition: .25s ease;
+    }
+
+    .state-intro {
+      border-radius: 16px;
+      padding: 12px 16px;
+      height: var(--hero-card-h);
+      display: grid;
+      grid-template-rows: var(--hero-row-1) var(--hero-row-2) var(--hero-row-3) var(--hero-row-4);
+      row-gap: var(--hero-gap);
+      align-content: center;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .state-shell.eco .state-intro { background: var(--green-bg); }
+    .state-shell.parc .state-intro { background: #ebf0ff; }
+
+    .eyebrow {
+      width: 100%;
+      height: var(--hero-row-1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: calc(10px * var(--scale));
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      opacity: .7;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    .state-shell.eco .eyebrow { color: var(--green); }
+    .state-shell.parc .eyebrow { color: var(--blue); }
+
+    .headline {
+      width: 100%;
+      height: var(--hero-row-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: calc(13px * var(--scale));
+      font-weight: 500;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .state-shell.eco .headline { color: var(--green-soft); }
+    .state-shell.parc .headline { color: #2a4a8a; }
+
+    .value-wrap {
+      width: 100%;
+      height: var(--hero-row-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .big-number {
+      font-size: calc(28px * var(--scale));
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .headline-suffix {
+      font-size: calc(13px * var(--scale));
+      font-weight: 600;
+      vertical-align: middle;
+      margin-left: 4px;
+      white-space: nowrap;
+    }
+
+    .state-shell.eco .big-number { color: var(--green); }
+    .state-shell.parc .big-number { color: var(--blue); }
+
+    .subhead {
+      width: 100%;
+      height: var(--hero-row-4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: calc(8.5px * var(--scale));
+      font-weight: 500;
+      line-height: 1;
+      opacity: .75;
+      white-space: nowrap;
+    }
+
+    .state-shell.eco .subhead { color: var(--green-soft); }
+    .state-shell.parc .subhead { color: #2a4a8a; }
+
+    .info-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+      align-items: stretch;
+    }
+
+    .info-box {
+      border-radius: 14px;
+      padding: 8px 10px 7px;
+      min-width: 0;
+      overflow: hidden;
+      text-align: center;
+      display: grid;
+      grid-template-rows: var(--ibox-row-1) var(--ibox-row-2) var(--ibox-row-3);
+      row-gap: var(--ibox-gap);
+      align-content: center;
+      justify-items: center;
+    }
+
+    .ibox-top,
+    .ibox-mid,
+    .ibox-bot {
+      width: 100%;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .ibox-top {
+      height: var(--ibox-row-1);
+      align-items: center;
+      font-size: calc(8.5px * var(--scale));
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+      opacity: .72;
+    }
+
+    .ibox-mid {
+      height: var(--ibox-row-2);
+      align-items: baseline;
+      gap: 3px;
+      white-space: nowrap;
+      flex-wrap: nowrap;
+      line-height: 1;
+    }
+
+    .ibox-ate {
+      font-size: calc(9px * var(--scale));
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+      opacity: .82;
+      display: inline-block;
+      vertical-align: baseline;
+    }
+
+    .money-nowrap,
+    #marginValue,
+    #creditValue {
+      font-size: calc(16px * var(--scale));
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+      word-break: keep-all;
+      display: inline-block;
+      vertical-align: baseline;
+    }
+
+    .ibox-bot {
+      height: var(--ibox-row-3);
+      align-items: center;
+      font-size: calc(6.7px * var(--scale));
+      font-weight: 500;
+      line-height: 1;
+      white-space: nowrap;
+      opacity: .68;
+      letter-spacing: -0.01em;
+    }
+
+    .info-box.margin-box .ibox-top { color: #5572b8; }
+    .info-box.margin-box .ibox-mid { color: var(--blue); }
+    .info-box.margin-box .ibox-bot { color: #5572b8; }
+
+    .info-box.credit-box .ibox-top { color: rgba(255,255,255,.60); }
+    .info-box.credit-box .ibox-mid { color: #fff; }
+    .info-box.credit-box .ibox-bot { color: rgba(255,255,255,.55); }
+
+    .info-box.margin-box {
+      background: #f0f4ff;
+      border: 1px solid var(--blue-mid);
+    }
+
+    .info-box.credit-box {
+      background: var(--navy);
+    }
+
+    .btn {
+      width: 100%;
+      border: 0;
+      border-radius: 14px;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: .15s ease;
+    }
+
+    .btn:active {
+      transform: scale(.98);
+    }
+
+    .btn-primary {
+      background: linear-gradient(160deg, #2f59d0 0%, #1d43b0 100%);
+      color: #fff;
+      padding: 15px 14px;
+      font-size: calc(15px * var(--scale));
+      font-weight: 600;
+      line-height: 1.2;
+      box-shadow: 0 8px 20px rgba(30,60,180,.25);
+      margin-bottom: 8px;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--blue);
+      border: 1.5px solid var(--blue-mid);
+      padding: 13px;
+      font-size: calc(13.5px * var(--scale));
+      font-weight: 500;
+    }
+
+    .btn-details {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .chevron {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      transition: transform .25s cubic-bezier(.4,0,.2,1);
+      display: block;
+    }
+
+    .btn-details.is-open .chevron {
+      transform: rotate(180deg);
+    }
+
+    .offer-details {
+      margin-top: 10px;
+      animation: fadeIn .22s ease forwards;
+    }
+
+    .receipt-card-wrap {
+      background: #f7f9fe;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px;
+    }
+
+    .receipt-card {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(0,0,0,.015) 0 1px, transparent 1px 100%),
+        linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)),
+        #f5f5f3;
+      background-size: 12px 12px, 100% 100%, auto;
+      border: 1px solid #ececec;
+      border-radius: 10px;
+      padding: 14px 12px 12px;
+      color: #4f4f4f;
+    }
+
+    .receipt-title {
+      text-align: center;
+      font-size: calc(12.5px * var(--scale));
+      font-weight: 800;
+      letter-spacing: .02em;
+      color: #444;
+    }
+
+    .receipt-date {
+      margin-top: 4px;
+      text-align: center;
+      font-size: calc(10px * var(--scale));
+      color: #808080;
+    }
+
+    .receipt-person {
+      margin-top: 12px;
+      font-size: calc(10.5px * var(--scale));
+      font-weight: 700;
+      color: #565656;
+    }
+
+    .receipt-meta {
+      margin-top: 6px;
+      font-size: calc(10.5px * var(--scale));
+      line-height: 1.35;
+      color: #5f5f5f;
+    }
+
+    .receipt-divider {
+      border-top: 1px dashed #cfcfcf;
+      margin: 10px 0;
+    }
+
+    .receipt-headline-small {
+      text-align: center;
+      font-size: calc(11.5px * var(--scale));
+      font-weight: 800;
+      color: #4a4a4a;
+    }
+
+    .receipt-headline-tag {
+      text-align: center;
+      margin-top: 4px;
+      font-size: calc(9px * var(--scale));
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: #888;
+      text-transform: uppercase;
+    }
+
+    .receipt-headline-big {
+      text-align: center;
+      margin-top: 2px;
+      font-size: calc(22px * var(--scale));
+      line-height: 1;
+      font-weight: 900;
+      color: #232323;
+    }
+
+    .receipt-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: calc(10.5px * var(--scale));
+      color: #5b5b5b;
+    }
+    .receipt-table td:first-child,
+    .receipt-table th:first-child {
+      width: 1%;
+      white-space: nowrap;
+      padding-right: 12px;
+      font-size: calc(8.5px * var(--scale));
+    }
+    .receipt-table td:nth-child(2),
+    .receipt-table th:nth-child(2) {
+      padding-left: 0;
+    }
+
+    .receipt-table th {
+      text-align: left;
+      font-weight: 500;
+      padding: 4px 0 8px;
+      color: #676767;
+    }
+
+    .receipt-table td {
+      padding: 4px 0;
+    }
+
+    .receipt-table th:last-child,
+    .receipt-table td:last-child {
+      text-align: right;
+    }
+
+    .receipt-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .receipt-total-label {
+      font-size: calc(10.5px * var(--scale));
+      font-weight: 700;
+      color: #555;
+    }
+
+    .receipt-total-value {
+      font-size: calc(15px * var(--scale));
+      font-weight: 800;
+      color: #3b3b3b;
+      white-space: nowrap;
+    }
+
+    .receipt-code-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .receipt-protocol {
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: #f0f0ee;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .receipt-credit-block {
+      margin-top: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .receipt-credit-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 10px;
+    }
+    .receipt-credit-label {
+      font-size: calc(10.5px * var(--scale));
+      font-weight: 700;
+      color: #555;
+      line-height: 1.3;
+      flex: 1;
+    }
+    .receipt-credit-value {
+      font-size: calc(15px * var(--scale));
+      font-weight: 800;
+      color: #3b3b3b;
+      white-space: nowrap;
+    }
+    .receipt-credit-divider {
+      border: none;
+      border-top: 1px dashed #cfcfcf;
+      margin: 0;
+    }
+    .receipt-protocol-label {
+      font-size: calc(8.5px * var(--scale));
+      color: #888;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .receipt-protocol-code {
+      font-size: calc(9px * var(--scale));
+      color: #444;
+      font-weight: 700;
+      font-family: ui-monospace, monospace;
+      letter-spacing: .05em;
+    }
+    
+
+    .receipt-site {
+      text-align: center;
+      margin-top: 4px;
+      font-size: calc(10px * var(--scale));
+      color: #7a7a7a;
+      letter-spacing: .08em;
+    }
+
+
+    .details-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-download {
+      background: #edf3ff;
+      color: var(--blue);
+      border: 1.5px solid #d2ddfb;
+      padding: 13px;
+      font-size: calc(13px * var(--scale));
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-download:hover {
+      background: #e6efff;
+    }
+
+    .btn-download[disabled] {
+      opacity: .7;
+      cursor: wait;
+    }
+
+    .download-status {
+      margin-top: 8px;
+      font-size: calc(9px * var(--scale));
+      color: var(--muted);
+      text-align: center;
+      min-height: 14px;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+
+      #pdfOfferArea,
+      #pdfOfferArea * {
+        visibility: visible !important;
+      }
+
+      html, body {
+        background: #fff !important;
+      }
+
+      #pdfOfferArea {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        padding: 24px;
+        background: #fff;
+      }
+
+      .offer-card {
+        box-shadow: none;
+        border: 0;
+        padding: 0;
+      }
+
+      .btn, .disclaimer, .fontbar, .bottom {
+        display: none !important;
+      }
+    }
+
+    .bottom {
+      padding: 0 0 8px;
+    }
+
+    .more-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-top: 4px;
+    }
+
+    .more-title {
+      font-size: calc(13px * var(--scale));
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .more-subtitle {
+      font-size: calc(10px * var(--scale));
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .mini-card {
+      border-radius: 18px;
+      margin-bottom: 8px;
+      border: 1px solid transparent;
+      overflow: hidden;
+      animation: cardRise .28s ease both;
+    }
+
+    .mini-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .mini-card.refin {
+      background: var(--gold-bg);
+      border-color: var(--gold-line);
+    }
+
+    .mini-card.novo {
+      background: #eef4ff;
+      border-color: #c0d2f5;
+    }
+
+    .mini-card.refin { animation-delay: .02s; }
+    .mini-card.novo { animation-delay: .06s; }
+
+    .mini-card-inner {
+      padding: 14px 14px 0;
+    }
+
+    .mini-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .icon.refin { background: #fde9a0; }
+    .icon.novo { background: #c0d4f8; }
+
+    .mini-name {
+      font-size: calc(13px * var(--scale));
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 3px;
+    }
+
+    .mini-name.refin { color: var(--gold); }
+    .mini-name.novo { color: #0c3278; }
+
+    .mini-desc {
+      font-size: calc(10.5px * var(--scale));
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    .mini-desc.refin { color: #9b7020; }
+    .mini-desc.novo { color: #4a6fa8; }
+
+    .mini-divider {
+      height: 1px;
+      margin: 0 14px;
+    }
+
+    .mini-card.refin .mini-divider { background: var(--gold-line); }
+    .mini-card.novo .mini-divider { background: #c0d2f5; }
+
+    .mini-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+    }
+
+    .mini-value {
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+      white-space: nowrap;
+    }
+
+    .mini-value .rs {
+      font-size: calc(11px * var(--scale));
+      font-weight: 600;
+    }
+
+    .mini-value .num {
+      font-size: calc(22px * var(--scale));
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -.02em;
+    }
+
+    .mini-value.refin,
+    .mini-value.refin .rs,
+    .mini-value.refin .num {
+      color: var(--gold);
+    }
+
+    .mini-value.novo,
+    .mini-value.novo .rs,
+    .mini-value.novo .num {
+      color: #0c3278;
+    }
+
+    .mini-detail {
+      font-size: calc(9.5px * var(--scale));
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .mini-detail.refin { color: #9b7020; }
+    .mini-detail.novo { color: #4a6fa8; }
+
+    .mini-btn {
+      border: 0;
+      border-radius: 12px;
+      color: #fff;
+      padding: 11px 16px;
+      font: 600 calc(11.5px * var(--scale))/1.2 var(--font);
+      cursor: pointer;
+      white-space: nowrap;
+      transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        filter .18s ease,
+        background-color .18s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 4px 10px rgba(0, 24, 81, .10);
+    }
+
+    .mini-btn svg {
+      transition: transform .18s ease;
+    }
+
+    .mini-btn.refin { background: var(--gold-btn); }
+    .mini-btn.novo  { background: #1840a8; }
+
+    .mini-btn:hover {
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: 0 8px 18px rgba(0, 24, 81, .16);
+      filter: brightness(1.03);
+    }
+
+    .mini-btn:hover svg {
+      transform: translateX(2px);
+    }
+
+    .mini-btn:active {
+      transform: scale(.98);
+      box-shadow: 0 3px 8px rgba(0, 24, 81, .10);
+    }
+
+    .mini-btn:focus-visible {
+      outline: 2px solid rgba(35, 80, 200, .28);
+      outline-offset: 2px;
+    }
+
+    .disclaimer {
+      font-size: calc(8px * var(--scale));
+      color: var(--muted);
+      text-align: right;
+      margin-top: 8px;
+      opacity: .68;
+      font-style: italic;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    .fade-content {
+      animation: fadeIn .22s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes cardRise {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="screen">
+    <section class="header">
+      <div class="fontbar">
+        <div class="font-toggle">
+          <button id="btnNormal" class="active" type="button">Normal</button>
+          <button id="btnLarge" type="button">A+</button>
+        </div>
+      </div>
+
+      <div class="user">
+        <div>
+          <div class="hello">Olá,</div>
+          <div class="name">Carlos Eduardo</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="tag">
+          <div class="tag-dot"></div>
+          <span>PORTABILIDADE</span>
+        </div>
+
+        <div class="choices">
+          <button class="choice active" id="choiceEco" type="button">
+            <div class="bars">
+              <span class="bar bar-eco-1"></span>
+              <span class="bar bar-eco-2"></span>
+              <span class="bar bar-eco-3"></span>
+              <span class="bar bar-eco-4 dim"></span>
+              <span class="bar bar-eco-5 dim"></span>
+            </div>
+            <div class="title">Quero<br>Economizar</div>
+            <div class="sub">Diminuir Minha<br>Dívida</div>
+          </button>
+
+          <button class="choice" id="choiceParc" type="button">
+            <div class="bars">
+              <span class="bar bar-parc-1"></span>
+              <span class="bar bar-parc-2"></span>
+              <span class="bar bar-parc-3"></span>
+              <span class="bar bar-parc-4"></span>
+              <span class="bar bar-parc-5"></span>
+            </div>
+            <div class="title">Parcela<br>Menor</div>
+            <div class="sub">Mais Alívio<br>No Mês</div>
+          </button>
+        </div>
+
+        <div class="offer-card" id="pdfOfferArea">
+          <div class="compare">
+            <div class="compare-row-lbl">
+              <div class="lbl">Parcela<br>Atual</div>
+              <div></div>
+              <div class="lbl" style="text-align:right">Parcela<br>Nova</div>
+            </div>
+            <div class="compare-row-val">
+              <div class="val old">R$&nbsp;550</div>
+              <div class="arrow-icon">→</div>
+              <div class="val new" style="text-align:right" id="newInstallment"></div>
+            </div>
+          </div>
+
+          <div class="state-shell eco" id="stateShell">
+            <div class="state-intro fade-content">
+              <div class="eyebrow" id="stateEyebrow">Sem Aumentar o Prazo</div>
+              <div class="headline" id="headlinePrefix">Economize até</div>
+              <div class="value-wrap" id="valueWrap"></div>
+              <div class="subhead" id="stateSubhead">reduzindo o valor total do seu contrato</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-box margin-box">
+              <div class="ibox-top">Margem livre de</div>
+              <div class="ibox-mid">
+                <span class="ibox-ate">até</span>
+                <span id="marginValue" class="money-nowrap"></span>
+              </div>
+              <div class="ibox-bot">após portabilidade</div>
+            </div>
+
+            <div class="info-box credit-box">
+              <div class="ibox-top">Crédito disponível de</div>
+              <div class="ibox-mid">
+                <span class="ibox-ate">até</span>
+                <span id="creditValue" class="money-nowrap"></span>
+              </div>
+              <div class="ibox-bot">após a Liberação da Margem</div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="mainCta" type="button">Quero Economizar Agora</button>
+          <button class="btn btn-secondary btn-details" id="toggleDetails" type="button" aria-expanded="false" aria-controls="offerDetails">
+            <span>Ver detalhes da oferta</span>
+            <svg class="chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 6l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <div class="offer-details" id="offerDetails" hidden>
+            <div class="receipt-card-wrap">
+
+              <!-- RECIBO ECO: Quero Economizar -->
+              <section class="receipt-card receipt-eco" id="receiptEco" aria-label="Recibo de economia">
+                <div class="receipt-title">RECIBO DE ECONOMIA CONSIGAI</div>
+                <div class="receipt-date">19 de abril de 2025</div>
+
+                <div class="receipt-person">CARLOS EDUARDO MARTINS</div>
+                <div class="receipt-meta">
+                  CPF: 177.665.442-8<br>
+                  Benefício: Aposentadoria por Tempo de Contribuição<br>
+                  Nascimento: 30/07/1957<br>
+                  Valor do Benefício: R$ 2.200
+                </div>
+
+                <div class="receipt-divider"></div>
+
+                <div class="receipt-headline-small">PARABÉNS! VOCÊ ECONOMIZOU</div>
+                <div class="receipt-headline-big">R$ 2.399</div>
+                <div class="receipt-headline-tag">SEM AUMENTAR O PRAZO</div>
+
+                <div class="receipt-divider"></div>
+
+                <table class="receipt-table" aria-label="Itens do contrato">
+                  <thead>
+                    <tr>
+                      <th>Cód.</th>
+                      <th>De &rarr; Para</th>
+                      <th>Economia</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>0056347710</td>
+                      <td>FACTA &rarr; Banrisul</td>
+                      <td>R$ 779,14</td>
+                    </tr>
+                    <tr>
+                      <td>0123472010087</td>
+                      <td>Bradesco &rarr; Banrisul</td>
+                      <td>R$ 550,93</td>
+                    </tr>
+                    <tr>
+                      <td>0056346924</td>
+                      <td>FACTA &rarr; Banrisul</td>
+                      <td>R$ 365,63</td>
+                    </tr>
+                    <tr>
+                      <td>0057628452</td>
+                      <td>FACTA &rarr; Banrisul</td>
+                      <td>R$ 167,50</td>
+                    </tr>
+                    <tr>
+                      <td>622921912</td>
+                      <td>Itaú Consig. &rarr; Banrisul</td>
+                      <td>R$ 0,30</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="receipt-divider"></div>
+
+                <div class="receipt-total">
+                  <span class="receipt-total-label">Economia Total</span>
+                  <span class="receipt-total-value">R$ 1.863,50</span>
+                </div>
+
+                <div class="receipt-divider"></div>
+
+                <div class="receipt-credit-block">
+                  <div class="receipt-credit-item">
+                    <span class="receipt-credit-label">Crédito disponível após a liberação da margem</span>
+                    <span class="receipt-credit-value">até R$ 5.033</span>
+                  </div>
+                  <hr class="receipt-credit-divider">
+                  <div class="receipt-credit-item">
+                    <span class="receipt-credit-label">Margem livre após portabilidade</span>
+                    <span class="receipt-credit-value">até R$ 320</span>
+                  </div>
+                </div>
+
+                <div class="receipt-protocol">
+                  <div class="receipt-protocol-label">Protocolo</div>
+                  <div class="receipt-protocol-code">CSG-2025-04871</div>
+                </div>
+                <div class="receipt-site">ConsigAI.com.br</div>
+              </section>
+
+              <!-- RECIBO PARC: Parcela Menor -->
+              <section class="receipt-card receipt-parc" id="receiptParc" aria-label="Recibo de economia mensal" hidden>
+                <div class="receipt-title">RECIBO DE ECONOMIA CONSIGAI</div>
+                <div class="receipt-date">19 de abril de 2025</div>
+
+                <div class="receipt-person">CARLOS EDUARDO MARTINS</div>
+                <div class="receipt-meta">
+                  CPF: 177.665.442-8<br>
+                  Benefício: Aposentadoria por Tempo de Contribuição<br>
+                  Nascimento: 30/07/1957<br>
+                  Valor do Benefício: R$ 2.200
+                </div>
+
+                <div class="receipt-divider"></div>
+
+                <div class="receipt-headline-small">PARABÉNS! VOCÊ ECONOMIZOU</div>
+                <div class="receipt-headline-big">R$ 117<span style="font-size:55%;font-weight:700;vertical-align:middle"> /mês</span></div>
+                <div class="receipt-headline-tag">ALÍVIO MENSAL</div>
+
+                <div class="receipt-divider"></div>
+
+                <table class="receipt-table" aria-label="Itens do contrato">
+                  <thead>
+                    <tr>
+                      <th>Cód.</th>
+                      <th>De &rarr; Para</th>
+                      <th>Alívio/mês</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>0123472010087</td>
+                      <td>Bradesco &rarr; Banrisul</td>
+                      <td>R$ 25,86</td>
+                    </tr>
+                    <tr>
+                      <td>0056347710</td>
+                      <td>FACTA &rarr; Banrisul</td>
+                      <td>R$ 24,85</td>
+                    </tr>
+                    <tr>
+                      <td>0056346924</td>
+                      <td>FACTA &rarr; Banrisul</td>
+                      <td>R$ 12,13</td>
+                    </tr>
+                    <tr>
+                      <td>0057628452</td>
+                      <td>FACTA &rarr; Banrisul</td>
+                      <td>R$ 7,95</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="receipt-divider"></div>
+
+                <div class="receipt-total">
+                  <span class="receipt-total-label">Alívio por mês</span>
+                  <span class="receipt-total-value">R$ 70,79/mês</span>
+                </div>
+
+                <div class="receipt-divider"></div>
+
+                <div class="receipt-credit-block">
+                  <div class="receipt-credit-item">
+                    <span class="receipt-credit-label">Margem livre após portabilidade</span>
+                    <span class="receipt-credit-value">até R$ 480</span>
+                  </div>
+                  <hr class="receipt-credit-divider">
+                  <div class="receipt-credit-item">
+                    <span class="receipt-credit-label">Crédito disponível após a liberação da margem</span>
+                    <span class="receipt-credit-value">até R$ 7.593</span>
+                  </div>
+                </div>
+
+                <div class="receipt-protocol">
+                  <div class="receipt-protocol-label">Protocolo</div>
+                  <div class="receipt-protocol-code">CSG-2025-04871</div>
+                </div>
+                <div class="receipt-site">ConsigAI.com.br</div>
+              </section>
+
+            </div>
+
+            <div class="details-actions">
+              <button class="btn btn-download" id="downloadOfferPdf" type="button">
+                <span aria-hidden="true">⬇</span>
+                <span>Fazer download da oferta</span>
+              </button>
+              <div class="download-status" id="downloadStatus" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <p class="disclaimer">Valores estimados. Sujeitos à análise e aprovação de crédito.</p>
+        </div>
+
+        <section class="bottom">
+          <div class="more-header">
+            <div class="more-title">Outras opções para você</div>
+            <div class="more-subtitle">2 disponíveis</div>
+          </div>
+
+          <div class="mini-card refin">
+            <div class="mini-card-inner">
+              <div class="mini-top">
+                <div class="icon refin">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="10" r="7.5" stroke="#b07800" stroke-width="1.5"/>
+                    <path d="M10 6.5V10.5L12.5 13" stroke="#b07800" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="mini-name refin">Refinanciamento</div>
+                  <div class="mini-desc refin">Receba dinheiro agora sem aumentar sua parcela atual</div>
+                </div>
+              </div>
+            </div>
+            <div class="mini-divider"></div>
+            <div class="mini-footer">
+              <div>
+                <div class="mini-value refin">
+                  <span class="rs">R$</span>
+                  <span class="num">9.547</span>
+                </div>
+                <div class="mini-detail refin">estimado para receber</div>
+              </div>
+              <button class="mini-btn refin" type="button">
+                Ver oferta
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M6 3l5 5-5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="mini-card novo">
+            <div class="mini-card-inner">
+              <div class="mini-top">
+                <div class="icon novo">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 4v12M4 10h12" stroke="#1840a8" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="mini-name novo">Novo Empréstimo</div>
+                  <div class="mini-desc novo">Mais dinheiro disponível com pequeno ajuste na parcela</div>
+                </div>
+              </div>
+            </div>
+            <div class="mini-divider"></div>
+            <div class="mini-footer">
+              <div>
+                <div class="mini-value novo">
+                  <span class="rs">R$</span>
+                  <span class="num">2.845</span>
+                </div>
+                <div class="mini-detail novo">estimado disponível</div>
+              </div>
+              <button class="mini-btn novo" type="button">
+                Ver oferta
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M6 3l5 5-5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const stateData = {
+      eco: {
+        newInstallment: 'R$ 496',
+        shellClass: 'eco',
+        eyebrow: 'Sem Aumentar o Prazo',
+        headlinePrefix: 'Economize até',
+        headlineValue: 'R$ 2.399',
+        headlineSuffix: '',
+        subhead: 'reduzindo o valor total do seu contrato',
+        margin: 'R$ 320',
+        credit: 'R$ 5.033',
+        cta: 'Quero Economizar Agora'
+      },
+      parc: {
+        newInstallment: 'R$ 433',
+        shellClass: 'parc',
+        eyebrow: 'Mais Alívio no Orçamento',
+        headlinePrefix: 'Economize até',
+        headlineValue: 'R$ 117',
+        headlineSuffix: 'por mês',
+        subhead: 'mais folga no seu orçamento mensal',
+        margin: 'R$ 480',
+        credit: 'R$ 7.593',
+        cta: 'Quero Pagar Menos Agora'
+      }
+    };
+
+    const $id = id => document.getElementById(id);
+    const els = {
+      choiceEco: $id('choiceEco'),
+      choiceParc: $id('choiceParc'),
+      newInstallment: $id('newInstallment'),
+      stateShell: $id('stateShell'),
+      stateEyebrow: $id('stateEyebrow'),
+      headlinePrefix: $id('headlinePrefix'),
+      valueWrap: $id('valueWrap'),
+      stateSubhead: $id('stateSubhead'),
+      marginValue: $id('marginValue'),
+      creditValue: $id('creditValue'),
+      mainCta: $id('mainCta'),
+      btnNormal: $id('btnNormal'),
+      btnLarge: $id('btnLarge'),
+      downloadOfferPdf: $id('downloadOfferPdf'),
+      receiptEco: $id('receiptEco'),
+      receiptParc: $id('receiptParc'),
+      downloadStatus: $id('downloadStatus')
+    };
+
+
+
+    async function generateOfferPdf() {
+      const target = $id('pdfOfferArea');
+      const { downloadOfferPdf, downloadStatus } = els;
+      if (!target || !downloadOfferPdf) return;
+
+      const previousLabel = downloadOfferPdf.innerHTML;
+      downloadOfferPdf.disabled = true;
+      downloadOfferPdf.innerHTML = '<span aria-hidden="true">⏳</span><span>Gerando PDF...</span>';
+      if (downloadStatus) downloadStatus.textContent = 'Preparando o arquivo da oferta...';
+
+      try {
+        if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
+          throw new Error('Bibliotecas de PDF indisponíveis');
+        }
+
+        const canvas = await window.html2canvas(target, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff'
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const margin = 10;
+        const contentWidth = pdfWidth - margin * 2;
+        const contentHeight = (canvas.height * contentWidth) / canvas.width;
+
+        if (contentHeight <= pdfHeight - margin * 2) {
+          pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight);
+        } else {
+          let remainingHeight = contentHeight;
+          let position = margin;
+          pdf.addImage(imgData, 'PNG', margin, position, contentWidth, contentHeight);
+          remainingHeight -= (pdfHeight - margin * 2);
+
+          while (remainingHeight > 0) {
+            position = remainingHeight - contentHeight + margin;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', margin, position, contentWidth, contentHeight);
+            remainingHeight -= (pdfHeight - margin * 2);
+          }
+        }
+
+        pdf.save('oferta-portabilidade.pdf');
+        if (downloadStatus) downloadStatus.textContent = 'PDF gerado com sucesso.';
+      } catch (error) {
+        if (downloadStatus) {
+          downloadStatus.textContent = 'Não foi possível baixar automaticamente. Abrimos a impressão como alternativa.';
+        }
+        window.print();
+      } finally {
+        downloadOfferPdf.disabled = false;
+        downloadOfferPdf.innerHTML = previousLabel;
+      }
+    }
+
+    function setMode(mode) {
+      const d = stateData[mode];
+
+      els.newInstallment.textContent = d.newInstallment;
+      els.stateShell.classList.remove('eco', 'parc');
+      els.stateShell.classList.add(d.shellClass);
+      els.stateEyebrow.textContent = d.eyebrow;
+      els.headlinePrefix.textContent = d.headlinePrefix;
+      els.valueWrap.innerHTML =
+        '<span class="big-number">' + d.headlineValue + '</span>' +
+        (d.headlineSuffix ? '<span class="headline-suffix">' + d.headlineSuffix + '</span>' : '');
+      els.stateSubhead.textContent = d.subhead;
+      els.marginValue.textContent = d.margin;
+      els.creditValue.textContent = d.credit;
+      els.mainCta.textContent = d.cta;
+
+      els.choiceEco.classList.toggle('active', mode === 'eco');
+      els.choiceParc.classList.toggle('active', mode === 'parc');
+
+      const intro = els.stateShell.querySelector('.state-intro');
+      intro.classList.remove('fade-content');
+      void intro.offsetWidth;
+      intro.classList.add('fade-content');
+
+      // Trocar recibo conforme o modo
+      if (els.receiptEco && els.receiptParc) {
+        if (mode === 'eco') {
+          els.receiptEco.removeAttribute('hidden');
+          els.receiptParc.setAttribute('hidden', '');
+        } else {
+          els.receiptParc.removeAttribute('hidden');
+          els.receiptEco.setAttribute('hidden', '');
+        }
+      }
+    }
+
+    function setFont(size) {
+      document.body.classList.toggle('large-font', size === 'large');
+      els.btnNormal.classList.toggle('active', size !== 'large');
+      els.btnLarge.classList.toggle('active', size === 'large');
+    }
+
+    els.choiceEco.addEventListener('click', () => setMode('eco'));
+    els.choiceParc.addEventListener('click', () => setMode('parc'));
+    els.btnNormal.addEventListener('click', () => setFont('normal'));
+    els.btnLarge.addEventListener('click', () => setFont('large'));
+
+
+    const toggleDetails = $id('toggleDetails');
+    const offerDetails = $id('offerDetails');
+
+    if (toggleDetails && offerDetails) {
+      toggleDetails.addEventListener('click', () => {
+        const isHidden = offerDetails.hasAttribute('hidden');
+        if (isHidden) {
+          offerDetails.removeAttribute('hidden');
+          toggleDetails.classList.add('is-open');
+          toggleDetails.setAttribute('aria-expanded', 'true');
+        } else {
+          offerDetails.setAttribute('hidden', '');
+          toggleDetails.classList.remove('is-open');
+          toggleDetails.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    if (els.downloadOfferPdf) {
+      els.downloadOfferPdf.addEventListener('click', generateOfferPdf);
+    }
+
+    setMode('eco');
+  </script>
+</body>
+</html>
