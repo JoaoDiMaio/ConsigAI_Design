@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Refinanciamento — ConsigAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --scale: 1;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --navy:        #001851;
+      --blue:        #2350c8;
+      --blue-2:      #1844b8;
+      --blue-light:  #e8eeff;
+      --blue-mid:    #c2d0f8;
+      --text:        #0f2057;
+      --muted:       #7a8db8;
+      --line:        #e4eaf8;
+      --gold:        #7a5200;
+      --gold-soft:   #9b7020;
+      --gold-bg:     #fffbf0;
+      --gold-line:   #edddb0;
+      --gold-btn:    #a87000;
+      --gold-accent: #c88a00;
+      --bg-panel:    #f4f7fd;
+      --shadow-card: 0 8px 28px rgba(0,24,81,.09);
+      --shadow-phone: 0 30px 80px rgba(0,24,81,.22);
+      --r-card: 20px;
+    }
+    body.large-font { --scale: 1.13; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #dde4f2;
+      font-family: var(--font);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 28px 16px;
+    }
+
+    /* ── Phone ── */
+    .phone {
+      width: 350px;
+      background: var(--bg-panel);
+      border-radius: 44px;
+      border: 9px solid var(--navy);
+      box-shadow: var(--shadow-phone);
+      overflow: hidden;
+    }
+    .screen {
+      max-height: 800px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      background: var(--bg-panel);
+    }
+    .screen::-webkit-scrollbar { display: none; }
+
+    /* ── Header ── */
+    .header {
+      background: var(--navy);
+      padding: 18px 20px 0;
+    }
+    .fontbar { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+    .font-toggle {
+      display: flex; gap: 2px; padding: 3px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+    .font-toggle button {
+      border: 0; background: transparent;
+      color: rgba(255,255,255,.55);
+      font: 500 calc(10px * var(--scale))/1 var(--font);
+      padding: 6px 10px; border-radius: 999px; cursor: pointer;
+      transition: .15s ease;
+    }
+    .font-toggle button.active { background: rgba(255,255,255,.14); color: #fff; }
+
+    .user {
+      display: flex; justify-content: space-between;
+      align-items: flex-end; gap: 12px; margin-bottom: 20px;
+    }
+    .hello { font-size: calc(11px * var(--scale)); color: rgba(255,255,255,.5); margin-bottom: 4px; }
+    .name  { font-size: calc(18px * var(--scale)); font-weight: 600; color: #fff; line-height: 1.1; }
+    .benefit-chip {
+      flex-shrink: 0; text-align: right;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px; padding: 8px 12px;
+    }
+    .benefit-chip small { display: block; font-size: calc(9.5px * var(--scale)); color: rgba(255,255,255,.45); margin-bottom: 3px; }
+    .benefit-chip strong { font-size: calc(15px * var(--scale)); font-weight: 600; color: #fff; }
+
+    /* ── Panel ── */
+    .panel {
+      background: var(--bg-panel);
+      border-radius: 26px 26px 0 0;
+      padding: 20px 18px 28px;
+    }
+
+    .tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      border-radius: 999px;
+      padding: 4px 12px 4px 8px; margin-bottom: 6px;
+      background: var(--gold-bg);
+      border: 1px solid var(--gold-line);
+    }
+    .tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold-accent); flex-shrink: 0; }
+    .tag span { font-size: calc(10px * var(--scale)); font-weight: 700; letter-spacing: .07em; color: var(--gold); }
+
+    .section-title {
+      font-size: calc(20px * var(--scale));
+      font-weight: 700; color: var(--text); line-height: 1.15; margin-bottom: 4px;
+    }
+    .section-sub {
+      font-size: calc(12px * var(--scale));
+      color: var(--muted); font-weight: 500; margin-bottom: 20px; line-height: 1.4;
+    }
+
+    /* ── Contrato atual card ── */
+    .current-card {
+      background: #fff;
+      border-radius: var(--r-card);
+      border: 1px solid #e6ecf8;
+      box-shadow: var(--shadow-card);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .card-label {
+      font-size: calc(10px * var(--scale));
+      font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .contract-grid {
+      display: grid; grid-template-columns: 1fr 1px 1fr 1px 1fr;
+      align-items: center; gap: 0;
+    }
+    .contract-sep { width: 1px; background: var(--line); height: 32px; align-self: center; }
+    .contract-item { text-align: center; padding: 0 6px; }
+    .contract-item-label {
+      font-size: calc(9px * var(--scale));
+      color: var(--muted); font-weight: 500;
+      margin-bottom: 4px; line-height: 1.2;
+    }
+    .contract-item-value {
+      font-size: calc(14px * var(--scale));
+      font-weight: 700; color: var(--text);
+      line-height: 1; letter-spacing: -.01em;
+      white-space: nowrap;
+    }
+
+    /* ── Troco slider ── */
+    .troco-card {
+      background: #fff;
+      border-radius: var(--r-card);
+      border: 1px solid #e6ecf8;
+      box-shadow: var(--shadow-card);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .troco-header {
+      display: flex; justify-content: space-between;
+      align-items: flex-end; margin-bottom: 10px;
+    }
+    .troco-label {
+      font-size: calc(11px * var(--scale));
+      font-weight: 700; letter-spacing: .04em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .troco-value {
+      font-size: calc(24px * var(--scale));
+      font-weight: 700; letter-spacing: -.02em;
+      line-height: 1; color: var(--gold);
+      white-space: nowrap;
+    }
+    .troco-value .rs {
+      font-size: calc(13px * var(--scale));
+      font-weight: 600;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%; height: 6px;
+      border-radius: 999px; outline: none; cursor: pointer;
+    }
+    input[type=range].gold::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--gold-btn);
+      border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(168,112,0,.35);
+      cursor: pointer; transition: transform .12s ease;
+    }
+    input[type=range].gold::-webkit-slider-thumb:active { transform: scale(1.15); }
+
+    .slider-range {
+      display: flex; justify-content: space-between; margin-top: 6px;
+    }
+    .slider-range span {
+      font-size: calc(10px * var(--scale)); color: var(--muted); font-weight: 500;
+    }
+
+    .divider { height: 1px; background: var(--line); margin: 14px 0; }
+
+    /* Prazo refinanciamento */
+    .prazo-label {
+      font-size: calc(11px * var(--scale));
+      font-weight: 700; letter-spacing: .04em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
+    }
+    .prazo-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;
+    }
+    .prazo-btn {
+      border: 1.5px solid var(--line);
+      background: #f7f9fe; border-radius: 12px;
+      padding: 10px 6px; cursor: pointer; text-align: center;
+      transition: all .18s cubic-bezier(.4,0,.2,1);
+      font-family: var(--font);
+    }
+    .prazo-btn:active { transform: scale(.96); }
+    .prazo-btn.active {
+      background: var(--gold-btn);
+      border-color: #8c5e00;
+      box-shadow: 0 6px 16px rgba(168,112,0,.28);
+    }
+    .prazo-btn .n {
+      display: block; font-size: calc(17px * var(--scale));
+      font-weight: 700; line-height: 1;
+      color: var(--text); letter-spacing: -.01em;
+    }
+    .prazo-btn .x {
+      display: block; font-size: calc(9px * var(--scale));
+      font-weight: 600; color: var(--muted); margin-top: 2px;
+    }
+    .prazo-btn.active .n { color: #fff; }
+    .prazo-btn.active .x { color: rgba(255,255,255,.65); }
+
+    /* ── Resumo dark card ── */
+    .summary-card {
+      background: var(--navy);
+      border-radius: var(--r-card);
+      padding: 16px; margin-bottom: 14px;
+    }
+    .summary-eyebrow {
+      font-size: calc(10px * var(--scale));
+      font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.45); margin-bottom: 12px;
+    }
+
+    /* Highlight: troco a receber */
+    .troco-destaque {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px; padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .troco-destaque-left { }
+    .troco-destaque-label {
+      font-size: calc(10px * var(--scale));
+      color: rgba(255,255,255,.5); font-weight: 600;
+      letter-spacing: .04em; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .troco-destaque-value {
+      font-size: calc(26px * var(--scale));
+      font-weight: 700; line-height: 1;
+      letter-spacing: -.02em; color: #fff;
+      white-space: nowrap;
+    }
+    .troco-destaque-sub {
+      font-size: calc(10px * var(--scale));
+      color: rgba(255,255,255,.45); font-weight: 500;
+      margin-top: 3px;
+    }
+    .troco-destaque-badge {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 10px; padding: 8px 12px;
+      text-align: center; flex-shrink: 0;
+    }
+    .troco-destaque-badge .badge-label {
+      font-size: calc(9px * var(--scale));
+      color: rgba(255,255,255,.45); font-weight: 600;
+      margin-bottom: 3px;
+    }
+    .troco-destaque-badge .badge-value {
+      font-size: calc(13px * var(--scale));
+      font-weight: 700; color: rgba(255,255,255,.9); white-space: nowrap;
+    }
+
+    .summary-row {
+      display: grid; grid-template-columns: 1fr 1px 1fr 1px 1fr;
+      align-items: center; margin-bottom: 12px;
+    }
+    .summary-sep { width: 1px; background: rgba(255,255,255,.1); height: 36px; align-self: center; }
+    .summary-item { text-align: center; padding: 0 4px; }
+    .summary-item-label {
+      font-size: calc(9.5px * var(--scale));
+      color: rgba(255,255,255,.45); font-weight: 500;
+      margin-bottom: 4px; line-height: 1.2;
+    }
+    .summary-item-value {
+      font-size: calc(13px * var(--scale));
+      font-weight: 700; color: #fff;
+      line-height: 1; letter-spacing: -.01em;
+      white-space: nowrap;
+    }
+
+    .rate-row {
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(255,255,255,.06);
+      border-radius: 10px; padding: 10px 12px;
+    }
+    .rate-left { font-size: calc(10px * var(--scale)); color: rgba(255,255,255,.5); font-weight: 500; }
+    .rate-right { font-size: calc(12px * var(--scale)); font-weight: 600; color: rgba(255,255,255,.8); }
+
+    /* ── Buttons ── */
+    .btn {
+      width: 100%; border: 0; border-radius: 14px;
+      font-family: var(--font); cursor: pointer;
+      transition: .15s ease;
+    }
+    .btn:active { transform: scale(.98); }
+    .btn-primary {
+      background: linear-gradient(160deg, #c88a00 0%, #a87000 100%);
+      color: #fff; padding: 15px 14px;
+      font-size: calc(15px * var(--scale)); font-weight: 600; line-height: 1.2;
+      box-shadow: 0 8px 20px rgba(168,112,0,.3); margin-bottom: 8px;
+    }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-secondary {
+      background: transparent; color: var(--blue);
+      border: 1.5px solid var(--blue-mid);
+      padding: 13px; font-size: calc(13.5px * var(--scale)); font-weight: 500;
+    }
+    .btn-secondary:hover { background: var(--blue-light); }
+
+    .spacer { height: 12px; }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen">
+      <section class="header">
+        <div class="fontbar">
+          <div class="font-toggle">
+            <button id="btnNormal" class="active" type="button">Normal</button>
+            <button id="btnLarge" type="button">A+</button>
+          </div>
+        </div>
+        <div class="user">
+          <div>
+            <div class="hello">Olá, bem-vindo de volta 👋</div>
+            <div class="name">Carlos Eduardo</div>
+          </div>
+          <div class="benefit-chip">
+            <small>Benefício mensal</small>
+            <strong>R$ 2.200</strong>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="tag">
+            <div class="tag-dot"></div>
+            <span>REFINANCIAMENTO</span>
+          </div>
+          <div class="section-title">Seu contrato atual</div>
+          <div class="section-sub">Refinancie e receba dinheiro extra na conta</div>
+
+          <!-- Contrato atual -->
+          <div class="current-card">
+            <div class="card-label">Contrato em aberto</div>
+            <div class="contract-grid">
+              <div class="contract-item">
+                <div class="contract-item-label">Saldo devedor</div>
+                <div class="contract-item-value">R$ 18.540</div>
+              </div>
+              <div class="contract-sep"></div>
+              <div class="contract-item">
+                <div class="contract-item-label">Parcela atual</div>
+                <div class="contract-item-value">R$ 550</div>
+              </div>
+              <div class="contract-sep"></div>
+              <div class="contract-item">
+                <div class="contract-item-label">Parcelas rest.</div>
+                <div class="contract-item-value">42 meses</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slider de troco -->
+          <div class="troco-card">
+            <div class="troco-header">
+              <div class="troco-label">Quanto quer receber?</div>
+              <div class="troco-value"><span class="rs">R$ </span><span id="trocoDisplay">5.000</span></div>
+            </div>
+            <input type="range" id="trocoSlider" class="gold" min="1000" max="12000" step="100" value="5000" />
+            <div class="slider-range">
+              <span>R$ 1.000</span>
+              <span>R$ 12.000</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="prazo-label">Novo prazo do contrato</div>
+            <div class="prazo-grid">
+              <button class="prazo-btn" data-n="24" type="button"><span class="n">24</span><span class="x">meses</span></button>
+              <button class="prazo-btn" data-n="36" type="button"><span class="n">36</span><span class="x">meses</span></button>
+              <button class="prazo-btn active" data-n="48" type="button"><span class="n">48</span><span class="x">meses</span></button>
+              <button class="prazo-btn" data-n="60" type="button"><span class="n">60</span><span class="x">meses</span></button>
+              <button class="prazo-btn" data-n="72" type="button"><span class="n">72</span><span class="x">meses</span></button>
+              <button class="prazo-btn" data-n="84" type="button"><span class="n">84</span><span class="x">meses</span></button>
+            </div>
+          </div>
+
+          <!-- Resumo dark -->
+          <div class="summary-card">
+            <div class="summary-eyebrow">Resumo do refinanciamento</div>
+
+            <div class="troco-destaque">
+              <div class="troco-destaque-left">
+                <div class="troco-destaque-label">Você vai receber</div>
+                <div class="troco-destaque-value" id="summaryTroco">—</div>
+                <div class="troco-destaque-sub">creditado em conta</div>
+              </div>
+              <div class="troco-destaque-badge">
+                <div class="badge-label">Novo prazo</div>
+                <div class="badge-value" id="summaryPrazo">—</div>
+              </div>
+            </div>
+
+            <div class="summary-row">
+              <div class="summary-item">
+                <div class="summary-item-label">Nova parcela</div>
+                <div class="summary-item-value" id="summaryInstallment">—</div>
+              </div>
+              <div class="summary-sep"></div>
+              <div class="summary-item">
+                <div class="summary-item-label">Novo saldo total</div>
+                <div class="summary-item-value" id="summaryTotal">—</div>
+              </div>
+              <div class="summary-sep"></div>
+              <div class="summary-item">
+                <div class="summary-item-label">Margem restante</div>
+                <div class="summary-item-value" id="summaryMargem">—</div>
+              </div>
+            </div>
+
+            <div class="rate-row">
+              <div class="rate-left">Taxa de juros mensal</div>
+              <div class="rate-right" id="summaryRate">—</div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" type="button">Quero Refinanciar Agora</button>
+          <button class="btn btn-secondary" type="button">Falar com consultor</button>
+
+          <div class="spacer"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // Rates per term (monthly %)
+    const rates = { 24: 1.75, 36: 1.88, 48: 1.97, 60: 2.05, 72: 2.10, 84: 2.14 };
+    const SALDO_ATUAL = 18540;
+    const BENEFICIO   = 2200;
+    const MARGEM_MAX  = BENEFICIO * 0.35; // 770
+
+    let currentTroco = 5000;
+    let currentN = 48;
+
+    const $id = id => document.getElementById(id);
+
+    function calcPMT(pv, iMensal, n) {
+      const i = iMensal / 100;
+      return pv * (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1);
+    }
+
+    function fmt(n) {
+      return n.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
+    function fmtDec(n) {
+      return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function updateSliderTrack() {
+      const slider = $id('trocoSlider');
+      const pct = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+      slider.style.background = `linear-gradient(to right, #a87000 ${pct}%, #f5e8c0 ${pct}%)`;
+    }
+
+    function update() {
+      const novoSaldo = SALDO_ATUAL + currentTroco;
+      const pmt = calcPMT(novoSaldo, rates[currentN], currentN);
+      const margemRestante = MARGEM_MAX - pmt;
+      const totalPagar = pmt * currentN;
+
+      $id('summaryTroco').textContent = 'R$ ' + fmt(currentTroco);
+      $id('summaryPrazo').textContent = currentN + ' meses';
+      $id('summaryInstallment').textContent = 'R$ ' + fmtDec(pmt);
+      $id('summaryTotal').textContent = 'R$ ' + fmt(novoSaldo);
+      $id('summaryMargem').textContent = margemRestante >= 0
+        ? 'R$ ' + fmtDec(margemRestante)
+        : '– R$ ' + fmtDec(-margemRestante);
+      $id('summaryRate').textContent = rates[currentN].toFixed(2).replace('.', ',') + '% a.m.';
+
+      // Color margem
+      const margemEl = $id('summaryMargem');
+      margemEl.style.color = margemRestante >= 0 ? '#7ee8b0' : '#ff9090';
+    }
+
+    $id('trocoSlider').addEventListener('input', e => {
+      currentTroco = parseInt(e.target.value);
+      $id('trocoDisplay').textContent = fmt(currentTroco);
+      updateSliderTrack();
+      update();
+    });
+
+    document.querySelectorAll('.prazo-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.prazo-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentN = parseInt(btn.dataset.n);
+        update();
+      });
+    });
+
+    $id('btnNormal').addEventListener('click', () => {
+      document.body.classList.remove('large-font');
+      $id('btnNormal').classList.add('active');
+      $id('btnLarge').classList.remove('active');
+    });
+    $id('btnLarge').addEventListener('click', () => {
+      document.body.classList.add('large-font');
+      $id('btnLarge').classList.add('active');
+      $id('btnNormal').classList.remove('active');
+    });
+
+    updateSliderTrack();
+    update();
+  </script>
+</body>
+</html>

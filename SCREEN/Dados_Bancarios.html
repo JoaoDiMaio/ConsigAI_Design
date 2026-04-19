@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dados Bancários — ConsigAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --scale: 1;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --navy:       #001851;
+      --blue:       #2350c8;
+      --blue-2:     #1844b8;
+      --blue-light: #e8eeff;
+      --blue-mid:   #c2d0f8;
+      --text:       #0f2057;
+      --muted:      #7a8db8;
+      --line:       #e4eaf8;
+      --green:      #0a6640;
+      --green-bg:   #e8f5ee;
+      --green-accent:#16a364;
+      --bg-panel:   #f4f7fd;
+      --shadow-card: 0 8px 28px rgba(0,24,81,.09);
+      --shadow-phone:0 30px 80px rgba(0,24,81,.22);
+      --r-card: 20px;
+    }
+    body.large-font { --scale: 1.13; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #dde4f2; font-family: var(--font); color: var(--text);
+      min-height: 100vh; display: flex; align-items: flex-start;
+      justify-content: center; padding: 28px 16px;
+    }
+    .phone {
+      width: 350px; background: var(--bg-panel);
+      border-radius: 44px; border: 9px solid var(--navy);
+      box-shadow: var(--shadow-phone); overflow: hidden;
+    }
+    .screen {
+      max-height: 800px; overflow-y: auto; overflow-x: hidden;
+      scroll-behavior: smooth; background: var(--bg-panel);
+    }
+    .screen::-webkit-scrollbar { display: none; }
+    .header { background: var(--navy); padding: 18px 20px 0; }
+    .fontbar { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+    .font-toggle {
+      display: flex; gap: 2px; padding: 3px; border-radius: 999px;
+      background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1);
+    }
+    .font-toggle button {
+      border: 0; background: transparent; color: rgba(255,255,255,.55);
+      font: 500 calc(10px * var(--scale))/1 var(--font);
+      padding: 6px 10px; border-radius: 999px; cursor: pointer; transition: .15s ease;
+    }
+    .font-toggle button.active { background: rgba(255,255,255,.14); color: #fff; }
+    .header-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; margin-bottom: 20px; }
+    .header-eyebrow { font-size: calc(11px * var(--scale)); color: rgba(255,255,255,.5); margin-bottom: 4px; }
+    .header-title   { font-size: calc(18px * var(--scale)); font-weight: 700; color: #fff; line-height: 1.1; }
+    .header-badge {
+      flex-shrink: 0; background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 8px 12px; text-align: right;
+    }
+    .header-badge small { display: block; font-size: calc(9.5px * var(--scale)); color: rgba(255,255,255,.45); margin-bottom: 3px; }
+    .header-badge strong { font-size: calc(15px * var(--scale)); font-weight: 600; color: #fff; }
+    .panel { background: var(--bg-panel); border-radius: 26px 26px 0 0; padding: 22px 18px 28px; }
+    .step-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--blue-light); border-radius: 999px;
+      padding: 3px 10px 3px 7px; margin-bottom: 8px; white-space: nowrap;
+    }
+    .step-tag-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--blue); }
+    .step-tag span { font-size: calc(10px * var(--scale)); font-weight: 700; letter-spacing: .07em; color: var(--blue); }
+    .step-title { font-size: calc(18px * var(--scale)); font-weight: 700; color: var(--text); line-height: 1.2; margin-bottom: 4px; }
+    .step-sub   { font-size: calc(12px * var(--scale)); color: var(--muted); font-weight: 500; line-height: 1.4; margin-bottom: 20px; }
+    .form-card {
+      background: #fff; border-radius: var(--r-card);
+      border: 1px solid #e6ecf8; box-shadow: var(--shadow-card);
+      padding: 16px; margin-bottom: 14px;
+    }
+    .field { margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-label {
+      font-size: calc(11px * var(--scale)); font-weight: 700;
+      letter-spacing: .03em; color: var(--muted); margin-bottom: 6px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .req { color: var(--blue); font-size: calc(14px * var(--scale)); line-height: 1; }
+    .field-input {
+      width: 100%; border: 1.5px solid var(--line); border-radius: 12px;
+      padding: 12px 14px; font: 500 calc(14px * var(--scale))/1.2 var(--font);
+      color: var(--text); background: #fafbfe; outline: none;
+      transition: border-color .15s, box-shadow .15s; -webkit-appearance: none;
+    }
+    .field-input::placeholder { color: var(--muted); opacity: .6; }
+    .field-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(35,80,200,.1); background: #fff; }
+    select.field-input {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a8db8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+    }
+    .field-hint { font-size: calc(10px * var(--scale)); color: var(--muted); margin-top: 5px; font-weight: 500; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .security-badge {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--green-bg); border: 1px solid #b8e0ca;
+      border-radius: 12px; padding: 10px 12px; margin-bottom: 14px;
+    }
+    .security-icon {
+      width: 28px; height: 28px; border-radius: 8px; background: #c8eeda;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .security-text { font-size: calc(10.5px * var(--scale)); color: var(--green); font-weight: 500; line-height: 1.35; }
+    .security-text strong { font-weight: 700; }
+    .btn {
+      width: 100%; border: 0; border-radius: 14px;
+      font-family: var(--font); cursor: pointer; transition: .15s ease;
+    }
+    .btn:active { transform: scale(.98); }
+    .btn-primary {
+      background: linear-gradient(160deg, #2f59d0 0%, #1d43b0 100%);
+      color: #fff; padding: 15px 14px;
+      font-size: calc(15px * var(--scale)); font-weight: 600; line-height: 1.2;
+      box-shadow: 0 8px 20px rgba(30,60,180,.25); margin-bottom: 8px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-secondary {
+      background: transparent; color: var(--blue);
+      border: 1.5px solid var(--blue-mid);
+      padding: 13px; font-size: calc(13.5px * var(--scale)); font-weight: 500;
+    }
+    .spacer { height: 12px; }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen">
+      <section class="header">
+        <div class="fontbar">
+          <div class="font-toggle">
+            <button id="btnNormal" class="active" type="button">Normal</button>
+            <button id="btnLarge" type="button">A+</button>
+          </div>
+        </div>
+        <div class="header-top">
+          <div>
+            <div class="header-eyebrow">Olá, bem-vindo de volta 👋</div>
+            <div class="header-title">Carlos Eduardo</div>
+          </div>
+          <div class="header-badge">
+            <small>Benefício mensal</small>
+            <strong>R$ 2.200</strong>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="step-tag"><div class="step-tag-dot"></div><span>DADOS BANCÁRIOS</span></div>
+          <div class="step-title">Conta para recebimento</div>
+          <div class="step-sub">Informe onde quer receber seu crédito</div>
+
+          <div class="form-card">
+            <div class="field">
+              <div class="field-label">Banco <span class="req">*</span></div>
+              <select class="field-input">
+                <option value="" disabled selected>Selecione seu banco</option>
+                <option>Caixa Econômica Federal</option>
+                <option>Banco do Brasil</option>
+                <option>Bradesco</option>
+                <option>Itaú</option>
+                <option>Santander</option>
+                <option>Nubank</option>
+                <option>Inter</option>
+                <option>Sicoob</option>
+                <option>Outro</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-label">Tipo de conta <span class="req">*</span></div>
+              <select class="field-input">
+                <option value="" disabled selected>Selecione</option>
+                <option>Conta Corrente</option>
+                <option>Conta Poupança</option>
+                <option>Conta de Pagamento</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <div class="field-label">Agência <span class="req">*</span></div>
+                <input class="field-input" type="tel" placeholder="0000" maxlength="6" />
+              </div>
+              <div class="field">
+                <div class="field-label">Conta + dígito <span class="req">*</span></div>
+                <input class="field-input" type="tel" placeholder="000000-0" maxlength="12" />
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Chave Pix</div>
+              <input class="field-input" type="text" placeholder="CPF, e-mail ou telefone" />
+              <div class="field-hint">Opcional — para transferências mais rápidas</div>
+            </div>
+          </div>
+
+          <div class="security-badge">
+            <div class="security-icon">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                <path d="M10 2l7 3v6c0 4-3.5 6.5-7 7.5C6.5 17.5 3 15 3 11V5l7-3z" stroke="#16a364" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M7 10l2 2 4-4" stroke="#16a364" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="security-text"><strong>Verificado pelo Banco Central.</strong> Seus dados bancários são transmitidos com segurança total.</div>
+          </div>
+
+          <button class="btn btn-primary" type="button">
+            Salvar dados bancários
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="btn btn-secondary" type="button">Fazer depois</button>
+
+          <div class="spacer"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('btnNormal').addEventListener('click', () => {
+      document.body.classList.remove('large-font');
+      document.getElementById('btnNormal').classList.add('active');
+      document.getElementById('btnLarge').classList.remove('active');
+    });
+    document.getElementById('btnLarge').addEventListener('click', () => {
+      document.body.classList.add('large-font');
+      document.getElementById('btnLarge').classList.add('active');
+      document.getElementById('btnNormal').classList.remove('active');
+    });
+  </script>
+</body>
+</html>
