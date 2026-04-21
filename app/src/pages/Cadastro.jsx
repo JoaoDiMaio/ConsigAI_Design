@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { maskCPF, maskDate, maskPhone, formatFileSize } from '../lib/masks'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import logoSvg from '../assets/logo.svg'
@@ -434,7 +435,8 @@ function DesktopLeftPanel({ step }) {
 // ── Main ───────────────────────────────────────────────────────────────────────
 
 export default function Cadastro() {
-  const isDesktop = useMediaQuery('(min-width: 768px)')
+  const navigate   = useNavigate()
+  const isDesktop  = useMediaQuery('(min-width: 768px)')
 
   const [large,   setLarge]   = useState(false)
   const [step,    setStep]    = useState(1)
@@ -451,7 +453,7 @@ export default function Cadastro() {
     <>
       {step === 1 && <Step1 form={form} onChange={setField} onNext={() => setStep(2)} />}
       {step === 2 && <Step2 file={file} onFile={handleFileSelect} onRemoveFile={() => setFile(null)} skipped={skipped} onSkip={() => setSkipped(s => !s)} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
-      {step === 3 && <StepSuccess form={form} file={file} skipped={skipped} onVerOfertas={() => alert('→ Navegar para ofertas')} />}
+      {step === 3 && <StepSuccess form={form} file={file} skipped={skipped} onVerOfertas={() => navigate('/ofertas')} />}
     </>
   )
 

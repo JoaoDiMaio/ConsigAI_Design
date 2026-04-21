@@ -5,6 +5,7 @@ import Contratacao from './pages/Contratacao'
 import NovoContrato from './pages/NovoContrato'
 import Portabilidade from './pages/Portabilidade'
 import Refinanciamento from './pages/Refinanciamento'
+import Ofertas from './pages/Ofertas'
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/novo-contrato" element={<NovoContrato />} />
         <Route path="/portabilidade" element={<Portabilidade />} />
         <Route path="/refinanciamento" element={<Refinanciamento />} />
+        <Route path="/ofertas" element={<Ofertas />} />
       </Routes>
     </BrowserRouter>
   )
