@@ -164,8 +164,6 @@ function MainOfferCard({ card, selected, onSelect }) {
         boxShadow: selected
           ? '0 12px 36px rgba(35,80,200,.22)'
           : t.cardShadow,
-        transform: selected ? 'translateY(-4px) scale(1.01)' : 'translateY(0) scale(1)',
-        transition: 'transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease, border .15s ease',
         cursor: 'pointer',
       }}
     >
@@ -175,7 +173,7 @@ function MainOfferCard({ card, selected, onSelect }) {
           {card.badge}
         </span>
         {selected && (
-          <span style={{ borderRadius: 999, padding: '4px 11px', fontSize: 10, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', background: t.blue, color: '#fff', animation: 'popIn .25s cubic-bezier(.34,1.56,.64,1)' }}>
+          <span style={{ borderRadius: 999, padding: '4px 11px', fontSize: 10, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', background: t.blue, color: '#fff' }}>
             ✓ Escolhido
           </span>
         )}
@@ -231,8 +229,6 @@ function SoloOfferCard({ card, selected, onSelect, onNav }) {
         border: selected ? `1.5px solid ${t.blue}` : `1px solid ${t.cardBorder}`,
         background: '#fff',
         boxShadow: selected ? '0 10px 30px rgba(35,80,200,.2)' : t.cardShadow,
-        transform: selected ? 'translateY(-3px) scale(1.01)' : 'translateY(0) scale(1)',
-        transition: 'transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease, border .15s ease',
         cursor: 'pointer',
       }}
     >
@@ -241,7 +237,7 @@ function SoloOfferCard({ card, selected, onSelect, onNav }) {
           {card.label}
         </div>
         {selected && (
-          <div style={{ borderRadius: 999, padding: '4px 11px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.07em', background: t.blue, color: '#fff', animation: 'popIn .25s cubic-bezier(.34,1.56,.64,1)' }}>
+          <div style={{ borderRadius: 999, padding: '4px 11px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.07em', background: t.blue, color: '#fff' }}>
             ✓ Escolhido
           </div>
         )}
@@ -383,7 +379,6 @@ export default function Ofertas() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; }
-        @keyframes popIn { from { transform: scale(.5); opacity: 0 } to { transform: scale(1); opacity: 1 } }
       `}</style>
 
       <div style={{ minHeight: '100vh', background: t.bg, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: t.text }}>
