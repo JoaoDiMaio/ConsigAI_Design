@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ConsigAI — Design Navigator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #0f0f0f; color: #f0f0f0; min-height: 100vh; }
+
+    header {
+      padding: 24px 32px;
+      border-bottom: 1px solid #222;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header h1 { font-size: 1.2rem; font-weight: 600; letter-spacing: -0.02em; }
+    header span { font-size: 0.75rem; color: #666; background: #1a1a1a; padding: 2px 8px; border-radius: 99px; border: 1px solid #333; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      padding: 32px;
+    }
+
+    .section-label {
+      grid-column: 1 / -1;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #555;
+      margin-top: 8px;
+    }
+
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.15s, transform 0.15s;
+      cursor: pointer;
+    }
+    .card:hover { border-color: #444; transform: translateY(-2px); }
+
+    .preview {
+      width: 100%;
+      height: 180px;
+      border: none;
+      display: block;
+      pointer-events: none;
+      transform-origin: top left;
+      background: #fff;
+    }
+
+    .card-info {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-name { font-size: 0.9rem; font-weight: 500; }
+    .card-tag { font-size: 0.7rem; color: #666; background: #111; padding: 2px 8px; border-radius: 99px; border: 1px solid #2a2a2a; }
+
+    .open-btn {
+      display: block;
+      margin: 0 16px 16px;
+      padding: 8px;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #ccc;
+      font-size: 0.8rem;
+      text-align: center;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .open-btn:hover { background: #2a2a2a; color: #fff; }
+
+    /* Mobile frame toggle */
+    .toolbar {
+      padding: 0 32px 0;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .toolbar button {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #aaa;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .toolbar button.active, .toolbar button:hover { background: #2a2a2a; color: #fff; border-color: #555; }
+
+    /* Viewer overlay */
+    #viewer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 100;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #viewer.open { display: flex; }
+
+    #viewer-controls {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+    }
+    #viewer-title { font-size: 0.9rem; color: #ccc; }
+    #viewer-close {
+      background: #333;
+      border: none;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    #viewer-frame-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 0 16px 16px;
+    }
+    #viewer-frame-wrap.mobile { max-width: 390px; }
+    #viewer-frame-wrap.desktop { max-width: 1200px; width: 100%; }
+
+    #viewer-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    #viewer-size-btns { display: flex; gap: 8px; }
+    #viewer-size-btns button {
+      background: #222; border: 1px solid #444; color: #aaa;
+      padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;
+    }
+    #viewer-size-btns button.active { background: #333; color: #fff; border-color: #666; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>ConsigAI Design</h1>
+  <span>Navigator</span>
+</header>
+
+<div class="toolbar" style="padding: 16px 32px 0;">
+  <span style="font-size:0.8rem;color:#555;">Clique num card para abrir em tela cheia</span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<!-- Viewer overlay -->
+<div id="viewer">
+  <div id="viewer-controls">
+    <span id="viewer-title"></span>
+    <div id="viewer-size-btns">
+      <button onclick="setViewerSize('mobile')" id="btn-mobile">📱 Mobile</button>
+      <button onclick="setViewerSize('desktop')" id="btn-desktop" class="active">🖥 Desktop</button>
+    </div>
+    <button id="viewer-close" onclick="closeViewer()">✕ Fechar</button>
+  </div>
+  <div id="viewer-frame-wrap" class="desktop">
+    <iframe id="viewer-iframe"></iframe>
+  </div>
+</div>
+
+<script>
+const screens = [
+  { name: 'Cadastro',        path: 'SCREEN/Cadastro.html',         tag: 'SCREEN' },
+  { name: 'Contratação',     path: 'SCREEN/Contratacao.html',      tag: 'SCREEN' },
+  { name: 'Dados Bancários', path: 'SCREEN/Dados_Bancarios.html',  tag: 'SCREEN' },
+  { name: 'Novo Contrato',   path: 'V1/Novo_Contrato_Final.html',  tag: 'V1' },
+  { name: 'Portabilidade',   path: 'V1/Portabilidade_Final.html',  tag: 'V1' },
+  { name: 'Refinanciamento', path: 'V1/Refinanciamento_Final.html',tag: 'V1' },
+];
+
+const grid = document.getElementById('grid');
+let lastTag = null;
+
+screens.forEach(s => {
+  if (s.tag !== lastTag) {
+    const label = document.createElement('div');
+    label.className = 'section-label';
+    label.textContent = s.tag;
+    grid.appendChild(label);
+    lastTag = s.tag;
+  }
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <iframe class="preview" src="${s.path}" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+    <div class="card-info">
+      <span class="card-name">${s.name}</span>
+      <span class="card-tag">${s.tag}</span>
+    </div>
+    <a class="open-btn" href="${s.path}" target="_blank">↗ Abrir em nova aba</a>
+  `;
+  card.addEventListener('click', e => {
+    if (e.target.classList.contains('open-btn')) return;
+    openViewer(s.path, s.name);
+  });
+  grid.appendChild(card);
+});
+
+function openViewer(path, name) {
+  document.getElementById('viewer-title').textContent = name;
+  document.getElementById('viewer-iframe').src = path;
+  document.getElementById('viewer').classList.add('open');
+}
+
+function closeViewer() {
+  document.getElementById('viewer').classList.remove('open');
+  document.getElementById('viewer-iframe').src = '';
+}
+
+function setViewerSize(size) {
+  const wrap = document.getElementById('viewer-frame-wrap');
+  wrap.className = size;
+  document.getElementById('btn-mobile').classList.toggle('active', size === 'mobile');
+  document.getElementById('btn-desktop').classList.toggle('active', size === 'desktop');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeViewer(); });
+</script>
+</body>
+</html>

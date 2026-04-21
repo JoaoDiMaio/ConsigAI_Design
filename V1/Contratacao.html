@@ -2,51 +2,63 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Contratação — ConsigAI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --scale: 1;
+      --scale: 1.22;
       --font: 'Plus Jakarta Sans', system-ui, sans-serif;
-      --navy:        #001851;
-      --blue:        #2350c8;
-      --blue-light:  #e8eeff;
-      --blue-mid:    #c2d0f8;
-      --text:        #0f2057;
-      --muted:       #7a8db8;
-      --line:        #e4eaf8;
-      --green:       #0a6640;
-      --green-bg:    #e8f5ee;
-      --green-accent:#16a364;
-      --whatsapp:    #25d366;
+
+      --navy:         #001851;
+      --blue:         #2350c8;
+      --blue-2:       #1844b8;
+      --blue-light:   #e8eeff;
+      --blue-mid:     #c2d0f8;
+
+      --text:         #0f2057;
+      --muted:        #7a8db8;
+      --line:         #e4eaf8;
+
+      --green:        #0a6640;
+      --green-soft:   #3d6b52;
+      --green-bg:     #e8f5ee;
+      --green-accent: #16a364;
+
+      --danger:       #d94b4b;
+
+      --gold:         #7a5200;
+      --gold-bg:      #fffbf0;
+      --gold-line:    #edddb0;
+      --gold-btn:     #a87000;
+
+      --white:        #ffffff;
+      --bg:           #f4f7fd;
+
+      --r-card:       20px;
+      --shadow-card:  0 8px 28px rgba(0,24,81,.09);
+    --whatsapp:    #25d366;
       --whatsapp-dk: #128c3f;
-      --bg-panel:    #f4f7fd;
-      --shadow-card: 0 8px 28px rgba(0,24,81,.09);
-      --shadow-phone:0 30px 80px rgba(0,24,81,.22);
-      --r-card: 20px;
     }
-    body.large-font { --scale: 1.13; }
+    body.large-font { --scale: 1.47; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #dde4f2; font-family: var(--font); color: var(--text);
-      min-height: 100vh; display: flex; align-items: flex-start;
-      justify-content: center; padding: 28px 16px;
+      background: var(--bg);
+      font-family: var(--font);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-    .phone {
-      width: 350px; background: var(--bg-panel);
-      border-radius: 44px; border: 9px solid var(--navy);
-      box-shadow: var(--shadow-phone); overflow: hidden;
-    }
+    
     .screen {
-      max-height: 800px; overflow-y: auto; overflow-x: hidden;
-      scroll-behavior: smooth; background: var(--bg-panel);
+      width: 100%;
+      min-height: 100vh;
+      background: var(--bg);
     }
-    .screen::-webkit-scrollbar { display: none; }
 
     /* ── Header ── */
-    .header { background: var(--navy); padding: 18px 20px 0; }
+    .header { background: var(--navy); padding: max(18px, env(safe-area-inset-top)) 20px 0; }
     .fontbar { display: flex; justify-content: flex-end; margin-bottom: 16px; }
     .font-toggle {
       display: flex; gap: 2px; padding: 3px; border-radius: 999px;
@@ -74,7 +86,7 @@
     .benefit-chip strong { font-size: calc(15px * var(--scale)); font-weight: 600; color: #fff; }
 
     /* ── Panel ── */
-    .panel { background: var(--bg-panel); border-radius: 26px 26px 0 0; padding: 22px 18px 28px; }
+    .panel { background: var(--bg); border-radius: 26px 26px 0 0; padding: 22px 18px calc(28px + env(safe-area-inset-bottom)); }
 
     .tag {
       display: inline-flex; align-items: center; gap: 6px;
@@ -240,19 +252,20 @@
     }
     .btn:active { transform: scale(.98); }
     .btn-primary {
-      background: linear-gradient(160deg, #2f59d0 0%, #1d43b0 100%);
+      background: var(--blue);
       color: #fff; padding: 15px 14px;
       font-size: calc(15px * var(--scale)); font-weight: 600; line-height: 1.2;
-      box-shadow: 0 8px 20px rgba(30,60,180,.25); margin-bottom: 8px;
+      box-shadow: 0 8px 20px rgba(35,80,200,.25); margin-bottom: 8px;
       display: flex; align-items: center; justify-content: center; gap: 8px;
     }
-    .btn-primary:hover { filter: brightness(1.06); }
+    .btn-primary:hover { background: var(--blue-2); }
     .btn-primary:disabled { opacity: .45; cursor: not-allowed; transform: none; filter: none; }
     .btn-secondary {
-      background: transparent; color: var(--muted);
-      border: 1.5px solid var(--line);
+      background: transparent; color: var(--blue);
+      border: 1.5px solid var(--blue-mid);
       padding: 13px; font-size: calc(13px * var(--scale)); font-weight: 500;
     }
+    .btn-secondary:hover { background: var(--blue-light); }
 
     /* ── Success overlay ── */
     .success-overlay {
@@ -291,7 +304,7 @@
     .success-wa-title { font-size: calc(13px * var(--scale)); font-weight: 700; color: #fff; margin-bottom: 3px; }
     .success-wa-sub   { font-size: calc(11px * var(--scale)); color: rgba(255,255,255,.8); font-weight: 500; line-height: 1.3; }
     .success-info-card {
-      background: #fff; border-radius: 18px;
+      background: #fff; border-radius: var(--r-card);
       border: 1px solid #e6ecf8; box-shadow: var(--shadow-card);
       padding: 14px; margin-bottom: 14px; text-align: left;
     }
@@ -308,8 +321,6 @@
   </style>
 </head>
 <body>
-  <div class="phone">
-    <div class="screen" id="screen">
       <section class="header">
         <div class="fontbar">
           <div class="font-toggle">
@@ -509,8 +520,6 @@
           <div class="spacer"></div>
         </div>
       </section>
-    </div>
-  </div>
 
   <script>
     function toggleCheck(id, callback) {
@@ -533,7 +542,7 @@
     document.getElementById('btnContratar').addEventListener('click', () => {
       document.getElementById('viewReview').style.display = 'none';
       document.getElementById('viewSuccess').classList.add('visible');
-      document.getElementById('screen').scrollTop = 0;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
     document.getElementById('btnNormal').addEventListener('click', () => {
