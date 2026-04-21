@@ -48,6 +48,7 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
+    .app { width: 100%; min-height: 100vh; background: var(--bg); }
     .screen {
       width: 100%;
       min-height: 100vh;
@@ -376,9 +377,60 @@
       from { opacity: 0; transform: translateX(14px); }
       to   { opacity: 1; transform: translateX(0); }
     }
+
+    /* ── Desktop polish (mobile-first, desktop-friendly) ── */
+    @media (min-width: 860px) {
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 26px 18px;
+      }
+
+      .app {
+        max-width: 980px;
+        min-height: auto;
+        border-radius: 28px;
+        overflow: hidden;
+        border: 1px solid rgba(228,234,248,.9);
+        box-shadow: 0 22px 70px rgba(0,24,81,.18);
+      }
+
+      .header { padding-left: 26px; padding-right: 26px; }
+      .panel  { padding-left: 26px; padding-right: 26px; border-radius: 26px 26px 28px 28px; }
+
+      /* Etapa 1: form em 2 colunas (campos longos em largura total) */
+      #step1 .form-card {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px 12px;
+      }
+      #step1 .field { margin-bottom: 0; }
+      #step1 .field:nth-child(1),
+      #step1 .field:nth-child(5) { grid-column: 1 / -1; }
+
+      /* Etapa 2: upload + como baixar lado a lado */
+      #step2 {
+        display: grid;
+        grid-template-columns: 1.1fr .9fr;
+        gap: 14px 12px;
+        align-items: start;
+      }
+      #step2 > .step-header { grid-column: 1 / -1; }
+      #step2 > .form-card   { grid-column: 1; margin-bottom: 0; }
+      #step2 > .how-to      { grid-column: 2; margin-bottom: 0; }
+      #step2 > button,
+      #step2 > .skip-divider,
+      #step2 > .no-extrato-warning { grid-column: 1 / -1; }
+    }
+
+    @media (min-width: 1200px) {
+      .app { max-width: 1040px; }
+    }
   </style>
 </head>
 <body>
+      <div class="app">
       <section class="header">
         <div class="fontbar">
           <div class="font-toggle">
@@ -451,7 +503,7 @@
           </div>
 
           <!-- ── ETAPA 2: Extrato INSS ── -->
-          <div id="step2" class="step-view" style="display:none">
+          <div id="step2" class="step-view" hidden>
             <div class="step-header">
               <div class="step-tag"><div class="step-tag-dot"></div><span>ETAPA 2 DE 2</span></div>
               <div class="step-title">Extrato do INSS</div>
@@ -571,7 +623,7 @@
           </div>
 
           <!-- ── SUCESSO ── -->
-          <div id="stepSuccess" class="success-screen">
+          <div id="stepSuccess" class="success-screen" hidden>
             <div class="success-icon-wrap">
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <path d="M8 16l5 5 11-10" stroke="#16a364" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -613,6 +665,7 @@
           <div class="spacer"></div>
         </div>
       </section>
+      </div>
 
   <script>
     // ── Masks ──
@@ -723,16 +776,16 @@
     function showStep(n) {
       ['step1','step2','stepSuccess'].forEach(id => {
         const el = document.getElementById(id);
-        el.style.display = 'none';
+        el.hidden = true;
         el.classList.remove('visible');
       });
       if (n <= 2) {
         const el = document.getElementById('step' + n);
-        el.style.display = 'block';
+        el.hidden = false;
         el.classList.remove('step-view'); void el.offsetWidth; el.classList.add('step-view');
       } else {
         const el = document.getElementById('stepSuccess');
-        el.style.display = 'block'; el.classList.add('visible');
+        el.hidden = false; el.classList.add('visible');
       }
       updateProgress(n);
       window.scrollTo({ top: 0, behavior: 'smooth' });
