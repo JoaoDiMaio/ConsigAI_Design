@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Novo Contrato — ConsigAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── Tokens ── */
+    :root {
+      --scale: 1.22;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+      --navy:         #001851;
+      --blue:         #2350c8;
+      --blue-2:       #1844b8;
+      --blue-light:   #e8eeff;
+      --blue-mid:     #c2d0f8;
+
+      --text:         #0f2057;
+      --muted:        #7a8db8;
+      --line:         #e4eaf8;
+
+      --green:        #0a6640;
+      --green-soft:   #3d6b52;
+      --green-bg:     #e8f5ee;
+      --green-accent: #16a364;
+
+      --danger:       #d94b4b;
+
+      --gold:         #7a5200;
+      --gold-bg:      #fffbf0;
+      --gold-line:    #edddb0;
+      --gold-btn:     #a87000;
+
+      --white:        #fff;
+      --bg:           #f4f7fd;
+
+      --r-card:       20px;
+      --shadow-card:  0 8px 28px rgba(0,24,81,.09);
+    }
+
+    body.large-font { --scale: 1.47; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      background: var(--bg);
+      font-family: var(--font);
+      color: var(--text);
+    }
+
+    body { overflow-x: hidden; }
+
+    .screen { width: 100%; min-height: 100vh; background: var(--bg); }
+
+    /* ── Header ── */
+    .header {
+      background: var(--navy);
+      padding: max(18px, env(safe-area-inset-top)) 20px 0;
+    }
+
+    .fontbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+    }
+
+    .font-toggle {
+      display: flex;
+      gap: 2px;
+      padding: 3px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+
+    .font-toggle button {
+      border: 0;
+      background: transparent;
+      color: rgba(255,255,255,.55);
+      font: 500 calc(10px * var(--scale))/1 var(--font);
+      padding: 6px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: .15s ease;
+    }
+
+    .font-toggle button.active { background: rgba(255,255,255,.14); color: #fff; }
+
+    .user {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .hello {
+      font-size: calc(12px * var(--scale));
+      color: rgba(255,255,255,.72);
+      margin-bottom: 2px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .name {
+      font-size: calc(18px * var(--scale));
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.1;
+    }
+
+    /* ── Panel ── */
+    .panel {
+      background: var(--bg);
+      border-radius: 26px 26px 0 0;
+      padding: 20px 18px calc(24px + env(safe-area-inset-bottom));
+    }
+
+    /* ── Tag ── */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--blue-light);
+      border-radius: 999px;
+      padding: 4px 12px 4px 8px;
+      margin-bottom: 20px;
+    }
+
+    .tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
+
+    .tag span {
+      font-size: calc(10px * var(--scale));
+      font-weight: 700;
+      letter-spacing: .07em;
+      color: var(--blue);
+    }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: calc(10px * var(--scale));
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    /* ════════════════════════════════
+       ÂNCORA PRINCIPAL — grande, azul
+       ════════════════════════════════ */
+    .anchor-main {
+      background: var(--blue);
+      border-radius: var(--r-card);
+      padding: 22px 20px 20px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border: 2px solid var(--blue-2);
+      box-shadow: 0 10px 28px rgba(35,80,200,.28);
+      transition: transform .18s ease, box-shadow .18s ease;
+      outline: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 6px;
+    }
+
+    .anchor-main:hover  { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(35,80,200,.36); }
+    .anchor-main:active { transform: scale(.99); }
+    .anchor-main.selected { border-color: rgba(255,255,255,.45); }
+    .anchor-main:focus-visible { outline: 3px solid rgba(255,255,255,.45); outline-offset: 3px; }
+
+    /* Rec tag */
+    .rec-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,.15);
+      border-radius: 999px;
+      padding: 3px 10px 3px 7px;
+    }
+
+    .rec-dot { width: 5px; height: 5px; border-radius: 50%; background: #5de89e; }
+
+    .rec-tag span {
+      font-size: calc(9px * var(--scale));
+      font-weight: 700;
+      letter-spacing: .07em;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    /* Main value */
+    .anchor-main-amount {
+      font-size: calc(38px * var(--scale));
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -.03em;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .anchor-main-amount .rs {
+      font-size: calc(17px * var(--scale));
+      font-weight: 600;
+      vertical-align: baseline;
+      margin-right: 2px;
+    }
+
+    /* Installment line */
+    .anchor-main-install {
+      font-size: calc(13px * var(--scale));
+      font-weight: 500;
+      color: rgba(255,255,255,.75);
+      line-height: 1;
+      text-align: center;
+    }
+
+    .anchor-main-install strong {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    /* Margin badge */
+    .margin-ok {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(93,232,158,.15);
+      border: 1px solid rgba(93,232,158,.28);
+      border-radius: 999px;
+      padding: 4px 10px 4px 7px;
+      margin-top: 4px;
+    }
+
+    .margin-ok-dot { width: 5px; height: 5px; border-radius: 50%; background: #5de89e; flex-shrink: 0; }
+
+    .margin-ok span {
+      font-size: calc(9px * var(--scale));
+      font-weight: 700;
+      color: #5de89e;
+    }
+
+    /* ════════════════════════════════
+       ÂNCORAS SECUNDÁRIAS — grid 2col
+       ════════════════════════════════ */
+    .anchors-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .anchor-card {
+      background: var(--blue-light);
+      border-radius: 18px;
+      border: 2px solid var(--blue-mid);
+      padding: 16px 14px;
+      cursor: pointer;
+      transition: all .18s cubic-bezier(.4,0,.2,1);
+      outline: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .anchor-card:hover {
+      border-color: var(--blue);
+      background: #dce6fc;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(35,80,200,.14);
+    }
+
+    .anchor-card:active { transform: scale(.98); }
+
+    .anchor-card.selected {
+      border-color: var(--blue);
+      background: #dce6fc;
+      box-shadow: 0 4px 16px rgba(35,80,200,.20);
+    }
+
+    .anchor-card:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+    .anchor-card-amount {
+      font-size: calc(22px * var(--scale));
+      font-weight: 700;
+      color: var(--blue);
+      letter-spacing: -.02em;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .anchor-card-amount .rs { font-size: calc(12px * var(--scale)); font-weight: 600; }
+
+    .anchor-card-install {
+      font-size: calc(10px * var(--scale));
+      font-weight: 500;
+      color: #4a6fa8;
+      line-height: 1.3;
+      text-align: center;
+    }
+
+    .anchor-card-install strong { font-weight: 700; color: var(--blue); }
+
+    /* ════════════════════════════════
+       CARD "Quero outro valor" — mesmo estilo âncoras secundárias
+       ════════════════════════════════ */
+    .anchor-card-custom {
+      background: var(--blue-light);
+      border-radius: 18px;
+      border: 2px dashed var(--blue-mid);
+      padding: 16px 14px;
+      cursor: pointer;
+      transition: all .18s cubic-bezier(.4,0,.2,1);
+      outline: none;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .anchor-card-custom:hover {
+      border-color: var(--blue);
+      background: #dce6fc;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(35,80,200,.14);
+    }
+
+    .anchor-card-custom:active { transform: scale(.98); }
+
+    .anchor-card-custom.is-open {
+      border-style: solid;
+      border-color: var(--blue);
+      background: #dce6fc;
+    }
+
+    .anchor-card-custom:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+    .anchor-card-custom-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform .25s ease;
+      flex-shrink: 0;
+    }
+
+    .anchor-card-custom.is-open .anchor-card-custom-icon { transform: rotate(45deg); }
+
+    .anchor-card-custom-text { text-align: left; }
+
+    .anchor-card-custom-title {
+      font-size: calc(13px * var(--scale));
+      font-weight: 700;
+      color: var(--blue);
+      line-height: 1.2;
+      margin-bottom: 3px;
+    }
+
+    .anchor-card-custom-sub {
+      font-size: calc(10px * var(--scale));
+      font-weight: 500;
+      color: #4a6fa8;
+      line-height: 1.3;
+    }
+
+    /* ── Campo livre expandido ── */
+    .custom-area {
+      background: var(--white);
+      border: 1.5px solid var(--blue-mid);
+      border-radius: var(--r-card);
+      padding: 16px;
+      margin-top: 10px;
+      animation: fadeIn .2s ease forwards;
+    }
+
+    .custom-input-label {
+      font-size: calc(10px * var(--scale));
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .custom-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg);
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      transition: border-color .15s ease;
+    }
+
+    .custom-input-row:focus-within { border-color: var(--blue); }
+
+    .custom-input-rs {
+      font-size: calc(18px * var(--scale));
+      font-weight: 700;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .custom-input-field {
+      flex: 1;
+      border: 0;
+      background: transparent;
+      font-family: var(--font);
+      font-size: calc(24px * var(--scale));
+      font-weight: 700;
+      color: var(--text);
+      outline: none;
+      letter-spacing: -.02em;
+      min-width: 0;
+    }
+
+    .custom-input-field::placeholder { color: var(--blue-mid); }
+
+    /* Feedback */
+    .custom-feedback {
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: calc(10px * var(--scale));
+      font-weight: 500;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .custom-feedback.ok   { background: var(--green-bg); border: 1px solid #b8e0ca; color: var(--green); }
+    .custom-feedback.warn { background: #fff5f5; border: 1px solid #ffc5c5; color: #a02020; }
+    .custom-feedback.idle { background: var(--blue-light); border: 1px solid var(--blue-mid); color: #4a6fa8; }
+
+    .custom-feedback-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+
+    .custom-feedback.ok   .custom-feedback-dot { background: var(--green-accent); }
+    .custom-feedback.warn .custom-feedback-dot { background: var(--danger); }
+    .custom-feedback.idle .custom-feedback-dot { background: var(--blue); }
+
+    /* ── Grid de prazos (3 opções) ── */
+    .prazo-label {
+      font-size: calc(10px * var(--scale));
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .prazo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .prazo-card {
+      background: var(--bg);
+      border: 2px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all .18s cubic-bezier(.4,0,.2,1);
+      outline: none;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .prazo-card:hover {
+      border-color: var(--blue-mid);
+      background: var(--blue-light);
+      transform: translateY(-1px);
+    }
+
+    .prazo-card:active { transform: scale(.97); }
+
+    .prazo-card.selected {
+      border-color: var(--blue);
+      background: var(--blue-light);
+      box-shadow: 0 4px 14px rgba(35,80,200,.16);
+    }
+
+    .prazo-card:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+    .prazo-n {
+      font-size: calc(20px * var(--scale));
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -.02em;
+      line-height: 1;
+    }
+
+    .prazo-card.selected .prazo-n { color: var(--blue); }
+
+    .prazo-x {
+      font-size: calc(9px * var(--scale));
+      font-weight: 600;
+      color: var(--muted);
+      line-height: 1;
+    }
+
+    .prazo-card.selected .prazo-x { color: #4a6fa8; }
+
+    .prazo-install {
+      font-size: calc(9.5px * var(--scale));
+      font-weight: 600;
+      color: var(--muted);
+      line-height: 1.2;
+      margin-top: 3px;
+    }
+
+    .prazo-card.selected .prazo-install { color: var(--blue); font-weight: 700; }
+
+    /* ════════════════════════════════
+       SUMMARY — só aparece no modo custom
+       ════════════════════════════════ */
+    .summary-card {
+      background: var(--navy);
+      border-radius: var(--r-card);
+      padding: 16px;
+      margin-top: 10px;
+      animation: fadeIn .22s ease forwards;
+    }
+
+    .summary-eyebrow {
+      font-size: calc(9.5px * var(--scale));
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.45);
+      margin-bottom: 12px;
+    }
+
+    .summary-main {
+      display: grid;
+      grid-template-columns: 1fr 1px 1fr 1px 1fr;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .summary-item { text-align: center; padding: 0 4px; }
+
+    .summary-sep {
+      width: 1px;
+      background: rgba(255,255,255,.1);
+      height: 36px;
+      align-self: center;
+    }
+
+    .summary-item-label {
+      font-size: calc(9px * var(--scale));
+      color: rgba(255,255,255,.45);
+      font-weight: 500;
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .summary-item-value {
+      font-size: calc(14px * var(--scale));
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+      letter-spacing: -.01em;
+    }
+
+    .summary-item-value.highlight {
+      font-size: calc(17px * var(--scale));
+      color: #5de89e;
+    }
+
+    .rate-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .rate-left  { font-size: calc(9.5px * var(--scale)); color: rgba(255,255,255,.5); font-weight: 500; }
+    .rate-right { font-size: calc(11px * var(--scale)); font-weight: 600; color: rgba(255,255,255,.8); }
+
+    /* ── Consultant button ── */
+    .btn-consult {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      background: transparent;
+      color: var(--blue);
+      border: 1.5px solid var(--blue-mid);
+      border-radius: 14px;
+      padding: 13px;
+      font: 500 calc(13.5px * var(--scale))/1.2 var(--font);
+      cursor: pointer;
+      transition: background .15s ease;
+    }
+
+    .btn-consult:hover { background: var(--blue-light); }
+    .btn-consult:active { transform: scale(.98); }
+
+    /* ── Disclaimer ── */
+    .disclaimer {
+      font-size: calc(8px * var(--scale));
+      color: var(--muted);
+      text-align: right;
+      margin-top: 10px;
+      opacity: .68;
+      font-style: italic;
+      line-height: 1;
+    }
+
+    /* ── Bottom outras opções ── */
+    .bottom { margin-top: 28px; padding-bottom: 8px; }
+
+    .more-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .more-title    { font-size: calc(13px * var(--scale)); font-weight: 700; color: var(--text); flex: 1; }
+    .more-subtitle { font-size: calc(10px * var(--scale)); color: var(--muted); font-weight: 500; }
+
+    /* ── Mini cards ── */
+    .mini-card {
+      border-radius: 18px;
+      margin-bottom: 8px;
+      border: 1px solid transparent;
+      overflow: hidden;
+      animation: cardRise .28s ease both;
+    }
+
+    .mini-card:last-child { margin-bottom: 0; }
+    .mini-card.eco   { background: var(--green-bg); border-color: #b8e0ca; animation-delay: .02s; }
+    .mini-card.refin { background: var(--gold-bg);  border-color: var(--gold-line); animation-delay: .06s; }
+
+    .mini-card-inner { padding: 14px 14px 0; }
+    .mini-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+
+    .icon { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .icon.eco   { background: #c0e8d4; }
+    .icon.refin { background: #fde9a0; }
+
+    .mini-name { font-size: calc(13px * var(--scale)); font-weight: 600; line-height: 1.2; margin-bottom: 3px; }
+    .mini-name.eco   { color: var(--green); }
+    .mini-name.refin { color: var(--gold); }
+
+    .mini-desc { font-size: calc(10.5px * var(--scale)); font-weight: 500; line-height: 1.35; }
+    .mini-desc.eco   { color: var(--green-soft); }
+    .mini-desc.refin { color: #9b7020; }
+
+    .mini-divider { height: 1px; margin: 0 14px; }
+    .mini-card.eco   .mini-divider { background: #b8e0ca; }
+    .mini-card.refin .mini-divider { background: var(--gold-line); }
+
+    .mini-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 14px; }
+
+    .mini-value { display: flex; align-items: baseline; gap: 2px; white-space: nowrap; }
+    .mini-value .rs  { font-size: calc(11px * var(--scale)); font-weight: 600; }
+    .mini-value .num { font-size: calc(22px * var(--scale)); font-weight: 700; line-height: 1; letter-spacing: -.02em; }
+
+    .mini-value.eco,   .mini-value.eco .rs,   .mini-value.eco .num   { color: var(--green); }
+    .mini-value.refin, .mini-value.refin .rs, .mini-value.refin .num { color: var(--gold); }
+
+    .mini-detail { font-size: calc(9.5px * var(--scale)); font-weight: 500; margin-top: 2px; }
+    .mini-detail.eco   { color: var(--green-soft); }
+    .mini-detail.refin { color: #9b7020; }
+
+    .mini-btn {
+      border: 0;
+      border-radius: 12px;
+      color: #fff;
+      padding: 11px 16px;
+      font: 600 calc(11.5px * var(--scale))/1.2 var(--font);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 4px 10px rgba(0,24,81,.10);
+    }
+
+    .mini-btn svg { transition: transform .18s ease; }
+    .mini-btn:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 8px 18px rgba(0,24,81,.16); filter: brightness(1.03); }
+    .mini-btn:hover svg { transform: translateX(2px); }
+    .mini-btn:active { transform: scale(.98); }
+    .mini-btn:focus-visible { outline: 2px solid rgba(35,80,200,.28); outline-offset: 2px; }
+
+    .mini-btn.eco   { background: var(--green); }
+    .mini-btn.refin { background: var(--gold-btn); }
+
+    /* ── Botão primário ── */
+    .btn {
+      width: 100%;
+      border: 0;
+      border-radius: 14px;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: .15s ease;
+    }
+
+    .btn:active { transform: scale(.98); }
+
+    .btn-primary {
+      background: linear-gradient(160deg, #2f59d0 0%, #1d43b0 100%);
+      color: #fff;
+      padding: 15px 14px;
+      font-size: calc(15px * var(--scale));
+      font-weight: 600;
+      line-height: 1.2;
+      box-shadow: 0 8px 20px rgba(30,60,180,.25);
+      display: block;
+    }
+
+    .btn-primary:hover { background: linear-gradient(160deg, #3362dc 0%, #2148be 100%); }
+
+    /* ── Btn details toggle ── */
+    .btn-details {
+      width: 100%;
+      background: transparent;
+      color: var(--blue);
+      border: 1.5px solid var(--blue-mid);
+      border-radius: 14px;
+      padding: 13px 16px;
+      font-family: var(--font);
+      font-size: calc(13.5px * var(--scale));
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .15s ease;
+    }
+
+    .btn-details:hover { background: var(--blue-light); }
+    .btn-details:active { transform: scale(.98); }
+
+    .chevron {
+      width: 16px; height: 16px;
+      flex-shrink: 0;
+      transition: transform .25s cubic-bezier(.4,0,.2,1);
+    }
+
+    .btn-details.is-open .chevron { transform: rotate(180deg); }
+
+    /* ── Offer details wrapper ── */
+    .offer-details {
+      margin-top: 10px;
+      animation: fadeIn .22s ease forwards;
+    }
+
+    /* ── Receipt — documento de largura fixa, só escala ── */
+    .receipt-card-wrap {
+      background: #f7f9fe;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px;
+      /* centraliza o papel dentro do wrap */
+      display: flex;
+      justify-content: center;
+    }
+
+    .receipt-card {
+      /* Papel fixo — 300px, nunca estica */
+      width: 300px;
+      flex-shrink: 0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(0,0,0,.015) 0 1px, transparent 1px 100%),
+        linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)),
+        #f5f5f3;
+      background-size: 12px 12px, 100% 100%, auto;
+      border: 1px solid #ececec;
+      border-radius: 10px;
+      padding: 14px 12px 12px;
+      color: #4f4f4f;
+      /* Fonte fixa — não herda --scale da tela */
+      font-size: 12px;
+      font-family: var(--font);
+    }
+
+    /* Todas as fontes internas do recibo são fixas em px — sem calc/scale */
+    .receipt-card .receipt-title         { font-size: 12px; text-align: center; font-weight: 800; letter-spacing: .02em; color: #444; }
+    .receipt-card .receipt-date          { font-size: 10px; margin-top: 4px; text-align: center; color: #808080; }
+    .receipt-card .receipt-person        { font-size: 10.5px; margin-top: 12px; font-weight: 700; color: #565656; }
+    .receipt-card .receipt-meta          { font-size: 10px; margin-top: 6px; line-height: 1.35; color: #5f5f5f; }
+    .receipt-card .receipt-headline-small{ font-size: 11px; text-align: center; font-weight: 800; color: #4a4a4a; }
+    .receipt-card .receipt-headline-tag  { font-size: 8.5px; text-align: center; margin-top: 4px; font-weight: 700; letter-spacing: .08em; color: #888; text-transform: uppercase; }
+    .receipt-card .receipt-headline-big  { font-size: 22px; text-align: center; margin-top: 2px; font-weight: 900; color: #232323; line-height: 1; }
+    .receipt-card .receipt-table         { font-size: 10px; width: 100%; border-collapse: collapse; color: #5b5b5b; }
+    .receipt-card .receipt-table th      { font-size: 8px; text-align: left; font-weight: 500; padding: 4px 0 8px; color: #676767; }
+    .receipt-card .receipt-table td      { font-size: 10px; padding: 4px 0; }
+    .receipt-card .receipt-table td:first-child { font-size: 8px; white-space: nowrap; padding-right: 10px; }
+    .receipt-card .receipt-table th:last-child,
+    .receipt-card .receipt-table td:last-child  { text-align: right; }
+    .receipt-card .receipt-total-label   { font-size: 10px; font-weight: 700; color: #555; }
+    .receipt-card .receipt-total-value   { font-size: 14px; font-weight: 800; color: #3b3b3b; white-space: nowrap; }
+    .receipt-card .receipt-credit-label  { font-size: 10px; font-weight: 700; color: #555; line-height: 1.3; flex: 1; }
+    .receipt-card .receipt-credit-value  { font-size: 14px; font-weight: 800; color: #3b3b3b; white-space: nowrap; }
+    .receipt-card .receipt-protocol-label{ font-size: 8px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
+    .receipt-card .receipt-protocol-code { font-size: 8.5px; color: #444; font-weight: 700; font-family: ui-monospace, monospace; letter-spacing: .05em; }
+    .receipt-card .receipt-site          { font-size: 9.5px; text-align: center; margin-top: 4px; color: #7a7a7a; letter-spacing: .08em; }
+
+    .receipt-title {
+      text-align: center;
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      color: #444;
+    }
+
+    .receipt-date {
+      margin-top: 4px;
+      text-align: center;
+      font-size: 10px;
+      color: #808080;
+    }
+
+    .receipt-person {
+      margin-top: 12px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #565656;
+    }
+
+    .receipt-meta {
+      margin-top: 6px;
+      font-size: 10.5px;
+      line-height: 1.35;
+      color: #5f5f5f;
+    }
+
+    .receipt-divider {
+      border-top: 1px dashed #cfcfcf;
+      margin: 10px 0;
+    }
+
+    .receipt-headline-small {
+      text-align: center;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #4a4a4a;
+    }
+
+    .receipt-headline-tag {
+      text-align: center;
+      margin-top: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: #888;
+      text-transform: uppercase;
+    }
+
+    .receipt-headline-big {
+      text-align: center;
+      margin-top: 2px;
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 900;
+      color: #232323;
+    }
+
+    .receipt-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10.5px;
+      color: #5b5b5b;
+    }
+
+    .receipt-table td:first-child,
+    .receipt-table th:first-child {
+      width: 1%;
+      white-space: nowrap;
+      padding-right: 12px;
+      font-size: 8.5px;
+    }
+
+    .receipt-table th {
+      text-align: left;
+      font-weight: 500;
+      padding: 4px 0 8px;
+      color: #676767;
+    }
+
+    .receipt-table td { padding: 4px 0; }
+
+    .receipt-table th:last-child,
+    .receipt-table td:last-child { text-align: right; }
+
+    .receipt-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .receipt-total-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #555;
+    }
+
+    .receipt-total-value {
+      font-size: 15px;
+      font-weight: 800;
+      color: #3b3b3b;
+      white-space: nowrap;
+    }
+
+    .receipt-credit-block {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .receipt-credit-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .receipt-credit-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #555;
+      line-height: 1.3;
+      flex: 1;
+    }
+
+    .receipt-credit-value {
+      font-size: 15px;
+      font-weight: 800;
+      color: #3b3b3b;
+      white-space: nowrap;
+    }
+
+    .receipt-credit-divider {
+      border: none;
+      border-top: 1px dashed #cfcfcf;
+      margin: 0;
+    }
+
+    .receipt-protocol {
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: #f0f0ee;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .receipt-protocol-label {
+      font-size: 8.5px;
+      color: #888;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .receipt-protocol-code {
+      font-size: 9px;
+      color: #444;
+      font-weight: 700;
+      font-family: ui-monospace, monospace;
+      letter-spacing: .05em;
+    }
+
+    .receipt-site {
+      text-align: center;
+      margin-top: 4px;
+      font-size: 10px;
+      color: #7a7a7a;
+      letter-spacing: .08em;
+    }
+
+    /* ── Download ── */
+    .details-actions {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-download {
+      width: 100%;
+      background: #edf3ff;
+      color: var(--blue);
+      border: 1.5px solid #d2ddfb;
+      border-radius: 14px;
+      padding: 13px;
+      font-family: var(--font);
+      font-size: calc(13px * var(--scale));
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background .15s ease;
+    }
+
+    .btn-download:hover { background: #e6efff; }
+    .btn-download[disabled] { opacity: .7; cursor: wait; }
+
+    .download-status {
+      font-size: calc(9px * var(--scale));
+      color: var(--muted);
+      text-align: center;
+      min-height: 14px;
+    }
+
+    /* ── Cross-sell C: Bottom sheet ── */
+    .sheet-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,18,51,.55);
+      z-index: 200;
+      display: flex;
+      align-items: flex-end;
+      animation: fadeIn .2s ease forwards;
+    }
+
+    .sheet-overlay[hidden] { display: none; }
+
+    .sheet {
+      background: var(--white);
+      border-radius: 24px 24px 0 0;
+      padding: 12px 20px calc(28px + env(safe-area-inset-bottom));
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      animation: slideUp .28s cubic-bezier(.4,0,.2,1) forwards;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+
+    .sheet-handle {
+      width: 36px; height: 4px;
+      border-radius: 999px;
+      background: var(--line);
+      margin-bottom: 2px;
+    }
+
+    .sheet-eyebrow {
+      font-size: calc(10px * var(--scale));
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .sheet-title {
+      font-size: calc(18px * var(--scale));
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .sheet-text {
+      font-size: calc(10.5px * var(--scale));
+      font-weight: 500;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.5;
+      margin-bottom: 2px;
+    }
+
+    .sheet-text strong { color: var(--text); font-weight: 700; }
+
+    /* Grid dos dois cards */
+    .sheet-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+      align-items: start;
+    }
+
+    .sheet-card {
+      border: 0;
+      border-radius: 18px;
+      padding: 14px 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      text-align: center;
+      font-family: var(--font);
+      transition: transform .18s ease, box-shadow .18s ease;
+      outline: none;
+    }
+
+    .sheet-card:hover  { transform: translateY(-2px); }
+    .sheet-card:active { transform: scale(.97); }
+    .sheet-card:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+    .sheet-card.green {
+      background: var(--green-bg);
+      border: 2px solid #b8e0ca;
+      box-shadow: 0 6px 18px rgba(10,102,64,.12);
+    }
+
+    .sheet-card.blue {
+      background: var(--blue-light);
+      border: 2px solid var(--blue-mid);
+      box-shadow: 0 6px 18px rgba(35,80,200,.10);
+    }
+
+    .sheet-card-tag {
+      font-size: calc(8px * var(--scale));
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      padding: 3px 8px;
+      margin-bottom: 6px;
+    }
+
+    .sheet-card.green .sheet-card-tag         { background: #c0e8d4; color: var(--green); }
+    .sheet-card-tag.blue                       { background: var(--blue-light); color: var(--blue); border: 1px solid var(--blue-mid); }
+
+    .sheet-card-label {
+      font-size: calc(8.5px * var(--scale));
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .sheet-card.green .sheet-card-label { color: var(--green-soft); }
+    .sheet-card.blue  .sheet-card-label { color: #4a6fa8; }
+
+    /* Valor principal — ocupa a linha de 2rem */
+    .sheet-card-value {
+      font-size: calc(18px * var(--scale));
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Valores menores (portabilidade e limite) */
+    .sheet-card-value.sm {
+      font-size: calc(15px * var(--scale));
+    }
+
+    .sheet-card.green .sheet-card-value       { color: var(--blue); }
+    .sheet-card-value.green                   { color: var(--green) !important; }
+    .sheet-card-value.blue                    { color: var(--blue) !important; }
+
+    .sheet-card-mo {
+      font-size: calc(9px * var(--scale));
+      font-weight: 600;
+      margin-left: 1px;
+    }
+
+    /* Bloco resultado — sem divisor, integrado ao card */
+    .sheet-card-result {
+      width: 100%;
+      padding: 4px 0 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      text-align: center;
+    }
+
+    .sheet-card-result.green { background: transparent; }
+    .sheet-card-result.blue  { background: transparent; }
+
+    .sheet-card-result-eq {
+      font-size: calc(13px * var(--scale));
+      font-weight: 700;
+    }
+
+    .sheet-card-result.green .sheet-card-result-eq { color: var(--green-accent); }
+    .sheet-card-result.blue  .sheet-card-result-eq { color: var(--blue); }
+
+    .sheet-card-result-label {
+      font-size: calc(8px * var(--scale));
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+
+    .sheet-card-result.green .sheet-card-result-label { color: var(--green-soft); }
+    .sheet-card-result.blue  .sheet-card-result-label { color: #4a6fa8; }
+
+    .sheet-card-result-value {
+      font-size: calc(16px * var(--scale));
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1;
+    }
+
+    .sheet-card-result.green .sheet-card-result-value { color: var(--green); }
+    .sheet-card-result.blue  .sheet-card-result-value { color: var(--blue); }
+
+    .sheet-card-result-sub {
+      font-size: calc(8px * var(--scale));
+      font-weight: 500;
+    }
+
+    .sheet-card-result.green .sheet-card-result-sub { color: var(--green-soft); }
+    .sheet-card-result.blue  .sheet-card-result-sub { color: #4a6fa8; }
+
+    .sheet-card-sub {
+      font-size: calc(8.5px * var(--scale));
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .sheet-card.green .sheet-card-sub { color: var(--green-soft); }
+    .sheet-card.blue  .sheet-card-sub { color: #4a6fa8; }
+
+    .sheet-card-divider {
+      width: 100%;
+      height: 1px;
+      margin: 4px 0;
+    }
+
+    .sheet-card.green .sheet-card-divider { background: #b8e0ca; }
+    .sheet-card.blue  .sheet-card-divider { background: var(--blue-mid); }
+
+    .sheet-card-plus {
+      font-size: calc(13px * var(--scale));
+      font-weight: 700;
+      margin: 4px 0;
+    }
+
+    .sheet-card.green .sheet-card-plus { color: var(--green-accent); }
+    .sheet-card.blue  .sheet-card-plus { color: var(--blue); }
+
+    /* Botão "só o novo contrato" */
+    .sheet-btn-no {
+      width: 100%;
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
+      background: transparent;
+      color: var(--muted);
+      padding: 13px;
+      font: 500 calc(12px * var(--scale))/1 var(--font);
+      cursor: pointer;
+      transition: border-color .15s ease, color .15s ease, transform .1s ease;
+    }
+
+    .sheet-btn-no:hover  { border-color: var(--blue-mid); color: var(--text); }
+    .sheet-btn-no:active { transform: scale(.98); }
+
+    /* ── Animations ── */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes cardRise {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="screen">
+    <section class="header">
+
+      <div class="fontbar">
+        <div class="font-toggle">
+          <button id="btnNormal" class="active" type="button">Normal</button>
+          <button id="btnLarge" type="button">A+</button>
+        </div>
+      </div>
+
+      <div class="user">
+        <div>
+          <div class="hello">Olá,</div>
+          <div class="name">Carlos Eduardo</div>
+        </div>
+      </div>
+
+      <div class="panel">
+
+        <div class="tag">
+          <div class="tag-dot"></div>
+          <span>NOVO CONTRATO</span>
+        </div>
+
+        <div class="section-label">Escolha o valor que prefere</div>
+
+        <!-- ── ÂNCORA PRINCIPAL ── -->
+        <div class="anchor-main selected" id="anchorMain"
+          role="button" tabindex="0"
+          aria-pressed="true"
+          aria-label="Selecionar oferta recomendada">
+
+          <div class="rec-tag">
+            <div class="rec-dot"></div>
+            <span>Recomendado</span>
+          </div>
+
+          <div class="anchor-main-amount">
+            <span class="rs">R$&nbsp;</span><span id="mainAmount">—</span>
+          </div>
+
+          <div class="anchor-main-install" id="mainInstall">—</div>
+
+          <div class="margin-ok">
+            <div class="margin-ok-dot"></div>
+            <span>✓ Cabe na sua margem</span>
+          </div>
+        </div>
+
+        <!-- ── ÂNCORAS SECUNDÁRIAS ── -->
+        <div class="anchors-grid">
+          <div class="anchor-card" id="anchorMid"
+            role="button" tabindex="0"
+            aria-pressed="false"
+            aria-label="Selecionar valor intermediário">
+            <div class="anchor-card-amount">
+              <span class="rs">R$ </span><span id="midAmount">—</span>
+            </div>
+            <div class="anchor-card-install" id="midInstall">—</div>
+          </div>
+
+          <div class="anchor-card" id="anchorLow"
+            role="button" tabindex="0"
+            aria-pressed="false"
+            aria-label="Selecionar valor menor">
+            <div class="anchor-card-amount">
+              <span class="rs">R$ </span><span id="lowAmount">—</span>
+            </div>
+            <div class="anchor-card-install" id="lowInstall">—</div>
+          </div>
+        </div>
+
+        <!-- ── CARD "Quero outro valor" ── -->
+        <div class="anchor-card-custom" id="customToggle"
+          role="button" tabindex="0"
+          aria-expanded="false"
+          aria-controls="customArea">
+          <div class="anchor-card-custom-icon">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M8 3v10M3 8h10" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="anchor-card-custom-text">
+            <div class="anchor-card-custom-title">Quero outro valor</div>
+            <div class="anchor-card-custom-sub">Digite e escolha o prazo ideal</div>
+          </div>
+        </div>
+
+        <div id="customArea" hidden>
+          <div class="custom-area">
+            <div class="custom-input-label">Qual valor você quer?</div>
+            <div class="custom-input-row">
+              <span class="custom-input-rs">R$</span>
+              <input
+                class="custom-input-field"
+                id="customField"
+                type="number"
+                inputmode="numeric"
+                placeholder="0"
+                aria-label="Digite o valor desejado"
+              />
+            </div>
+            <div class="custom-feedback idle" id="customFeedback">
+              <div class="custom-feedback-dot"></div>
+              <span id="customFeedbackText">—</span>
+            </div>
+
+            <div class="prazo-label">Escolha o prazo</div>
+            <div class="prazo-grid" id="prazoGrid">
+              <!-- Preenchido dinamicamente pelo JS via payload da API -->
+            </div>
+          </div>
+
+          <!-- Summary aparece só aqui -->
+          <div class="summary-card" id="summaryCard" aria-live="polite">
+            <div class="summary-eyebrow">Resumo da oferta</div>
+            <div class="summary-main">
+              <div class="summary-item">
+                <div class="summary-item-label">Parcela</div>
+                <div class="summary-item-value highlight" id="summaryInstallment">—</div>
+              </div>
+              <div class="summary-sep" aria-hidden="true"></div>
+              <div class="summary-item">
+                <div class="summary-item-label">Crédito</div>
+                <div class="summary-item-value" id="summaryCredit">—</div>
+              </div>
+              <div class="summary-sep" aria-hidden="true"></div>
+              <div class="summary-item">
+                <div class="summary-item-label">Prazo</div>
+                <div class="summary-item-value" id="summaryTerm">—</div>
+              </div>
+            </div>
+            <div class="rate-row">
+              <div class="rate-left">Taxa mensal</div>
+              <div class="rate-right" id="summaryRate">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Detalhes + Recibo ── -->
+        <button class="btn btn-primary" id="mainCta" type="button" style="margin-top: 14px;">Quero Novo Contrato</button>
+
+        <!-- Cross-sell C: bottom sheet -->
+        <div class="sheet-overlay" id="sheetOverlay" aria-modal="true" role="dialog" aria-labelledby="sheetTitle" hidden>
+          <div class="sheet" id="sheet">
+            <div class="sheet-handle"></div>
+
+            <div class="sheet-eyebrow">Ótima escolha! Mas olha isso…</div>
+            <div class="sheet-title" id="sheetTitle">Faça ainda mais pelo seu futuro</div>
+            <div class="sheet-text">Com a portabilidade você garante um limite maior disponível quando precisar de crédito de novo.</div>
+
+            <!-- Dois cards lado a lado -->
+            <div class="sheet-cards">
+
+              <!-- Card verde — Economizar -->
+              <button class="sheet-card green" id="sheetCardEco" type="button" aria-label="Novo contrato mais Economia Inteligente">
+                <div class="sheet-card-tag">Recomendado</div>
+
+                <div class="sheet-card-label">Novo Contrato</div>
+                <div class="sheet-card-value" id="sheetValEco">—</div>
+
+                <div class="sheet-card-plus">+</div>
+
+                <div class="sheet-card-label">Economia Inteligente</div>
+                <div class="sheet-card-value sm green">R$ 2.399</div>
+                <div class="sheet-card-sub">de economia</div>
+
+                <div class="sheet-card-plus">+</div>
+
+                <div class="sheet-card-result green">
+                  
+                  <div class="sheet-card-result-label">Novo contrato depois</div>
+                  <div class="sheet-card-result-value" id="sheetFuturoEco">—</div>
+                  <div class="sheet-card-result-sub">disponível</div>
+                </div>
+              </button>
+
+              <!-- Card azul — Parcela menor -->
+              <button class="sheet-card blue" id="sheetCardParc" type="button" aria-label="Novo contrato mais Parcela Menor">
+                <div class="sheet-card-tag blue">Mais alívio</div>
+
+                <div class="sheet-card-label">Novo Contrato</div>
+                <div class="sheet-card-value" id="sheetValParc">—</div>
+
+                <div class="sheet-card-plus">+</div>
+
+                <div class="sheet-card-label">Parcela Menor</div>
+                <div class="sheet-card-value sm blue">R$ 117<span class="sheet-card-mo">/mês</span></div>
+                <div class="sheet-card-sub">a menos por mês</div>
+
+                <div class="sheet-card-plus">+</div>
+
+                <div class="sheet-card-result blue">
+                  
+                  <div class="sheet-card-result-label">Novo contrato depois</div>
+                  <div class="sheet-card-result-value" id="sheetFuturoParc">—</div>
+                  <div class="sheet-card-result-sub">disponível</div>
+                </div>
+              </button>
+
+            </div>
+
+            <button class="sheet-btn-no" id="sheetBtnNo" type="button">Não, só o novo contrato por agora</button>
+          </div>
+        </div>
+
+        <button
+          class="btn-details"
+          id="toggleDetails"
+          type="button"
+          style="margin-top: 8px;"
+          aria-expanded="false"
+          aria-controls="offerDetails">
+          <span>Ver detalhes da oferta</span>
+          <svg class="chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 6l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <div class="offer-details" id="offerDetails" hidden>
+          <div class="receipt-card-wrap">
+            <section class="receipt-card" aria-label="Simulação de novo contrato">
+
+              <div class="receipt-title">SIMULAÇÃO DE NOVO CONTRATO — CONSIGAI</div>
+              <div class="receipt-date" id="receiptDate"></div>
+
+              <div class="receipt-person">CARLOS EDUARDO MARTINS</div>
+              <div class="receipt-meta">
+                CPF: 177.665.442-8<br>
+                Benefício: Aposentadoria por Tempo de Contribuição<br>
+                Nascimento: 30/07/1957<br>
+                Valor do Benefício: R$ 2.200
+              </div>
+
+              <div class="receipt-divider"></div>
+
+              <div class="receipt-headline-small">VOCÊ PODE RECEBER HOJE</div>
+              <div class="receipt-headline-big" id="receiptAmount">—</div>
+              <div class="receipt-headline-tag">NOVO CRÉDITO CONSIGNADO</div>
+
+              <div class="receipt-divider"></div>
+
+              <table class="receipt-table" aria-label="Condições do contrato">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Detalhe</th>
+                    <th>Valor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Crédito</td>
+                    <td>Valor liberado</td>
+                    <td id="rtCredit">—</td>
+                  </tr>
+                  <tr>
+                    <td>Prazo</td>
+                    <td>Total de parcelas</td>
+                    <td id="rtTerm">—</td>
+                  </tr>
+                  <tr>
+                    <td>Parcela</td>
+                    <td>Valor mensal</td>
+                    <td id="rtInstall">—</td>
+                  </tr>
+                  <tr>
+                    <td>Taxa</td>
+                    <td>Juros ao mês</td>
+                    <td id="rtRate">—</td>
+                  </tr>
+                  <tr>
+                    <td>Banco</td>
+                    <td>Instituição</td>
+                    <td>Banrisul</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="receipt-divider"></div>
+
+              <div class="receipt-total">
+                <span class="receipt-total-label">Total a pagar</span>
+                <span class="receipt-total-value" id="rtTotal">—</span>
+              </div>
+
+              <div class="receipt-divider"></div>
+
+              <div class="receipt-credit-block">
+                <div class="receipt-credit-item">
+                  <span class="receipt-credit-label">Parcela mensal usada da margem</span>
+                  <span class="receipt-credit-value" id="rtMarginUsed">—</span>
+                </div>
+                <hr class="receipt-credit-divider">
+                <div class="receipt-credit-item">
+                  <span class="receipt-credit-label">Margem livre restante após contratação</span>
+                  <span class="receipt-credit-value" id="rtMarginLeft">—</span>
+                </div>
+              </div>
+
+              <div class="receipt-protocol">
+                <div class="receipt-protocol-label">Protocolo</div>
+                <div class="receipt-protocol-code">CSG-2025-05019</div>
+              </div>
+              <div class="receipt-site">ConsigAI.com.br</div>
+
+            </section>
+          </div>
+
+          <div class="details-actions">
+            <button class="btn-download" id="downloadPdf" type="button">
+              <span aria-hidden="true">⬇</span>
+              <span>Fazer download da simulação</span>
+            </button>
+            <div class="download-status" id="downloadStatus" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <p class="disclaimer">Valores estimados. Sujeitos à análise e aprovação de crédito.</p>
+
+        <!-- ── Outras opções ── -->
+        <section class="bottom">
+          <div class="more-header">
+            <div class="more-title">Outras opções para você</div>
+            <div class="more-subtitle">2 disponíveis</div>
+          </div>
+
+          <div class="mini-card eco">
+            <div class="mini-card-inner">
+              <div class="mini-top">
+                <div class="icon eco">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                    <path d="M4 10h12M10 4l6 6-6 6" stroke="#0a6640" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="mini-name eco">Economia Inteligente</div>
+                  <div class="mini-desc eco">Faça a portabilidade dos seus contratos e economize</div>
+                </div>
+              </div>
+            </div>
+            <div class="mini-divider"></div>
+            <div class="mini-footer">
+              <div>
+                <div class="mini-value eco"><span class="rs">R$</span><span class="num">2.399</span></div>
+                <div class="mini-detail eco">estimado de economia</div>
+              </div>
+              <button class="mini-btn eco" type="button" aria-label="Ver oferta de Economia Inteligente">
+                Ver oferta
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M6 3l5 5-5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="mini-card refin">
+            <div class="mini-card-inner">
+              <div class="mini-top">
+                <div class="icon refin">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="10" r="7.5" stroke="#b07800" stroke-width="1.5"/>
+                    <path d="M10 6.5V10.5L12.5 13" stroke="#b07800" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="mini-name refin">Refinanciamento</div>
+                  <div class="mini-desc refin">Receba dinheiro agora sem aumentar sua parcela atual</div>
+                </div>
+              </div>
+            </div>
+            <div class="mini-divider"></div>
+            <div class="mini-footer">
+              <div>
+                <div class="mini-value refin"><span class="rs">R$</span><span class="num">9.547</span></div>
+                <div class="mini-detail refin">estimado para receber</div>
+              </div>
+              <button class="mini-btn refin" type="button" aria-label="Ver oferta de Refinanciamento">
+                Ver oferta
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M6 3l5 5-5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </section>
+  </div>
+
+  <script>
+    /* ══════════════════════════════
+       PAYLOAD DO MOTOR
+       ══════════════════════════════ */
+    const OFERTA = {
+      oferta: {
+        credito_maximo:    8400.00,
+        margem_disponivel:  770.00,
+        taxa_mensal:          1.88,
+        valor_minimo:        500.00,
+        ancoras: [
+          { valor: 8400, prazo: 84, parcela: 158.40 },
+          { valor: 5000, prazo: 84, parcela:  94.28 },
+          { valor: 2500, prazo: 84, parcela:  47.14 }
+        ],
+        /* Prazos disponíveis para o campo livre — vêm da API por cliente */
+        prazos_disponiveis: [24, 48, 84]
+      }
+    };
+
+    /* ── Helpers ── */
+    const $id    = id => document.getElementById(id);
+    const fmt    = n  => n.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    const fmtDec = n  => n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function calcPMT(pv, rate, n) {
+      const i = rate / 100;
+      return pv * (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1);
+    }
+
+    /* ── Preenche âncoras ── */
+    function fillAnchors() {
+      const [main, mid, low] = OFERTA.oferta.ancoras;
+
+      $id('mainAmount').textContent  = fmt(main.valor);
+      $id('mainInstall').innerHTML   =
+        main.prazo + 'x de <strong>R$ ' + fmtDec(main.parcela) + '</strong>';
+
+      $id('midAmount').textContent   = fmt(mid.valor);
+      $id('midInstall').innerHTML    =
+        mid.prazo + 'x de <strong>R$ ' + fmtDec(mid.parcela) + '</strong>';
+
+      $id('lowAmount').textContent   = fmt(low.valor);
+      $id('lowInstall').innerHTML    =
+        low.prazo + 'x de <strong>R$ ' + fmtDec(low.parcela) + '</strong>';
+    }
+
+    /* ── Estado ── */
+    let activeAnchor  = 'anchorMain';
+    let customValue   = null;
+    let selectedPrazo = null; /* prazo selecionado no campo livre */
+
+    /* ── Pulse CTA ── */
+    function pulseCta() { /* removido — botão agora é fixo */ }
+
+    /* ── Atualiza label do CTA ── */
+    function updateCta(valor, parcela, prazo) {
+      $id('mainCta').textContent = 'Quero Novo Contrato de R$ ' + fmt(valor) + ' em ' + prazo + 'x';
+      updateReceipt(valor, prazo, parcela);
+    }
+
+    /* ── Atualiza summary (só quando campo livre ativo) ── */
+    function updateSummary(valor, prazo, parcela) {
+      const taxa = OFERTA.oferta.taxa_mensal;
+      $id('summaryInstallment').textContent = 'R$ ' + fmtDec(parcela);
+      $id('summaryCredit').textContent      = 'R$ ' + fmt(valor);
+      $id('summaryTerm').textContent        = prazo + ' meses';
+      $id('summaryRate').textContent        = taxa.toFixed(2).replace('.', ',') + '% a.m.';
+    }
+
+    /* ── Deselect all anchors ── */
+    function deselectAll() {
+      ['anchorMain', 'anchorMid', 'anchorLow'].forEach(id => {
+        $id(id).classList.remove('selected');
+        $id(id).setAttribute('aria-pressed', 'false');
+      });
+    }
+
+    /* ── Select anchor ── */
+    function selectAnchor(anchorId) {
+      deselectAll();
+      $id(anchorId).classList.add('selected');
+      $id(anchorId).setAttribute('aria-pressed', 'true');
+      activeAnchor = anchorId;
+      customValue  = null;
+
+      const idx = { anchorMain: 0, anchorMid: 1, anchorLow: 2 }[anchorId];
+      const a   = OFERTA.oferta.ancoras[idx];
+      updateCta(a.valor, a.parcela, a.prazo);
+
+      closeCustom();
+    }
+
+    /* ── Fecha campo livre ── */
+    function closeCustom() {
+      $id('customArea').setAttribute('hidden', '');
+      $id('customToggle').classList.remove('is-open');
+      $id('customToggle').setAttribute('aria-expanded', 'false');
+      $id('customField').value = '';
+      setFeedback('idle',
+        'Digite um valor entre R$ ' + fmt(OFERTA.oferta.valor_minimo) +
+        ' e R$ ' + fmt(OFERTA.oferta.credito_maximo)
+      );
+    }
+
+    /* ── Renderiza grid de prazos dinamicamente ── */
+    function buildPrazoGrid() {
+      const { prazos_disponiveis, taxa_mensal } = OFERTA.oferta;
+      const grid = $id('prazoGrid');
+      grid.innerHTML = '';
+
+      /* Pré-seleciona o maior prazo (menor parcela) */
+      selectedPrazo = prazos_disponiveis[prazos_disponiveis.length - 1];
+
+      prazos_disponiveis.forEach(prazo => {
+        const card = document.createElement('div');
+        card.className = 'prazo-card' + (prazo === selectedPrazo ? ' selected' : '');
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-pressed', prazo === selectedPrazo ? 'true' : 'false');
+        card.setAttribute('data-prazo', prazo);
+
+        /* Calcula parcela para o valor digitado (se houver) ou placeholder */
+        const valorRef = customValue || 0;
+        const parcelaRef = valorRef > 0
+          ? calcPMT(valorRef, taxa_mensal, prazo)
+          : null;
+
+        card.innerHTML =
+          '<div class="prazo-n">' + prazo + '</div>' +
+          '<div class="prazo-x">parcelas</div>' +
+          '<div class="prazo-install">' +
+            (parcelaRef ? 'R$ ' + fmtDec(parcelaRef) + '/mês' : '—') +
+          '</div>';
+
+        card.addEventListener('click',   () => selectPrazo(prazo));
+        card.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectPrazo(prazo); }
+        });
+
+        grid.appendChild(card);
+      });
+    }
+
+    /* ── Seleciona prazo no campo livre ── */
+    function selectPrazo(prazo) {
+      selectedPrazo = prazo;
+
+      document.querySelectorAll('.prazo-card').forEach(card => {
+        const isThis = parseInt(card.dataset.prazo) === prazo;
+        card.classList.toggle('selected', isThis);
+        card.setAttribute('aria-pressed', isThis ? 'true' : 'false');
+      });
+
+      /* Recalcula com o valor atual digitado */
+      const raw = parseFloat($id('customField').value);
+      if (raw && raw >= OFERTA.oferta.valor_minimo && raw <= OFERTA.oferta.credito_maximo) {
+        recalcCustom(raw, prazo);
+      }
+    }
+
+    /* ── Atualiza os valores exibidos nos cards de prazo ── */
+    function updatePrazoCards(valor) {
+      const { taxa_mensal } = OFERTA.oferta;
+      document.querySelectorAll('.prazo-card').forEach(card => {
+        const prazo = parseInt(card.dataset.prazo);
+        const parcela = calcPMT(valor, taxa_mensal, prazo);
+        card.querySelector('.prazo-install').textContent = 'R$ ' + fmtDec(parcela) + '/mês';
+      });
+    }
+
+    /* ── Recalcula com valor + prazo ── */
+    function recalcCustom(valor, prazo) {
+      const parcela = calcPMT(valor, OFERTA.oferta.taxa_mensal, prazo);
+      setFeedback('ok', '✓ ' + prazo + 'x de R$ ' + fmtDec(parcela) + '/mês');
+      updateSummary(valor, prazo, parcela);
+      updateCta(valor, parcela, prazo);
+      customValue = valor;
+    }
+
+    /* ── Toggle campo livre ── */
+    const customToggleEl = $id('customToggle');
+    customToggleEl.addEventListener('click', () => {
+      const area   = $id('customArea');
+      const isOpen = !area.hasAttribute('hidden');
+
+      if (isOpen) {
+        selectAnchor('anchorMain');
+      } else {
+        area.removeAttribute('hidden');
+        customToggleEl.classList.add('is-open');
+        customToggleEl.setAttribute('aria-expanded', 'true');
+        deselectAll();
+        buildPrazoGrid();
+        
+        setTimeout(() => $id('customField').focus(), 50);
+      }
+    });
+
+    customToggleEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); customToggleEl.click(); }
+    });
+
+    /* ── Feedback helper ── */
+    function setFeedback(type, text) {
+      $id('customFeedback').className       = 'custom-feedback ' + type;
+      $id('customFeedbackText').textContent = text;
+    }
+
+    /* ── Validação em tempo real ── */
+    $id('customField').addEventListener('input', e => {
+      const raw  = parseFloat(e.target.value);
+      const { credito_maximo, valor_minimo } = OFERTA.oferta;
+      const prazo = selectedPrazo || OFERTA.oferta.prazos_disponiveis[OFERTA.oferta.prazos_disponiveis.length - 1];
+
+      if (!raw || isNaN(raw)) {
+        setFeedback('idle',
+          'Digite um valor entre R$ ' + fmt(valor_minimo) + ' e R$ ' + fmt(credito_maximo)
+        );
+        /* Limpa parcelas nos cards de prazo */
+        document.querySelectorAll('.prazo-card .prazo-install').forEach(el => el.textContent = '—');
+        
+        return;
+      }
+
+      if (raw > credito_maximo) {
+        setFeedback('warn', 'Máximo disponível é R$ ' + fmt(credito_maximo));
+        updatePrazoCards(credito_maximo);
+        recalcCustom(credito_maximo, prazo);
+        return;
+      }
+
+      if (raw < valor_minimo) {
+        setFeedback('warn', 'Valor mínimo é R$ ' + fmt(valor_minimo));
+        
+        return;
+      }
+
+      /* Valor válido — atualiza todos os cards de prazo e recalcula */
+      updatePrazoCards(raw);
+      recalcCustom(raw, prazo);
+    });
+
+    /* ── Anchor listeners ── */
+    ['anchorMain', 'anchorMid', 'anchorLow'].forEach(id => {
+      const el = $id(id);
+      el.addEventListener('click',   ()  => selectAnchor(id));
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectAnchor(id); }
+      });
+    });
+
+    /* ── Font toggle ── */
+    $id('btnNormal').addEventListener('click', () => {
+      document.body.classList.remove('large-font');
+      $id('btnNormal').classList.add('active');
+      $id('btnLarge').classList.remove('active');
+    });
+
+    $id('btnLarge').addEventListener('click', () => {
+      document.body.classList.add('large-font');
+      $id('btnLarge').classList.add('active');
+      $id('btnNormal').classList.remove('active');
+    });
+
+    /* ── Preenche data do recibo ── */
+    (function() {
+      const opts = { day: 'numeric', month: 'long', year: 'numeric' };
+      $id('receiptDate').textContent = new Date().toLocaleDateString('pt-BR', opts);
+    })();
+
+    /* ── Atualiza campos do recibo reativamente ── */
+    function updateReceipt(valor, prazo, parcela) {
+      const taxa = OFERTA.oferta.taxa_mensal;
+      const total = parcela * prazo;
+      const marginLeft = OFERTA.oferta.margem_disponivel - parcela;
+
+      $id('receiptAmount').textContent  = 'R$ ' + fmt(valor);
+      $id('rtCredit').textContent       = 'R$ ' + fmt(valor);
+      $id('rtTerm').textContent         = prazo + ' meses';
+      $id('rtInstall').textContent      = 'R$ ' + fmtDec(parcela);
+      $id('rtRate').textContent         = taxa.toFixed(2).replace('.', ',') + '% a.m.';
+      $id('rtTotal').textContent        = 'R$ ' + fmtDec(total);
+      $id('rtMarginUsed').textContent   = 'R$ ' + fmtDec(parcela);
+      $id('rtMarginLeft').textContent   = marginLeft >= 0
+        ? 'R$ ' + fmtDec(marginLeft)
+        : 'Indisponível';
+    }
+
+    /* ── Toggle detalhes ── */
+    const toggleDetails = $id('toggleDetails');
+    const offerDetails  = $id('offerDetails');
+
+    toggleDetails.addEventListener('click', () => {
+      const isHidden = offerDetails.hasAttribute('hidden');
+      if (isHidden) {
+        offerDetails.removeAttribute('hidden');
+        toggleDetails.classList.add('is-open');
+        toggleDetails.setAttribute('aria-expanded', 'true');
+      } else {
+        offerDetails.setAttribute('hidden', '');
+        toggleDetails.classList.remove('is-open');
+        toggleDetails.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    /* ── PDF download ── */
+    async function generatePdf() {
+      const btn    = $id('downloadPdf');
+      const status = $id('downloadStatus');
+      /* Captura só o papel — não o wrap com fundo azulado */
+      const target = offerDetails.querySelector('.receipt-card');
+      if (!btn || !target) return;
+
+      const prev = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span aria-hidden="true">⏳</span><span>Gerando PDF...</span>';
+      if (status) status.textContent = 'Preparando o arquivo...';
+
+      try {
+        if (!window.html2canvas || !window.jspdf?.jsPDF) throw new Error('Libs indisponíveis');
+
+        const canvas = await window.html2canvas(target, {
+          scale: 3,
+          useCORS: true,
+          backgroundColor: '#f5f5f3'
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+
+        /* PDF no tamanho exato do recibo — não A4, mas o papel real */
+        const mmW  = (canvas.width  / 3) * 0.2646; /* px → mm (96dpi) */
+        const mmH  = (canvas.height / 3) * 0.2646;
+        const m    = 6; /* margem pequena em volta */
+
+        const pdf = new jsPDF({
+          orientation: mmW > mmH ? 'l' : 'p',
+          unit: 'mm',
+          format: [mmW + m * 2, mmH + m * 2]
+        });
+
+        pdf.addImage(imgData, 'PNG', m, m, mmW, mmH);
+        pdf.save('simulacao-novo-contrato.pdf');
+
+        if (status) status.textContent = 'PDF gerado com sucesso.';
+      } catch {
+        if (status) status.textContent = 'Não foi possível gerar. Abrindo impressão...';
+        window.print();
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = prev;
+      }
+    }
+
+    $id('downloadPdf').addEventListener('click', generatePdf);
+
+    /* ── Init ── */
+    fillAnchors();
+    selectAnchor('anchorMain');
+
+    /* Feedback inicial do campo livre */
+    setFeedback('idle',
+      'Digite um valor entre R$ ' + fmt(OFERTA.oferta.valor_minimo) +
+      ' e R$ ' + fmt(OFERTA.oferta.credito_maximo)
+    );
+
+    /* ── Cross-sell C: Bottom sheet ── */
+    const sheetOverlay = $id('sheetOverlay');
+
+    /* Valores de portabilidade vindos do payload da Economia Inteligente */
+    const PORT_ECO_MARGEM  = 320;   /* margem livre após portabilidade modo eco */
+    const PORT_PARC_MARGEM = 480;   /* margem livre após portabilidade modo parcela */
+    const TAXA_MENSAL      = OFERTA.oferta.taxa_mensal;
+    const PRAZO_REF        = OFERTA.oferta.ancoras[0].prazo;
+
+    function calcCreditFromMargem(margem) {
+      const i = TAXA_MENSAL / 100;
+      return margem / (i * Math.pow(1+i, PRAZO_REF) / (Math.pow(1+i, PRAZO_REF) - 1));
+    }
+
+    $id('mainCta').addEventListener('click', () => {
+      const idx = ['anchorMain','anchorMid','anchorLow'].indexOf(activeAnchor);
+      const valorContrato = customValue ||
+        (idx >= 0 ? OFERTA.oferta.ancoras[idx].valor : OFERTA.oferta.ancoras[0].valor);
+
+      const v = 'R$ ' + fmt(valorContrato);
+      $id('sheetValEco').textContent  = v;
+      $id('sheetValParc').textContent = v;
+
+      $id('sheetFuturoEco').textContent  = 'R$ ' + fmt(Math.round(calcCreditFromMargem(PORT_ECO_MARGEM)));
+      $id('sheetFuturoParc').textContent = 'R$ ' + fmt(Math.round(calcCreditFromMargem(PORT_PARC_MARGEM)));
+
+      sheetOverlay.removeAttribute('hidden');
+    });
+
+    function closeSheet() {
+      sheetOverlay.setAttribute('hidden', '');
+    }
+
+    $id('sheetCardEco').addEventListener('click',  closeSheet);
+    $id('sheetCardParc').addEventListener('click', closeSheet);
+    $id('sheetBtnNo').addEventListener('click',    closeSheet);
+
+    sheetOverlay.addEventListener('click', e => {
+      if (e.target === sheetOverlay) closeSheet();
+    });
+  </script>
+</body>
+</html>

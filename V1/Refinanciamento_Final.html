@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Refinanciamento por Contrato — ConsigAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --scale: 1.22;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --navy: #001851; --blue: #2350c8; --blue-2: #1844b8;
+      --blue-light: #e8eeff; --blue-mid: #c2d0f8;
+      --text: #0f2057; --muted: #7a8db8; --line: #e4eaf8;
+      --green: #0a6640; --green-soft: #3d6b52; --green-bg: #e8f5ee; --green-accent: #16a364;
+      --gold:     #7a5200;
+      --gold-bg:  #fffbf0;
+      --gold-line: #edddb0;
+      --gold-btn: #a87000;
+      --purple: var(--gold); --purple-bg: var(--gold-bg); --purple-mid: var(--gold-line);
+      --white: #fff; --bg: #f4f7fd;
+      --r-card: 20px; --shadow-card: 0 8px 28px rgba(0,24,81,.09);
+    }
+    body.large-font { --scale: 1.47; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; min-height: 100%; background: var(--bg); font-family: var(--font); color: var(--text); }
+    body { overflow-x: hidden; }
+    .screen { width: 100%; min-height: 100vh; }
+
+    /* ── Header ── */
+    .header { background: var(--navy); padding: max(18px, env(safe-area-inset-top)) 20px 0; }
+    .fontbar { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+    .font-toggle { display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); }
+    .font-toggle button { border: 0; background: transparent; color: rgba(255,255,255,.55); font: 500 calc(10px * var(--scale))/1 var(--font); padding: 6px 10px; border-radius: 999px; cursor: pointer; transition: .15s ease; }
+    .font-toggle button.active { background: rgba(255,255,255,.14); color: #fff; }
+    .user { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 20px; }
+    .hello { font-size: calc(12px * var(--scale)); color: rgba(255,255,255,.72); margin-bottom: 2px; font-weight: 600; line-height: 1; }
+    .name  { font-size: calc(18px * var(--scale)); font-weight: 600; color: #fff; line-height: 1.1; }
+    .panel { background: var(--bg); border-radius: 26px 26px 0 0; padding: 20px 18px calc(24px + env(safe-area-inset-bottom)); }
+
+    /* ── Tag ── */
+    .tag { display: inline-flex; align-items: center; gap: 6px; background: var(--blue-light); border-radius: 999px; padding: 4px 12px 4px 8px; margin-bottom: 20px; }
+    .tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
+    .tag span { font-size: calc(10px * var(--scale)); font-weight: 700; letter-spacing: .07em; color: var(--blue); }
+    .intro-label { font-size: calc(10px * var(--scale)); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+
+    /* ── Cenários ── */
+    .scenarios { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .scenario-card { border-radius: 20px; border: 2px solid transparent; cursor: pointer; transition: transform .2s cubic-bezier(.4,0,.2,1), box-shadow .2s ease, border-color .2s ease; overflow: hidden; outline: none; font-family: var(--font); text-align: left; width: 100%; }
+    .scenario-card:hover  { transform: translateY(-2px); }
+    .scenario-card:active { transform: scale(.99); }
+    .scenario-card:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+    .scenario-card.s-dinheiro { background: var(--blue-light); border-color: var(--blue-mid); }
+    .scenario-card.s-margem   { background: var(--green-bg);   border-color: #b8e0ca; }
+    .scenario-card.s-parcela  { background: var(--purple-bg);  border-color: var(--purple-mid); }
+    .scenario-card.s-dinheiro.active { border-color: var(--blue);        box-shadow: 0 10px 30px rgba(35,80,200,.20); }
+    .scenario-card.s-margem.active   { border-color: var(--green-accent); box-shadow: 0 10px 30px rgba(10,102,64,.18); }
+    .scenario-card.s-parcela.active  { border-color: var(--gold);       box-shadow: 0 10px 30px rgba(122,82,0,.18); }
+    .scenario-inner { padding: 16px; }
+    .scenario-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+    .scenario-icon { width: 40px; height: 40px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .s-dinheiro .scenario-icon { background: rgba(35,80,200,.12); }
+    .s-margem   .scenario-icon { background: rgba(10,102,64,.12); }
+    .s-parcela  .scenario-icon { background: rgba(122,82,0,.12); }
+    .scenario-meta { flex: 1; }
+    .scenario-eyebrow { font-size: calc(9px * var(--scale)); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px; }
+    .s-dinheiro .scenario-eyebrow { color: var(--blue); }
+    .s-margem   .scenario-eyebrow { color: var(--green-accent); }
+    .s-parcela  .scenario-eyebrow { color: var(--purple); }
+    .scenario-title { font-size: calc(15px * var(--scale)); font-weight: 700; color: var(--text); line-height: 1.2; margin-bottom: 2px; }
+    .scenario-desc  { font-size: calc(10px * var(--scale)); font-weight: 500; color: var(--muted); line-height: 1.4; }
+    .scenario-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); background: var(--white); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; transition: all .18s ease; }
+    .scenario-card.active .scenario-radio { border-width: 6px; }
+    .s-dinheiro.active .scenario-radio { border-color: var(--blue); }
+    .s-margem.active   .scenario-radio { border-color: var(--green-accent); }
+    .s-parcela.active  .scenario-radio { border-color: var(--purple); }
+    .scenario-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .kpi { border-radius: 14px; padding: 10px 8px; text-align: center; display: flex; flex-direction: column; gap: 3px; }
+    .s-dinheiro .kpi { background: rgba(35,80,200,.08); }
+    .s-margem   .kpi { background: rgba(10,102,64,.08); }
+    .s-parcela  .kpi { background: rgba(122,82,0,.08); }
+    .kpi-label { font-size: calc(8.5px * var(--scale)); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; line-height: 1.2; }
+    .s-dinheiro .kpi-label { color: #4a6fa8; }
+    .s-margem   .kpi-label { color: var(--green-soft); }
+    .s-parcela  .kpi-label { color: var(--gold-btn); }
+    .kpi-value { font-size: calc(13px * var(--scale)); font-weight: 700; line-height: 1; letter-spacing: -.01em; white-space: nowrap; }
+    .s-dinheiro .kpi-value { color: var(--blue); }
+    .s-margem   .kpi-value { color: var(--green); }
+    .s-parcela  .kpi-value { color: var(--purple); }
+    .kpi-value.highlight { font-size: calc(15px * var(--scale)); }
+    .scenario-contracts { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,.06); }
+    .scenario-contracts-label { font-size: calc(9px * var(--scale)); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 8px; }
+    .contract-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .contract-pill { border-radius: 999px; padding: 4px 10px; font-size: calc(9px * var(--scale)); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+    .s-dinheiro .contract-pill { background: rgba(35,80,200,.10); color: var(--blue); }
+    .s-margem   .contract-pill { background: rgba(10,102,64,.10); color: var(--green); }
+    .s-parcela  .contract-pill { background: rgba(122,82,0,.10); color: var(--gold); }
+    .contract-pill-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .s-dinheiro .contract-pill-dot { background: var(--blue); }
+    .s-margem   .contract-pill-dot { background: var(--green-accent); }
+    .s-parcela  .contract-pill-dot { background: var(--purple); }
+
+    /* ── Margem card ── */
+    .margem-card { background: var(--navy); border-radius: var(--r-card); padding: 18px; margin-bottom: 10px; box-shadow: 0 8px 28px rgba(0,24,81,.18); }
+    .margem-eyebrow { font-size: calc(9.5px * var(--scale)); font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: rgba(255,255,255,.45); margin-bottom: 14px; }
+    .margem-bar-wrap { margin-bottom: 14px; }
+    .margem-bar-labels { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .margem-bar-label  { font-size: calc(9px * var(--scale)); font-weight: 600; color: rgba(255,255,255,.5); }
+    .margem-bar-track  { width: 100%; height: 10px; background: rgba(255,255,255,.08); border-radius: 999px; overflow: hidden; position: relative; }
+    .margem-bar-used   { height: 100%; border-radius: 999px; background: rgba(255,255,255,.25); transition: width .5s cubic-bezier(.4,0,.2,1); position: absolute; left: 0; }
+    .margem-bar-free   { height: 100%; border-radius: 999px; background: #5de89e; transition: width .5s cubic-bezier(.4,0,.2,1), left .5s cubic-bezier(.4,0,.2,1); position: absolute; }
+    .margem-grid { display: grid; grid-template-columns: 1fr 1px 1fr 1px 1fr; align-items: center; }
+    .margem-sep  { width: 1px; background: rgba(255,255,255,.1); height: 36px; align-self: center; }
+    .margem-item { text-align: center; padding: 0 6px; }
+    .margem-item-label { font-size: calc(9px * var(--scale)); color: rgba(255,255,255,.45); font-weight: 500; margin-bottom: 4px; line-height: 1.2; }
+    .margem-item-value { font-size: calc(14px * var(--scale)); font-weight: 700; color: #fff; line-height: 1; letter-spacing: -.01em; }
+    .margem-item-value.accent { color: #5de89e; font-size: calc(16px * var(--scale)); }
+    .credito-row { display: flex; justify-content: space-between; align-items: center; background: rgba(93,232,158,.10); border: 1px solid rgba(93,232,158,.22); border-radius: 12px; padding: 10px 14px; margin-top: 14px; }
+    .credito-left { font-size: calc(9.5px * var(--scale)); color: rgba(255,255,255,.55); font-weight: 500; line-height: 1.3; }
+    .credito-left strong { display: block; color: #5de89e; font-size: calc(11px * var(--scale)); font-weight: 700; }
+    .credito-value { font-size: calc(18px * var(--scale)); font-weight: 700; color: #5de89e; letter-spacing: -.02em; white-space: nowrap; }
+
+    /* ── Actions ── */
+    .actions-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-card); padding: 16px; box-shadow: var(--shadow-card); margin-bottom: 10px; }
+    .btn { width: 100%; border: 0; border-radius: 14px; font-family: var(--font); cursor: pointer; transition: .15s ease; }
+    .btn:active { transform: scale(.98); }
+    .btn-primary { background: linear-gradient(160deg, #2f59d0 0%, #1d43b0 100%); color: #fff; padding: 15px 14px; font-size: calc(15px * var(--scale)); font-weight: 600; line-height: 1.2; box-shadow: 0 8px 20px rgba(30,60,180,.25); display: block; text-align: center; }
+    .btn-primary:hover { background: linear-gradient(160deg, #3362dc 0%, #2148be 100%); }
+    .btn-secondary { margin-top: 8px; background: transparent; color: var(--blue); border: 1.5px solid var(--blue-mid); padding: 13px; font-size: calc(13.5px * var(--scale)); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background .15s ease; }
+    .btn-secondary:hover { background: var(--blue-light); }
+    .chevron { width: 16px; height: 16px; flex-shrink: 0; transition: transform .25s cubic-bezier(.4,0,.2,1); }
+    .btn-secondary.is-open .chevron { transform: rotate(180deg); }
+
+    /* ── Details / Recibo ── */
+    .details-wrap { display: none; margin-top: 12px; animation: fadeIn .22s ease forwards; }
+    .details-wrap.show { display: block; }
+    .details-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+    .details-eyebrow  { font-size: calc(9.5px * var(--scale)); font-weight: 700; letter-spacing: .10em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .details-subtitle { font-size: calc(14px * var(--scale)); font-weight: 700; color: var(--text); }
+    .details-pill { border-radius: 999px; background: var(--blue-light); border: 1px solid var(--blue-mid); padding: 5px 12px; font-size: calc(10px * var(--scale)); font-weight: 700; color: var(--blue); white-space: nowrap; flex-shrink: 0; }
+
+    /* ── Recibo — padrão Portabilidade ── */
+    .receipt-frame { background: #f7f9fe; border: 1px solid var(--line); border-radius: 16px; padding: 10px; display: flex; justify-content: center; }
+    .receipt-card { width: 300px; flex-shrink: 0; background: radial-gradient(circle at 20% 20%, rgba(0,0,0,.015) 0 1px, transparent 1px 100%), linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)), #f5f5f3; background-size: 12px 12px, 100% 100%, auto; border: 1px solid #ececec; border-radius: 10px; padding: 14px 12px 12px; color: #4f4f4f; font-size: 12px; font-family: var(--font); }
+    .receipt-card .receipt-title          { font-size: 12px; text-align: center; font-weight: 800; letter-spacing: .02em; color: #444; }
+    .receipt-card .receipt-date           { font-size: 10px; margin-top: 4px; text-align: center; color: #808080; }
+    .receipt-card .receipt-person         { font-size: 10.5px; margin-top: 12px; font-weight: 700; color: #565656; }
+    .receipt-card .receipt-meta           { font-size: 10px; margin-top: 6px; line-height: 1.35; color: #5f5f5f; }
+    .receipt-card .receipt-headline-small { font-size: 11px; text-align: center; font-weight: 800; color: #4a4a4a; }
+    .receipt-card .receipt-headline-tag   { font-size: 8.5px; text-align: center; margin-top: 4px; font-weight: 700; letter-spacing: .08em; color: #888; text-transform: uppercase; }
+    .receipt-card .receipt-headline-big   { font-size: 22px; text-align: center; margin-top: 2px; font-weight: 900; color: #232323; line-height: 1; }
+    .receipt-card .receipt-table          { font-size: 10px; width: 100%; border-collapse: collapse; color: #5b5b5b; }
+    .receipt-card .receipt-table th       { font-size: 8px; text-align: left; font-weight: 500; padding: 4px 0 8px; color: #676767; }
+    .receipt-card .receipt-table td       { font-size: 10px; padding: 4px 0; }
+    .receipt-card .receipt-table td:first-child { font-size: 8px; white-space: nowrap; padding-right: 10px; }
+    .receipt-card .receipt-table th:last-child,
+    .receipt-card .receipt-table td:last-child  { text-align: right; }
+    .receipt-card .receipt-total          { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; margin-top: 8px; }
+    .receipt-card .receipt-total-label    { font-size: 10px; font-weight: 700; color: #555; }
+    .receipt-card .receipt-total-value    { font-size: 14px; font-weight: 800; color: #3b3b3b; white-space: nowrap; }
+    .receipt-card .receipt-credit-block   { display: flex; flex-direction: column; gap: 6px; }
+    .receipt-card .receipt-credit-item    { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; }
+    .receipt-card .receipt-credit-label   { font-size: 10px; font-weight: 700; color: #555; line-height: 1.3; flex: 1; }
+    .receipt-card .receipt-credit-value   { font-size: 14px; font-weight: 800; color: #3b3b3b; white-space: nowrap; }
+    .receipt-card .receipt-credit-divider { border: none; border-top: 1px dashed #cfcfcf; margin: 0; }
+    .receipt-card .receipt-protocol       { margin-top: 10px; padding: 8px 10px; background: #f0f0ee; border-radius: 6px; border: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .receipt-card .receipt-protocol-label { font-size: 8px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
+    .receipt-card .receipt-protocol-code  { font-size: 8.5px; color: #444; font-weight: 700; font-family: ui-monospace, monospace; letter-spacing: .05em; }
+    .receipt-card .receipt-site           { font-size: 9.5px; text-align: center; margin-top: 4px; color: #7a7a7a; letter-spacing: .08em; }
+    .receipt-divider { border-top: 1px dashed #cfcfcf; margin: 10px 0; }
+
+    /* ── Download ── */
+    .details-actions { display: grid; gap: 8px; margin-top: 10px; }
+    .btn-download { width: 100%; background: #edf3ff; color: var(--blue); border: 1.5px solid #d2ddfb; border-radius: 14px; padding: 13px; font-family: var(--font); font-size: calc(13px * var(--scale)); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background .15s ease; }
+    .btn-download:hover { background: #e6efff; }
+    .btn-download[disabled] { opacity: .7; cursor: wait; }
+    .download-status { font-size: calc(9px * var(--scale)); color: var(--muted); text-align: center; min-height: 14px; }
+
+    /* ── Outras opções ── */
+    .bottom { margin-top: 28px; padding-bottom: 8px; }
+    .more-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .more-title    { font-size: calc(13px * var(--scale)); font-weight: 700; color: var(--text); flex: 1; }
+    .more-subtitle { font-size: calc(10px * var(--scale)); color: var(--muted); font-weight: 500; }
+    .mini-card { border-radius: 18px; margin-bottom: 8px; border: 1px solid transparent; overflow: hidden; animation: cardRise .28s ease both; }
+    .mini-card:last-child { margin-bottom: 0; }
+    .mini-card.eco  { background: var(--green-bg); border-color: #b8e0ca; animation-delay: .02s; }
+    .mini-card.novo { background: var(--blue-light); border-color: var(--blue-mid); animation-delay: .06s; }
+    .mini-card-inner { padding: 14px 14px 0; }
+    .mini-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+    .mini-icon { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mini-icon.eco  { background: #c0e8d4; }
+    .mini-icon.novo { background: #c0d4f8; }
+    .mini-name { font-size: calc(13px * var(--scale)); font-weight: 600; line-height: 1.2; margin-bottom: 3px; }
+    .mini-name.eco  { color: var(--green); }
+    .mini-name.novo { color: #0c3278; }
+    .mini-desc { font-size: calc(10.5px * var(--scale)); font-weight: 500; line-height: 1.35; }
+    .mini-desc.eco  { color: var(--green-soft); }
+    .mini-desc.novo { color: #4a6fa8; }
+    .mini-divider { height: 1px; margin: 0 14px; }
+    .mini-card.eco  .mini-divider { background: #b8e0ca; }
+    .mini-card.novo .mini-divider { background: var(--blue-mid); }
+    .mini-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 14px; }
+    .mini-value { display: flex; align-items: baseline; gap: 2px; white-space: nowrap; }
+    .mini-value .rs  { font-size: calc(11px * var(--scale)); font-weight: 600; }
+    .mini-value .num { font-size: calc(22px * var(--scale)); font-weight: 700; line-height: 1; letter-spacing: -.02em; }
+    .mini-value.eco,  .mini-value.eco .rs,  .mini-value.eco .num  { color: var(--green); }
+    .mini-value.novo, .mini-value.novo .rs, .mini-value.novo .num { color: #0c3278; }
+    .mini-detail { font-size: calc(9.5px * var(--scale)); font-weight: 500; margin-top: 2px; }
+    .mini-detail.eco  { color: var(--green-soft); }
+    .mini-detail.novo { color: #4a6fa8; }
+    .mini-btn { border: 0; border-radius: 12px; color: #fff; padding: 11px 16px; font: 600 calc(11.5px * var(--scale))/1.2 var(--font); cursor: pointer; white-space: nowrap; transition: transform .18s ease, box-shadow .18s ease, filter .18s ease; display: flex; align-items: center; gap: 5px; box-shadow: 0 4px 10px rgba(0,24,81,.10); }
+    .mini-btn svg { transition: transform .18s ease; }
+    .mini-btn:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 8px 18px rgba(0,24,81,.16); filter: brightness(1.03); }
+    .mini-btn:hover svg { transform: translateX(2px); }
+    .mini-btn:active { transform: scale(.98); }
+    .mini-btn.eco  { background: var(--green); }
+    .mini-btn.novo { background: #1840a8; }
+    .disclaimer { font-size: calc(8px * var(--scale)); color: var(--muted); text-align: right; margin-top: 10px; opacity: .68; font-style: italic; line-height: 1; }
+
+    /* ── Bottom sheet ── */
+    .sheet-overlay { position: fixed; inset: 0; background: rgba(0,18,51,.55); z-index: 200; display: flex; align-items: flex-end; animation: fadeIn .2s ease forwards; }
+    .sheet-overlay[hidden] { display: none; }
+    .sheet { background: var(--white); border-radius: 24px 24px 0 0; padding: 12px 20px calc(28px + env(safe-area-inset-bottom)); width: 100%; display: flex; flex-direction: column; align-items: center; gap: 12px; animation: slideUp .28s cubic-bezier(.4,0,.2,1) forwards; }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .sheet-handle { width: 36px; height: 4px; border-radius: 999px; background: var(--line); margin-bottom: 2px; }
+    .sheet-eyebrow { font-size: calc(10px * var(--scale)); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); text-align: center; }
+    .sheet-title   { font-size: calc(18px * var(--scale)); font-weight: 700; color: var(--text); text-align: center; line-height: 1.2; }
+    .sheet-text    { font-size: calc(10.5px * var(--scale)); font-weight: 500; color: var(--muted); text-align: center; line-height: 1.5; margin-bottom: 2px; }
+    .sheet-text strong { color: var(--text); font-weight: 700; }
+    .sheet-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; align-items: start; }
+    .sheet-card { border: 0; border-radius: 18px; padding: 14px 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; text-align: center; font-family: var(--font); transition: transform .18s ease, box-shadow .18s ease; outline: none; }
+    .sheet-card:hover  { transform: translateY(-2px); }
+    .sheet-card:active { transform: scale(.97); }
+    .sheet-card:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+    .sheet-card.green { background: var(--green-bg); border: 2px solid #b8e0ca; box-shadow: 0 6px 18px rgba(10,102,64,.12); }
+    .sheet-card.blue  { background: var(--blue-light); border: 2px solid var(--blue-mid); box-shadow: 0 6px 18px rgba(35,80,200,.10); }
+    .sheet-card-tag { font-size: calc(8px * var(--scale)); font-weight: 700; letter-spacing: .07em; text-transform: uppercase; border-radius: 999px; padding: 3px 8px; margin-bottom: 6px; }
+    .sheet-card.green .sheet-card-tag { background: #c0e8d4; color: var(--green); }
+    .sheet-card-tag.blue { background: var(--blue-light); color: var(--blue); border: 1px solid var(--blue-mid); }
+    .sheet-card-label { font-size: calc(8.5px * var(--scale)); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; line-height: 1; }
+    .sheet-card.green .sheet-card-label { color: var(--green-soft); }
+    .sheet-card.blue  .sheet-card-label { color: #4a6fa8; }
+    .sheet-card-value { font-size: calc(18px * var(--scale)); font-weight: 700; letter-spacing: -.02em; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; }
+    .sheet-card-value.sm { font-size: calc(15px * var(--scale)); }
+    .sheet-card.green .sheet-card-value { color: var(--blue); }
+    .sheet-card-value.green { color: var(--green) !important; }
+    .sheet-card-value.blue  { color: var(--blue) !important; }
+    .sheet-card-mo { font-size: calc(9px * var(--scale)); font-weight: 600; margin-left: 1px; }
+    .sheet-card-sub { font-size: calc(8.5px * var(--scale)); font-weight: 500; line-height: 1.3; }
+    .sheet-card.green .sheet-card-sub { color: var(--green-soft); }
+    .sheet-card.blue  .sheet-card-sub { color: #4a6fa8; }
+    .sheet-card-plus { font-size: calc(13px * var(--scale)); font-weight: 700; margin: 4px 0; }
+    .sheet-card.green .sheet-card-plus { color: var(--green-accent); }
+    .sheet-card.blue  .sheet-card-plus { color: var(--blue); }
+    .sheet-card-result { width: 100%; padding: 4px 0 0; display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
+    .sheet-card-result-label { font-size: calc(8px * var(--scale)); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; line-height: 1.2; }
+    .sheet-card-result.green .sheet-card-result-label { color: var(--green-soft); }
+    .sheet-card-result.blue  .sheet-card-result-label { color: #4a6fa8; }
+    .sheet-card-result-value { font-size: calc(16px * var(--scale)); font-weight: 700; letter-spacing: -.02em; line-height: 1; }
+    .sheet-card-result.green .sheet-card-result-value { color: var(--green); }
+    .sheet-card-result.blue  .sheet-card-result-value { color: var(--blue); }
+    .sheet-card-result-sub { font-size: calc(8px * var(--scale)); font-weight: 500; }
+    .sheet-card-result.green .sheet-card-result-sub { color: var(--green-soft); }
+    .sheet-card-result.blue  .sheet-card-result-sub { color: #4a6fa8; }
+    .sheet-btn-no { width: 100%; border: 1.5px solid var(--line); border-radius: 14px; background: transparent; color: var(--muted); padding: 13px; font: 500 calc(12px * var(--scale))/1 var(--font); cursor: pointer; transition: border-color .15s ease, color .15s ease, transform .1s ease; }
+    .sheet-btn-no:hover  { border-color: var(--blue-mid); color: var(--text); }
+    .sheet-btn-no:active { transform: scale(.98); }
+
+    @keyframes fadeIn  { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes cardRise{ from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <div class="screen">
+    <header class="header">
+      <div class="fontbar">
+        <div class="font-toggle">
+          <button id="btnNormal" class="active" type="button">Normal</button>
+          <button id="btnLarge" type="button">A+</button>
+        </div>
+      </div>
+      <div class="user">
+        <div>
+          <div class="hello">Olá,</div>
+          <div class="name">Carlos Eduardo</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="tag"><div class="tag-dot"></div><span>REFINANCIAMENTO POR CONTRATO</span></div>
+        <div class="intro-label">Escolha o melhor cenário para você</div>
+
+        <div class="scenarios">
+
+          <!-- Cenário 1 — Máximo dinheiro -->
+          <button class="scenario-card s-dinheiro active" id="s1" type="button" aria-pressed="true">
+            <div class="scenario-inner">
+              <div class="scenario-head">
+                <div class="scenario-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke="#2350c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="scenario-meta">
+                  <div class="scenario-eyebrow">Cenário 1</div>
+                  <div class="scenario-title">Máximo dinheiro</div>
+                  <div class="scenario-desc">Receba o maior valor possível refinanciando todos os contratos elegíveis</div>
+                </div>
+                <div class="scenario-radio"></div>
+              </div>
+              <div class="scenario-kpis">
+                <div class="kpi"><div class="kpi-label">Você recebe</div><div class="kpi-value highlight" id="s1-cash">—</div></div>
+                <div class="kpi"><div class="kpi-label">Nova parcela</div><div class="kpi-value" id="s1-install">—</div></div>
+                <div class="kpi"><div class="kpi-label">Margem livre</div><div class="kpi-value" id="s1-margem">—</div></div>
+                <div class="kpi"><div class="kpi-label">Contratos</div><div class="kpi-value" id="s1-count">—</div></div>
+              </div>
+              <div class="scenario-contracts">
+                <div class="scenario-contracts-label">Contratos incluídos</div>
+                <div class="contract-pills" id="s1-pills"></div>
+              </div>
+            </div>
+          </button>
+
+          <!-- Cenário 2 — Máxima margem -->
+          <button class="scenario-card s-margem" id="s2" type="button" aria-pressed="false">
+            <div class="scenario-inner">
+              <div class="scenario-head">
+                <div class="scenario-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="#16a364" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="scenario-meta">
+                  <div class="scenario-eyebrow">Cenário 2</div>
+                  <div class="scenario-title">Máxima margem livre</div>
+                  <div class="scenario-desc">Libere mais espaço na margem para contratar um novo empréstimo maior depois</div>
+                </div>
+                <div class="scenario-radio"></div>
+              </div>
+              <div class="scenario-kpis">
+                <div class="kpi"><div class="kpi-label">Você recebe</div><div class="kpi-value highlight" id="s2-cash">—</div></div>
+                <div class="kpi"><div class="kpi-label">Nova parcela</div><div class="kpi-value" id="s2-install">—</div></div>
+                <div class="kpi"><div class="kpi-label">Margem livre</div><div class="kpi-value" id="s2-margem">—</div></div>
+                <div class="kpi"><div class="kpi-label">Contratos</div><div class="kpi-value" id="s2-count">—</div></div>
+              </div>
+              <div class="scenario-contracts">
+                <div class="scenario-contracts-label">Contratos incluídos</div>
+                <div class="contract-pills" id="s2-pills"></div>
+              </div>
+            </div>
+          </button>
+
+          <!-- Cenário 3 — Menor parcela -->
+          <button class="scenario-card s-parcela" id="s3" type="button" aria-pressed="false">
+            <div class="scenario-inner">
+              <div class="scenario-head">
+                <div class="scenario-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" stroke="#a87000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17 6 23 6 23 12" stroke="#a87000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="scenario-meta">
+                  <div class="scenario-eyebrow">Cenário 3</div>
+                  <div class="scenario-title">Menor parcela total</div>
+                  <div class="scenario-desc">Reduza ao máximo o comprometimento mensal da sua renda com parcelas</div>
+                </div>
+                <div class="scenario-radio"></div>
+              </div>
+              <div class="scenario-kpis">
+                <div class="kpi"><div class="kpi-label">Você recebe</div><div class="kpi-value highlight" id="s3-cash">—</div></div>
+                <div class="kpi"><div class="kpi-label">Nova parcela</div><div class="kpi-value" id="s3-install">—</div></div>
+                <div class="kpi"><div class="kpi-label">Margem livre</div><div class="kpi-value" id="s3-margem">—</div></div>
+                <div class="kpi"><div class="kpi-label">Contratos</div><div class="kpi-value" id="s3-count">—</div></div>
+              </div>
+              <div class="scenario-contracts">
+                <div class="scenario-contracts-label">Contratos incluídos</div>
+                <div class="contract-pills" id="s3-pills"></div>
+              </div>
+            </div>
+          </button>
+
+        </div>
+
+        <!-- Bottom sheet — Economia -->
+        <div class="sheet-overlay" id="sheetOverlay" aria-modal="true" role="dialog" aria-labelledby="sheetTitle" hidden>
+          <div class="sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-eyebrow">Ótima escolha! Mas olha isso…</div>
+            <div class="sheet-title" id="sheetTitle">Faça ainda mais pelo seu futuro</div>
+            <div class="sheet-text">Com a portabilidade você garante um limite maior disponível quando precisar de crédito de novo.</div>
+
+            <div class="sheet-cards">
+              <!-- Card verde — Economizar -->
+              <button class="sheet-card green" id="sheetCardEco" type="button" aria-label="Refinanciamento mais Economia Inteligente">
+                <div class="sheet-card-tag">Recomendado</div>
+                <div class="sheet-card-label">Refinanciamento</div>
+                <div class="sheet-card-value" id="sheetValEco">—</div>
+                <div class="sheet-card-plus">+</div>
+                <div class="sheet-card-label">Economia Inteligente</div>
+                <div class="sheet-card-value sm green">R$ 2.399</div>
+                <div class="sheet-card-sub">de economia</div>
+                <div class="sheet-card-plus">+</div>
+                <div class="sheet-card-result green">
+                  <div class="sheet-card-result-label">Novo contrato depois</div>
+                  <div class="sheet-card-result-value" id="sheetFuturoEco">—</div>
+                  <div class="sheet-card-result-sub">disponível</div>
+                </div>
+              </button>
+
+              <!-- Card azul — Parcela menor -->
+              <button class="sheet-card blue" id="sheetCardParc" type="button" aria-label="Refinanciamento mais Parcela Menor">
+                <div class="sheet-card-tag blue">Mais alívio</div>
+                <div class="sheet-card-label">Refinanciamento</div>
+                <div class="sheet-card-value" id="sheetValParc">—</div>
+                <div class="sheet-card-plus">+</div>
+                <div class="sheet-card-label">Parcela Menor</div>
+                <div class="sheet-card-value sm blue">R$ 117<span class="sheet-card-mo">/mês</span></div>
+                <div class="sheet-card-sub">a menos por mês</div>
+                <div class="sheet-card-plus">+</div>
+                <div class="sheet-card-result blue">
+                  <div class="sheet-card-result-label">Novo contrato depois</div>
+                  <div class="sheet-card-result-value" id="sheetFuturoParc">—</div>
+                  <div class="sheet-card-result-sub">disponível</div>
+                </div>
+              </button>
+            </div>
+
+            <button class="sheet-btn-no" id="sheetBtnNo" type="button">Não, só o refinanciamento por agora</button>
+          </div>
+        </div>
+
+        <!-- Ações -->
+        <div class="actions-card">
+          <button class="btn btn-primary" id="mainCta" type="button">Quero este cenário</button>
+          <button class="btn btn-secondary" id="toggleDetails" type="button" aria-expanded="false" aria-controls="detailsWrap">
+            <span>Ver detalhes da oferta</span>
+            <svg class="chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 6l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <div class="details-wrap" id="detailsWrap">
+            <div class="details-head">
+              <div>
+                <div class="details-eyebrow">Detalhes da oferta</div>
+                <div class="details-subtitle">Extrato da simulação</div>
+              </div>
+              <div class="details-pill" id="detailsPill">—</div>
+            </div>
+
+            <div class="receipt-frame">
+              <section class="receipt-card" id="receiptPaper" aria-label="Recibo de refinanciamento">
+                <div class="receipt-title">SIMULAÇÃO DE REFINANCIAMENTO — CONSIGAI</div>
+                <div class="receipt-date" id="receiptDate"></div>
+                <div class="receipt-person">CARLOS EDUARDO MARTINS</div>
+                <div class="receipt-meta">
+                  CPF: 177.665.442-8<br>
+                  Benefício: Aposentadoria por Tempo de Contribuição<br>
+                  Nascimento: 30/07/1957<br>
+                  Valor do Benefício: R$ 2.200
+                </div>
+
+                <div class="receipt-divider"></div>
+                <div class="receipt-headline-small">VOCÊ VAI RECEBER HOJE</div>
+                <div class="receipt-headline-big" id="receiptCash">—</div>
+                <div class="receipt-headline-tag">REFINANCIAMENTO CONSIGNADO</div>
+
+                <div class="receipt-divider"></div>
+                <table class="receipt-table" aria-label="Contratos refinanciados">
+                  <thead><tr><th>Cód.</th><th>Banco</th><th>Troco</th></tr></thead>
+                  <tbody id="receiptBody"></tbody>
+                </table>
+
+                <div class="receipt-divider"></div>
+                <div class="receipt-total">
+                  <span class="receipt-total-label">Nova parcela total</span>
+                  <span class="receipt-total-value" id="receiptInstall">—</span>
+                </div>
+
+                <div class="receipt-divider"></div>
+                <div class="receipt-credit-block">
+                  <div class="receipt-credit-item">
+                    <span class="receipt-credit-label">Margem livre após refinanciamento</span>
+                    <span class="receipt-credit-value" id="receiptMargem">—</span>
+                  </div>
+                  <hr class="receipt-credit-divider">
+                  <div class="receipt-credit-item">
+                    <span class="receipt-credit-label">Crédito disponível após liberação da margem</span>
+                    <span class="receipt-credit-value" id="receiptCredito">—</span>
+                  </div>
+                </div>
+
+                <div class="receipt-protocol">
+                  <div class="receipt-protocol-label">Protocolo</div>
+                  <div class="receipt-protocol-code">CSG-2025-05312</div>
+                </div>
+                <div class="receipt-site">ConsigAI.com.br</div>
+              </section>
+            </div>
+
+            <div class="details-actions">
+              <button class="btn-download" id="downloadPdf" type="button">
+                <span aria-hidden="true">⬇</span>
+                <span>Fazer download da simulação</span>
+              </button>
+              <div class="download-status" id="downloadStatus" aria-live="polite"></div>
+            </div>
+            <p class="disclaimer">Valores estimados. Sujeitos à análise e aprovação de crédito.</p>
+          </div>
+        </div>
+
+        <!-- Outras opções -->
+        <section class="bottom">
+          <div class="more-header">
+            <div class="more-title">Outras opções para você</div>
+            <div class="more-subtitle">2 disponíveis</div>
+          </div>
+          <div class="mini-card eco">
+            <div class="mini-card-inner">
+              <div class="mini-top">
+                <div class="mini-icon eco"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M10 4l6 6-6 6" stroke="#0a6640" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div><div class="mini-name eco">Economia Inteligente</div><div class="mini-desc eco">Faça a portabilidade dos seus contratos e economize</div></div>
+              </div>
+            </div>
+            <div class="mini-divider"></div>
+            <div class="mini-footer">
+              <div><div class="mini-value eco"><span class="rs">R$</span><span class="num">2.399</span></div><div class="mini-detail eco">estimado de economia</div></div>
+              <button class="mini-btn eco" type="button" aria-label="Ver oferta de Economia Inteligente">Ver oferta <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+          </div>
+          <div class="mini-card novo">
+            <div class="mini-card-inner">
+              <div class="mini-top">
+                <div class="mini-icon novo"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="#1840a8" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+                <div><div class="mini-name novo">Novo Empréstimo</div><div class="mini-desc novo">Mais dinheiro disponível com pequeno ajuste na parcela</div></div>
+              </div>
+            </div>
+            <div class="mini-divider"></div>
+            <div class="mini-footer">
+              <div><div class="mini-value novo"><span class="rs">R$</span><span class="num">2.845</span></div><div class="mini-detail novo">estimado disponível</div></div>
+              <button class="mini-btn novo" type="button" aria-label="Ver oferta de Novo Empréstimo">Ver oferta <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </header>
+  </div>
+
+  <script>
+    const MARGEM_TOTAL = 770;
+    const TAXA_MENSAL  = 1.88;
+    const PRAZO_REF    = 84;
+
+    const CONTRACTS = [
+      { id:1, code:'0056347710',    bank:'Banco PAN', installment:322, newInstallment:298, cashBack:3200, margemLiberada:24 },
+      { id:2, code:'0123472010087', bank:'Facta',     installment:418, newInstallment:381, cashBack:5550, margemLiberada:37 },
+      { id:3, code:'0057628452',    bank:'C6 Consig', installment:544, newInstallment:512, cashBack:4180, margemLiberada:32 }
+    ];
+
+    const MARGEM_ATUAL_USADA = CONTRACTS.reduce((s,c) => s + c.installment, 0);
+
+    const $id  = id => document.getElementById(id);
+    const fBRL = v  => new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL', minimumFractionDigits:0 }).format(v);
+
+    function calcCredito(margemLivre) {
+      const i = TAXA_MENSAL / 100, n = PRAZO_REF;
+      return Math.round(margemLivre / (i * Math.pow(1+i,n) / (Math.pow(1+i,n) - 1)));
+    }
+
+    function buildScenario(indices) {
+      const cs = indices.map(i => CONTRACTS[i]);
+      const totalCash   = cs.reduce((a,c) => a + c.cashBack, 0);
+      const totalNew    = cs.reduce((a,c) => a + c.newInstallment, 0);
+      const margemUsada = MARGEM_ATUAL_USADA - cs.reduce((a,c) => a + c.installment, 0) + totalNew;
+      const margemLivre = Math.max(MARGEM_TOTAL - margemUsada, 0);
+      return { cs, totalCash, totalNew, margemUsada, margemLivre, credito: calcCredito(margemLivre) };
+    }
+
+    const SCENARIOS = [
+      { id:'s1', key:'dinheiro', ...buildScenario([0,1,2]) },
+      { id:'s2', key:'margem',   ...buildScenario([1,2])   },
+      { id:'s3', key:'parcela',  ...buildScenario([1])     }
+    ];
+
+    let active = SCENARIOS[0];
+
+    function fillScenarios() {
+      SCENARIOS.forEach(s => {
+        $id(s.id+'-cash').textContent    = fBRL(s.totalCash);
+        $id(s.id+'-install').textContent = fBRL(s.totalNew)+'/mês';
+        $id(s.id+'-margem').textContent  = fBRL(s.margemLivre);
+        $id(s.id+'-count').textContent   = s.cs.length + (s.cs.length===1?' contrato':' contratos');
+        const pills = $id(s.id+'-pills');
+        pills.innerHTML = '';
+        s.cs.forEach(c => {
+          const p = document.createElement('span');
+          p.className = 'contract-pill';
+          p.innerHTML = '<span class="contract-pill-dot"></span>'+c.bank;
+          pills.appendChild(p);
+        });
+      });
+    }
+
+    function updateCta(s) {
+      const names = { dinheiro:'Máximo Dinheiro', margem:'Máxima Margem', parcela:'Menor Parcela' };
+      $id('mainCta').textContent = 'Quero o Cenário ' + names[s.key];
+    }
+
+    function updateReceipt(s) {
+      $id('receiptCash').textContent    = fBRL(s.totalCash);
+      $id('receiptInstall').textContent = fBRL(s.totalNew)+'/mês';
+      $id('receiptMargem').textContent  = fBRL(s.margemLivre);
+      $id('receiptCredito').textContent = fBRL(s.credito);
+      $id('detailsPill').textContent    = s.cs.length+' contrato'+(s.cs.length===1?'':'s');
+      const tbody = $id('receiptBody');
+      tbody.innerHTML = '';
+      s.cs.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>'+c.code+'</td><td>'+c.bank+'</td><td style="text-align:right;font-weight:700;color:#3b3b3b;">'+fBRL(c.cashBack)+'</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    function selectScenario(sid) {
+      active = SCENARIOS.find(s => s.id === sid);
+      SCENARIOS.forEach(s => {
+        const el = $id(s.id);
+        const on = s.id === sid;
+        el.classList.toggle('active', on);
+        el.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      updateCta(active);
+      updateReceipt(active);
+    }
+
+    SCENARIOS.forEach(s => {
+      $id(s.id).addEventListener('click', () => selectScenario(s.id));
+      $id(s.id).addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); selectScenario(s.id); } });
+    });
+
+    const toggleDetails = $id('toggleDetails');
+    const detailsWrap   = $id('detailsWrap');
+    toggleDetails.addEventListener('click', () => {
+      const open = detailsWrap.classList.toggle('show');
+      toggleDetails.classList.toggle('is-open', open);
+      toggleDetails.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+
+    $id('btnNormal').addEventListener('click', () => { document.body.classList.remove('large-font'); $id('btnNormal').classList.add('active'); $id('btnLarge').classList.remove('active'); });
+    $id('btnLarge').addEventListener('click',  () => { document.body.classList.add('large-font');    $id('btnLarge').classList.add('active');  $id('btnNormal').classList.remove('active'); });
+
+    /* ── Bottom sheet ── */
+    const sheetOverlay = $id('sheetOverlay');
+    const PORT_ECO_MARGEM  = 320;
+    const PORT_PARC_MARGEM = 480;
+
+    function calcCreditFromMargem(margem) {
+      const i = TAXA_MENSAL / 100, n = PRAZO_REF;
+      return Math.round(margem / (i * Math.pow(1+i,n) / (Math.pow(1+i,n) - 1)));
+    }
+
+    $id('mainCta').addEventListener('click', () => {
+      const v = fBRL(active.totalCash);
+      $id('sheetValEco').textContent  = v;
+      $id('sheetValParc').textContent = v;
+      $id('sheetFuturoEco').textContent  = fBRL(calcCreditFromMargem(PORT_ECO_MARGEM));
+      $id('sheetFuturoParc').textContent = fBRL(calcCreditFromMargem(PORT_PARC_MARGEM));
+      sheetOverlay.removeAttribute('hidden');
+    });
+
+    function closeSheet() { sheetOverlay.setAttribute('hidden', ''); }
+    $id('sheetCardEco').addEventListener('click',  closeSheet);
+    $id('sheetCardParc').addEventListener('click', closeSheet);
+    $id('sheetBtnNo').addEventListener('click',    closeSheet);
+    sheetOverlay.addEventListener('click', e => { if (e.target === sheetOverlay) closeSheet(); });
+
+    async function generatePdf() {
+      const btn = $id('downloadPdf'), status = $id('downloadStatus');
+      const target = $id('receiptPaper');
+      if (!btn || !target) return;
+      const prev = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span aria-hidden="true">⏳</span><span>Gerando PDF...</span>';
+      if (status) status.textContent = 'Preparando o arquivo...';
+      try {
+        if (!window.html2canvas || !window.jspdf?.jsPDF) throw new Error('Libs indisponíveis');
+        const canvas = await window.html2canvas(target, { scale: 3, useCORS: true, backgroundColor: '#f5f5f3' });
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const mmW = (canvas.width/3)*0.2646, mmH = (canvas.height/3)*0.2646, m = 6;
+        const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: [mmW+m*2, mmH+m*2] });
+        pdf.addImage(imgData, 'PNG', m, m, mmW, mmH);
+        pdf.save('simulacao-refinanciamento.pdf');
+        if (status) status.textContent = 'PDF gerado com sucesso.';
+      } catch {
+        if (status) status.textContent = 'Não foi possível gerar. Abrindo impressão...';
+        window.print();
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = prev;
+      }
+    }
+
+    $id('downloadPdf').addEventListener('click', generatePdf);
+
+    $id('receiptDate').textContent = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' });
+
+    fillScenarios();
+    selectScenario('s1');
+  </script>
+</body>
+</html>
