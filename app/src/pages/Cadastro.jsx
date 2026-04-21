@@ -30,6 +30,125 @@ const t = {
 // s(n) → uses CSS var --scale set on root wrapper; scales with A+ toggle
 const s = (n) => `calc(${n}px * var(--scale))`
 
+const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024
+const ALLOWED_UPLOAD_MIMES = new Set(['application/pdf', 'image/jpeg', 'image/png'])
+const ALLOWED_UPLOAD_EXTENSIONS = /\.(pdf|jpe?g|png)$/i
+const VALID_DDDS = new Set([
+  '11', '12', '13', '14', '15', '16', '17', '18', '19',
+  '21', '22', '24', '27', '28',
+  '31', '32', '33', '34', '35', '37', '38',
+  '41', '42', '43', '44', '45', '46',
+  '47', '48', '49',
+  '51', '53', '54', '55',
+  '61', '62', '63', '64', '65', '66', '67', '68', '69',
+  '71', '73', '74', '75', '77', '79',
+  '81', '82', '83', '84', '85', '86', '87', '88', '89',
+  '91', '92', '93', '94', '95', '96', '97', '98', '99',
+])
+
+const onlyDigits = (v) => v.replace(/\D/g, '')
+const normalizeSpaces = (v) => v.replace(/\s+/g, ' ').trim()
+const sanitizeTextInput = (v) => v.replace(/[\u0000-\u001F\u007F<>]/g, '')
+
+function isValidCPF(value) {
+  const cpf = onlyDigits(value)
+  if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false
+
+  const calcDigit = (base, factor) => {
+    let sum = 0
+    for (let i = 0; i < base.length; i += 1) sum += Number(base[i]) * (factor - i)
+    const rest = (sum * 10) % 11
+    return rest === 10 ? 0 : rest
+  }
+
+  const first = calcDigit(cpf.slice(0, 9), 10)
+  const second = calcDigit(cpf.slice(0, 10), 11)
+  return first === Number(cpf[9]) && second === Number(cpf[10])
+}
+
+function isValidBirthDate(value) {
+  const m = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
+  if (!m) return false
+
+  const day = Number(m[1])
+  const month = Number(m[2])
+  const year = Number(m[3])
+  if (year < 1900) return false
+
+  const date = new Date(year, month - 1, day)
+  if (
+    date.getFullYear() !== year
+    || date.getMonth() !== month - 1
+    || date.getDate() !== day
+  ) return false
+
+  const now = new Date()
+  if (date > now) return false
+
+  let age = now.getFullYear() - year
+  const monthDiff = now.getMonth() - (month - 1)
+  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < day)) age -= 1
+  return age >= 18
+}
+
+function isValidBRPhone(value) {
+  const digits = onlyDigits(value)
+  if (digits.length !== 10 && digits.length !== 11) return false
+
+  const ddd = digits.slice(0, 2)
+  if (!VALID_DDDS.has(ddd)) return false
+
+  const subscriber = digits.slice(2)
+  if (digits.length === 11) return subscriber[0] === '9'
+  return /^[2-5]/.test(subscriber)
+}
+
+function isValidEmail(value) {
+  if (!value) return true
+  if (value.length > 254 || /\s/.test(value)) return false
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)
+}
+
+function validatePersonalData(form) {
+  const errors = {}
+  const nome = normalizeSpaces(form.nome || '')
+  const cpf = form.cpf || ''
+  const nasc = form.nasc || ''
+  const tel = form.tel || ''
+  const email = normalizeSpaces(form.email || '')
+
+  if (!nome) {
+    errors.nome = 'Informe seu nome completo.'
+  } else {
+    const nameParts = nome.split(' ').filter(Boolean)
+    if (nameParts.length < 2) {
+      errors.nome = 'Informe nome e sobrenome.'
+    } else if (!/^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/.test(nome)) {
+      errors.nome = 'Use apenas letras no nome.'
+    }
+  }
+
+  if (!isValidCPF(cpf)) errors.cpf = 'CPF inválido.'
+  if (!isValidBirthDate(nasc)) errors.nasc = 'Data inválida ou idade inferior a 18 anos.'
+  if (!isValidBRPhone(tel)) errors.tel = 'Telefone inválido. Use DDD + número brasileiro.'
+  if (!isValidEmail(email)) errors.email = 'E-mail inválido.'
+
+  return errors
+}
+
+function validateUploadFile(file) {
+  if (!file) return 'Selecione um arquivo para continuar.'
+
+  const fileName = normalizeSpaces(file.name || '')
+  const extOk = ALLOWED_UPLOAD_EXTENSIONS.test(fileName)
+  const mime = (file.type || '').toLowerCase()
+  const mimeOk = !mime || ALLOWED_UPLOAD_MIMES.has(mime)
+  if (!extOk || !mimeOk) return 'Formato inválido. Envie somente PDF, JPG ou PNG.'
+  if (file.size > MAX_UPLOAD_SIZE_BYTES) return 'Arquivo muito grande. Limite de 10 MB.'
+  if (file.size <= 0) return 'Não foi possível ler este arquivo. Tente novamente.'
+  return ''
+}
+
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
 function FontToggle({ large, onToggle, dark }) {
@@ -90,27 +209,40 @@ function StepTag({ label }) {
   )
 }
 
-function FieldInput({ label, required, hint, ...props }) {
+function FieldInput({ id, label, required, hint, error, onBlurField, ...props }) {
   const [focused, setFocused] = useState(false)
+  const hasError = Boolean(error)
   return (
     <div style={{ marginBottom: 14 }}>
       <div style={{ fontSize: s(11), fontWeight: 700, letterSpacing: '.03em', color: t.muted, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
         {label} {required && <span style={{ color: t.blue, fontSize: s(14), lineHeight: 1 }}>*</span>}
       </div>
       <input
+        id={id}
+        name={id}
+        aria-invalid={hasError}
+        aria-describedby={hasError ? `${id}-error` : hint ? `${id}-hint` : undefined}
         onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
+        onBlur={() => {
+          setFocused(false)
+          if (onBlurField) onBlurField(id)
+        }}
         style={{
-          width: '100%', border: `1.5px solid ${focused ? t.blue : t.line}`, borderRadius: 12,
+          width: '100%', border: `1.5px solid ${hasError ? '#d94b4b' : focused ? t.blue : t.line}`, borderRadius: 12,
           padding: '12px 14px', fontSize: s(14), fontWeight: 500, lineHeight: 1.2,
           color: t.text, background: focused ? '#fff' : '#fafbfe', outline: 'none',
           fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-          boxShadow: focused ? '0 0 0 3px rgba(35,80,200,.1)' : 'none',
+          boxShadow: hasError ? '0 0 0 3px rgba(217,75,75,.12)' : focused ? '0 0 0 3px rgba(35,80,200,.1)' : 'none',
           transition: 'border-color .15s, box-shadow .15s', WebkitAppearance: 'none',
         }}
         {...props}
       />
-      {hint && <div style={{ fontSize: s(10), color: t.muted, marginTop: 5, fontWeight: 500 }}>{hint}</div>}
+      {hasError && (
+        <div id={`${id}-error`} role="alert" style={{ fontSize: s(10), color: '#a02020', marginTop: 5, fontWeight: 600 }}>
+          {error}
+        </div>
+      )}
+      {!hasError && hint && <div id={`${id}-hint`} style={{ fontSize: s(10), color: t.muted, marginTop: 5, fontWeight: 500 }}>{hint}</div>}
     </div>
   )
 }
@@ -157,8 +289,7 @@ const ArrowIcon = () => (
 
 // ── Step 1 ─────────────────────────────────────────────────────────────────────
 
-function Step1({ form, onChange, onNext }) {
-  const valid = form.nome.trim() && form.cpf.length === 14 && form.nasc.length === 10 && form.tel.length >= 14
+function Step1({ form, errors, touched, onChange, onBlurField, onNext, canProceed }) {
   return (
     <div>
       <div style={{ marginBottom: 20 }}>
@@ -168,12 +299,12 @@ function Step1({ form, onChange, onNext }) {
       </div>
 
       <div style={{ background: '#fff', borderRadius: 20, border: '1px solid #e6ecf8', boxShadow: '0 8px 28px rgba(0,24,81,.09)', padding: 16, marginBottom: 14 }}>
-        <FieldInput label="Nome completo"       required placeholder="Como aparece no documento" autoComplete="name"    value={form.nome}  onChange={e => onChange('nome', e.target.value)} />
-        <FieldInput label="CPF"                 required placeholder="000.000.000-00"             inputMode="numeric"   value={form.cpf}   onChange={e => onChange('cpf',  maskCPF(e.target.value))}   maxLength={14} />
-        <FieldInput label="Data de nascimento"  required placeholder="DD/MM/AAAA"                inputMode="numeric"   value={form.nasc}  onChange={e => onChange('nasc', maskDate(e.target.value))}  maxLength={10} />
-        <FieldInput label="Telefone / WhatsApp" required placeholder="(00) 00000-0000"           inputMode="tel"       value={form.tel}   onChange={e => onChange('tel',  maskPhone(e.target.value))} maxLength={15} />
+        <FieldInput id="nome" label="Nome completo" required placeholder="Como aparece no documento" autoComplete="name" value={form.nome} onChange={e => onChange('nome', e.target.value)} onBlurField={onBlurField} error={touched.nome ? errors.nome : ''} />
+        <FieldInput id="cpf" label="CPF" required placeholder="000.000.000-00" inputMode="numeric" value={form.cpf} onChange={e => onChange('cpf', maskCPF(e.target.value))} maxLength={14} onBlurField={onBlurField} error={touched.cpf ? errors.cpf : ''} />
+        <FieldInput id="nasc" label="Data de nascimento" required placeholder="DD/MM/AAAA" inputMode="numeric" value={form.nasc} onChange={e => onChange('nasc', maskDate(e.target.value))} maxLength={10} onBlurField={onBlurField} error={touched.nasc ? errors.nasc : ''} />
+        <FieldInput id="tel" label="Telefone / WhatsApp" required placeholder="(00) 00000-0000" inputMode="tel" value={form.tel} onChange={e => onChange('tel', maskPhone(e.target.value))} maxLength={15} onBlurField={onBlurField} error={touched.tel ? errors.tel : ''} />
         <div style={{ marginBottom: 0 }}>
-          <FieldInput label="E-mail" placeholder="seu@email.com" type="email" autoComplete="email" hint="Para receber sua proposta" value={form.email} onChange={e => onChange('email', e.target.value)} />
+          <FieldInput id="email" label="E-mail" placeholder="seu@email.com" type="email" autoComplete="email" hint="Para receber sua proposta" value={form.email} onChange={e => onChange('email', e.target.value)} onBlurField={onBlurField} error={touched.email ? errors.email : ''} />
         </div>
       </div>
 
@@ -189,14 +320,14 @@ function Step1({ form, onChange, onNext }) {
         </div>
       </div>
 
-      <BtnPrimary disabled={!valid} onClick={onNext}>Continuar <ArrowIcon /></BtnPrimary>
+      <BtnPrimary disabled={!canProceed} onClick={onNext}>Continuar <ArrowIcon /></BtnPrimary>
     </div>
   )
 }
 
 // ── Step 2 ─────────────────────────────────────────────────────────────────────
 
-function Step2({ file, onFile, onRemoveFile, skipped, onSkip, onNext, onBack }) {
+function Step2({ file, fileError, onFile, onRemoveFile, skipped, onSkip, onNext, onBack }) {
   const inputRef  = useRef(null)
   const [dragging, setDragging] = useState(false)
   const handleFile = useCallback((f) => { if (f) onFile(f) }, [onFile])
@@ -221,7 +352,7 @@ function Step2({ file, onFile, onRemoveFile, skipped, onSkip, onNext, onBack }) 
             onDragOver={e => { e.preventDefault(); setDragging(true) }}
             onDragLeave={() => setDragging(false)}
             onDrop={e => { e.preventDefault(); setDragging(false); handleFile(e.dataTransfer.files[0]) }}
-            style={{ border: `2px dashed ${dragging ? t.blue : t.blueMid}`, borderRadius: 20, background: dragging ? '#dce6ff' : t.blueLight, padding: '28px 20px', textAlign: 'center', cursor: 'pointer', transition: 'all .2s ease' }}
+            style={{ border: `2px dashed ${fileError ? '#d94b4b' : dragging ? t.blue : t.blueMid}`, borderRadius: 20, background: dragging ? '#dce6ff' : t.blueLight, padding: '28px 20px', textAlign: 'center', cursor: 'pointer', transition: 'all .2s ease' }}
           >
             <input ref={inputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" style={{ display: 'none' }} onChange={e => handleFile(e.target.files[0])} />
             <div style={{ width: 48, height: 48, borderRadius: 14, background: '#fff', border: `1px solid ${t.blueMid}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', boxShadow: '0 4px 12px rgba(35,80,200,.1)' }}>
@@ -232,6 +363,7 @@ function Step2({ file, onFile, onRemoveFile, skipped, onSkip, onNext, onBack }) 
             </div>
             <div style={{ fontSize: s(14), fontWeight: 700, color: t.blue, marginBottom: 4 }}>Toque para enviar</div>
             <div style={{ fontSize: s(11), color: t.muted, fontWeight: 500, lineHeight: 1.4 }}>Selecione o extrato do seu benefício INSS</div>
+            <div style={{ fontSize: s(10), color: t.muted, fontWeight: 500, lineHeight: 1.3, marginTop: 6 }}>Somente PDF/JPG/PNG com até 10 MB.</div>
             <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginTop: 10 }}>
               {['PDF','JPG','PNG'].map(fmt => (
                 <span key={fmt} style={{ background: '#fff', border: `1px solid ${t.blueMid}`, borderRadius: 6, padding: '3px 8px', fontSize: s(9.5), fontWeight: 700, color: t.blue, letterSpacing: '.04em' }}>{fmt}</span>
@@ -253,6 +385,11 @@ function Step2({ file, onFile, onRemoveFile, skipped, onSkip, onNext, onBack }) 
             <button type="button" onClick={onRemoveFile} style={{ width: 26, height: 26, borderRadius: '50%', background: '#f0f3fa', border: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: t.muted, flexShrink: 0 }}>
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             </button>
+          </div>
+        )}
+        {fileError && (
+          <div role="alert" style={{ marginTop: 8, fontSize: s(10.5), fontWeight: 600, color: '#a02020' }}>
+            {fileError}
           </div>
         )}
       </div>
@@ -441,18 +578,70 @@ export default function Cadastro() {
   const [large,   setLarge]   = useState(false)
   const [step,    setStep]    = useState(1)
   const [form,    setForm]    = useState({ nome: '', cpf: '', nasc: '', tel: '', email: '' })
+  const [touched, setTouched] = useState({})
   const [file,    setFile]    = useState(null)
+  const [fileError, setFileError] = useState('')
   const [skipped, setSkipped] = useState(false)
 
   const scale = large ? 1.47 : 1.22
 
-  const setField = (key, val) => setForm(f => ({ ...f, [key]: val }))
-  const handleFileSelect = (f) => { setFile(f); setSkipped(false) }
+  const personalErrors = validatePersonalData(form)
+  const canProceedStep1 = Object.keys(personalErrors).length === 0
+
+  const setField = (key, val) => {
+    let nextValue = val
+    if (key === 'nome') nextValue = sanitizeTextInput(val).slice(0, 120)
+    if (key === 'email') nextValue = sanitizeTextInput(val).slice(0, 254)
+    setForm((f) => ({ ...f, [key]: nextValue }))
+  }
+
+  const handleBlurField = (key) => {
+    setTouched((v) => ({ ...v, [key]: true }))
+  }
+
+  const handleNextStep1 = () => {
+    setTouched({ nome: true, cpf: true, nasc: true, tel: true, email: true })
+    if (!canProceedStep1) return
+    setStep(2)
+  }
+
+  const handleFileSelect = (nextFile) => {
+    const err = validateUploadFile(nextFile)
+    if (err) {
+      setFile(null)
+      setFileError(err)
+      return
+    }
+    setFile(nextFile)
+    setFileError('')
+    setSkipped(false)
+  }
+
+  const handleRemoveFile = () => {
+    setFile(null)
+    setFileError('')
+  }
+
+  const handleSkipFile = () => {
+    setSkipped((s) => !s)
+    setFileError('')
+  }
+
+  const handleNextStep2 = () => {
+    if (!skipped) {
+      const err = validateUploadFile(file)
+      if (err) {
+        setFileError(err)
+        return
+      }
+    }
+    setStep(3)
+  }
 
   const formPanel = (
     <>
-      {step === 1 && <Step1 form={form} onChange={setField} onNext={() => setStep(2)} />}
-      {step === 2 && <Step2 file={file} onFile={handleFileSelect} onRemoveFile={() => setFile(null)} skipped={skipped} onSkip={() => setSkipped(s => !s)} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
+      {step === 1 && <Step1 form={form} errors={personalErrors} touched={touched} onChange={setField} onBlurField={handleBlurField} onNext={handleNextStep1} canProceed={canProceedStep1} />}
+      {step === 2 && <Step2 file={file} fileError={fileError} onFile={handleFileSelect} onRemoveFile={handleRemoveFile} skipped={skipped} onSkip={handleSkipFile} onNext={handleNextStep2} onBack={() => setStep(1)} />}
       {step === 3 && <StepSuccess form={form} file={file} skipped={skipped} onVerOfertas={() => navigate('/ofertas')} />}
     </>
   )
