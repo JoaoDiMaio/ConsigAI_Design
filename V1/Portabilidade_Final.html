@@ -11,33 +11,33 @@
       --scale: 1.22;
       --font: 'Plus Jakarta Sans', system-ui, sans-serif;
 
-      --navy: #001851;
-      --blue: #2350c8;
-      --blue-2: #1844b8;
-      --blue-light: #e8eeff;
-      --blue-mid: #c2d0f8;
+      --navy:         #001851;
+      --blue:         #2350c8;
+      --blue-2:       #1844b8;
+      --blue-light:   #e8eeff;
+      --blue-mid:     #c2d0f8;
 
-      --text: #0f2057;
-      --muted: #7a8db8;
-      --line: #e4eaf8;
+      --text:         #0f2057;
+      --muted:        #7a8db8;
+      --line:         #e4eaf8;
 
-      --green: #0a6640;
-      --green-soft: #3d6b52;
-      --green-bg: #e8f5ee;
+      --green:        #0a6640;
+      --green-soft:   #3d6b52;
+      --green-bg:     #e8f5ee;
       --green-accent: #16a364;
 
-      --danger: #d94b4b;
+      --danger:       #d94b4b;
 
-      --gold: #7a5200;
-      --gold-bg: #fffbf0;
-      --gold-line: #edddb0;
-      --gold-btn: #a87000;
+      --gold:         #7a5200;
+      --gold-bg:      #fffbf0;
+      --gold-line:    #edddb0;
+      --gold-btn:     #a87000;
 
-      --white: #fff;
-      --bg: #f4f7fd;
+      --white:        #ffffff;
+      --bg:           #f4f7fd;
 
-      --r-card: 20px;
-      --shadow-card: 0 8px 28px rgba(0,24,81,.09);
+      --r-card:       20px;
+      --shadow-card:  0 8px 28px rgba(0,24,81,.09);
 
       --ibox-row-1: 18px;
       --ibox-row-2: 22px;
@@ -75,21 +75,18 @@
     .screen {
       width: 100%;
       min-height: 100vh;
-      background: #f4f7fd;
+      background: var(--bg);
     }
 
     .header {
       background: var(--navy);
       padding: max(18px, env(safe-area-inset-top)) 20px 0;
-      position: relative;
-      overflow: hidden;
     }
 
     .fontbar {
       display: flex;
       justify-content: flex-end;
       margin-bottom: 16px;
-      position: relative;
     }
 
     .font-toggle {
@@ -119,11 +116,9 @@
 
     .user {
       display: flex;
-      justify-content: flex-start;
       align-items: flex-end;
       gap: 12px;
       margin-bottom: 20px;
-      position: relative;
     }
 
     .hello {
@@ -142,7 +137,7 @@
     }
 
     .panel {
-      background: #f4f7fd;
+      background: var(--bg);
       border-radius: 26px 26px 0 0;
       padding: 20px 18px calc(24px + env(safe-area-inset-bottom));
     }
@@ -154,7 +149,7 @@
       background: var(--blue-light);
       border-radius: 999px;
       padding: 4px 12px 4px 8px;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
 
     .tag-dot {
@@ -529,15 +524,19 @@
     }
 
     .btn-primary {
-      background: linear-gradient(160deg, #2f59d0 0%, #1d43b0 100%);
+      background: var(--blue);
       color: #fff;
       padding: 15px 14px;
       font-size: calc(15px * var(--scale));
       font-weight: 600;
       line-height: 1.2;
-      box-shadow: 0 8px 20px rgba(30,60,180,.25);
+      box-shadow: 0 8px 20px rgba(35,80,200,.25);
+      display: block;
+      text-align: center;
       margin-bottom: 8px;
     }
+
+    .btn-primary:hover { background: var(--blue-2); }
 
     .btn-secondary {
       background: transparent;
@@ -903,7 +902,7 @@
     }
 
     .mini-card {
-      border-radius: 18px;
+      border-radius: var(--r-card);
       margin-bottom: 8px;
       border: 1px solid transparent;
       overflow: hidden;
@@ -1076,11 +1075,10 @@
       font-size: calc(8px * var(--scale));
       color: var(--muted);
       text-align: right;
-      margin-top: 8px;
+      margin-top: 10px;
       opacity: .68;
       font-style: italic;
-      white-space: nowrap;
-      line-height: 1;
+      line-height: 1.4;
     }
 
     .fade-content {
@@ -1537,7 +1535,7 @@
       if (downloadStatus) downloadStatus.textContent = 'Preparando o arquivo da oferta...';
 
       try {
-        if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
+        if (!window.html2canvas || !window.jspdf?.jsPDF) {
           throw new Error('Bibliotecas de PDF indisponíveis');
         }
 

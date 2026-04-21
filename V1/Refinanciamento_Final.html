@@ -5,30 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Refinanciamento por Contrato — ConsigAI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --scale: 1.22;
       --font: 'Plus Jakarta Sans', system-ui, sans-serif;
-      --navy: #001851; --blue: #2350c8; --blue-2: #1844b8;
-      --blue-light: #e8eeff; --blue-mid: #c2d0f8;
-      --text: #0f2057; --muted: #7a8db8; --line: #e4eaf8;
-      --green: #0a6640; --green-soft: #3d6b52; --green-bg: #e8f5ee; --green-accent: #16a364;
-      --gold:     #7a5200;
-      --gold-bg:  #fffbf0;
-      --gold-line: #edddb0;
-      --gold-btn: #a87000;
-      --purple: var(--gold); --purple-bg: var(--gold-bg); --purple-mid: var(--gold-line);
-      --white: #fff; --bg: #f4f7fd;
-      --r-card: 20px; --shadow-card: 0 8px 28px rgba(0,24,81,.09);
+
+      --navy:         #001851;
+      --blue:         #2350c8;
+      --blue-2:       #1844b8;
+      --blue-light:   #e8eeff;
+      --blue-mid:     #c2d0f8;
+
+      --text:         #0f2057;
+      --muted:        #7a8db8;
+      --line:         #e4eaf8;
+
+      --green:        #0a6640;
+      --green-soft:   #3d6b52;
+      --green-bg:     #e8f5ee;
+      --green-accent: #16a364;
+
+      --danger:       #d94b4b;
+
+      --gold:         #7a5200;
+      --gold-bg:      #fffbf0;
+      --gold-line:    #edddb0;
+      --gold-btn:     #a87000;
+
+      --white:        #ffffff;
+      --bg:           #f4f7fd;
+
+      --r-card:       20px;
+      --shadow-card:  0 8px 28px rgba(0,24,81,.09);
     }
     body.large-font { --scale: 1.47; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; min-height: 100%; background: var(--bg); font-family: var(--font); color: var(--text); }
     body { overflow-x: hidden; }
-    .screen { width: 100%; min-height: 100vh; }
+    .screen { width: 100%; min-height: 100vh; background: var(--bg); }
 
     /* ── Header ── */
     .header { background: var(--navy); padding: max(18px, env(safe-area-inset-top)) 20px 0; }
@@ -55,7 +70,7 @@
     .scenario-card:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
     .scenario-card.s-dinheiro { background: var(--blue-light); border-color: var(--blue-mid); }
     .scenario-card.s-margem   { background: var(--green-bg);   border-color: #b8e0ca; }
-    .scenario-card.s-parcela  { background: var(--purple-bg);  border-color: var(--purple-mid); }
+    .scenario-card.s-parcela  { background: var(--gold-bg);  border-color: var(--gold-line); }
     .scenario-card.s-dinheiro.active { border-color: var(--blue);        box-shadow: 0 10px 30px rgba(35,80,200,.20); }
     .scenario-card.s-margem.active   { border-color: var(--green-accent); box-shadow: 0 10px 30px rgba(10,102,64,.18); }
     .scenario-card.s-parcela.active  { border-color: var(--gold);       box-shadow: 0 10px 30px rgba(122,82,0,.18); }
@@ -69,14 +84,14 @@
     .scenario-eyebrow { font-size: calc(9px * var(--scale)); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px; }
     .s-dinheiro .scenario-eyebrow { color: var(--blue); }
     .s-margem   .scenario-eyebrow { color: var(--green-accent); }
-    .s-parcela  .scenario-eyebrow { color: var(--purple); }
+    .s-parcela  .scenario-eyebrow { color: var(--gold); }
     .scenario-title { font-size: calc(15px * var(--scale)); font-weight: 700; color: var(--text); line-height: 1.2; margin-bottom: 2px; }
     .scenario-desc  { font-size: calc(10px * var(--scale)); font-weight: 500; color: var(--muted); line-height: 1.4; }
     .scenario-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); background: var(--white); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; transition: all .18s ease; }
     .scenario-card.active .scenario-radio { border-width: 6px; }
     .s-dinheiro.active .scenario-radio { border-color: var(--blue); }
     .s-margem.active   .scenario-radio { border-color: var(--green-accent); }
-    .s-parcela.active  .scenario-radio { border-color: var(--purple); }
+    .s-parcela.active  .scenario-radio { border-color: var(--gold); }
     .scenario-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
     .kpi { border-radius: 14px; padding: 10px 8px; text-align: center; display: flex; flex-direction: column; gap: 3px; }
     .s-dinheiro .kpi { background: rgba(35,80,200,.08); }
@@ -89,7 +104,7 @@
     .kpi-value { font-size: calc(13px * var(--scale)); font-weight: 700; line-height: 1; letter-spacing: -.01em; white-space: nowrap; }
     .s-dinheiro .kpi-value { color: var(--blue); }
     .s-margem   .kpi-value { color: var(--green); }
-    .s-parcela  .kpi-value { color: var(--purple); }
+    .s-parcela  .kpi-value { color: var(--gold); }
     .kpi-value.highlight { font-size: calc(15px * var(--scale)); }
     .scenario-contracts { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,.06); }
     .scenario-contracts-label { font-size: calc(9px * var(--scale)); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 8px; }
@@ -101,7 +116,7 @@
     .contract-pill-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
     .s-dinheiro .contract-pill-dot { background: var(--blue); }
     .s-margem   .contract-pill-dot { background: var(--green-accent); }
-    .s-parcela  .contract-pill-dot { background: var(--purple); }
+    .s-parcela  .contract-pill-dot { background: var(--gold); }
 
     /* ── Margem card ── */
     .margem-card { background: var(--navy); border-radius: var(--r-card); padding: 18px; margin-bottom: 10px; box-shadow: 0 8px 28px rgba(0,24,81,.18); }
@@ -127,16 +142,16 @@
     .actions-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-card); padding: 16px; box-shadow: var(--shadow-card); margin-bottom: 10px; }
     .btn { width: 100%; border: 0; border-radius: 14px; font-family: var(--font); cursor: pointer; transition: .15s ease; }
     .btn:active { transform: scale(.98); }
-    .btn-primary { background: linear-gradient(160deg, #2f59d0 0%, #1d43b0 100%); color: #fff; padding: 15px 14px; font-size: calc(15px * var(--scale)); font-weight: 600; line-height: 1.2; box-shadow: 0 8px 20px rgba(30,60,180,.25); display: block; text-align: center; }
-    .btn-primary:hover { background: linear-gradient(160deg, #3362dc 0%, #2148be 100%); }
+    .btn-primary { background: var(--blue); color: #fff; padding: 15px 14px; font-size: calc(15px * var(--scale)); font-weight: 600; line-height: 1.2; box-shadow: 0 8px 20px rgba(35,80,200,.25); display: block; text-align: center; }
+    .btn-primary:hover { background: var(--blue-2); }
     .btn-secondary { margin-top: 8px; background: transparent; color: var(--blue); border: 1.5px solid var(--blue-mid); padding: 13px; font-size: calc(13.5px * var(--scale)); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background .15s ease; }
     .btn-secondary:hover { background: var(--blue-light); }
     .chevron { width: 16px; height: 16px; flex-shrink: 0; transition: transform .25s cubic-bezier(.4,0,.2,1); }
     .btn-secondary.is-open .chevron { transform: rotate(180deg); }
 
     /* ── Details / Recibo ── */
-    .details-wrap { display: none; margin-top: 12px; animation: fadeIn .22s ease forwards; }
-    .details-wrap.show { display: block; }
+    .details-wrap { margin-top: 12px; animation: fadeIn .22s ease forwards; }
+    .details-wrap[hidden] { display: none; }
     .details-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
     .details-eyebrow  { font-size: calc(9.5px * var(--scale)); font-weight: 700; letter-spacing: .10em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
     .details-subtitle { font-size: calc(14px * var(--scale)); font-weight: 700; color: var(--text); }
@@ -184,7 +199,7 @@
     .more-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
     .more-title    { font-size: calc(13px * var(--scale)); font-weight: 700; color: var(--text); flex: 1; }
     .more-subtitle { font-size: calc(10px * var(--scale)); color: var(--muted); font-weight: 500; }
-    .mini-card { border-radius: 18px; margin-bottom: 8px; border: 1px solid transparent; overflow: hidden; animation: cardRise .28s ease both; }
+    .mini-card { border-radius: var(--r-card); margin-bottom: 8px; border: 1px solid transparent; overflow: hidden; animation: cardRise .28s ease both; }
     .mini-card:last-child { margin-bottom: 0; }
     .mini-card.eco  { background: var(--green-bg); border-color: #b8e0ca; animation-delay: .02s; }
     .mini-card.novo { background: var(--blue-light); border-color: var(--blue-mid); animation-delay: .06s; }
@@ -216,9 +231,18 @@
     .mini-btn:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 8px 18px rgba(0,24,81,.16); filter: brightness(1.03); }
     .mini-btn:hover svg { transform: translateX(2px); }
     .mini-btn:active { transform: scale(.98); }
+    .mini-btn:focus-visible { outline: 2px solid rgba(35,80,200,.28); outline-offset: 2px; }
     .mini-btn.eco  { background: var(--green); }
     .mini-btn.novo { background: #1840a8; }
-    .disclaimer { font-size: calc(8px * var(--scale)); color: var(--muted); text-align: right; margin-top: 10px; opacity: .68; font-style: italic; line-height: 1; }
+    .disclaimer {
+      font-size: calc(8px * var(--scale));
+      color: var(--muted);
+      text-align: right;
+      margin-top: 10px;
+      opacity: .68;
+      font-style: italic;
+      line-height: 1.4;
+    }
 
     /* ── Bottom sheet ── */
     .sheet-overlay { position: fixed; inset: 0; background: rgba(0,18,51,.55); z-index: 200; display: flex; align-items: flex-end; animation: fadeIn .2s ease forwards; }
@@ -436,7 +460,7 @@
             </svg>
           </button>
 
-          <div class="details-wrap" id="detailsWrap">
+          <div class="details-wrap" id="detailsWrap" hidden>
             <div class="details-head">
               <div>
                 <div class="details-eyebrow">Detalhes da oferta</div>
@@ -544,6 +568,8 @@
     </header>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
     const MARGEM_TOTAL = 770;
     const TAXA_MENSAL  = 1.88;
@@ -639,9 +665,16 @@
     const toggleDetails = $id('toggleDetails');
     const detailsWrap   = $id('detailsWrap');
     toggleDetails.addEventListener('click', () => {
-      const open = detailsWrap.classList.toggle('show');
-      toggleDetails.classList.toggle('is-open', open);
-      toggleDetails.setAttribute('aria-expanded', open ? 'true' : 'false');
+      const isHidden = detailsWrap.hasAttribute('hidden');
+      if (isHidden) {
+        detailsWrap.removeAttribute('hidden');
+        toggleDetails.classList.add('is-open');
+        toggleDetails.setAttribute('aria-expanded', 'true');
+      } else {
+        detailsWrap.setAttribute('hidden', '');
+        toggleDetails.classList.remove('is-open');
+        toggleDetails.setAttribute('aria-expanded', 'false');
+      }
     });
 
     $id('btnNormal').addEventListener('click', () => { document.body.classList.remove('large-font'); $id('btnNormal').classList.add('active'); $id('btnLarge').classList.remove('active'); });
