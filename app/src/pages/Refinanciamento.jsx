@@ -108,26 +108,21 @@ const SCENARIO_ICONS = [
 
 // ── Desktop Header ─────────────────────────────────────────────────────────────
 
-function DesktopHeader({ clientName, onBack }) {
-  const [hovBack, setHovBack] = useState(false)
+function DesktopHeader({ clientName, onLogoClick }) {
   return (
     <div style={{ background: t.navy, padding: '28px 40px 32px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
-        <img src={logoSvg} alt="ConsigAI" style={{ height: 52, width: 'auto' }} />
+        <button
+          type="button"
+          onClick={onLogoClick}
+          aria-label="Ir para ofertas"
+          style={{ border: 0, background: 'transparent', padding: 0, cursor: 'pointer' }}
+        >
+          <img src={logoSvg} alt="ConsigAI" style={{ height: 52, width: 'auto', display: 'block' }} />
+        </button>
 
         <div style={{ flex: 1, maxWidth: 540 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-            <button
-              onClick={onBack}
-              onMouseEnter={() => setHovBack(true)}
-              onMouseLeave={() => setHovBack(false)}
-              style={{
-                border: 0, background: hovBack ? 'rgba(255,255,255,.15)' : 'rgba(255,255,255,.08)',
-                borderRadius: 8, padding: '4px 10px', cursor: 'pointer', color: 'rgba(255,255,255,.72)',
-                fontSize: 12, fontWeight: 600, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-                transition: 'background .15s ease',
-              }}
-            >← Ofertas</button>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 999, background: t.blueLight, padding: '4px 12px 4px 8px' }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: t.blue }} />
               <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', color: t.blue, textTransform: 'uppercase' }}>Refinanciamento</span>
@@ -451,6 +446,7 @@ export default function Refinanciamento() {
   const [hovCta, setHovCta]           = useState(false)
   const [hovDetails, setHovDetails]   = useState(false)
   const [hovDown, setHovDown]         = useState(false)
+  const [backHover, setBackHover] = useState(false)
 
   const scenario = SCENARIOS[activeIdx]
   const ctaNames = ['Máximo Dinheiro', 'Máxima Margem', 'Menor Parcela']
@@ -595,6 +591,31 @@ export default function Refinanciamento() {
     </div>
   )
 
+  const bottomBack = (
+    <div style={{ marginTop: isDesktop ? 24 : 18 }}>
+      <button
+        onClick={() => navigate('/ofertas')}
+        onMouseEnter={() => setBackHover(true)}
+        onMouseLeave={() => setBackHover(false)}
+        style={{
+          width: '100%',
+          border: `1.5px solid ${t.blueMid}`,
+          borderRadius: 14,
+          padding: isDesktop ? '14px 16px' : '13px 14px',
+          background: backHover ? '#f0f5ff' : '#fff',
+          color: t.blue,
+          fontSize: isDesktop ? 14 : 13.5,
+          fontWeight: 700,
+          cursor: 'pointer',
+          fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+          transition: 'background .15s ease',
+        }}
+      >
+        {'<-'} Voltar para ofertas
+      </button>
+    </div>
+  )
+
   return (
     <>
       <style>{`
@@ -608,12 +629,13 @@ export default function Refinanciamento() {
       <div style={{ minHeight: '100vh', background: t.bg, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: t.text }}>
         {isDesktop ? (
           <>
-            <DesktopHeader clientName={clientName} onBack={() => navigate('/ofertas')} />
+            <DesktopHeader clientName={clientName} onLogoClick={() => navigate('/ofertas')} />
             <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 40px 56px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 28, alignItems: 'start' }}>
                 <div>
                   {scenarioList}
                   {otherOptions}
+                  {bottomBack}
                 </div>
                 <div style={{ position: 'sticky', top: 24 }}>
                   {offerCard}
@@ -625,10 +647,15 @@ export default function Refinanciamento() {
           <>
             <div style={{ background: t.navy, padding: 'max(18px, env(safe-area-inset-top)) 20px 0' }}>
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, marginBottom: 20 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <button
+                  type="button"
+                  onClick={() => navigate('/ofertas')}
+                  aria-label="Ir para ofertas"
+                  style={{ border: 0, background: 'transparent', padding: 0, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
+                >
                   <img src={logoIconSvg} alt="" aria-hidden="true" style={{ height: 28, width: 28 }} />
                   <span style={{ fontSize: 16, fontWeight: 700, color: '#fff', letterSpacing: '-.01em' }}>ConsigAI</span>
-                </div>
+                </button>
                 <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
                   <div style={{ fontSize: 10, color: 'rgba(255,255,255,.55)', fontWeight: 600, marginBottom: 2 }}>Cliente</div>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{clientName}</div>
@@ -639,6 +666,7 @@ export default function Refinanciamento() {
               {scenarioList}
               {offerCard}
               {otherOptions}
+                  {bottomBack}
             </div>
           </>
         )}

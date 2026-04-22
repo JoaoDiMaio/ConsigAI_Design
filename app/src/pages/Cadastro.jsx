@@ -511,13 +511,20 @@ const valueProps = [
   { icon: '💰', title: 'Melhores Taxas do Mercado', sub: 'Comparamos dezenas de ofertas pra você.' },
 ]
 
-function DesktopLeftPanel({ step }) {
+function DesktopLeftPanel({ step, onLogoClick }) {
   return (
     <div style={{ width: '44%', minHeight: '100vh', background: t.navy, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '48px 40px', position: 'sticky', top: 0 }}>
       <div>
         {/* Logo real */}
         <div style={{ marginBottom: 56 }}>
-          <img src={logoSvg} alt="ConsigAI" style={{ height: 100, width: 'auto' }} />
+          <button
+            type="button"
+            onClick={onLogoClick}
+            aria-label="Ir para ofertas"
+            style={{ border: 0, background: 'transparent', padding: 0, cursor: 'pointer' }}
+          >
+            <img src={logoSvg} alt="ConsigAI" style={{ height: 100, width: 'auto', display: 'block' }} />
+          </button>
         </div>
 
         <div style={{ marginBottom: 48 }}>
@@ -661,7 +668,7 @@ export default function Cadastro() {
 
         {isDesktop ? (
           <div style={{ display: 'flex', minHeight: '100vh' }}>
-            <DesktopLeftPanel step={step} />
+            <DesktopLeftPanel step={step} onLogoClick={() => navigate('/ofertas')} />
 
             <div style={{ flex: 1, background: t.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 32px', minHeight: '100vh', overflowY: 'auto' }}>
               {/* Font toggle fixo top-right */}
@@ -689,10 +696,15 @@ export default function Cadastro() {
           <div style={{ background: t.bg }}>
             <div style={{ background: t.navy, padding: 'max(18px, env(safe-area-inset-top)) 20px 0' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <button
+                  type="button"
+                  onClick={() => navigate('/ofertas')}
+                  aria-label="Ir para ofertas"
+                  style={{ border: 0, background: 'transparent', padding: 0, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
+                >
                   <img src={logoIconSvg} alt="" aria-hidden="true" style={{ height: 28, width: 28 }} />
                   <span style={{ fontSize: 16, fontWeight: 700, color: '#fff', letterSpacing: '-.01em' }}>ConsigAI</span>
-                </div>
+                </button>
                 <FontToggle large={large} onToggle={setLarge} dark={true} />
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, gap: 10 }}>

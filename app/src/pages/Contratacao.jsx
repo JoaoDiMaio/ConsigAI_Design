@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import logoSvg from '../assets/logo.svg'
+import logoIconSvg from '../assets/logo-icon.svg'
 
 function pickSummaryValue(summary, labels, fallback) {
   if (!Array.isArray(summary)) return fallback
@@ -14,7 +17,9 @@ function pickSummaryValue(summary, labels, fallback) {
 export default function Contratacao() {
   const navigate = useNavigate()
   const { state } = useLocation()
+  const isDesktop = useMediaQuery('(min-width: 768px)')
   const screenRef = useRef(null)
+  const clientName = 'Carlos Eduardo'
 
   const [largeFont, setLargeFont] = useState(false)
   const [check1, setCheck1] = useState(false)
@@ -35,7 +40,7 @@ export default function Contratacao() {
     return {
       type,
       heroValue,
-      heroSub: heroValue.includes('/mês') || heroValue.includes('/mes') ? 'alívio mensal' : 'valor principal',
+      heroSub: heroValue.includes('/mÃªs') || heroValue.includes('/mes') ? 'alÃ­vio mensal' : 'valor principal',
       savingValue,
       currentInstallment,
       term,
@@ -78,6 +83,98 @@ export default function Contratacao() {
           font-family: var(--font);
           color: var(--text);
           min-height: 100vh;
+        }
+
+        .desktop-topbar {
+          background: var(--navy);
+          padding: 28px 40px 32px;
+        }
+
+        .desktop-topbar-inner {
+          max-width: 1200px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 24px;
+        }
+
+        .desktop-head-main {
+          flex: 1;
+          max-width: 560px;
+        }
+
+        .desktop-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          border-radius: 999px;
+          background: var(--blue-light);
+          padding: 4px 12px 4px 8px;
+          margin-bottom: 10px;
+        }
+
+        .desktop-chip-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: var(--blue);
+        }
+
+        .desktop-chip span {
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: .07em;
+          color: var(--blue);
+          text-transform: uppercase;
+        }
+
+        .desktop-head-title {
+          margin: 0;
+          font-size: 26px;
+          font-weight: 700;
+          color: #fff;
+          letter-spacing: -.02em;
+          line-height: 1.2;
+        }
+
+        .desktop-head-sub {
+          margin: 8px 0 0;
+          font-size: 13px;
+          color: rgba(255,255,255,.72);
+          font-weight: 500;
+          line-height: 1.55;
+        }
+
+        .desktop-client {
+          flex-shrink: 0;
+          border-radius: 14px;
+          background: rgba(255,255,255,.07);
+          border: 1px solid rgba(255,255,255,.1);
+          padding: 12px 18px;
+          text-align: right;
+        }
+
+        .desktop-client small {
+          display: block;
+          font-size: 10px;
+          text-transform: uppercase;
+          letter-spacing: .07em;
+          color: rgba(255,255,255,.55);
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+
+        .desktop-client strong {
+          font-size: 16px;
+          font-weight: 600;
+          color: #fff;
+        }
+
+        .desktop-content {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 32px 40px 56px;
         }
 
         .contratacao-page.large-font { --scale: 1.13; }
@@ -356,12 +453,16 @@ export default function Contratacao() {
         .btn-primary:disabled { opacity: .45; cursor: not-allowed; transform: none; filter: none; }
 
         .btn-secondary {
-          background: transparent;
-          color: var(--muted);
-          border: 1.5px solid var(--line);
+          background: #fff;
+          color: var(--blue);
+          border: 1.5px solid var(--blue-mid);
           padding: 13px;
-          font-size: calc(13px * var(--scale));
-          font-weight: 500;
+          font-size: calc(13.5px * var(--scale));
+          font-weight: 700;
+        }
+
+        .btn-secondary:hover {
+          background: #f0f5ff;
         }
 
         .success-overlay { display: none; text-align: center; padding: 10px 0 20px; }
@@ -419,9 +520,121 @@ export default function Contratacao() {
         .info-row-value { color: var(--text); font-weight: 600; white-space: nowrap; }
 
         .spacer { height: 12px; }
+
+        .mobile-brand {
+          display: none;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 8px;
+        }
+
+        .mobile-brand-name {
+          font-size: calc(16px * var(--scale));
+          font-weight: 700;
+          color: #fff;
+          letter-spacing: -.01em;
+        }
+
+        .mobile-only { display: block; }
+
+        .contratacao-page.desktop-mode .screen {
+          min-height: auto;
+          overflow: visible;
+          background: transparent;
+        }
+
+        .contratacao-page.desktop-mode .header {
+          background: transparent;
+          padding: 0;
+        }
+
+        .contratacao-page.desktop-mode .header-user {
+          display: none;
+        }
+
+        .contratacao-page.desktop-mode .fontbar {
+          margin-bottom: 18px;
+        }
+
+        .contratacao-page.desktop-mode .font-toggle {
+          background: #fff;
+          border: 1px solid var(--line);
+          box-shadow: 0 2px 8px rgba(0,24,81,.08);
+        }
+
+        .contratacao-page.desktop-mode .font-toggle button {
+          color: var(--muted);
+        }
+
+        .contratacao-page.desktop-mode .font-toggle button.active {
+          background: var(--navy);
+          color: #fff;
+        }
+
+        .contratacao-page.desktop-mode .panel {
+          background: transparent;
+          border-radius: 0;
+          padding: 0;
+          width: 100%;
+          max-width: 820px;
+          margin: 0 auto;
+        }
+
+        .contratacao-page.desktop-mode #viewReview,
+        .contratacao-page.desktop-mode #viewSuccess {
+          width: 100%;
+          max-width: 720px;
+          margin: 0 auto;
+        }
+
+        .contratacao-page.desktop-mode .mobile-only,
+        .contratacao-page.desktop-mode .mobile-brand {
+          display: none;
+        }
+
+        @media (max-width: 767px) {
+          .desktop-topbar,
+          .desktop-content {
+            display: none;
+          }
+
+          .mobile-brand {
+            display: flex;
+          }
+        }
       `}</style>
 
-      <div className={`contratacao-page ${largeFont ? 'large-font' : ''}`}>
+      <div className={`contratacao-page ${largeFont ? 'large-font' : ''} ${isDesktop ? 'desktop-mode' : ''}`}>
+        {isDesktop && (
+          <div className="desktop-topbar">
+            <div className="desktop-topbar-inner">
+              <button
+                type="button"
+                onClick={() => navigate('/ofertas')}
+                aria-label="Ir para ofertas"
+                style={{ border: 0, background: 'transparent', padding: 0, cursor: 'pointer' }}
+              >
+                <img src={logoSvg} alt="ConsigAI" style={{ height: 52, width: 'auto', display: 'block' }} />
+              </button>
+
+              <div className="desktop-head-main">
+                <div className="desktop-chip">
+                  <div className="desktop-chip-dot" />
+                  <span>Contratacao</span>
+                </div>
+                <h1 className="desktop-head-title">Revise e confirme sua contratacao</h1>
+                <p className="desktop-head-sub">Confira os detalhes da proposta de {offerData.type} antes de finalizar.</p>
+              </div>
+
+              <div className="desktop-client">
+                <small>Cliente</small>
+                <strong>{clientName}</strong>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className={isDesktop ? 'desktop-content' : ''}>
         <div className="phone">
           <div className="screen" ref={screenRef}>
             <section className="header">
@@ -438,19 +651,29 @@ export default function Contratacao() {
 
               <div className="header-user">
                 <div>
-                  <div className="hello">Olá, bem-vindo de volta</div>
-                  <div className="name">Carlos Eduardo</div>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/ofertas')}
+                    aria-label="Ir para ofertas"
+                    className="mobile-brand"
+                    style={{ border: 0, background: 'transparent', padding: 0, cursor: 'pointer' }}
+                  >
+                    <img src={logoIconSvg} alt="" aria-hidden="true" style={{ height: 28, width: 28 }} />
+                    <span className="mobile-brand-name">ConsigAI</span>
+                  </button>
+                  <div className="hello">OlÃ¡, bem-vindo de volta</div>
+                  <div className="name">{clientName}</div>
                 </div>
-                <div className="benefit-chip">
-                  <small>Benefício mensal</small>
+                <div className="benefit-chip mobile-only">
+                  <small>BenefÃ­cio mensal</small>
                   <strong>R$ 2.200</strong>
                 </div>
               </div>
 
               <div className="panel">
                 <div id="viewReview" style={{ display: submitted ? 'none' : 'block' }}>
-                  <div className="tag"><div className="tag-dot" /><span>CONFIRMAÇÃO</span></div>
-                  <div className="section-title">Revise sua contratação</div>
+                  <div className="tag"><div className="tag-dot" /><span>CONFIRMAÃ‡ÃƒO</span></div>
+                  <div className="section-title">Revise sua contrataÃ§Ã£o</div>
                   <div className="section-sub">Confirme os detalhes antes de finalizar</div>
 
                   <div className="offer-summary">
@@ -462,7 +685,7 @@ export default function Contratacao() {
                         <div className="offer-hero-sub">{offerData.heroSub}</div>
                       </div>
                       <div className="offer-badge">
-                        <div className="offer-badge-label">Você economiza</div>
+                        <div className="offer-badge-label">VocÃª economiza</div>
                         <div className="offer-badge-value">{offerData.savingValue}</div>
                       </div>
                     </div>
@@ -505,8 +728,8 @@ export default function Contratacao() {
                     <div className="check-item">
                       <div className="check-icon pending">?</div>
                       <div className="check-text">
-                        <div className="check-title">Dados bancários</div>
-                        <div className="check-sub">Informar após a contratação</div>
+                        <div className="check-title">Dados bancÃ¡rios</div>
+                        <div className="check-sub">Informar apÃ³s a contrataÃ§Ã£o</div>
                       </div>
                       <div className="check-status pending">Pendente</div>
                     </div>
@@ -517,68 +740,69 @@ export default function Contratacao() {
                       <div className="wa-icon">??</div>
                       <div>
                         <div className="wa-title">Finalizamos pelo WhatsApp</div>
-                        <div className="wa-sub">Um consultor entrará em contato para concluir sua contratação</div>
+                        <div className="wa-sub">Um consultor entrarÃ¡ em contato para concluir sua contrataÃ§Ã£o</div>
                       </div>
                     </div>
                     <div className="wa-steps">
-                      <div className="wa-step"><div className="wa-step-num">1</div><div className="wa-step-text">Você confirma aqui e <strong>enviamos sua solicitação</strong></div></div>
-                      <div className="wa-step"><div className="wa-step-num">2</div><div className="wa-step-text">Nosso consultor <strong>entra em contato em até 2h</strong> pelo WhatsApp</div></div>
-                      <div className="wa-step"><div className="wa-step-num">3</div><div className="wa-step-text"><strong>Assinatura digital</strong> no próprio WhatsApp</div></div>
+                      <div className="wa-step"><div className="wa-step-num">1</div><div className="wa-step-text">VocÃª confirma aqui e <strong>enviamos sua solicitaÃ§Ã£o</strong></div></div>
+                      <div className="wa-step"><div className="wa-step-num">2</div><div className="wa-step-text">Nosso consultor <strong>entra em contato em atÃ© 2h</strong> pelo WhatsApp</div></div>
+                      <div className="wa-step"><div className="wa-step-num">3</div><div className="wa-step-text"><strong>Assinatura digital</strong> no prÃ³prio WhatsApp</div></div>
                     </div>
                     <div className="wa-phone">
                       <div className="wa-phone-num">(11) 99999-0000</div>
-                      <div className="wa-phone-tag">Seu número</div>
+                      <div className="wa-phone-tag">Seu nÃºmero</div>
                     </div>
                   </div>
 
                   <div className="terms-card">
-                    <div className="terms-label">Aceite necessário</div>
+                    <div className="terms-label">Aceite necessÃ¡rio</div>
                     <div className="terms-row" onClick={() => setCheck1((v) => !v)} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setCheck1((v) => !v)}>
                       <div className={`checkbox ${check1 ? 'checked' : ''}`}>{check1 ? '?' : ''}</div>
-                      <div className="terms-text">Li e aceito os <a href="#" onClick={(e) => e.preventDefault()}>Termos de Contratação</a> e a <a href="#" onClick={(e) => e.preventDefault()}>Política de Privacidade</a></div>
+                      <div className="terms-text">Li e aceito os <a href="#" onClick={(e) => e.preventDefault()}>Termos de ContrataÃ§Ã£o</a> e a <a href="#" onClick={(e) => e.preventDefault()}>PolÃ­tica de Privacidade</a></div>
                     </div>
                     <div className="terms-row" onClick={() => setCheck2((v) => !v)} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setCheck2((v) => !v)}>
                       <div className={`checkbox ${check2 ? 'checked' : ''}`}>{check2 ? '?' : ''}</div>
-                      <div className="terms-text">Autorizo a <a href="#" onClick={(e) => e.preventDefault()}>consulta ao meu histórico de crédito</a> para análise da proposta</div>
+                      <div className="terms-text">Autorizo a <a href="#" onClick={(e) => e.preventDefault()}>consulta ao meu histÃ³rico de crÃ©dito</a> para anÃ¡lise da proposta</div>
                     </div>
                   </div>
 
                   <button className="btn btn-primary" type="button" disabled={!canSubmit} onClick={() => setSubmitted(true)}>
-                    Confirmar contratação
+                    Confirmar contrataÃ§Ã£o
                   </button>
-                  <button className="btn btn-secondary" type="button" onClick={() => navigate(sourcePath)}>Cancelar</button>
+                  <button className="btn btn-secondary" type="button" onClick={() => navigate(sourcePath)}>{'<-'} Voltar para oferta</button>
                 </div>
 
                 <div id="viewSuccess" className={`success-overlay ${submitted ? 'visible' : ''}`}>
                   <div className="confetti-wrap">
                     <div className="success-circle">?</div>
                   </div>
-                  <div className="success-title">Solicitação enviada!</div>
-                  <div className="success-sub">Tudo certo. Em breve um consultor entrará em contato pelo seu WhatsApp.</div>
+                  <div className="success-title">SolicitaÃ§Ã£o enviada!</div>
+                  <div className="success-sub">Tudo certo. Em breve um consultor entrarÃ¡ em contato pelo seu WhatsApp.</div>
 
                   <div className="success-wa">
                     <div className="success-wa-icon">??</div>
                     <div>
                       <div className="success-wa-title">Aguarde o contato no WhatsApp</div>
-                      <div className="success-wa-sub">(11) 99999-0000 — em até 2 horas úteis</div>
+                      <div className="success-wa-sub">(11) 99999-0000 â€” em atÃ© 2 horas Ãºteis</div>
                     </div>
                   </div>
 
                   <div className="success-info-card">
-                    <div className="success-info-label">Resumo da solicitação</div>
+                    <div className="success-info-label">Resumo da solicitaÃ§Ã£o</div>
                     <div className="info-row"><span className="info-row-label">Tipo</span><span className="info-row-value">{offerData.type}</span></div>
                     <div className="info-row"><span className="info-row-label">Valor principal</span><span className="info-row-value">{offerData.heroValue}</span></div>
                     <div className="info-row"><span className="info-row-label">Economia</span><span className="info-row-value">{offerData.savingValue}</span></div>
                     <div className="info-row"><span className="info-row-label">Protocolo</span><span className="info-row-value">#2026-04892</span></div>
                   </div>
 
-                  <button className="btn btn-primary" type="button" onClick={() => navigate('/ofertas')}>Voltar ao início ?</button>
+                  <button className="btn btn-primary" type="button" onClick={() => navigate('/ofertas')}>Voltar ao inÃ­cio ?</button>
                 </div>
 
                 <div className="spacer" />
               </div>
             </section>
           </div>
+        </div>
         </div>
       </div>
     </>

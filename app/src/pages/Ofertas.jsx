@@ -252,11 +252,18 @@ function SoloOfferCard({ card, selected, onSelect, onNav }) {
 
 // ── Desktop Header ────────────────────────────────────────────────────────────
 
-function DesktopHeader({ clientName }) {
+function DesktopHeader({ clientName, onLogoClick }) {
   return (
     <div style={{ background: t.navy, padding: '28px 40px 32px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
-        <img src={logoSvg} alt="ConsigAI" style={{ height: 52, width: 'auto' }} />
+        <button
+          type="button"
+          onClick={onLogoClick}
+          aria-label="Ir para ofertas"
+          style={{ border: 0, background: 'transparent', padding: 0, cursor: 'pointer' }}
+        >
+          <img src={logoSvg} alt="ConsigAI" style={{ height: 52, width: 'auto', display: 'block' }} />
+        </button>
 
         <div style={{ flex: 1, maxWidth: 540 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 999, background: t.blueLight, padding: '4px 12px 4px 8px', marginBottom: 10 }}>
@@ -325,9 +332,9 @@ export default function Ofertas() {
             onSelect={() => setSelectedMain(v => v === card.title ? null : card.title)}
             onNav={
               card.title === 'Receba e economize'
-                ? () => navigate('/novo-economia')
+                ? () => navigate('/novo-economia', { state: { strategyType: 'novo' } })
                 : card.title === 'Receba e pague menos'
-                  ? () => navigate('/refin-portabilidade')
+                  ? () => navigate('/refin-portabilidade', { state: { strategyType: 'refin' } })
                   : card.title === 'Abra novas possibilidades'
                     ? () => navigate('/portabilidade')
                   : undefined
@@ -387,7 +394,7 @@ export default function Ofertas() {
 
         {isDesktop ? (
           <>
-            <DesktopHeader clientName={clientName} />
+            <DesktopHeader clientName={clientName} onLogoClick={() => navigate('/ofertas')} />
             <div style={{ maxWidth: 1200, margin: '0 auto', padding: '28px 40px 48px' }}>
               {mainSection}
             </div>
@@ -397,10 +404,15 @@ export default function Ofertas() {
             {/* Mobile top bar */}
             <div style={{ background: t.navy, padding: 'max(18px, env(safe-area-inset-top)) 20px 0' }}>
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, marginBottom: 20 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <button
+                  type="button"
+                  onClick={() => navigate('/ofertas')}
+                  aria-label="Ir para ofertas"
+                  style={{ border: 0, background: 'transparent', padding: 0, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
+                >
                   <img src={logoIconSvg} alt="" aria-hidden="true" style={{ height: 28, width: 28 }} />
                   <span style={{ fontSize: 16, fontWeight: 700, color: '#fff', letterSpacing: '-.01em' }}>ConsigAI</span>
-                </div>
+                </button>
                 <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
                   <div style={{ fontSize: 10, color: 'rgba(255,255,255,.55)', fontWeight: 600, marginBottom: 2 }}>Cliente</div>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{clientName}</div>
