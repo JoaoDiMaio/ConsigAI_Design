@@ -1,27 +1,16 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
-import logoSvg from '../assets/logo.svg'
-import logoIconSvg from '../assets/logo-icon.svg'
+import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
+import { appPageStyle, theme } from '../ui/theme'
 
 const t = {
-  navy:        '#001851',
-  blue:        '#2350c8',
-  blue2:       '#1844b8',
-  blueLight:   '#e8eeff',
-  blueMid:     '#c2d0f8',
-  text:        '#0f2057',
-  muted:       '#7a8db8',
-  line:        '#e4eaf8',
-  green:       '#0a6640',
+  ...theme,
   greenSoft:   '#3d6b52',
-  greenBg:     '#e8f5ee',
-  greenAccent: '#16a364',
   gold:        '#7a5200',
   goldBg:      '#fffbf0',
   goldLine:    '#edddb0',
   goldBtn:     '#a87000',
-  bg:          '#f4f7fd',
   shadow:      '0 8px 28px rgba(0,24,81,.09)',
 }
 
@@ -106,46 +95,9 @@ const SCENARIO_ICONS = [
   <svg key="p" width="20" height="20" viewBox="0 0 24 24" fill="none"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" stroke="#a87000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><polyline points="17 6 23 6 23 12" stroke="#a87000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
 ]
 
-// ── Desktop Header ─────────────────────────────────────────────────────────────
+//  Desktop Header 
 
-function DesktopHeader({ clientName, onLogoClick }) {
-  return (
-    <div style={{ background: t.navy, padding: '28px 40px 32px' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
-        <button
-          type="button"
-          onClick={onLogoClick}
-          aria-label="Ir para ofertas"
-          style={{ border: 0, background: 'transparent', padding: 0, cursor: 'pointer' }}
-        >
-          <img src={logoSvg} alt="ConsigAI" style={{ height: 52, width: 'auto', display: 'block' }} />
-        </button>
-
-        <div style={{ flex: 1, maxWidth: 540 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 999, background: t.blueLight, padding: '4px 12px 4px 8px' }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: t.blue }} />
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', color: t.blue, textTransform: 'uppercase' }}>Refinanciamento</span>
-            </div>
-          </div>
-          <h1 style={{ margin: 0, fontSize: 26, fontWeight: 700, color: '#fff', letterSpacing: '-.02em', lineHeight: 1.2 }}>
-            Receba dinheiro agora nos seus contratos
-          </h1>
-          <p style={{ margin: '8px 0 0', fontSize: 13, color: 'rgba(255,255,255,.72)', fontWeight: 500, lineHeight: 1.55 }}>
-            Escolha o cenário ideal — mais dinheiro, mais margem ou menor parcela.
-          </p>
-        </div>
-
-        <div style={{ flexShrink: 0, borderRadius: 14, background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.1)', padding: '12px 18px', textAlign: 'right' }}>
-          <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '.07em', color: 'rgba(255,255,255,.55)', fontWeight: 600, marginBottom: 4 }}>Cliente</div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>{clientName}</div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ── Scenario Card ──────────────────────────────────────────────────────────────
+//  Scenario Card 
 
 function ScenarioCard({ scenario, icon, active, onClick }) {
   const c = scenario.colors
@@ -214,7 +166,7 @@ function ScenarioCard({ scenario, icon, active, onClick }) {
   )
 }
 
-// ── Receipt ────────────────────────────────────────────────────────────────────
+//  Receipt 
 
 function Receipt({ scenario }) {
   const today = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -225,7 +177,7 @@ function Receipt({ scenario }) {
       fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
       background: 'linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)), #f5f5f3',
     }}>
-      <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, letterSpacing: '.02em', color: '#444' }}>SIMULAÇÃO DE REFINANCIAMENTO — CONSIGAI</div>
+      <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, letterSpacing: '.02em', color: '#444' }}>SIMULACAO DE REFINANCIAMENTO - CONSIGAI</div>
       <div style={{ fontSize: 10, marginTop: 4, textAlign: 'center', color: '#808080' }}>{today}</div>
 
       <div style={{ fontSize: 10.5, marginTop: 12, fontWeight: 700, color: '#565656' }}>CARLOS EDUARDO MARTINS</div>
@@ -237,7 +189,7 @@ function Receipt({ scenario }) {
       </div>
 
       <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-      <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>VOCÊ VAI RECEBER HOJE</div>
+      <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>VOCE VAI RECEBER HOJE</div>
       <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323', lineHeight: 1 }}>{scenario.cash}</div>
       <div style={{ textAlign: 'center', marginTop: 4, fontSize: 8.5, fontWeight: 700, letterSpacing: '.08em', color: '#888', textTransform: 'uppercase' }}>REFINANCIAMENTO CONSIGNADO</div>
 
@@ -289,7 +241,7 @@ function Receipt({ scenario }) {
   )
 }
 
-// ── Bottom Sheet ───────────────────────────────────────────────────────────────
+//  Bottom Sheet 
 
 function BottomSheet({ scenario, onClose }) {
   return (
@@ -307,7 +259,7 @@ function BottomSheet({ scenario, onClose }) {
         maxHeight: '90vh', overflowY: 'auto',
       }}>
         <div style={{ width: 36, height: 4, borderRadius: 999, background: t.line, marginBottom: 2 }} />
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: t.muted, textAlign: 'center' }}>Ótima escolha! Mas olha isso…</div>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: t.muted, textAlign: 'center' }}>OTIMA ESCOLHA! MAS OLHA ISSO...</div>
         <div style={{ fontSize: 18, fontWeight: 700, color: t.text, textAlign: 'center', lineHeight: 1.2 }}>Faça ainda mais pelo seu futuro</div>
         <div style={{ fontSize: 11, fontWeight: 500, color: t.muted, textAlign: 'center', lineHeight: 1.5, maxWidth: 320 }}>
           Com a portabilidade você garante um limite maior disponível quando precisar de crédito de novo.
@@ -374,7 +326,7 @@ function BottomSheet({ scenario, onClose }) {
   )
 }
 
-// ── Mini card ──────────────────────────────────────────────────────────────────
+//  Mini card 
 
 function MiniCard({ variant, name, desc, value, detail, onNav }) {
   const isEco = variant === 'eco'
@@ -434,7 +386,7 @@ function MiniCard({ variant, name, desc, value, detail, onNav }) {
   )
 }
 
-// ── Main ───────────────────────────────────────────────────────────────────────
+//  Main 
 
 export default function Refinanciamento() {
   const navigate      = useNavigate()
@@ -449,23 +401,37 @@ export default function Refinanciamento() {
   const [backHover, setBackHover] = useState(false)
 
   const scenario = SCENARIOS[activeIdx]
+  const salarioBase = 2200
+  const parcelaAntes = 550
+  const parseMoney = (value) => {
+    const matched = String(value ?? '').match(/R\$\s*([\d.,]+)/)
+    if (!matched) return 0
+    return Number(matched[1].replace(/\./g, '').replace(',', '.')) || 0
+  }
+  const parcelaDepois = parseMoney(scenario.installment)
+  const liquidoAntes = salarioBase - parcelaAntes
+  const liquidoDepois = salarioBase - parcelaDepois
   const ctaNames = ['Máximo Dinheiro', 'Máxima Margem', 'Menor Parcela']
 
   const handleGoContratacao = () => {
-    navigate('/contratacao', {
+    navigate('/dados-bancarios', {
       state: {
         sourcePath: '/refinanciamento',
-        offerTitle: 'Refinanciamento',
-        offerSubtitle: 'Resumo da oferta selecionada antes da contratacao',
-        primaryValue: scenario.cash,
-        ctaLabel: 'Confirmar Refinanciamento',
-        summary: [
-          { label: 'Cenario', value: ctaNames[activeIdx] },
-          { label: 'Voce recebe', value: scenario.cash },
-          { label: 'Nova parcela', value: scenario.installment },
-          { label: 'Margem livre', value: scenario.margem },
-          { label: 'Contratos', value: String(scenario.contracts.length) },
-        ],
+        nextPath: '/contratacao',
+        offerState: {
+          sourcePath: '/refinanciamento',
+          offerTitle: 'Refinanciamento',
+          offerSubtitle: 'Resumo da oferta selecionada antes da contratacao',
+          primaryValue: scenario.cash,
+          ctaLabel: 'Confirmar Refinanciamento',
+          summary: [
+            { label: 'Cenario', value: ctaNames[activeIdx] },
+            { label: 'Voce recebe', value: scenario.cash },
+            { label: 'Nova parcela', value: scenario.installment },
+            { label: 'Margem livre', value: scenario.margem },
+            { label: 'Contratos', value: String(scenario.contracts.length) },
+          ],
+        },
       },
     })
   }
@@ -477,7 +443,7 @@ export default function Refinanciamento() {
         <div style={{ width: 6, height: 6, borderRadius: '50%', background: t.blue }} />
         <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', color: t.blue, textTransform: 'uppercase' }}>Refinanciamento por Contrato</span>
       </div>
-      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: t.muted, marginBottom: 4 }}>Escolha o melhor cenário para você</div>
+      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: t.muted, marginBottom: 4 }}>Escolha o cenário com melhor impacto na sua rotina</div>
 
       {SCENARIOS.map((s, i) => (
         <ScenarioCard
@@ -520,7 +486,7 @@ export default function Refinanciamento() {
           lineHeight: 1.2, boxShadow: '0 8px 20px rgba(35,80,200,.25)', cursor: 'pointer',
           fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", transition: 'background .15s ease',
         }}
-      >Quero o Cenário {ctaNames[activeIdx]}</button>
+      >Escolher cenário {ctaNames[activeIdx]}</button>
 
       {/* Toggle details */}
       <button
@@ -568,7 +534,7 @@ export default function Refinanciamento() {
             }}
             onClick={() => window.print()}
           >
-            <span aria-hidden="true">⬇</span>
+            <span aria-hidden="true">v</span>
             <span>Fazer download da simulação</span>
           </button>
         </div>
@@ -580,10 +546,46 @@ export default function Refinanciamento() {
     </div>
   )
 
+  const summarySidebar = (
+    <div style={{ background: '#fff', borderRadius: 16, border: `1px solid ${t.line}`, boxShadow: t.shadow, padding: 14 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: t.muted, marginBottom: 10 }}>
+        Resumo da oferta
+      </div>
+      {[
+        ['Cenário', ctaNames[activeIdx]],
+        ['Você recebe', scenario.cash],
+        ['Nova parcela', scenario.installment],
+        ['Margem livre', scenario.margem],
+        ['Contratos', String(scenario.contracts.length)],
+      ].map(([label, value]) => (
+        <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '7px 0', borderBottom: `1px solid ${t.line}` }}>
+          <span style={{ fontSize: 11, color: t.muted, fontWeight: 600 }}>{label}</span>
+          <strong style={{ fontSize: 11.5, color: t.text, fontWeight: 700, textAlign: 'right' }}>{value}</strong>
+        </div>
+      ))}
+
+      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: t.muted, marginTop: 12, marginBottom: 10 }}>
+        Salário líquido
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div style={{ borderRadius: 12, border: `1px solid ${t.line}`, background: '#f7f9ff', padding: 10 }}>
+          <div style={{ fontSize: 9.5, textTransform: 'uppercase', letterSpacing: '.06em', color: t.muted, fontWeight: 700, marginBottom: 5 }}>Antes</div>
+          <div style={{ fontSize: 17, fontWeight: 700, color: t.text, lineHeight: 1.1 }}>R$ {liquidoAntes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+          <div style={{ fontSize: 10, color: t.muted, marginTop: 5, lineHeight: 1.35 }}>Com parcela de R$ {parcelaAntes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+        </div>
+        <div style={{ borderRadius: 12, border: '1px solid #b8e0ca', background: '#eefaf3', padding: 10 }}>
+          <div style={{ fontSize: 9.5, textTransform: 'uppercase', letterSpacing: '.06em', color: t.green, fontWeight: 700, marginBottom: 5 }}>Depois</div>
+          <div style={{ fontSize: 17, fontWeight: 700, color: t.green, lineHeight: 1.1 }}>R$ {liquidoDepois.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+          <div style={{ fontSize: 10, color: t.greenSoft, marginTop: 5, lineHeight: 1.35 }}>Com parcela de R$ {parcelaDepois.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+        </div>
+      </div>
+    </div>
+  )
+
   const otherOptions = (
     <div style={{ marginTop: isDesktop ? 28 : 24 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: t.text, flex: 1 }}>Outras opções para você</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: t.text, flex: 1 }}>Outras opções para comparar</div>
         <div style={{ fontSize: 10, color: t.muted, fontWeight: 500 }}>2 disponíveis</div>
       </div>
       <MiniCard variant="eco"  name="Economia Inteligente" desc="Faça a portabilidade dos seus contratos e economize" value="2.399" detail="estimado de economia" onNav={() => navigate('/portabilidade')} />
@@ -626,10 +628,20 @@ export default function Refinanciamento() {
         button:focus-visible { outline: 3px solid rgba(35,80,200,.4); outline-offset: 2px; }
       `}</style>
 
-      <div style={{ minHeight: '100vh', background: t.bg, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: t.text }}>
+      <div style={appPageStyle}>
         {isDesktop ? (
           <>
-            <DesktopHeader clientName={clientName} onLogoClick={() => navigate('/ofertas')} />
+            <DesktopPageHeader
+              clientName={clientName}
+              chipLabel="Refinanciamento"
+              title="Refinancie com inteligencia e escolha o melhor impacto no seu mes"
+              subtitle="Compare cenario por cenario com clareza antes de confirmar."
+              onLogoClick={() => navigate('/ofertas')}
+              actions={[
+                { label: 'Ofertas', onClick: () => navigate('/ofertas') },
+                { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+              ]}
+            />
             <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 40px 56px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 28, alignItems: 'start' }}>
                 <div>
@@ -638,31 +650,25 @@ export default function Refinanciamento() {
                   {bottomBack}
                 </div>
                 <div style={{ position: 'sticky', top: 24 }}>
-                  {offerCard}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {summarySidebar}
+                    {offerCard}
+                  </div>
                 </div>
               </div>
             </div>
           </>
         ) : (
           <>
-            <div style={{ background: t.navy, padding: 'max(18px, env(safe-area-inset-top)) 20px 0' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, marginBottom: 20 }}>
-                <button
-                  type="button"
-                  onClick={() => navigate('/ofertas')}
-                  aria-label="Ir para ofertas"
-                  style={{ border: 0, background: 'transparent', padding: 0, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
-                >
-                  <img src={logoIconSvg} alt="" aria-hidden="true" style={{ height: 28, width: 28 }} />
-                  <span style={{ fontSize: 16, fontWeight: 700, color: '#fff', letterSpacing: '-.01em' }}>ConsigAI</span>
-                </button>
-                <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,.55)', fontWeight: 600, marginBottom: 2 }}>Cliente</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{clientName}</div>
-                </div>
-              </div>
-            </div>
-            <div style={{ background: t.bg, borderRadius: '26px 26px 0 0', marginTop: -26, padding: '20px 18px calc(24px + env(safe-area-inset-bottom))' }}>
+            <MobilePageHeader
+              clientName={clientName}
+              onLogoClick={() => navigate('/ofertas')}
+              actions={[
+                { label: 'Ofertas', onClick: () => navigate('/ofertas') },
+                { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+              ]}
+            />
+            <div style={{ background: t.bg, borderRadius: '26px 26px 0 0', marginTop: 0, padding: '20px 18px calc(24px + env(safe-area-inset-bottom))' }}>
               {scenarioList}
               {offerCard}
               {otherOptions}
@@ -676,3 +682,5 @@ export default function Refinanciamento() {
     </>
   )
 }
+
+

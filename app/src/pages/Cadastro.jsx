@@ -2,24 +2,14 @@ import { useState, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { maskCPF, maskDate, maskPhone, formatFileSize } from '../lib/masks'
 import { useMediaQuery } from '../hooks/useMediaQuery'
-import logoSvg from '../assets/logo.svg'
-import logoIconSvg from '../assets/logo-icon.svg'
+import { saveProfileData } from '../lib/profileStorage'
+import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
+import { appPageStyle, theme } from '../ui/theme'
 
-// ── Brand tokens ──────────────────────────────────────────────────────────────
+//  Brand tokens 
 const t = {
-  navy:        '#001851',
-  blue:        '#2350c8',
-  blue2:       '#1844b8',
-  blueLight:   '#e8eeff',
-  blueMid:     '#c2d0f8',
-  text:        '#0f2057',
-  muted:       '#7a8db8',
-  line:        '#e4eaf8',
-  green:       '#0a6640',
-  greenBg:     '#e8f5ee',
-  greenAccent: '#16a364',
+  ...theme,
   greenBorder: '#b8e0ca',
-  bg:          '#f4f7fd',
   gold:        '#7a5200',
   goldBg:      '#fffbf0',
   goldLine:    '#edddb0',
@@ -27,7 +17,7 @@ const t = {
   goldBody:    '#9b7020',
 }
 
-// s(n) → uses CSS var --scale set on root wrapper; scales with A+ toggle
+// s(n)   uses CSS var --scale set on root wrapper; scales with A+ toggle
 const s = (n) => `calc(${n}px * var(--scale))`
 
 const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024
@@ -149,7 +139,7 @@ function validateUploadFile(file) {
   return ''
 }
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
+//  Sub-components 
 
 function FontToggle({ large, onToggle, dark }) {
   const bg    = dark ? 'rgba(255,255,255,.07)' : '#fff'
@@ -277,7 +267,7 @@ function BtnBack({ onClick }) {
         fontSize: s(13), fontWeight: 500, cursor: 'pointer',
         fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
       }}
-    >← Voltar</button>
+    >  Voltar</button>
   )
 }
 
@@ -287,7 +277,7 @@ const ArrowIcon = () => (
   </svg>
 )
 
-// ── Step 1 ─────────────────────────────────────────────────────────────────────
+//  Step 1 
 
 function Step1({ form, errors, touched, onChange, onBlurField, onNext, canProceed }) {
   return (
@@ -325,7 +315,7 @@ function Step1({ form, errors, touched, onChange, onBlurField, onNext, canProcee
   )
 }
 
-// ── Step 2 ─────────────────────────────────────────────────────────────────────
+//  Step 2 
 
 function Step2({ file, fileError, onFile, onRemoveFile, skipped, onSkip, onNext, onBack }) {
   const inputRef  = useRef(null)
@@ -418,7 +408,7 @@ function Step2({ file, fileError, onFile, onRemoveFile, skipped, onSkip, onNext,
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '4px 0 10px' }}>
         <div style={{ flex: 1, height: 1, background: t.line }} />
-        <div style={{ fontSize: s(10), fontWeight: 600, color: t.muted, whiteSpace: 'nowrap', letterSpacing: '.03em' }}>NÃO TENHO O EXTRATO AGORA</div>
+        <div style={{ fontSize: s(10), fontWeight: 600, color: t.muted, whiteSpace: 'nowrap', letterSpacing: '.03em' }}>NAO TENHO O EXTRATO AGORA</div>
         <div style={{ flex: 1, height: 1, background: t.line }} />
       </div>
 
@@ -457,9 +447,9 @@ function Step2({ file, fileError, onFile, onRemoveFile, skipped, onSkip, onNext,
   )
 }
 
-// ── Success ────────────────────────────────────────────────────────────────────
+//  Success 
 
-function StepSuccess({ form, file, skipped, onVerOfertas }) {
+function StepSuccess({ form, file, skipped, onPrimaryAction, ctaLabel }) {
   const isPending = skipped && !file
   return (
     <div style={{ textAlign: 'center', padding: '20px 0 10px' }}>
@@ -487,9 +477,9 @@ function StepSuccess({ form, file, skipped, onVerOfertas }) {
       <div style={{ background: '#fff', borderRadius: 20, border: '1px solid #e6ecf8', boxShadow: '0 8px 28px rgba(0,24,81,.09)', padding: 16, marginBottom: 16, textAlign: 'left' }}>
         <div style={{ fontSize: s(10), fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: t.muted, marginBottom: 10 }}>Dados enviados</div>
         {[
-          ['Nome',    form.nome || '—'],
-          ['CPF',     form.cpf  || '—'],
-          ['Extrato', file ? file.name : isPending ? 'Não enviado — pendente' : '—'],
+          ['Nome',    form.nome || ''],
+          ['CPF',     form.cpf  || ''],
+          ['Extrato', file ? file.name : isPending ? 'Não enviado  pendente' : ''],
         ].map(([label, value], i, arr) => (
           <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: i < arr.length - 1 ? `1px solid ${t.line}` : 'none', fontSize: s(12) }}>
             <span style={{ color: t.muted, fontWeight: 500 }}>{label}</span>
@@ -498,34 +488,24 @@ function StepSuccess({ form, file, skipped, onVerOfertas }) {
         ))}
       </div>
 
-      <BtnPrimary onClick={onVerOfertas}>Ver minhas ofertas →</BtnPrimary>
+      <BtnPrimary onClick={onPrimaryAction}>{ctaLabel}  </BtnPrimary>
     </div>
   )
 }
 
-// ── Desktop Left Panel ────────────────────────────────────────────────────────
+//  Desktop Left Panel 
 
 const valueProps = [
-  { icon: '⚡', title: 'Análise em Minutos',      sub: 'Resultado da simulação na hora, sem burocracia.' },
-  { icon: '🔒', title: 'Segurança LGPD',           sub: 'Dados criptografados e protegidos por lei.' },
-  { icon: '💰', title: 'Melhores Taxas do Mercado', sub: 'Comparamos dezenas de ofertas pra você.' },
+  { icon: 'a', title: 'Análise em Minutos',      sub: 'Resultado da simulação na hora, sem burocracia.' },
+  { icon: 'x', title: 'Segurança LGPD',           sub: 'Dados criptografados e protegidos por lei.' },
+  { icon: 'x', title: 'Melhores Taxas do Mercado', sub: 'Comparamos dezenas de ofertas pra você.' },
 ]
 
-function DesktopLeftPanel({ step, onLogoClick }) {
+function DesktopLeftPanel({ step }) {
   return (
     <div style={{ width: '44%', minHeight: '100vh', background: t.navy, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '48px 40px', position: 'sticky', top: 0 }}>
       <div>
-        {/* Logo real */}
-        <div style={{ marginBottom: 56 }}>
-          <button
-            type="button"
-            onClick={onLogoClick}
-            aria-label="Ir para ofertas"
-            style={{ border: 0, background: 'transparent', padding: 0, cursor: 'pointer' }}
-          >
-            <img src={logoSvg} alt="ConsigAI" style={{ height: 100, width: 'auto', display: 'block' }} />
-          </button>
-        </div>
+        <div style={{ marginBottom: 56 }} />
 
         <div style={{ marginBottom: 48 }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.1em', color: 'rgba(255,255,255,.4)', textTransform: 'uppercase', marginBottom: 12 }}>Economia Inteligente</div>
@@ -576,7 +556,7 @@ function DesktopLeftPanel({ step, onLogoClick }) {
   )
 }
 
-// ── Main ───────────────────────────────────────────────────────────────────────
+//  Main 
 
 export default function Cadastro() {
   const navigate   = useNavigate()
@@ -591,6 +571,7 @@ export default function Cadastro() {
   const [skipped, setSkipped] = useState(false)
 
   const scale = large ? 1.47 : 1.22
+  const clientName = form.nome ? normalizeSpaces(form.nome) : 'Novo cliente'
 
   const personalErrors = validatePersonalData(form)
   const canProceedStep1 = Object.keys(personalErrors).length === 0
@@ -645,11 +626,42 @@ export default function Cadastro() {
     setStep(3)
   }
 
+  const handleFinishCadastro = () => {
+    saveProfileData({
+      nomeCompleto: form.nome,
+      cpf: form.cpf,
+      dataNascimento: form.nasc,
+      telefone: form.tel,
+      email: form.email,
+    })
+
+    if (skipped && !file) {
+      navigate('/dados-bancarios', {
+        state: {
+          sourcePath: '/cadastro',
+          nextPath: '/ofertas',
+          reason: 'sem_holerite',
+        },
+      })
+      return
+    }
+
+    navigate('/ofertas')
+  }
+
   const formPanel = (
     <>
       {step === 1 && <Step1 form={form} errors={personalErrors} touched={touched} onChange={setField} onBlurField={handleBlurField} onNext={handleNextStep1} canProceed={canProceedStep1} />}
       {step === 2 && <Step2 file={file} fileError={fileError} onFile={handleFileSelect} onRemoveFile={handleRemoveFile} skipped={skipped} onSkip={handleSkipFile} onNext={handleNextStep2} onBack={() => setStep(1)} />}
-      {step === 3 && <StepSuccess form={form} file={file} skipped={skipped} onVerOfertas={() => navigate('/ofertas')} />}
+      {step === 3 && (
+        <StepSuccess
+          form={form}
+          file={file}
+          skipped={skipped}
+          onPrimaryAction={handleFinishCadastro}
+          ctaLabel={skipped && !file ? 'Informar dados bancarios' : 'Ver minhas ofertas'}
+        />
+      )}
     </>
   )
 
@@ -663,16 +675,28 @@ export default function Cadastro() {
         input::placeholder  { opacity:.6 }
       `}</style>
 
-      {/* --scale CSS var aplicado aqui → todos s(n) herdam */}
-      <div style={{ '--scale': scale, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", minHeight: '100vh', color: t.text }}>
+      {/* --scale CSS var aplicado aqui   todos s(n) herdam */}
+      <div style={{ ...appPageStyle, '--scale': scale }}>
 
-        {isDesktop ? (
-          <div style={{ display: 'flex', minHeight: '100vh' }}>
-            <DesktopLeftPanel step={step} onLogoClick={() => navigate('/ofertas')} />
+                {isDesktop ? (
+          <>
+            <DesktopPageHeader
+              clientName={clientName}
+              chipLabel="Cadastro"
+              title="Crie sua conta ConsigAI"
+              subtitle="Preencha seus dados para liberar as propostas personalizadas."
+              onLogoClick={() => navigate('/ofertas')}
+              actions={[
+                { label: 'Ofertas', onClick: () => navigate('/ofertas') },
+                { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+              ]}
+            />
+            <div style={{ display: 'flex', minHeight: 'calc(100vh - 146px)' }}>
+            <DesktopLeftPanel step={step} />
 
-            <div style={{ flex: 1, background: t.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 32px', minHeight: '100vh', overflowY: 'auto' }}>
+            <div style={{ flex: 1, background: t.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 32px', minHeight: 'calc(100vh - 146px)', overflowY: 'auto' }}>
               {/* Font toggle fixo top-right */}
-              <div style={{ position: 'fixed', top: 20, right: 24, zIndex: 10 }}>
+              <div style={{ position: 'fixed', top: 164, right: 24, zIndex: 10 }}>
                 <FontToggle large={large} onToggle={setLarge} dark={false} />
               </div>
 
@@ -691,31 +715,27 @@ export default function Cadastro() {
               </div>
             </div>
           </div>
+          </>
         ) : (
           /* Mobile */
           <div style={{ background: t.bg }}>
-            <div style={{ background: t.navy, padding: 'max(18px, env(safe-area-inset-top)) 20px 0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <button
-                  type="button"
-                  onClick={() => navigate('/ofertas')}
-                  aria-label="Ir para ofertas"
-                  style={{ border: 0, background: 'transparent', padding: 0, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
-                >
-                  <img src={logoIconSvg} alt="" aria-hidden="true" style={{ height: 28, width: 28 }} />
-                  <span style={{ fontSize: 16, fontWeight: 700, color: '#fff', letterSpacing: '-.01em' }}>ConsigAI</span>
-                </button>
-                <FontToggle large={large} onToggle={setLarge} dark={true} />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, gap: 10 }}>
+                        <MobilePageHeader
+              clientName={clientName}
+              onLogoClick={() => navigate('/ofertas')}
+              actions={[{ label: 'Configuracoes', onClick: () => navigate('/configuracoes') }]}
+            />
+            <div style={{ background: t.navy, padding: '10px 20px 20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, gap: 10 }}>
                 <div>
-                  <div style={{ fontSize: s(11), color: 'rgba(255,255,255,.5)', marginBottom: 4 }}>Bem-vindo à ConsigAI</div>
+                  <div style={{ fontSize: s(11), color: 'rgba(255,255,255,.5)', marginBottom: 4 }}>Bem-vindo a ConsigAI</div>
                   <div style={{ fontSize: s(18), fontWeight: 700, color: '#fff', lineHeight: 1.1 }}>Crie sua conta</div>
                 </div>
+                <FontToggle large={large} onToggle={setLarge} dark={true} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 4 }}>
                 <ProgressDots step={step} total={2} />
               </div>
-            </div>
-            <div style={{ background: t.bg, borderRadius: '26px 26px 0 0', marginTop: -26, padding: '22px 18px calc(28px + env(safe-area-inset-bottom))', animation: 'slideIn .22s ease forwards' }}>
+            </div><div style={{ background: t.bg, borderRadius: '26px 26px 0 0', marginTop: 0, padding: '22px 18px calc(28px + env(safe-area-inset-bottom))', animation: 'slideIn .22s ease forwards' }}>
               {formPanel}
             </div>
           </div>
@@ -724,3 +744,5 @@ export default function Cadastro() {
     </>
   )
 }
+
+

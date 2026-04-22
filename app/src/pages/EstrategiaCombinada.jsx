@@ -1,26 +1,15 @@
-﻿import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
-import logoSvg from '../assets/logo.svg'
-import logoIconSvg from '../assets/logo-icon.svg'
+import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
+import { appPageStyle, theme } from '../ui/theme'
 
 const t = {
-  navy: '#001851',
-  blue: '#2350c8',
-  blue2: '#1844b8',
-  blueLight: '#e8eeff',
-  blueMid: '#c2d0f8',
-  text: '#0f2057',
-  muted: '#7a8db8',
-  line: '#e4eaf8',
-  green: '#0a6640',
+  ...theme,
   greenSoft: '#3d6b52',
-  greenBg: '#e8f5ee',
-  greenAccent: '#16a364',
   gold: '#7a5200',
   goldBg: '#fffbf0',
   goldLine: '#edddb0',
-  bg: '#f4f7fd',
   shadow: '0 8px 28px rgba(0,24,81,.09)',
 }
 
@@ -28,8 +17,8 @@ const VARIANTS = {
   novo: {
     route: '/novo-economia',
     chip: 'Novo Contrato + Economia',
-    title: 'Libere credito agora e economize depois',
-    subtitle: 'A tela mostra somente os elementos da estrategia Novo + Economia.',
+    title: 'Receba agora e construa economia para os proximos meses',
+    subtitle: 'Estrategia combinada para equilibrar dinheiro na conta e custo total menor.',
     offerTitle: 'Novo Contrato + Economia',
     economyValue: 'R$ 2.399',
     marginValue: 'R$ 320',
@@ -40,7 +29,7 @@ const VARIANTS = {
       {
         key: 'novo_max',
         title: 'Maior valor liberado',
-        desc: 'Receba mais agora e mantenha a estrategia de economia depois.',
+        desc: 'Prioriza valor imediato sem abrir mao da economia prevista na sequencia.',
         cash: 'R$ 8.400',
         installment: '84x de R$ 158,40',
         margin: 'R$ 320',
@@ -53,7 +42,7 @@ const VARIANTS = {
       {
         key: 'novo_bal',
         title: 'Equilibrio de parcela',
-        desc: 'Equilibrio entre valor liberado e parcela mensal.',
+        desc: 'Combina boa liberacao com parcela mensal mais previsivel.',
         cash: 'R$ 5.000',
         installment: '84x de R$ 94,28',
         margin: 'R$ 380',
@@ -66,7 +55,7 @@ const VARIANTS = {
       {
         key: 'novo_min',
         title: 'Parcela mais leve',
-        desc: 'Menor impacto mensal com estrategia combinada.',
+        desc: 'Menor impacto no mes com foco em mais tranquilidade financeira.',
         cash: 'R$ 2.500',
         installment: '84x de R$ 47,14',
         margin: 'R$ 450',
@@ -99,8 +88,8 @@ const VARIANTS = {
   refin: {
     route: '/refin-portabilidade',
     chip: 'Refinanciamento + Portabilidade',
-    title: 'Receba dinheiro agora e economize no total',
-    subtitle: 'A tela mostra somente os elementos da estrategia Refin + Portabilidade.',
+    title: 'Receba agora e reduza o peso financeiro no total',
+    subtitle: 'Estrategia combinada para unir liquidez imediata e economia ao longo do contrato.',
     offerTitle: 'Refinanciamento + Portabilidade',
     economyValue: 'R$ 2.399',
     marginValue: 'R$ 320',
@@ -111,7 +100,7 @@ const VARIANTS = {
       {
         key: 'refin_money',
         title: 'Maximo dinheiro',
-        desc: 'Receba o maior valor refinanciando contratos elegiveis.',
+        desc: 'Prioriza o maior valor disponivel para entrada imediata em conta.',
         cash: 'R$ 12.930',
         installment: 'R$ 1.191/mes',
         margin: 'R$ 56',
@@ -125,7 +114,7 @@ const VARIANTS = {
       {
         key: 'refin_margin',
         title: 'Maxima margem livre',
-        desc: 'Libere mais margem para futuras oportunidades.',
+        desc: 'Libera margem para voce ter mais poder de decisao depois.',
         cash: 'R$ 9.730',
         installment: 'R$ 893/mes',
         margin: 'R$ 120',
@@ -138,7 +127,7 @@ const VARIANTS = {
       {
         key: 'refin_install',
         title: 'Menor parcela total',
-        desc: 'Reduza o comprometimento mensal da renda.',
+        desc: 'Reduz o comprometimento mensal para aliviar o orcamento.',
         cash: 'R$ 5.550',
         installment: 'R$ 381/mes',
         margin: 'R$ 389',
@@ -174,39 +163,6 @@ function normalizeVariant(raw) {
   if (['refin', 'refin-portabilidade', 'refin_portabilidade'].includes(value)) return 'refin'
 
   return null
-}
-
-function DesktopHeader({ chip, title, subtitle, clientName, onLogoClick }) {
-  return (
-    <div style={{ background: t.navy, padding: '28px 40px 32px' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
-        <button
-          type="button"
-          onClick={onLogoClick}
-          aria-label="Ir para ofertas"
-          style={{ border: 0, background: 'transparent', padding: 0, cursor: 'pointer' }}
-        >
-          <img src={logoSvg} alt="ConsigAI" style={{ height: 52, width: 'auto', display: 'block' }} />
-        </button>
-
-        <div style={{ flex: 1, maxWidth: 560 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 999, background: t.blueLight, padding: '4px 12px 4px 8px' }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: t.blue }} />
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', color: t.blue, textTransform: 'uppercase' }}>{chip}</span>
-            </div>
-          </div>
-          <h1 style={{ margin: 0, fontSize: 26, fontWeight: 700, color: '#fff', letterSpacing: '-.02em', lineHeight: 1.2 }}>{title}</h1>
-          <p style={{ margin: '8px 0 0', fontSize: 13, color: 'rgba(255,255,255,.72)', fontWeight: 500, lineHeight: 1.55 }}>{subtitle}</p>
-        </div>
-
-        <div style={{ flexShrink: 0, borderRadius: 14, background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.1)', padding: '12px 18px', textAlign: 'right' }}>
-          <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '.07em', color: 'rgba(255,255,255,.55)', fontWeight: 600, marginBottom: 4 }}>Cliente</div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>{clientName}</div>
-        </div>
-      </div>
-    </div>
-  )
 }
 
 function ScenarioCard({ scenario, active, onClick }) {
@@ -348,22 +304,36 @@ function StrategyScreen({ variant }) {
   const [backHover, setBackHover] = useState(false)
 
   const scenario = config.scenarios[activeIdx]
+  const salarioBase = 2200
+  const parcelaAntes = 550
+  const parseMoney = (value) => {
+    const matched = String(value ?? '').match(/R\$\s*([\d.,]+)/)
+    if (!matched) return 0
+    return Number(matched[1].replace(/\./g, '').replace(',', '.')) || 0
+  }
+  const parcelaDepois = parseMoney(scenario.installment)
+  const liquidoAntes = salarioBase - parcelaAntes
+  const liquidoDepois = salarioBase - parcelaDepois
 
   const goToContratacao = () => {
-    navigate('/contratacao', {
+    navigate('/dados-bancarios', {
       state: {
         sourcePath: config.route,
-        offerTitle: config.offerTitle,
-        offerSubtitle: 'Resumo da oferta selecionada antes da contratacao',
-        primaryValue: `${scenario.cash} + ${config.economyValue}`,
-        ctaLabel: config.ctaLabel,
-        summary: [
-          { label: 'Voce recebe', value: scenario.cash },
-          { label: 'Economia', value: config.economyValue },
-          { label: 'Nova parcela', value: scenario.installment },
-          { label: 'Margem livre', value: scenario.margin },
-          { label: 'Contratos', value: String(scenario.contracts.length) },
-        ],
+        nextPath: '/contratacao',
+        offerState: {
+          sourcePath: config.route,
+          offerTitle: config.offerTitle,
+          offerSubtitle: 'Resumo da oferta selecionada antes da contratacao',
+          primaryValue: `${scenario.cash} + ${config.economyValue}`,
+          ctaLabel: config.ctaLabel,
+          summary: [
+            { label: 'Voce recebe', value: scenario.cash },
+            { label: 'Economia', value: config.economyValue },
+            { label: 'Nova parcela', value: scenario.installment },
+            { label: 'Margem livre', value: scenario.margin },
+            { label: 'Contratos', value: String(scenario.contracts.length) },
+          ],
+        },
       },
     })
   }
@@ -374,7 +344,7 @@ function StrategyScreen({ variant }) {
         <div style={{ width: 6, height: 6, borderRadius: '50%', background: t.blue }} />
         <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', color: t.blue, textTransform: 'uppercase' }}>{config.chip}</span>
       </div>
-      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: t.muted, marginBottom: 4 }}>Escolha o melhor cenario para voce</div>
+      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: t.muted, marginBottom: 4 }}>Escolha o cenario com melhor impacto no seu dia a dia</div>
 
       {config.scenarios.map((item, idx) => (
         <ScenarioCard
@@ -430,7 +400,7 @@ function StrategyScreen({ variant }) {
           transition: 'background .15s ease',
         }}
       >
-        Quero {scenario.cash} + Economia
+        Escolher {scenario.cash} + Economia
       </button>
 
       <button
@@ -473,10 +443,46 @@ function StrategyScreen({ variant }) {
     </div>
   )
 
+  const summarySidebar = (
+    <div style={{ background: '#fff', borderRadius: 16, border: `1px solid ${t.line}`, boxShadow: t.shadow, padding: 14 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: t.muted, marginBottom: 10 }}>
+        Resumo da oferta
+      </div>
+      {[
+        ['Estrategia', config.offerTitle],
+        ['Voce recebe', scenario.cash],
+        ['Economia', config.economyValue],
+        ['Nova parcela', scenario.installment],
+        ['Margem livre', scenario.margin],
+      ].map(([label, value]) => (
+        <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '7px 0', borderBottom: `1px solid ${t.line}` }}>
+          <span style={{ fontSize: 11, color: t.muted, fontWeight: 600 }}>{label}</span>
+          <strong style={{ fontSize: 11.5, color: t.text, fontWeight: 700, textAlign: 'right' }}>{value}</strong>
+        </div>
+      ))}
+
+      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: t.muted, marginTop: 12, marginBottom: 10 }}>
+        Salrio lquido
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div style={{ borderRadius: 12, border: `1px solid ${t.line}`, background: '#f7f9ff', padding: 10 }}>
+          <div style={{ fontSize: 9.5, textTransform: 'uppercase', letterSpacing: '.06em', color: t.muted, fontWeight: 700, marginBottom: 5 }}>Antes</div>
+          <div style={{ fontSize: 17, fontWeight: 700, color: t.text, lineHeight: 1.1 }}>R$ {liquidoAntes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+          <div style={{ fontSize: 10, color: t.muted, marginTop: 5, lineHeight: 1.35 }}>Com parcela de R$ {parcelaAntes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+        </div>
+        <div style={{ borderRadius: 12, border: '1px solid #b8e0ca', background: '#eefaf3', padding: 10 }}>
+          <div style={{ fontSize: 9.5, textTransform: 'uppercase', letterSpacing: '.06em', color: t.green, fontWeight: 700, marginBottom: 5 }}>Depois</div>
+          <div style={{ fontSize: 17, fontWeight: 700, color: t.green, lineHeight: 1.1 }}>R$ {liquidoDepois.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+          <div style={{ fontSize: 10, color: t.greenSoft, marginTop: 5, lineHeight: 1.35 }}>Com parcela de R$ {parcelaDepois.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+        </div>
+      </div>
+    </div>
+  )
+
   const options = (
     <div style={{ marginTop: isDesktop ? 28 : 24, display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: t.text, flex: 1 }}>Outras opcoes para voce</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: t.text, flex: 1 }}>Outras opcoes para comparar</div>
         <div style={{ fontSize: 10, color: t.muted, fontWeight: 500 }}>{config.otherOptions.length} disponiveis</div>
       </div>
       {config.otherOptions.map((item) => (
@@ -526,20 +532,29 @@ function StrategyScreen({ variant }) {
         }
       `}</style>
 
-      <div style={{ minHeight: '100vh', background: t.bg, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: t.text }}>
+      <div style={appPageStyle}>
         {isDesktop ? (
           <>
-            <DesktopHeader
-              chip={config.chip}
+            <DesktopPageHeader
+              chipLabel={config.chip}
               title={config.title}
               subtitle={config.subtitle}
               clientName={clientName}
               onLogoClick={() => navigate('/ofertas')}
+              actions={[
+                { label: 'Ofertas', onClick: () => navigate('/ofertas') },
+                { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+              ]}
             />
             <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 40px 56px' }}>
               <div className="mix-layout">
                 <div>{scenarioList}</div>
-                <div className="mix-right">{offerCard}</div>
+                <div className="mix-right">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {summarySidebar}
+                    {offerCard}
+                  </div>
+                </div>
                 <div className="mix-bottom">{options}</div>
               </div>
               {bottomBack}
@@ -547,24 +562,15 @@ function StrategyScreen({ variant }) {
           </>
         ) : (
           <>
-            <div style={{ background: t.navy, padding: 'max(18px, env(safe-area-inset-top)) 20px 0' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, marginBottom: 20 }}>
-                <button
-                  type="button"
-                  onClick={() => navigate('/ofertas')}
-                  aria-label="Ir para ofertas"
-                  style={{ border: 0, background: 'transparent', padding: 0, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
-                >
-                  <img src={logoIconSvg} alt="" aria-hidden="true" style={{ height: 28, width: 28 }} />
-                  <span style={{ fontSize: 16, fontWeight: 700, color: '#fff', letterSpacing: '-.01em' }}>ConsigAI</span>
-                </button>
-                <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,.55)', fontWeight: 600, marginBottom: 2 }}>Cliente</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{clientName}</div>
-                </div>
-              </div>
-            </div>
-            <div style={{ background: t.bg, borderRadius: '26px 26px 0 0', marginTop: -26, padding: '20px 18px calc(24px + env(safe-area-inset-bottom))' }}>
+            <MobilePageHeader
+              clientName={clientName}
+              onLogoClick={() => navigate('/ofertas')}
+              actions={[
+                { label: 'Ofertas', onClick: () => navigate('/ofertas') },
+                { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+              ]}
+            />
+            <div style={{ background: t.bg, borderRadius: '26px 26px 0 0', marginTop: 0, padding: '20px 18px calc(24px + env(safe-area-inset-bottom))' }}>
               {scenarioList}
               <div style={{ marginTop: 14 }}>{offerCard}</div>
               {options}
@@ -595,3 +601,5 @@ export default function EstrategiaCombinada({ variant: forcedVariant }) {
 
   return <StrategyScreen variant={variant} />
 }
+
+

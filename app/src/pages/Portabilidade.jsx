@@ -1,28 +1,17 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
-import logoSvg from '../assets/logo.svg'
-import logoIconSvg from '../assets/logo-icon.svg'
+import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
+import { appPageStyle, theme } from '../ui/theme'
 
 const t = {
-  navy:        '#001851',
-  blue:        '#2350c8',
-  blue2:       '#1844b8',
-  blueLight:   '#e8eeff',
-  blueMid:     '#c2d0f8',
-  text:        '#0f2057',
-  muted:       '#7a8db8',
-  line:        '#e4eaf8',
-  green:       '#0a6640',
+  ...theme,
   greenSoft:   '#3d6b52',
-  greenBg:     '#e8f5ee',
-  greenAccent: '#16a364',
   danger:      '#d94b4b',
   gold:        '#7a5200',
   goldBg:      '#fffbf0',
   goldLine:    '#edddb0',
   goldBtn:     '#a87000',
-  bg:          '#f4f7fd',
   shadow:      '0 8px 28px rgba(0,24,81,.09)',
 }
 
@@ -30,69 +19,32 @@ const stateData = {
   eco: {
     newInstallment: 'R$ 496',
     mode:           'eco',
-    eyebrow:        'Sem Aumentar o Prazo',
+    eyebrow:        'Menos custo sem esticar o prazo',
     headlinePrefix: 'Economize até',
     headlineValue:  'R$ 2.399',
     headlineSuffix: '',
-    subhead:        'reduzindo o valor total do seu contrato',
+    subhead:        'com redução real no custo total do contrato',
     margin:         'R$ 320',
     credit:         'R$ 5.033',
-    cta:            'Quero Economizar Agora',
+    cta:            'Escolher economia inteligente',
   },
   parc: {
     newInstallment: 'R$ 433',
     mode:           'parc',
-    eyebrow:        'Mais Alívio no Orçamento',
+    eyebrow:        'Mais folga no orçamento mensal',
     headlinePrefix: 'Economize até',
     headlineValue:  'R$ 117',
     headlineSuffix: 'por mês',
-    subhead:        'mais folga no seu orçamento mensal',
+    subhead:        'alívio mensal para organizar melhor as contas',
     margin:         'R$ 480',
     credit:         'R$ 7.593',
-    cta:            'Quero Pagar Menos Agora',
+    cta:            'Escolher parcela menor',
   },
 }
 
-// ── Desktop Header ────────────────────────────────────────────────────────────
+//  Desktop Header 
 
-function DesktopHeader({ clientName, onLogoClick }) {
-  return (
-    <div style={{ background: t.navy, padding: '28px 40px 32px' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
-        <button
-          type="button"
-          onClick={onLogoClick}
-          aria-label="Ir para ofertas"
-          style={{ border: 0, background: 'transparent', padding: 0, cursor: 'pointer' }}
-        >
-          <img src={logoSvg} alt="ConsigAI" style={{ height: 52, width: 'auto', display: 'block' }} />
-        </button>
-
-        <div style={{ flex: 1, maxWidth: 540 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 999, background: t.blueLight, padding: '4px 12px 4px 8px' }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: t.blue }} />
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', color: t.blue, textTransform: 'uppercase' }}>Portabilidade</span>
-            </div>
-          </div>
-          <h1 style={{ margin: 0, fontSize: 26, fontWeight: 700, color: '#fff', letterSpacing: '-.02em', lineHeight: 1.2 }}>
-            Reduza juros e pague menos no total
-          </h1>
-          <p style={{ margin: '8px 0 0', fontSize: 13, color: 'rgba(255,255,255,.72)', fontWeight: 500, lineHeight: 1.55 }}>
-            Transfira seus contratos para uma taxa menor sem precisar receber dinheiro novo.
-          </p>
-        </div>
-
-        <div style={{ flexShrink: 0, borderRadius: 14, background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.1)', padding: '12px 18px', textAlign: 'right' }}>
-          <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '.07em', color: 'rgba(255,255,255,.55)', fontWeight: 600, marginBottom: 4 }}>Cliente</div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>{clientName}</div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ── Choice button ─────────────────────────────────────────────────────────────
+//  Choice button 
 
 function ChoiceBtn({ active, onClick, bars, title, sub }) {
   return (
@@ -120,7 +72,7 @@ function ChoiceBtn({ active, onClick, bars, title, sub }) {
   )
 }
 
-// ── Receipt ───────────────────────────────────────────────────────────────────
+//  Receipt 
 
 function ReceiptEco() {
   return (
@@ -142,7 +94,7 @@ function ReceiptEco() {
       </div>
 
       <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-      <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>PARABÉNS! VOCÊ ECONOMIZOU</div>
+      <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>PARABENS! VOCE ECONOMIZOU</div>
       <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323', lineHeight: 1 }}>R$ 2.399</div>
       <div style={{ textAlign: 'center', marginTop: 4, fontSize: 8.5, fontWeight: 700, letterSpacing: '.08em', color: '#888', textTransform: 'uppercase' }}>SEM AUMENTAR O PRAZO</div>
       <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
@@ -151,12 +103,12 @@ function ReceiptEco() {
         <thead>
           <tr>
             <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767', paddingRight: 10 }}>Cód.</th>
-            <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>De → Para</th>
+            <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>De   Para</th>
             <th style={{ fontSize: 8, textAlign: 'right', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>Economia</th>
           </tr>
         </thead>
         <tbody>
-          {[['0056347710','FACTA → Banrisul','R$ 779,14'],['0123472010087','Bradesco → Banrisul','R$ 550,93'],['0056346924','FACTA → Banrisul','R$ 365,63'],['0057628452','FACTA → Banrisul','R$ 167,50'],['622921912','Itaú Consig. → Banrisul','R$ 0,30']].map(([cod, de, eco]) => (
+          {[['0056347710','FACTA   Banrisul','R$ 779,14'],['0123472010087','Bradesco   Banrisul','R$ 550,93'],['0056346924','FACTA   Banrisul','R$ 365,63'],['0057628452','FACTA   Banrisul','R$ 167,50'],['622921912','Itaú Consig.   Banrisul','R$ 0,30']].map(([cod, de, eco]) => (
             <tr key={cod}>
               <td style={{ fontSize: 8, padding: '4px 0', paddingRight: 10, whiteSpace: 'nowrap' }}>{cod}</td>
               <td style={{ padding: '4px 0' }}>{de}</td>
@@ -214,7 +166,7 @@ function ReceiptParc() {
       </div>
 
       <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-      <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>PARABÉNS! VOCÊ ECONOMIZOU</div>
+      <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>PARABENS! VOCE ECONOMIZOU</div>
       <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323', lineHeight: 1 }}>
         R$ 117<span style={{ fontSize: '55%', fontWeight: 700, verticalAlign: 'middle' }}> /mês</span>
       </div>
@@ -225,12 +177,12 @@ function ReceiptParc() {
         <thead>
           <tr>
             <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767', paddingRight: 10 }}>Cód.</th>
-            <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>De → Para</th>
+            <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>De   Para</th>
             <th style={{ fontSize: 8, textAlign: 'right', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>Alívio/mês</th>
           </tr>
         </thead>
         <tbody>
-          {[['0123472010087','Bradesco → Banrisul','R$ 25,86'],['0056347710','FACTA → Banrisul','R$ 24,85'],['0056346924','FACTA → Banrisul','R$ 12,13'],['0057628452','FACTA → Banrisul','R$ 7,95']].map(([cod, de, alivio]) => (
+          {[['0123472010087','Bradesco   Banrisul','R$ 25,86'],['0056347710','FACTA   Banrisul','R$ 24,85'],['0056346924','FACTA   Banrisul','R$ 12,13'],['0057628452','FACTA   Banrisul','R$ 7,95']].map(([cod, de, alivio]) => (
             <tr key={cod}>
               <td style={{ fontSize: 8, padding: '4px 0', paddingRight: 10, whiteSpace: 'nowrap' }}>{cod}</td>
               <td style={{ padding: '4px 0' }}>{de}</td>
@@ -268,7 +220,7 @@ function ReceiptParc() {
   )
 }
 
-// ── Mini card ─────────────────────────────────────────────────────────────────
+//  Mini card 
 
 function MiniCard({ variant, name, desc, value, onNav }) {
   const isRefin = variant === 'refin'
@@ -333,7 +285,7 @@ function MiniCard({ variant, name, desc, value, onNav }) {
   )
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
+//  Main 
 
 export default function Portabilidade() {
   const navigate    = useNavigate()
@@ -352,23 +304,45 @@ export default function Portabilidade() {
   const stateColors = isEco
     ? { bg: t.greenBg, eyebrow: t.green, headline: t.greenSoft, big: t.green, subhead: t.greenSoft }
     : { bg: '#ebf0ff', eyebrow: t.blue, headline: '#2a4a8a', big: t.blue, subhead: '#2a4a8a' }
+  const salarioBase = 2200
+  const parcelaAntes = 550
+
+  const parseMoney = (value) => {
+    const normalized = String(value ?? '')
+      .replace(/[^\d,.-]/g, '')
+      .replace(/\./g, '')
+      .replace(',', '.')
+    const parsed = Number(normalized)
+    return Number.isFinite(parsed) ? parsed : 0
+  }
+
+  const formatMoney = (value) =>
+    `R$ ${Number(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+
+  const parcelaDepois = parseMoney(d.newInstallment)
+  const liquidoAntes = salarioBase - parcelaAntes
+  const liquidoDepois = salarioBase - parcelaDepois
 
   const handleGoContratacao = () => {
     const benefit = `${d.headlineValue}${d.headlineSuffix ? ` ${d.headlineSuffix}` : ''}`
-    navigate('/contratacao', {
+    navigate('/dados-bancarios', {
       state: {
         sourcePath: '/portabilidade',
-        offerTitle: 'Portabilidade',
-        offerSubtitle: 'Resumo da oferta selecionada antes da contratacao',
-        primaryValue: benefit,
-        ctaLabel: 'Confirmar Portabilidade',
-        summary: [
-          { label: 'Estrategia', value: mode === 'eco' ? 'Economizar agora' : 'Parcela menor' },
-          { label: 'Parcela nova', value: d.newInstallment },
-          { label: 'Beneficio', value: benefit },
-          { label: 'Margem livre', value: `ate ${d.margin}` },
-          { label: 'Credito futuro', value: `ate ${d.credit}` },
-        ],
+        nextPath: '/contratacao',
+        offerState: {
+          sourcePath: '/portabilidade',
+          offerTitle: 'Portabilidade',
+          offerSubtitle: 'Resumo da oferta selecionada antes da contratacao',
+          primaryValue: benefit,
+          ctaLabel: 'Confirmar Portabilidade',
+          summary: [
+            { label: 'Estrategia', value: mode === 'eco' ? 'Economizar agora' : 'Parcela menor' },
+            { label: 'Parcela nova', value: d.newInstallment },
+            { label: 'Beneficio', value: benefit },
+            { label: 'Margem livre', value: `ate ${d.margin}` },
+            { label: 'Credito futuro', value: `ate ${d.credit}` },
+          ],
+        },
       },
     })
   }
@@ -411,7 +385,7 @@ export default function Portabilidade() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 34px 1fr', alignItems: 'center' }}>
             <div style={{ fontSize: 22, fontWeight: 700, lineHeight: 1, letterSpacing: '-.02em', color: t.danger, textDecoration: 'line-through', textDecorationColor: 'rgba(217,75,75,.55)' }}>R$&nbsp;550</div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9eaccf', fontSize: 20, fontWeight: 600, lineHeight: 1 }}>→</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9eaccf', fontSize: 20, fontWeight: 600, lineHeight: 1 }}> </div>
             <div style={{ fontSize: 22, fontWeight: 700, lineHeight: 1, letterSpacing: '-.02em', color: t.greenAccent, textAlign: 'right' }}>{d.newInstallment}</div>
           </div>
         </div>
@@ -494,7 +468,7 @@ export default function Portabilidade() {
               }}
               onClick={() => window.print()}
             >
-              <span aria-hidden="true">⬇</span>
+              <span aria-hidden="true">!</span>
               <span>Fazer download da oferta</span>
             </button>
           </div>
@@ -508,11 +482,51 @@ export default function Portabilidade() {
       {/* Other options */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, paddingTop: 4 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: t.text, flex: 1 }}>Outras opções para você</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: t.text, flex: 1 }}>Outras opções para comparar</div>
           <div style={{ fontSize: 10, color: t.muted, fontWeight: 500 }}>2 disponíveis</div>
         </div>
         <MiniCard variant="refin" name="Refinanciamento" desc="Receba dinheiro agora sem aumentar sua parcela atual" value="9.547" onNav={() => navigate('/refinanciamento')} />
         <MiniCard variant="novo"  name="Novo Empréstimo"  desc="Mais dinheiro disponível com pequeno ajuste na parcela" value="2.845" onNav={() => navigate('/novo-contrato')} />
+      </div>
+    </div>
+  )
+
+  const summarySidebar = (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ background: '#fff', borderRadius: 16, border: `1px solid ${t.line}`, boxShadow: t.shadow, padding: 14 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: t.muted, marginBottom: 10 }}>
+          Resumo da oferta
+        </div>
+        {[
+          ['Estratégia', mode === 'eco' ? 'Economia inteligente' : 'Parcela menor'],
+          ['Parcela nova', d.newInstallment],
+          ['Benefício', `${d.headlineValue}${d.headlineSuffix ? ` ${d.headlineSuffix}` : ''}`],
+          ['Margem livre', `até ${d.margin}`],
+          ['Crédito futuro', `até ${d.credit}`],
+        ].map(([label, value]) => (
+          <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '7px 0', borderBottom: `1px solid ${t.line}` }}>
+            <span style={{ fontSize: 11, color: t.muted, fontWeight: 600 }}>{label}</span>
+            <strong style={{ fontSize: 11.5, color: t.text, fontWeight: 700, textAlign: 'right' }}>{value}</strong>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ background: '#fff', borderRadius: 16, border: `1px solid ${t.line}`, boxShadow: t.shadow, padding: 14 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: t.muted, marginBottom: 10 }}>
+          Salário líquido
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <div style={{ borderRadius: 12, border: `1px solid ${t.line}`, background: '#f7f9ff', padding: 10 }}>
+            <div style={{ fontSize: 9.5, textTransform: 'uppercase', letterSpacing: '.06em', color: t.muted, fontWeight: 700, marginBottom: 5 }}>Antes</div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: t.text, lineHeight: 1.1 }}>{formatMoney(liquidoAntes)}</div>
+            <div style={{ fontSize: 10, color: t.muted, marginTop: 5, lineHeight: 1.35 }}>Com parcela de {formatMoney(parcelaAntes)}</div>
+          </div>
+          <div style={{ borderRadius: 12, border: '1px solid #b8e0ca', background: '#eefaf3', padding: 10 }}>
+            <div style={{ fontSize: 9.5, textTransform: 'uppercase', letterSpacing: '.06em', color: t.green, fontWeight: 700, marginBottom: 5 }}>Depois</div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: t.green, lineHeight: 1.1 }}>{formatMoney(liquidoDepois)}</div>
+            <div style={{ fontSize: 10, color: t.greenSoft, marginTop: 5, lineHeight: 1.35 }}>Com parcela de {formatMoney(parcelaDepois)}</div>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -550,35 +564,43 @@ export default function Portabilidade() {
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: translateY(0) } }
       `}</style>
 
-      <div style={{ minHeight: '100vh', background: t.bg, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: t.text }}>
+      <div style={appPageStyle}>
         {isDesktop ? (
           <>
-            <DesktopHeader clientName={clientName} onLogoClick={() => navigate('/ofertas')} />
+            <DesktopPageHeader
+              clientName={clientName}
+              chipLabel="Portabilidade"
+              title="Reduza juros e recupere espaco no orcamento"
+              subtitle="Transfira seus contratos para taxa menor e escolha entre economizar mais ou aliviar a parcela."
+              onLogoClick={() => navigate('/ofertas')}
+              actions={[
+                { label: 'Ofertas', onClick: () => navigate('/ofertas') },
+                { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+              ]}
+            />
             <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 40px 56px' }}>
-              {content}
-              {bottomBack}
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 24, alignItems: 'start' }}>
+                <div>
+                  {content}
+                  {bottomBack}
+                </div>
+                <div style={{ position: 'sticky', top: 24 }}>
+                  {summarySidebar}
+                </div>
+              </div>
             </div>
           </>
         ) : (
           <>
-            <div style={{ background: t.navy, padding: 'max(18px, env(safe-area-inset-top)) 20px 0' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, marginBottom: 20 }}>
-                <button
-                  type="button"
-                  onClick={() => navigate('/ofertas')}
-                  aria-label="Ir para ofertas"
-                  style={{ border: 0, background: 'transparent', padding: 0, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
-                >
-                  <img src={logoIconSvg} alt="" aria-hidden="true" style={{ height: 28, width: 28 }} />
-                  <span style={{ fontSize: 16, fontWeight: 700, color: '#fff', letterSpacing: '-.01em' }}>ConsigAI</span>
-                </button>
-                <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,.55)', fontWeight: 600, marginBottom: 2 }}>Cliente</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{clientName}</div>
-                </div>
-              </div>
-            </div>
-            <div style={{ background: t.bg, borderRadius: '26px 26px 0 0', marginTop: -26, padding: '20px 18px calc(24px + env(safe-area-inset-bottom))' }}>
+            <MobilePageHeader
+              clientName={clientName}
+              onLogoClick={() => navigate('/ofertas')}
+              actions={[
+                { label: 'Ofertas', onClick: () => navigate('/ofertas') },
+                { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+              ]}
+            />
+            <div style={{ background: t.bg, borderRadius: '26px 26px 0 0', marginTop: 0, padding: '20px 18px calc(24px + env(safe-area-inset-bottom))' }}>
               {content}
               {bottomBack}
             </div>
@@ -588,4 +610,6 @@ export default function Portabilidade() {
     </>
   )
 }
+
+
 
