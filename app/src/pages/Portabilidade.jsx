@@ -357,6 +357,26 @@ export default function Portabilidade() {
     ? { bg: t.greenBg, eyebrow: t.green, headline: t.greenSoft, big: t.green, subhead: t.greenSoft }
     : { bg: '#ebf0ff', eyebrow: t.blue, headline: '#2a4a8a', big: t.blue, subhead: '#2a4a8a' }
 
+  const handleGoContratacao = () => {
+    const benefit = `${d.headlineValue}${d.headlineSuffix ? ` ${d.headlineSuffix}` : ''}`
+    navigate('/contratacao', {
+      state: {
+        sourcePath: '/portabilidade',
+        offerTitle: 'Portabilidade',
+        offerSubtitle: 'Resumo da oferta selecionada antes da contratacao',
+        primaryValue: benefit,
+        ctaLabel: 'Confirmar Portabilidade',
+        summary: [
+          { label: 'Estrategia', value: mode === 'eco' ? 'Economizar agora' : 'Parcela menor' },
+          { label: 'Parcela nova', value: d.newInstallment },
+          { label: 'Beneficio', value: benefit },
+          { label: 'Margem livre', value: `ate ${d.margin}` },
+          { label: 'Credito futuro', value: `ate ${d.credit}` },
+        ],
+      },
+    })
+  }
+
   const content = (
     <div style={{ maxWidth: isDesktop ? 760 : undefined }}>
       {/* Tag */}
@@ -429,6 +449,7 @@ export default function Portabilidade() {
 
         {/* CTA */}
         <button
+          onClick={handleGoContratacao}
           onMouseEnter={() => setHovCta(true)}
           onMouseLeave={() => setHovCta(false)}
           style={{

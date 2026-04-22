@@ -89,14 +89,6 @@ const mainCards = [
 
 const soloCards = [
   {
-    label: 'Só economia',
-    title: 'Portabilidade',
-    value: 'R$ 2.399',
-    desc: 'Reduza juros e pague menos no total sem combinar outras soluções.',
-    cta: 'Ver portabilidade',
-    theme: 'green',
-  },
-  {
     label: 'Só crédito novo',
     title: 'Novo contrato',
     value: 'R$ 8.400',
@@ -150,7 +142,7 @@ function BtnPrimary({ children, onClick, onNav }) {
   )
 }
 
-function MainOfferCard({ card, selected, onSelect }) {
+function MainOfferCard({ card, selected, onSelect, onNav }) {
   const theme = themeMap[card.theme]
 
   return (
@@ -212,7 +204,7 @@ function MainOfferCard({ card, selected, onSelect }) {
         ))}
       </div>
 
-      <BtnPrimary>{card.cta}</BtnPrimary>
+      <BtnPrimary onNav={onNav}>{card.cta}</BtnPrimary>
     </div>
   )
 }
@@ -331,6 +323,15 @@ export default function Ofertas() {
             card={card}
             selected={selectedMain === card.title}
             onSelect={() => setSelectedMain(v => v === card.title ? null : card.title)}
+            onNav={
+              card.title === 'Receba e economize'
+                ? () => navigate('/novo-economia')
+                : card.title === 'Receba e pague menos'
+                  ? () => navigate('/refin-portabilidade')
+                  : card.title === 'Abra novas possibilidades'
+                    ? () => navigate('/portabilidade')
+                  : undefined
+            }
           />
         ))}
       </div>
@@ -350,7 +351,8 @@ export default function Ofertas() {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: isDesktop ? '1fr 1fr 1fr' : '1fr',
+          gridTemplateColumns: isDesktop ? 'repeat(2, minmax(280px, 360px))' : '1fr',
+          justifyContent: 'center',
           gap: 12,
         }}>
           {soloCards.map((card) => {

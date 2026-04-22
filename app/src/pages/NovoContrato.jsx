@@ -401,6 +401,25 @@ export default function NovoContrato() {
     ? `Quero Novo Contrato de R$ ${fmt(offer.valor)} em ${offer.prazo}x`
     : 'Quero Novo Contrato'
 
+  const handleGoContratacao = () => {
+    if (!offer) return
+    navigate('/contratacao', {
+      state: {
+        sourcePath: '/novo-contrato',
+        offerTitle: 'Novo Contrato',
+        offerSubtitle: 'Resumo da oferta selecionada antes da contratacao',
+        primaryValue: `R$ ${fmt(offer.valor)}`,
+        ctaLabel: 'Confirmar Novo Contrato',
+        summary: [
+          { label: 'Voce recebe', value: `R$ ${fmt(offer.valor)}` },
+          { label: 'Prazo', value: `${offer.prazo}x` },
+          { label: 'Parcela', value: `R$ ${fmtDec(offer.parcela)}/mes` },
+          { label: 'Taxa', value: `${OFERTA.taxaMensal.toFixed(2).replace('.', ',')}% a.m.` },
+        ],
+      },
+    })
+  }
+
   // Custom field feedback
   const getFeedback = () => {
     const v = parseFloat(customRaw)
@@ -578,7 +597,7 @@ export default function NovoContrato() {
 
       {/* CTA */}
       <button
-        onClick={() => setSheetOpen(true)}
+        onClick={handleGoContratacao}
         onMouseEnter={() => setHovCta(true)}
         onMouseLeave={() => setHovCta(false)}
         style={{

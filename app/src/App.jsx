@@ -6,6 +6,8 @@ import NovoContrato from './pages/NovoContrato'
 import Portabilidade from './pages/Portabilidade'
 import Refinanciamento from './pages/Refinanciamento'
 import Ofertas from './pages/Ofertas'
+import NovoEconomia from './pages/NOVO+ECONOMIA'
+import RefinPortabilidade from './pages/REFIN+PORTABILIDADE'
 
 export default function App() {
   return (
@@ -19,6 +21,8 @@ export default function App() {
         <Route path="/portabilidade" element={<Portabilidade />} />
         <Route path="/refinanciamento" element={<Refinanciamento />} />
         <Route path="/ofertas" element={<Ofertas />} />
+        <Route path="/novo-economia" element={<NovoEconomia />} />
+        <Route path="/refin-portabilidade" element={<RefinPortabilidade />} />
       </Routes>
     </BrowserRouter>
   )

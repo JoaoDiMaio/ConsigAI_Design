@@ -455,6 +455,25 @@ export default function Refinanciamento() {
   const scenario = SCENARIOS[activeIdx]
   const ctaNames = ['Máximo Dinheiro', 'Máxima Margem', 'Menor Parcela']
 
+  const handleGoContratacao = () => {
+    navigate('/contratacao', {
+      state: {
+        sourcePath: '/refinanciamento',
+        offerTitle: 'Refinanciamento',
+        offerSubtitle: 'Resumo da oferta selecionada antes da contratacao',
+        primaryValue: scenario.cash,
+        ctaLabel: 'Confirmar Refinanciamento',
+        summary: [
+          { label: 'Cenario', value: ctaNames[activeIdx] },
+          { label: 'Voce recebe', value: scenario.cash },
+          { label: 'Nova parcela', value: scenario.installment },
+          { label: 'Margem livre', value: scenario.margem },
+          { label: 'Contratos', value: String(scenario.contracts.length) },
+        ],
+      },
+    })
+  }
+
   const scenarioList = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: isDesktop ? 0 : 24 }}>
       {/* Tag */}
@@ -498,7 +517,7 @@ export default function Refinanciamento() {
       <button
         onMouseEnter={() => setHovCta(true)}
         onMouseLeave={() => setHovCta(false)}
-        onClick={() => setSheet(true)}
+        onClick={handleGoContratacao}
         style={{
           width: '100%', border: 0, borderRadius: 14, padding: '15px 14px', marginBottom: 8,
           background: hovCta ? t.blue2 : t.blue, color: '#fff', fontSize: 15, fontWeight: 600,

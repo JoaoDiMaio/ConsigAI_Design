@@ -30,17 +30,16 @@
     body.large-font { --scale: 1.13; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #dde4f2; font-family: var(--font); color: var(--text);
-      min-height: 100vh; display: flex; align-items: flex-start;
-      justify-content: center; padding: 28px 16px;
+      background: var(--bg-panel); font-family: var(--font); color: var(--text);
+      min-height: 100vh; margin: 0;
     }
     .phone {
-      width: 350px; background: var(--bg-panel);
-      border-radius: 44px; border: 9px solid var(--navy);
-      box-shadow: var(--shadow-phone); overflow: hidden;
+      width: 100%; max-width: none; background: transparent;
+      border-radius: 0; border: 0;
+      box-shadow: none; overflow: visible;
     }
     .screen {
-      max-height: 800px; overflow-y: auto; overflow-x: hidden;
+      min-height: 100vh; max-height: none; overflow-y: visible; overflow-x: hidden;
       scroll-behavior: smooth; background: var(--bg-panel);
     }
     .screen::-webkit-scrollbar { display: none; }
