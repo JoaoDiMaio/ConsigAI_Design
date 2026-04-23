@@ -1,0 +1,4 @@
+interface:
+  display_name: "Eller Frontend"
+  short_description: "Modern frontend engineering and performance specialist"
+  default_prompt: "Build responsive, accessible, high-performance frontend applications with modern frameworks and pixel-perfect UI implementation"

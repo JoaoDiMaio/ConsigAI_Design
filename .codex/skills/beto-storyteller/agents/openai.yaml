@@ -1,0 +1,4 @@
+interface:
+  display_name: "Beto Storyteller"
+  short_description: "Storytelling e copy para jornadas de credito"
+  default_prompt: "Crie copy para jornada de credito em 3 variacoes (conservadora, equilibrada e comercial), com clareza imediata, confianca, CTA especifico e racional curto por variacao."

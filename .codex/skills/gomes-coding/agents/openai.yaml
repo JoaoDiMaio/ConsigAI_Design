@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gomes Coding"
+  short_description: "Premium full-stack implementation specialist"
+  default_prompt: "Implement premium web experiences with Laravel, Livewire, FluxUI, advanced CSS, and clean production-grade architecture"

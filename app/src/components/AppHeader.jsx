@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import logoSvg from '../assets/logo.svg'
 import logoIconSvg from '../assets/logo-icon.svg'
 import { useMediaQuery } from '../hooks/useMediaQuery'
@@ -7,9 +7,7 @@ import { appFontFamily, theme } from '../ui/theme'
 const DESKTOP_HEADER_HEIGHT = 126
 const TABLET_HEADER_HEIGHT = 112
 const MOBILE_HEADER_HEIGHT = 96
-const DESKTOP_LOGO_HEIGHT = 58
-const TABLET_LOGO_HEIGHT = 54
-const MOBILE_LOGO_ICON_SIZE = 38
+const MOBILE_LOGO_ICON_SIZE = 48
 
 function toClientCallName(clientName) {
   const full = String(clientName || '').trim()
@@ -49,7 +47,7 @@ function ClientMenu({ clientName, actions = [], compact = false }) {
   }, [])
 
   const hasActions = actions.length > 0
-  const menuId = useMemo(() => `client-menu-${Math.random().toString(36).slice(2, 8)}`, [])
+  const menuId = useId()
 
   return (
     <div ref={wrapperRef} style={{ position: 'relative' }}>
@@ -161,22 +159,47 @@ export function DesktopPageHeader({
   const isTabletHeader = useMediaQuery('(max-width: 1079px)')
 
   const headerMinHeight = isTabletHeader ? TABLET_HEADER_HEIGHT : DESKTOP_HEADER_HEIGHT
-  const headerPadding = isTabletHeader ? '10px 18px' : '12px 24px'
+  const headerHorizontalPadding = isTabletHeader ? 18 : 24
   const headerGrid = isTabletHeader ? '196px minmax(0, 1fr) auto' : '220px minmax(0, 1fr) auto'
-  const logoHeight = isTabletHeader ? TABLET_LOGO_HEIGHT : DESKTOP_LOGO_HEIGHT
+  const logoHeight = Math.round(headerMinHeight * 0.58)
   const titleFontSize = isTabletHeader ? 19 : 21
   const subtitleFontSize = isTabletHeader ? 12 : 13
   const subtitleClamp = isTabletHeader ? 1 : 2
 
   return (
-    <div style={{ background: theme.navy, padding: headerPadding, minHeight: headerMinHeight, boxSizing: 'border-box' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+    <div
+      style={{
+        background: theme.navy,
+        minHeight: headerMinHeight,
+        boxSizing: 'border-box',
+        display: 'flex',
+        alignItems: 'center',
+        padding: `0 ${headerHorizontalPadding}px`,
+        position: 'relative',
+      }}
+    >
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', right: -60, top: -60, width: 280, height: 280, borderRadius: '50%', background: 'rgba(35,86,216,.15)' }} />
+        <div style={{ position: 'absolute', right: 80, top: 10, width: 140, height: 140, borderRadius: '50%', background: 'rgba(35,86,216,.08)' }} />
+      </div>
+      <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', position: 'relative' }}>
         <div style={{ display: 'grid', gridTemplateColumns: headerGrid, alignItems: 'center', gap: '8px 12px' }}>
           <button
             type="button"
             onClick={onLogoClick}
             aria-label="Ir para ofertas"
-            style={{ border: 0, background: 'transparent', padding: 0, cursor: 'pointer', height: isTabletHeader ? 54 : 58, display: 'flex', alignItems: 'center' }}
+            style={{
+              border: 0,
+              background: 'transparent',
+              padding: 0,
+              cursor: 'pointer',
+              minHeight: logoHeight,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              alignSelf: 'center',
+              lineHeight: 0,
+            }}
           >
             <img src={logoSvg} alt="ConsigAI" style={{ height: logoHeight, width: 'auto', display: 'block' }} />
           </button>
@@ -235,16 +258,25 @@ export function MobilePageHeader({
   const displayClientName = toClientCallName(clientName)
 
   return (
-    <div style={{ background: theme.navy, padding: 'max(10px, env(safe-area-inset-top)) 14px 10px', minHeight: MOBILE_HEADER_HEIGHT, boxSizing: 'border-box' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 42 }}>
+    <div
+      style={{
+        background: theme.navy,
+        padding: 'max(10px, env(safe-area-inset-top)) 14px 10px',
+        minHeight: MOBILE_HEADER_HEIGHT,
+        boxSizing: 'border-box',
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 46, width: '100%' }}>
         <button
           type="button"
           onClick={onLogoClick}
           aria-label="Ir para ofertas"
-          style={{ border: 0, background: 'transparent', padding: 0, display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', height: 44 }}
+          style={{ border: 0, background: 'transparent', padding: 0, display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer', minHeight: 46, lineHeight: 0 }}
         >
           <img src={logoIconSvg} alt="" aria-hidden="true" style={{ height: MOBILE_LOGO_ICON_SIZE, width: MOBILE_LOGO_ICON_SIZE }} />
-          <span style={{ fontSize: 19, fontWeight: 700, color: '#fff', letterSpacing: '-.01em', lineHeight: 1 }}>ConsigAI</span>
+          <span style={{ fontSize: 21, fontWeight: 700, color: '#fff', letterSpacing: '-.01em', lineHeight: 1 }}>ConsigAI</span>
         </button>
 
         <div style={{ marginLeft: 'auto' }}>

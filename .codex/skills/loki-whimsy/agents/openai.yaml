@@ -1,0 +1,4 @@
+interface:
+  display_name: "Loki Whimsy"
+  short_description: "Copy criativa com tom playful"
+  default_prompt: "Crie copy memoravel em 3 variacoes (segura, equilibrada e ousada), com humor inteligente, clareza imediata, CTA especifico e racional curto por variacao."

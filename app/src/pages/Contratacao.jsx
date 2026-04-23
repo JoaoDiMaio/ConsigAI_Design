@@ -67,10 +67,10 @@ export default function Contratacao() {
   const [check2, setCheck2] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
-  const summary = state?.summary ?? []
   const sourcePath = state?.sourcePath ?? '/ofertas'
 
   const offerData = useMemo(() => {
+    const summary = state?.summary ?? []
     const type = state?.offerTitle ?? 'Portabilidade de consignado'
     const heroValue = pickSummaryValue(summary, ['parcela nova', 'parcela', 'nova parcela'], state?.primaryValue ?? 'R$ 496/mes')
     const savingValue = pickSummaryValue(summary, ['beneficio', 'economia'], 'R$ 2.399')
@@ -87,7 +87,7 @@ export default function Contratacao() {
       term,
       rate,
     }
-  }, [state, summary])
+  }, [state])
 
   useEffect(() => {
     if (submitted) {

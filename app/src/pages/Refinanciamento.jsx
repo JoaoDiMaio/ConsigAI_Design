@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
+import { MiniCard } from '../components/MiniCard'
 import { appPageStyle, theme } from '../ui/theme'
 
 const t = {
@@ -326,67 +327,7 @@ function BottomSheet({ scenario, onClose }) {
   )
 }
 
-//  Mini card 
-
-function MiniCard({ variant, name, desc, value, detail, onNav }) {
-  const isEco = variant === 'eco'
-  const [hov, setHov] = useState(false)
-  const colors = isEco
-    ? { bg: t.greenBg, border: '#b8e0ca', iconBg: '#c0e8d4', iconStroke: t.green, nameCl: t.green, descCl: t.greenSoft, divider: '#b8e0ca', valueCl: t.green, btnBg: t.green, detailCl: t.greenSoft }
-    : { bg: '#eef4ff', border: '#c0d2f5', iconBg: '#c0d4f8', iconStroke: '#1840a8', nameCl: '#0c3278', descCl: '#4a6fa8', divider: '#c0d2f5', valueCl: '#0c3278', btnBg: '#1840a8', detailCl: '#4a6fa8' }
-
-  return (
-    <div style={{ borderRadius: 20, border: `1px solid ${colors.border}`, background: colors.bg, overflow: 'hidden', marginBottom: 8 }}>
-      <div style={{ padding: '14px 14px 0' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12 }}>
-          <div style={{ width: 38, height: 38, borderRadius: 12, background: colors.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            {isEco ? (
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M10 4l6 6-6 6" stroke={colors.iconStroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            ) : (
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke={colors.iconStroke} strokeWidth="1.5" strokeLinecap="round"/></svg>
-            )}
-          </div>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: colors.nameCl, lineHeight: 1.2, marginBottom: 3 }}>{name}</div>
-            <div style={{ fontSize: 10.5, fontWeight: 500, color: colors.descCl, lineHeight: 1.35 }}>{desc}</div>
-          </div>
-        </div>
-      </div>
-      <div style={{ height: 1, background: colors.divider, margin: '0 14px' }} />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, padding: '12px 14px' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 2, whiteSpace: 'nowrap', color: colors.valueCl }}>
-            <span style={{ fontSize: 11, fontWeight: 600 }}>R$</span>
-            <span style={{ fontSize: 22, fontWeight: 700, lineHeight: 1, letterSpacing: '-.02em' }}>{value}</span>
-          </div>
-          <div style={{ fontSize: 9.5, fontWeight: 500, color: colors.detailCl, marginTop: 2 }}>{detail}</div>
-        </div>
-        <button
-          onClick={onNav}
-          onMouseEnter={() => setHov(true)}
-          onMouseLeave={() => setHov(false)}
-          style={{
-            border: 0, borderRadius: 12, color: '#fff', background: colors.btnBg,
-            padding: '11px 16px', fontWeight: 600, fontSize: 11.5, lineHeight: 1.2,
-            cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 5,
-            fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-            boxShadow: '0 4px 10px rgba(0,24,81,.10)',
-            transform: hov ? 'translateY(-1px) scale(1.02)' : 'none',
-            transition: 'transform .18s ease, box-shadow .18s ease, filter .18s ease',
-            filter: hov ? 'brightness(1.03)' : 'none',
-          }}
-        >
-          Ver oferta
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M6 3l5 5-5 5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  )
-}
-
-//  Main 
+//  Main
 
 export default function Refinanciamento() {
   const navigate      = useNavigate()

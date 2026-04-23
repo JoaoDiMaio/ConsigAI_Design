@@ -38,7 +38,12 @@ const VALID_DDDS = new Set([
 
 const onlyDigits = (v) => v.replace(/\D/g, '')
 const normalizeSpaces = (v) => v.replace(/\s+/g, ' ').trim()
-const sanitizeTextInput = (v) => v.replace(/[\u0000-\u001F\u007F<>]/g, '')
+const sanitizeTextInput = (v) =>
+  Array.from(v).filter((ch) => {
+    const code = ch.charCodeAt(0)
+    const isControl = code <= 31 || code === 127
+    return !isControl && ch !== '<' && ch !== '>'
+  }).join('')
 
 function isValidCPF(value) {
   const cpf = onlyDigits(value)
@@ -146,7 +151,6 @@ function FontToggle({ large, onToggle, dark }) {
   const bdr   = dark ? '1px solid rgba(255,255,255,.1)' : `1px solid ${t.line}`
   const shad  = dark ? 'none' : '0 2px 8px rgba(0,24,81,.08)'
   const inact = dark ? 'rgba(255,255,255,.55)' : t.muted
-  const act   = dark ? '#fff' : t.navy
   const actBg = dark ? 'rgba(255,255,255,.14)' : t.navy
   const actC  = dark ? t.navy : '#fff'
 

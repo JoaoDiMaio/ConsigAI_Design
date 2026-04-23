@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fantoni UX"
+  short_description: "Visual design systems and pixel-perfect UI specialist"
+  default_prompt: "Design a beautiful, consistent, accessible interface system with reusable components, clear hierarchy, and implementation-ready specs"

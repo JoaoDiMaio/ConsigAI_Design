@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
+import { loadProfileData } from '../lib/profileStorage'
 import { appPageStyle, theme } from '../ui/theme'
 
 const t = {
@@ -15,7 +16,7 @@ const t = {
 
 const VARIANTS = {
   novo: {
-    route: '/novo-economia',
+    route: '/estrategia-combinada',
     chip: 'Novo Contrato + Economia',
     title: 'Receba agora e construa economia para os proximos meses',
     subtitle: 'Estrategia combinada para equilibrar dinheiro na conta e custo total menor.',
@@ -24,7 +25,7 @@ const VARIANTS = {
     marginValue: 'R$ 320',
     futureCreditValue: 'R$ 5.033',
     ctaLabel: 'Confirmar Estrategia',
-    detailLabel: 'Novo contrato + Portabilidade',
+    detailLabel: 'Novo Contrato + Economia',
     scenarios: [
       {
         key: 'novo_max',
@@ -86,16 +87,16 @@ const VARIANTS = {
     ],
   },
   refin: {
-    route: '/refin-portabilidade',
-    chip: 'Refinanciamento + Portabilidade',
+    route: '/estrategia-combinada',
+    chip: 'Refinanciamento + Economia',
     title: 'Receba agora e reduza o peso financeiro no total',
     subtitle: 'Estrategia combinada para unir liquidez imediata e economia ao longo do contrato.',
-    offerTitle: 'Refinanciamento + Portabilidade',
+    offerTitle: 'Refinanciamento + Economia',
     economyValue: 'R$ 2.399',
     marginValue: 'R$ 320',
     futureCreditValue: 'R$ 5.033',
     ctaLabel: 'Confirmar Estrategia',
-    detailLabel: 'Refinanciamento + Portabilidade',
+    detailLabel: 'Refinanciamento + Economia',
     scenarios: [
       {
         key: 'refin_money',
@@ -158,9 +159,26 @@ const VARIANTS = {
 
 function normalizeVariant(raw) {
   const value = String(raw ?? '').trim().toLowerCase()
+  const normalized = value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+  const hasEconomy = normalized.includes('economia') || normalized.includes('econmia')
 
-  if (['novo', 'novo-economia', 'novo_economia'].includes(value)) return 'novo'
-  if (['refin', 'refin-portabilidade', 'refin_portabilidade'].includes(value)) return 'refin'
+  if (
+    ['novo', 'novo-economia', 'novo_economia'].includes(value) ||
+    (normalized.includes('novo') && hasEconomy)
+  ) {
+    return 'novo'
+  }
+
+  if (
+    ['refin', 'refin-portabilidade', 'refin_portabilidade', 'refin-economia', 'refin_economia'].includes(value) ||
+    (normalized.includes('refin') && hasEconomy)
+  ) {
+    return 'refin'
+  }
 
   return null
 }
@@ -168,6 +186,7 @@ function normalizeVariant(raw) {
 function ScenarioCard({ scenario, active, onClick }) {
   return (
     <button
+      type="button"
       onClick={onClick}
       style={{
         width: '100%',
@@ -216,6 +235,7 @@ function MiniOption({ item, onClick }) {
         <div style={{ fontSize: 10.5, color: t.muted, marginTop: 2, lineHeight: 1.35 }}>{item.desc}</div>
       </div>
       <button
+        type="button"
         onClick={onClick}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
@@ -294,7 +314,8 @@ function LineItem({ label, value }) {
 function StrategyScreen({ variant }) {
   const navigate = useNavigate()
   const isDesktop = useMediaQuery('(min-width: 768px)')
-  const clientName = 'Carlos Eduardo'
+  const profile = useMemo(() => loadProfileData(), [])
+  const clientName = profile.nomeCompleto || 'Cliente'
 
   const config = VARIANTS[variant]
   const [activeIdx, setActiveIdx] = useState(0)
@@ -382,6 +403,7 @@ function StrategyScreen({ variant }) {
       </div>
 
       <button
+        type="button"
         onClick={goToContratacao}
         onMouseEnter={() => setCtaHover(true)}
         onMouseLeave={() => setCtaHover(false)}
@@ -400,10 +422,11 @@ function StrategyScreen({ variant }) {
           transition: 'background .15s ease',
         }}
       >
-        Escolher {scenario.cash} + Economia
+        {config.ctaLabel}
       </button>
 
       <button
+        type="button"
         onClick={() => setDetailsOpen((v) => !v)}
         onMouseEnter={() => setDetailsHover(true)}
         onMouseLeave={() => setDetailsHover(false)}
@@ -462,7 +485,7 @@ function StrategyScreen({ variant }) {
       ))}
 
       <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: t.muted, marginTop: 12, marginBottom: 10 }}>
-        Salrio lquido
+        Salario liquido
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
         <div style={{ borderRadius: 12, border: `1px solid ${t.line}`, background: '#f7f9ff', padding: 10 }}>
@@ -494,6 +517,7 @@ function StrategyScreen({ variant }) {
   const bottomBack = (
     <div style={{ marginTop: isDesktop ? 24 : 18 }}>
       <button
+        type="button"
         onClick={() => navigate('/ofertas')}
         onMouseEnter={() => setBackHover(true)}
         onMouseLeave={() => setBackHover(false)}

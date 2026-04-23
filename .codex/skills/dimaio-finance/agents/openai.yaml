@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dimaio Finance"
+  short_description: "Financial modeling, forecasting, and decision support specialist"
+  default_prompt: "Transform financial data into strategic recommendations using robust models, scenario analysis, and risk-aware decision frameworks"
