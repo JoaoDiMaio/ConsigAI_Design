@@ -1,0 +1,194 @@
+[
+  {
+    "viewport": {
+      "name": "desktop",
+      "width": 1366,
+      "height": 768
+    },
+    "metrics": {
+      "parentOverflowX": false,
+      "frameOverflowX": false,
+      "parentInnerWidth": 1366,
+      "frameInnerWidth": 1366,
+      "cards": [
+        {
+          "id": "oc0",
+          "top": 0,
+          "left": 151,
+          "width": 345.328125,
+          "height": 298.90625
+        },
+        {
+          "id": "oc1",
+          "top": 0,
+          "left": 510.328125,
+          "width": 345.328125,
+          "height": 298.90625
+        },
+        {
+          "id": "oc2",
+          "top": -1.067475438117981,
+          "left": 869.65625,
+          "width": 345.34375,
+          "height": 298.90625
+        }
+      ],
+      "uniqueRows": 2,
+      "sameLine": true,
+      "recommendedAtRight": true,
+      "titleRow": {
+        "top": 19,
+        "left": 170,
+        "width": 307.328125,
+        "height": 28,
+        "right": 477.328125,
+        "bottom": 47
+      },
+      "titlePill": {
+        "top": 19,
+        "left": 170,
+        "width": 146.203125,
+        "height": 28,
+        "right": 316.203125,
+        "bottom": 47
+      },
+      "recommendedBadge": {
+        "top": 21,
+        "left": 357.078125,
+        "width": 120.25,
+        "height": 24,
+        "right": 477.328125,
+        "bottom": 45
+      },
+      "route": "/ofertas"
+    }
+  },
+  {
+    "viewport": {
+      "name": "tablet",
+      "width": 1024,
+      "height": 768
+    },
+    "metrics": {
+      "parentOverflowX": false,
+      "frameOverflowX": false,
+      "parentInnerWidth": 1024,
+      "frameInnerWidth": 1024,
+      "cards": [
+        {
+          "id": "oc0",
+          "top": 0,
+          "left": 16,
+          "width": 489,
+          "height": 286
+        },
+        {
+          "id": "oc1",
+          "top": 0,
+          "left": 519,
+          "width": 489,
+          "height": 286
+        },
+        {
+          "id": "oc2",
+          "top": 298.9304504394531,
+          "left": 252,
+          "width": 520,
+          "height": 318.9062194824219
+        }
+      ],
+      "uniqueRows": 2,
+      "sameLine": true,
+      "recommendedAtRight": true,
+      "titleRow": {
+        "top": 39,
+        "left": 35,
+        "width": 451,
+        "height": 28,
+        "right": 486,
+        "bottom": 67
+      },
+      "titlePill": {
+        "top": 39,
+        "left": 35,
+        "width": 146.203125,
+        "height": 28,
+        "right": 181.203125,
+        "bottom": 67
+      },
+      "recommendedBadge": {
+        "top": 41,
+        "left": 365.75,
+        "width": 120.25,
+        "height": 24,
+        "right": 486,
+        "bottom": 65
+      },
+      "route": "/ofertas"
+    }
+  },
+  {
+    "viewport": {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "metrics": {
+      "parentOverflowX": false,
+      "frameOverflowX": false,
+      "parentInnerWidth": 390,
+      "frameInnerWidth": 390,
+      "cards": [
+        {
+          "id": "oc0",
+          "top": 296.953125,
+          "left": 12,
+          "width": 366,
+          "height": 249.59375
+        },
+        {
+          "id": "oc1",
+          "top": 554.951904296875,
+          "left": 12,
+          "width": 366,
+          "height": 249.59375
+        },
+        {
+          "id": "oc2",
+          "top": 815.8407592773438,
+          "left": 12,
+          "width": 366,
+          "height": 284.59381103515625
+        }
+      ],
+      "uniqueRows": 3,
+      "sameLine": true,
+      "recommendedAtRight": true,
+      "titleRow": {
+        "top": 311.953125,
+        "left": 27,
+        "width": 336,
+        "height": 28,
+        "right": 363,
+        "bottom": 339.953125
+      },
+      "titlePill": {
+        "top": 311.953125,
+        "left": 27,
+        "width": 146.203125,
+        "height": 28,
+        "right": 173.203125,
+        "bottom": 339.953125
+      },
+      "recommendedBadge": {
+        "top": 313.953125,
+        "left": 242.75,
+        "width": 120.25,
+        "height": 24,
+        "right": 363,
+        "bottom": 337.953125
+      },
+      "route": "/ofertas"
+    }
+  }
+]
