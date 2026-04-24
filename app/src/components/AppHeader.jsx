@@ -4,10 +4,10 @@ import logoIconSvg from '../assets/logo-icon.svg'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { appFontFamily, theme } from '../ui/theme'
 
-const DESKTOP_HEADER_HEIGHT = 126
-const TABLET_HEADER_HEIGHT = 112
-const MOBILE_HEADER_HEIGHT = 96
-const MOBILE_LOGO_ICON_SIZE = 48
+const DESKTOP_HEADER_HEIGHT = 72
+const TABLET_HEADER_HEIGHT = 72
+const MOBILE_HEADER_HEIGHT = 72
+const MOBILE_LOGO_ICON_SIZE = 34
 
 function toClientCallName(clientName) {
   const full = String(clientName || '').trim()
@@ -57,16 +57,16 @@ function ClientMenu({ clientName, actions = [], compact = false }) {
         aria-expanded={open}
         aria-controls={hasActions ? menuId : undefined}
         style={{
-          borderRadius: compact ? 10 : 11,
-          border: '1px solid rgba(255,255,255,.18)',
-          background: 'rgba(255,255,255,.1)',
-          padding: compact ? '4px 8px 5px' : '5px 10px 6px',
-          minHeight: compact ? 44 : 40,
+          borderRadius: compact ? 10 : 12,
+          border: '1px solid rgba(255,255,255,.14)',
+          background: 'rgba(255,255,255,.08)',
+          padding: compact ? '4px 8px 5px' : '5px 12px 6px',
+          minHeight: compact ? 40 : 40,
           display: 'inline-flex',
           alignItems: 'center',
           gap: 8,
           cursor: hasActions ? 'pointer' : 'default',
-          boxShadow: '0 2px 6px rgba(0,0,0,.09)',
+          boxShadow: '0 2px 10px rgba(0,0,0,.12)',
           fontFamily: appFontFamily,
         }}
       >
@@ -74,25 +74,25 @@ function ClientMenu({ clientName, actions = [], compact = false }) {
           <div style={{ fontSize: 8, textTransform: 'uppercase', letterSpacing: '.07em', color: 'rgba(255,255,255,.66)', fontWeight: 700, lineHeight: 1 }}>
             Cliente
           </div>
-          <div style={{ marginTop: 2, fontSize: compact ? 11 : 12, fontWeight: 700, color: '#fff', maxWidth: compact ? 136 : 150, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2 }}>
-            {clientName}
+            <div style={{ marginTop: 2, fontSize: compact ? 11 : 12, fontWeight: 700, color: '#fff', maxWidth: compact ? 136 : 170, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2 }}>
+              {clientName}
+            </div>
           </div>
-        </div>
         {hasActions ? (
-          <span
+          <svg
             aria-hidden="true"
+            width="12"
+            height="12"
+            viewBox="0 0 16 16"
+            fill="none"
             style={{
-              color: '#fff',
-              fontSize: 12,
-              lineHeight: 1,
-              fontWeight: 700,
               transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
               transition: 'transform .15s ease',
               display: 'inline-block',
             }}
           >
-            v
-          </span>
+            <path d="M3 6l5 5 5-5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         ) : null}
       </button>
 
@@ -160,11 +160,11 @@ export function DesktopPageHeader({
 
   const headerMinHeight = isTabletHeader ? TABLET_HEADER_HEIGHT : DESKTOP_HEADER_HEIGHT
   const headerHorizontalPadding = isTabletHeader ? 18 : 24
-  const headerGrid = isTabletHeader ? '196px minmax(0, 1fr) auto' : '220px minmax(0, 1fr) auto'
-  const logoHeight = Math.round(headerMinHeight * 0.58)
-  const titleFontSize = isTabletHeader ? 19 : 21
-  const subtitleFontSize = isTabletHeader ? 12 : 13
-  const subtitleClamp = isTabletHeader ? 1 : 2
+  const headerGrid = isTabletHeader ? '190px minmax(0, 1fr) auto' : '214px minmax(0, 1fr) auto'
+  const logoHeight = isTabletHeader ? 36 : 40
+  const titleFontSize = isTabletHeader ? 15 : 16
+  const subtitleFontSize = 11
+  const subtitleClamp = 1
 
   return (
     <div
@@ -175,7 +175,10 @@ export function DesktopPageHeader({
         display: 'flex',
         alignItems: 'center',
         padding: `0 ${headerHorizontalPadding}px`,
-        position: 'relative',
+        position: 'sticky',
+        top: 0,
+        zIndex: 40,
+        boxShadow: '0 2px 16px rgba(0,0,0,.18)',
       }}
     >
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
@@ -205,9 +208,9 @@ export function DesktopPageHeader({
           </button>
 
           <div style={{ minWidth: 0 }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 999, background: theme.blueLight, padding: '3px 10px 3px 7px', marginBottom: 5 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: theme.blue }} />
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', color: theme.blue, textTransform: 'uppercase' }}>{chipLabel}</span>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 999, background: 'rgba(255,255,255,.1)', border: '1px solid rgba(255,255,255,.14)', padding: '3px 10px 3px 7px', marginBottom: 4 }}>
+              <div style={{ width: 5, height: 5, borderRadius: '50%', background: theme.greenAccent }} />
+              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', color: 'rgba(255,255,255,.72)', textTransform: 'uppercase' }}>{chipLabel}</span>
             </div>
             <h1
               style={{
@@ -215,8 +218,8 @@ export function DesktopPageHeader({
                 fontSize: titleFontSize,
                 fontWeight: 700,
                 color: '#fff',
-                letterSpacing: '-.02em',
-                lineHeight: 1.14,
+                letterSpacing: '-.01em',
+                lineHeight: 1.2,
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
@@ -228,9 +231,9 @@ export function DesktopPageHeader({
               style={{
                 margin: '4px 0 0',
                 fontSize: subtitleFontSize,
-                color: 'rgba(255,255,255,.74)',
+                color: 'rgba(255,255,255,.45)',
                 fontWeight: 500,
-                lineHeight: 1.35,
+                lineHeight: 1.2,
                 display: '-webkit-box',
                 WebkitLineClamp: subtitleClamp,
                 WebkitBoxOrient: 'vertical',
@@ -252,6 +255,9 @@ export function DesktopPageHeader({
 
 export function MobilePageHeader({
   clientName,
+  chipLabel,
+  title,
+  subtitle,
   onLogoClick,
   actions = [],
 }) {
@@ -261,14 +267,18 @@ export function MobilePageHeader({
     <div
       style={{
         background: theme.navy,
-        padding: 'max(10px, env(safe-area-inset-top)) 14px 10px',
+        padding: 'max(8px, env(safe-area-inset-top)) 14px 8px',
         minHeight: MOBILE_HEADER_HEIGHT,
         boxSizing: 'border-box',
         display: 'flex',
         alignItems: 'center',
+        boxShadow: '0 2px 16px rgba(0,0,0,.18)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 40,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 46, width: '100%' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', alignItems: 'center', gap: 8, minHeight: 46, width: '100%' }}>
         <button
           type="button"
           onClick={onLogoClick}
@@ -276,10 +286,29 @@ export function MobilePageHeader({
           style={{ border: 0, background: 'transparent', padding: 0, display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer', minHeight: 46, lineHeight: 0 }}
         >
           <img src={logoIconSvg} alt="" aria-hidden="true" style={{ height: MOBILE_LOGO_ICON_SIZE, width: MOBILE_LOGO_ICON_SIZE }} />
-          <span style={{ fontSize: 21, fontWeight: 700, color: '#fff', letterSpacing: '-.01em', lineHeight: 1 }}>ConsigAI</span>
+          <span style={{ fontSize: 19, fontWeight: 700, color: '#fff', letterSpacing: '-.01em', lineHeight: 1 }}>ConsigAI</span>
         </button>
 
-        <div style={{ marginLeft: 'auto' }}>
+        <div style={{ minWidth: 0 }}>
+          {chipLabel ? (
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, borderRadius: 999, background: 'rgba(255,255,255,.1)', border: '1px solid rgba(255,255,255,.14)', padding: '2px 8px 2px 6px', marginBottom: 2 }}>
+              <div style={{ width: 4, height: 4, borderRadius: '50%', background: theme.greenAccent }} />
+              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.07em', color: 'rgba(255,255,255,.72)', textTransform: 'uppercase' }}>{chipLabel}</span>
+            </div>
+          ) : null}
+          {title ? (
+            <div style={{ fontSize: 13, color: '#fff', fontWeight: 700, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', lineHeight: 1.2 }}>
+              {title}
+            </div>
+          ) : null}
+          {subtitle ? (
+            <div style={{ marginTop: 1, fontSize: 10, color: 'rgba(255,255,255,.45)', fontWeight: 500, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', lineHeight: 1.2 }}>
+              {subtitle}
+            </div>
+          ) : null}
+        </div>
+
+        <div style={{ marginLeft: 'auto', justifySelf: 'end' }}>
           <ClientMenu clientName={displayClientName} actions={actions} compact />
         </div>
       </div>

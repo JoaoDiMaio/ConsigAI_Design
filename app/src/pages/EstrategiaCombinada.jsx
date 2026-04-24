@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
+import { MiniCard } from '../components/MiniCard'
 import { loadProfileData } from '../lib/profileStorage'
 import { appPageStyle, theme } from '../ui/theme'
 
@@ -221,40 +222,6 @@ function Kpi({ label, value }) {
     <div style={{ borderRadius: 12, background: t.blueLight, padding: '8px 6px', textAlign: 'center' }}>
       <div style={{ fontSize: 8, textTransform: 'uppercase', color: t.muted, fontWeight: 700, letterSpacing: '.04em', marginBottom: 3 }}>{label}</div>
       <div style={{ fontSize: 12, color: t.blue, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{value}</div>
-    </div>
-  )
-}
-
-function MiniOption({ item, onClick }) {
-  const [hover, setHover] = useState(false)
-
-  return (
-    <div style={{ borderRadius: 18, border: `1px solid ${t.line}`, background: '#fff', padding: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
-      <div>
-        <div style={{ fontSize: 13, color: t.text, fontWeight: 700 }}>{item.name}</div>
-        <div style={{ fontSize: 10.5, color: t.muted, marginTop: 2, lineHeight: 1.35 }}>{item.desc}</div>
-      </div>
-      <button
-        type="button"
-        onClick={onClick}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        style={{
-          border: 0,
-          borderRadius: 12,
-          background: hover ? t.blue2 : t.blue,
-          color: '#fff',
-          padding: '10px 12px',
-          fontSize: 11,
-          fontWeight: 600,
-          cursor: 'pointer',
-          whiteSpace: 'nowrap',
-          fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-          transition: 'background .15s ease',
-        }}
-      >
-        Ver oferta
-      </button>
     </div>
   )
 }
@@ -509,7 +476,15 @@ function StrategyScreen({ variant }) {
         <div style={{ fontSize: 10, color: t.muted, fontWeight: 500 }}>{config.otherOptions.length} disponiveis</div>
       </div>
       {config.otherOptions.map((item) => (
-        <MiniOption key={item.key} item={item} onClick={() => navigate(item.route)} />
+        <MiniCard
+          key={item.key}
+          variant={item.key === 'refin' ? 'refin' : item.key === 'novo' ? 'novo' : 'eco'}
+          name={item.name}
+          desc={item.desc}
+          value={item.value}
+          detail={item.detail}
+          onNav={() => navigate(item.route)}
+        />
       ))}
     </div>
   )
@@ -535,7 +510,12 @@ function StrategyScreen({ variant }) {
           transition: 'background .15s ease',
         }}
       >
-        {'<-'} Voltar para ofertas
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Voltar para ofertas
+        </span>
       </button>
     </div>
   )
@@ -546,7 +526,7 @@ function StrategyScreen({ variant }) {
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-        .mix-layout { display: grid; grid-template-columns: 1fr 380px; gap: 28px; align-items: start; }
+        .mix-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
         .mix-right { position: sticky; top: 24px; }
         .mix-bottom { grid-column: 1; }
         @media (max-width: 980px) {
@@ -570,7 +550,7 @@ function StrategyScreen({ variant }) {
                 { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
               ]}
             />
-            <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 40px 56px' }}>
+            <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px 56px' }}>
               <div className="mix-layout">
                 <div>{scenarioList}</div>
                 <div className="mix-right">
@@ -588,6 +568,9 @@ function StrategyScreen({ variant }) {
           <>
             <MobilePageHeader
               clientName={clientName}
+              chipLabel={config.chip}
+              title={config.title}
+              subtitle={config.subtitle}
               onLogoClick={() => navigate('/ofertas')}
               actions={[
                 { label: 'Ofertas', onClick: () => navigate('/ofertas') },

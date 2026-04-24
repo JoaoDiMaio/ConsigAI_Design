@@ -545,7 +545,9 @@ export default function NovoContrato() {
               transition: 'background .15s ease',
             }}
           >
-            <span aria-hidden="true">v</span>
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M3 11h10M8 3v8M5 8l3 3 3-3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
             <span>Fazer download da simulação</span>
           </button>
         </div>
@@ -635,7 +637,12 @@ export default function NovoContrato() {
           transition: 'background .15s ease',
         }}
       >
-        {'<-'} Voltar para ofertas
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Voltar para ofertas
+        </span>
       </button>
     </div>
   )
@@ -665,8 +672,8 @@ export default function NovoContrato() {
                 { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
               ]}
             />
-            <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 40px 56px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 24, alignItems: 'start' }}>
+            <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px 56px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 340px', gap: 24, alignItems: 'start' }}>
                 <div>
                   {content}
                   {bottomBack}
@@ -681,6 +688,9 @@ export default function NovoContrato() {
           <>
             <MobilePageHeader
               clientName={clientName}
+              chipLabel="Novo Contrato"
+              title="Libere credito novo com equilibrio para o seu mes"
+              subtitle="Simule valor e prazo com clareza para contratar sem apertar o orcamento."
               onLogoClick={() => navigate('/ofertas')}
               actions={[
                 { label: 'Ofertas', onClick: () => navigate('/ofertas') },

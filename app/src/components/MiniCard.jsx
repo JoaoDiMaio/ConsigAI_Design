@@ -5,9 +5,9 @@ const t = { ...theme }
 
 const VARIANT_COLORS = {
   eco: {
-    bg: t.greenBg,
+    bg: '#f4fbf7',
     border: '#b8e0ca',
-    iconBg: '#c0e8d4',
+    iconBg: '#e1f3ea',
     iconStroke: '#0a6640',
     nameCl: t.green,
     descCl: t.greenSoft,
@@ -17,9 +17,9 @@ const VARIANT_COLORS = {
     detailCl: t.greenSoft,
   },
   refin: {
-    bg: t.goldBg,
+    bg: '#fffaf0',
     border: t.goldLine,
-    iconBg: '#fde9a0',
+    iconBg: '#fff0c9',
     iconStroke: '#b07800',
     nameCl: t.gold,
     descCl: '#9b7020',
@@ -29,9 +29,9 @@ const VARIANT_COLORS = {
     detailCl: '#9b7020',
   },
   novo: {
-    bg: '#eef4ff',
+    bg: '#f2f6ff',
     border: '#c0d2f5',
-    iconBg: '#c0d4f8',
+    iconBg: '#d9e5ff',
     iconStroke: '#1840a8',
     nameCl: '#0c3278',
     descCl: '#4a6fa8',
@@ -45,18 +45,18 @@ const VARIANT_COLORS = {
 const VARIANT_ICON = {
   eco: (stroke) => (
     <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-      <path d="M4 10h12M10 4l6 6-6 6" stroke={stroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M4 10h12M11 6l5 4-5 4" stroke={stroke} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
   refin: (stroke) => (
     <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-      <circle cx="10" cy="10" r="7.5" stroke={stroke} strokeWidth="1.5" />
-      <path d="M10 6.5V10.5L12.5 13" stroke={stroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M3 10h3l2 4 3-8 2 4h4" stroke={stroke} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
   novo: (stroke) => (
     <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-      <path d="M10 4v12M4 10h12" stroke={stroke} strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M10 4v12M4 10h12" stroke={stroke} strokeWidth="1.7" strokeLinecap="round" />
+      <circle cx="10" cy="10" r="7.2" stroke={stroke} strokeWidth="1.5" opacity=".55" />
     </svg>
   ),
 }
@@ -67,10 +67,10 @@ export function MiniCard({ variant = 'eco', name, desc, value, detail, onNav }) 
   const [hov, setHov] = useState(false)
 
   return (
-    <div style={{ borderRadius: 20, border: `1px solid ${colors.border}`, background: colors.bg, overflow: 'hidden', marginBottom: 8 }}>
+    <div style={{ borderRadius: 16, border: `2px solid ${colors.border}`, background: colors.bg, overflow: 'hidden', marginBottom: 8 }}>
       <div style={{ padding: '14px 14px 0' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12 }}>
-          <div style={{ width: 38, height: 38, borderRadius: 12, background: colors.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 999, background: colors.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             {icon(colors.iconStroke)}
           </div>
           <div>

@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const OFFER_ROUTES = [
@@ -127,7 +127,7 @@ export default function OfertasNova() {
         }
         .consigai-pocket-card.after .consigai-pocket-pill {
           background: #dff8ea;
-          color: #08783a;
+          color: #0a7c52;
         }
         .consigai-pocket-metric {
           display: grid;
@@ -167,7 +167,7 @@ export default function OfertasNova() {
         }
         .consigai-pocket-card.after .consigai-pocket-icon {
           background: #e0f8ea;
-          color: #0f9d4a;
+          color: #0a7c52;
         }
         .consigai-pocket-label {
           font-size: 11px;
@@ -182,8 +182,8 @@ export default function OfertasNova() {
           color: #061a55;
           line-height: 1.05;
         }
-        .consigai-pocket-val.negative { color: #d73232; }
-        .consigai-pocket-val.positive { color: #0f9d4a; }
+        .consigai-pocket-val.negative { color: rgb(192, 0, 0); }
+        .consigai-pocket-val.positive { color: #0a7c52; }
         .consigai-pocket-note {
           margin-top: 2px;
           color: #49649b;
@@ -192,7 +192,7 @@ export default function OfertasNova() {
         }
         .consigai-pocket-gain {
           border-radius: 14px;
-          border: 1.5px solid #0f9d4a;
+          border: 1.5px solid #0a7c52;
           background: linear-gradient(180deg, #fbfffd 0%, #f2fbf6 100%);
           padding: 14px 14px 12px;
           display: flex;
@@ -204,7 +204,7 @@ export default function OfertasNova() {
           font-weight: 900;
           letter-spacing: .05em;
           text-transform: uppercase;
-          color: #08783a;
+          color: #0a7c52;
           text-align: center;
         }
         .consigai-pocket-gain-hero {
@@ -219,7 +219,7 @@ export default function OfertasNova() {
           width: 42px;
           height: 42px;
           border-radius: 999px;
-          background: #0f9d4a;
+          background: #0a7c52;
           color: #fff;
           display: inline-flex;
           align-items: center;
@@ -246,7 +246,7 @@ export default function OfertasNova() {
           font-size: clamp(20px, 2.8vw, 34px);
           line-height: 1;
           letter-spacing: -.04em;
-          color: #0f9d4a;
+          color: #0a7c52;
           font-weight: 900;
         }
         .consigai-pocket-gain-copy {
@@ -273,7 +273,7 @@ export default function OfertasNova() {
           height: 28px;
           border-radius: 999px;
           background: #e0f8ea;
-          color: #0f9d4a;
+          color: #0a7c52;
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -297,7 +297,7 @@ export default function OfertasNova() {
         .consigai-pocket-gain-num {
           font-size: 16px;
           line-height: 1;
-          color: #0f9d4a;
+          color: #0a7c52;
           font-weight: 900;
           letter-spacing: -.03em;
           white-space: nowrap;
@@ -331,7 +331,7 @@ export default function OfertasNova() {
           border-radius: 50%;
           background: #f1fcf6;
           border: 1px solid #c9f0d9;
-          color: #0f9d4a;
+          color: #0a7c52;
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -535,7 +535,7 @@ export default function OfertasNova() {
       const creditoExtra = Math.max(0, parseCurrency(creditAfter) - parseCurrency(creditToday))
 
       const formatDeduct = (value) => {
-        const clean = value.replace(/^\s*[−-]\s*/, '').trim()
+        const clean = value.replace(/^\s*[--]\s*/, '').trim()
         return clean ? `- ${clean}` : value
       }
 
@@ -743,7 +743,7 @@ export default function OfertasNova() {
     const normalizeCtaSaving = (doc) => {
       const ctaSaving = doc?.querySelector('#ctaSaving')
       if (ctaSaving?.textContent) {
-        ctaSaving.textContent = ctaSaving.textContent.replace(/^\s*[−-]\s*/, '')
+        ctaSaving.textContent = ctaSaving.textContent.replace(/^\s*[--]\s*/, '')
       }
     }
 
@@ -755,7 +755,7 @@ export default function OfertasNova() {
       if (heroOld) heroOld.textContent = parcelaHoje
 
       const todayDeduct = doc.querySelector('.ba-col.today .ba-row-val.deduct')
-      if (todayDeduct) todayDeduct.textContent = `− ${parcelaHoje}`
+      if (todayDeduct) todayDeduct.textContent = `- ${parcelaHoje}`
 
       const oldValuesInCards = doc.querySelectorAll('.offers-grid .offer-val-num.old')
       oldValuesInCards.forEach((el) => {
@@ -766,16 +766,577 @@ export default function OfertasNova() {
       const arrowSpans = doc.querySelectorAll('.offers-grid .offer-val-block span')
       arrowSpans.forEach((el) => {
         const raw = (el.textContent || '').trim()
-        if (raw === '→' || raw === 'â†’' || raw === '->') {
+        if (raw === '?' || raw === 'â†’' || raw === '->') {
           el.style.display = 'none'
         }
       })
       normalizeCtaSaving(doc)
     }
 
+    const getOfferCardSnapshot = (doc) => {
+      const textOf = (selector, fallback = '') => doc.querySelector(selector)?.textContent?.trim() || fallback
+
+      return {
+        money0: textOf('#oc0 .offer-val-num.blue', 'R$ 3.000'),
+        money1: textOf('#oc1 .offer-val-num.blue', 'R$ 500'),
+        parcela0: textOf('#oc0 .offer-val-num.green', 'R$ 214'),
+        parcela1: textOf('#oc1 .offer-val-num.green:last-child', 'R$ 168'),
+      }
+    }
+
+    const applyOfferCardRedesignStyles = (doc) => {
+      if (doc.body?.dataset?.consigaiOfferRedesignStyleApplied) return
+
+      const styleEl = doc.createElement('style')
+      styleEl.textContent = `
+        .hero-sub { display: none !important; }
+        body {
+          background-image:
+            linear-gradient(180deg, rgba(0, 24, 81, .18) 0%, rgba(0, 24, 81, .12) 100%),
+            url('/consigai_fundo_logo_navy_energy.webp') !important;
+          background-size: cover !important;
+          background-position: center !important;
+          background-repeat: no-repeat !important;
+          background-attachment: fixed !important;
+        }
+        .main {
+          position: relative !important;
+          z-index: 0 !important;
+        }
+        .main::before {
+          display: none !important;
+        }
+        .hero-title { color: #1a3d8f !important; }
+        .hero-title em {
+          color: #ec7000 !important;
+          font-style: normal !important;
+        }
+        .hc-col-val.old { color: rgb(192, 0, 0) !important; }
+        .hc-col-val.new,
+        .hc-saving-value,
+        #hcNova,
+        #hcEco {
+          color: #0a7c52 !important;
+        }
+        .ba-row-val.deduct { color: rgb(192, 0, 0) !important; }
+        .ba-section .ba-title,
+        .ba-section .ba-row-label,
+        .ba-section .ba-total-label,
+        .ba-section .ba-credit-label,
+        .ba-section .ba-credit-note,
+        .ba-section .ba-col.today .ba-row-val:not(.deduct),
+        .ba-section .ba-col.today .ba-total-val,
+        .ba-section .ba-col.today .ba-credit-val {
+          color: #1a3d8f !important;
+        }
+        .ba-section .consigai-pocket-label,
+        .ba-section .consigai-pocket-note,
+        .ba-section .consigai-pocket-val:not(.positive):not(.negative),
+        .ba-section .consigai-pocket-card.today .consigai-pocket-pill,
+        .ba-section .consigai-pocket-card.today .consigai-pocket-icon,
+        .ba-section .consigai-pocket-card.after .consigai-pocket-label {
+          color: #1a3d8f !important;
+        }
+        .btn-cta {
+          background: linear-gradient(160deg, #1e4aaa, #12307a) !important;
+        }
+        /* Keep motion only on the 3 offer cards */
+        .main * {
+          animation: none !important;
+          transition: none !important;
+          transform: none;
+        }
+        .offers-grid .offer-card {
+          transition: all .18s ease !important;
+        }
+        .ba-section .vc,
+        .ba-section .popped,
+        #baNova,
+        #baSobra,
+        #baCredito,
+        #baPill {
+          animation: none !important;
+          transition: none !important;
+          transform: none !important;
+        }
+
+        .offers-grid {
+          display: grid !important;
+          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+          gap: 14px !important;
+          align-items: stretch !important;
+        }
+
+        .offer-card {
+          background: #fff !important;
+          border: 2px solid transparent !important;
+          box-shadow: 0 8px 24px rgba(0,24,81,.06) !important;
+          border-radius: 22px !important;
+          padding: 18px !important;
+          min-height: 286px !important;
+          transition: all .18s ease !important;
+          touch-action: manipulation !important;
+          will-change: transform, box-shadow, border-color;
+        }
+        .offer-card.selected {
+          border-color: #1a3d8f !important;
+          box-shadow: 0 16px 34px rgba(35,80,200,.16) !important;
+          background: #fff !important;
+        }
+        #oc0,
+        #oc0.selected {
+          border: 0 !important;
+        }
+        .offer-card.selected::before { display: none !important; }
+        .offer-card:hover {
+          border-color: #c2d0f8 !important;
+          transform: translateY(-1px) !important;
+        }
+        .offer-card:active {
+          transform: scale(.998) !important;
+        }
+
+        .consigai-offer-card {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .consigai-offer-head {
+          margin-bottom: 0;
+          min-height: 0;
+          display: flex;
+          align-items: flex-start;
+          justify-content: flex-end;
+        }
+        .consigai-offer-title-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+          margin-bottom: 14px;
+          flex-wrap: nowrap;
+        }
+        .consigai-offer-title-row .consigai-offer-head-badges {
+          margin-left: auto;
+          justify-content: flex-end;
+        }
+        .consigai-offer-head-badges {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          flex-wrap: nowrap;
+          flex-shrink: 0;
+        }
+        .consigai-hidden-state-badge {
+          display: none !important;
+        }
+        #badge0,
+        #badge1,
+        #badge2 {
+          display: none !important;
+        }
+        .consigai-offer-head-badges .badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: .04em;
+          line-height: 1;
+          padding: 6px 10px;
+          border-radius: 999px;
+          white-space: nowrap;
+        }
+        .consigai-offer-badge-rec {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          border-radius: 999px;
+          padding: 6px 10px;
+          background: linear-gradient(135deg, #fff3cf 0%, #ffe3a3 100%);
+          border: 1px solid #f0d38a;
+          color: #9a6a00;
+          font-size: 10px;
+          font-weight: 950;
+          letter-spacing: .06em;
+          text-transform: uppercase;
+          line-height: 1;
+          white-space: nowrap;
+        }
+
+        .consigai-offer-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          align-self: flex-start;
+          width: auto;
+          max-width: max-content;
+          border-radius: 999px;
+          padding: 7px 12px;
+          background: #e8eeff;
+          border: 1px solid #c2d0f8;
+          color: #1a3d8f;
+          font-size: 12px;
+          font-weight: 900;
+          line-height: 1;
+          margin-bottom: 14px;
+        }
+        .consigai-offer-title-row .consigai-offer-pill {
+          margin-bottom: 0;
+          flex-shrink: 0;
+        }
+        .offer-card.selected .consigai-offer-pill {
+          background: #1a3d8f;
+          border-color: #1a3d8f;
+          color: #fff;
+          box-shadow: 0 8px 18px rgba(35,80,200,.18);
+        }
+
+        .consigai-offer-lines {
+          display: grid;
+          gap: 3px;
+          margin-bottom: 14px;
+        }
+        .consigai-offer-lines .consigai-offer-line:first-of-type {
+          min-height: 50px;
+          align-content: start;
+        }
+        .consigai-offer-line {
+          display: grid;
+          gap: 3px;
+        }
+        .consigai-offer-line-main {
+          font-size: 24px;
+          font-weight: 850;
+          line-height: 1.08;
+          letter-spacing: -.03em;
+        }
+        .consigai-offer-line-main.blue { color: #1a3d8f; }
+        .consigai-offer-line-main.green { color: #ec7000; }
+        .consigai-offer-line-helper {
+          font-size: 11px;
+          color: #1a3d8f;
+          font-weight: 750;
+          line-height: 1;
+        }
+        .consigai-offer-line-helper.spacer {
+          color: transparent;
+        }
+
+        .consigai-offer-or {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: fit-content;
+          font-size: 13px;
+          color: #1a3d8f;
+          font-weight: 850;
+          line-height: 1;
+          letter-spacing: -.01em;
+          border-radius: 999px;
+          background: #e8eeff;
+          border: 1px solid #c2d0f8;
+          padding: 5px 8px;
+          white-space: nowrap;
+          margin: 2px 0;
+        }
+        #oc2 .consigai-offer-lines {
+          display: block;
+        }
+        .consigai-offer-choice-grid {
+          display: grid;
+          grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr);
+          column-gap: 12px;
+          align-items: start;
+        }
+        .consigai-offer-choice-title {
+          color: #ec7000;
+          font-size: 24px;
+          font-weight: 900;
+          letter-spacing: -.03em;
+          line-height: 1;
+          align-self: center;
+        }
+        .consigai-offer-choice-options {
+          display: grid;
+          gap: 8px;
+          min-width: 0;
+        }
+        .consigai-offer-choice-row {
+          display: grid;
+          gap: 2px;
+          min-width: 0;
+        }
+        .consigai-offer-choice-label {
+          font-size: 12px;
+          line-height: 1.1;
+          color: #1a3d8f;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: .03em;
+        }
+        .consigai-offer-choice-value {
+          font-size: 24px;
+          line-height: 1;
+          color: #ec7000;
+          font-weight: 900;
+          letter-spacing: -.03em;
+          white-space: nowrap;
+        }
+
+        .consigai-offer-note {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          font-size: 14px;
+          line-height: 1.42;
+          color: #1a3d8f;
+          font-weight: 700;
+          margin-top: auto;
+          min-height: 48px;
+        }
+        .consigai-offer-note-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #1a3d8f;
+          flex-shrink: 0;
+          margin-top: 6px;
+        }
+        .consigai-offer-note-text {
+          display: grid;
+          gap: 2px;
+        }
+        .consigai-offer-note-title {
+          color: #1a3d8f;
+          font-weight: 850;
+          line-height: 1.15;
+        }
+        .consigai-offer-note-sub {
+          color: #1a3d8f;
+          font-weight: 650;
+          font-size: 12px;
+          line-height: 1.25;
+        }
+
+        .consigai-offer-metric {
+          margin-top: 10px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-radius: 12px;
+          background: #f8faff;
+          border: 1px solid #e4eaf8;
+          padding: 12px;
+        }
+        .offer-card.selected .consigai-offer-metric {
+          background: #f2f6ff;
+          border-color: #c2d0f8;
+          box-shadow: 0 8px 18px rgba(35,80,200,.08);
+        }
+        .consigai-offer-metric-label {
+          font-size: 11px;
+          color: #1a3d8f;
+          font-weight: 800;
+        }
+        .consigai-offer-metric-value {
+          font-size: 16px;
+          color: #1a3d8f;
+          font-weight: 900;
+          letter-spacing: -.02em;
+          white-space: nowrap;
+        }
+        .consigai-offer-metric-value.green { color: #0a7c52; }
+
+        @media (max-width: 1080px) {
+          .offers-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          }
+          .offers-grid > .offer-card:nth-child(3) {
+            grid-column: 1 / -1 !important;
+            justify-self: center !important;
+            width: min(520px, 100%) !important;
+          }
+        }
+
+        @media (max-width: 760px) {
+          .offers-grid {
+            grid-template-columns: minmax(0, 1fr) !important;
+            gap: 10px !important;
+          }
+          .offers-grid > .offer-card:nth-child(3) {
+            grid-column: auto !important;
+            justify-self: stretch !important;
+            width: 100% !important;
+          }
+          .offer-card {
+            min-height: auto !important;
+            padding: 14px !important;
+          }
+          .consigai-offer-line-main {
+            font-size: 22px !important;
+          }
+          .consigai-offer-choice-title {
+            font-size: 22px !important;
+            margin-bottom: 4px !important;
+          }
+          .consigai-offer-choice-value {
+            font-size: 22px !important;
+          }
+          #oc2 .consigai-offer-choice-grid {
+            grid-template-columns: 1fr !important;
+            row-gap: 6px !important;
+          }
+          #oc2 .consigai-offer-choice-options {
+            gap: 6px !important;
+          }
+          #oc2 .consigai-offer-choice-label {
+            font-size: 11px !important;
+          }
+        }
+      `
+      doc.head?.appendChild(styleEl)
+      doc.body.dataset.consigaiOfferRedesignStyleApplied = '1'
+    }
+
+    const upsertOfferCardsRedesign = (doc) => {
+      const card0 = doc.querySelector('#oc0')
+      const card1 = doc.querySelector('#oc1')
+      const card2 = doc.querySelector('#oc2')
+      if (!card0 || !card1 || !card2) return
+
+      // Keep cards stable after first render to improve tap/click responsiveness.
+      const isAlreadyRedesigned =
+        card0.querySelector('.consigai-offer-card') &&
+        card1.querySelector('.consigai-offer-card') &&
+        card2.querySelector('.consigai-offer-card')
+      if (isAlreadyRedesigned) return
+
+      const snapshot = getOfferCardSnapshot(doc)
+      const totalEconomiaMensal = 'R$ 116/mês'
+      const totalEconomiaParcelas = 'R$ 108/mês'
+      const receiveFuture = 'até R$ 5.033'
+
+      card0.innerHTML = `
+        <div class="consigai-offer-card">
+          <span class="consigai-hidden-state-badge badge sel" id="badge0">Selecionada</span>
+          <div class="consigai-offer-title-row">
+            <span class="consigai-offer-pill">Dinheiro + Economia</span>
+            <div class="consigai-offer-head-badges">
+              <span class="consigai-offer-badge-rec">★ Recomendada</span>
+            </div>
+          </div>
+          <div class="consigai-offer-lines">
+            <div class="consigai-offer-line">
+              <span class="consigai-offer-line-main blue">Receba ${snapshot.money0}</span>
+              <span class="consigai-offer-line-helper">na sua conta</span>
+            </div>
+            <div class="consigai-offer-line">
+              <span class="consigai-offer-line-main green">Economize ${TOTAL_ECONOMIA}</span>
+              <span class="consigai-offer-line-helper">em contratos</span>
+            </div>
+          </div>
+          <div class="consigai-offer-note">
+            <span class="consigai-offer-note-dot" aria-hidden="true"></span>
+            <span class="consigai-offer-note-text">
+              <span class="consigai-offer-note-title">Prazo mantido</span>
+              <span class="consigai-offer-note-sub">sem aumentar a divida no tempo</span>
+            </span>
+          </div>
+          <div class="consigai-offer-metric">
+            <span class="consigai-offer-metric-label">Parcela nova</span>
+            <span class="consigai-offer-metric-value green">${snapshot.parcela0}</span>
+          </div>
+        </div>
+      `
+
+      card1.innerHTML = `
+        <div class="consigai-offer-card">
+          <span class="consigai-hidden-state-badge badge pick" id="badge1">Escolher</span>
+          <div class="consigai-offer-head"></div>
+          <span class="consigai-offer-pill">Dinheiro + Parcela Menor</span>
+          <div class="consigai-offer-lines">
+            <div class="consigai-offer-line">
+              <span class="consigai-offer-line-main blue">Receba ${snapshot.money1}</span>
+              <span class="consigai-offer-line-helper">na sua conta</span>
+            </div>
+            <div class="consigai-offer-line">
+              <span class="consigai-offer-line-main green">Economize ${totalEconomiaMensal}</span>
+              <span class="consigai-offer-line-helper">na sua parcela</span>
+            </div>
+          </div>
+          <div class="consigai-offer-note">
+            <span class="consigai-offer-note-dot" aria-hidden="true"></span>
+            <span class="consigai-offer-note-text">
+              <span class="consigai-offer-note-title">Mais alivio</span>
+              <span class="consigai-offer-note-sub">sobra mais dinheiro todo mes</span>
+            </span>
+          </div>
+          <div class="consigai-offer-metric">
+            <span class="consigai-offer-metric-label">Parcela nova</span>
+            <span class="consigai-offer-metric-value green">${snapshot.parcela1}</span>
+          </div>
+        </div>
+      `
+
+      card2.innerHTML = `
+        <div class="consigai-offer-card">
+          <span class="consigai-hidden-state-badge badge pick" id="badge2">Escolher</span>
+          <div class="consigai-offer-head"></div>
+          <span class="consigai-offer-pill">Turbo Economia <span aria-hidden="true">🚀</span></span>
+          <div class="consigai-offer-lines">
+            <div class="consigai-offer-choice-grid">
+              <div class="consigai-offer-choice-title">Economize</div>
+              <div class="consigai-offer-choice-options">
+                <div class="consigai-offer-choice-row">
+                  <span class="consigai-offer-choice-label">em contratos</span>
+                  <span class="consigai-offer-choice-value">${TOTAL_ECONOMIA}</span>
+                </div>
+                <div class="consigai-offer-choice-row">
+                  <span class="consigai-offer-choice-label">ou na sua parcela</span>
+                  <span class="consigai-offer-choice-value">${totalEconomiaParcelas}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="consigai-offer-note">
+            <span class="consigai-offer-note-dot" aria-hidden="true"></span>
+            <span class="consigai-offer-note-text">
+              <span class="consigai-offer-note-title">Sem novo credito</span>
+              <span class="consigai-offer-note-sub">voce melhora a divida sem pegar dinheiro agora</span>
+            </span>
+          </div>
+          <div class="consigai-offer-metric">
+            <span class="consigai-offer-metric-label">Receba no futuro</span>
+            <span class="consigai-offer-metric-value green">${receiveFuture}</span>
+          </div>
+        </div>
+      `
+    }
+
     const goToSelectedOffer = () => {
       const selected = OFFER_ROUTES[selectedOfferIndexRef.current] || OFFER_ROUTES[0]
       navigate(selected.route, selected.state ? { state: selected.state } : undefined)
+    }
+
+    const keepSelectedCardInView = (doc, win, idx) => {
+      if (!doc || !win) return
+      const card = doc.querySelector(`#oc${idx}`)
+      if (!card) return
+
+      const cardRect = card.getBoundingClientRect()
+      const topbarHeight = doc.querySelector('.topbar')?.getBoundingClientRect()?.height || 0
+      const ctaHeight = doc.querySelector('.sticky-cta')?.getBoundingClientRect()?.height || 0
+      const safeTop = topbarHeight + 8
+      const safeBottom = win.innerHeight - ctaHeight - 8
+
+      // Never auto-scroll upward on card selection. Only scroll down when needed.
+      const downDelta = cardRect.bottom - safeBottom
+      if (downDelta > 4) {
+        const behavior = win.innerWidth <= 760 ? 'auto' : 'smooth'
+        win.scrollBy({ top: downDelta + 8, behavior })
+      }
     }
 
     const attachBridge = () => {
@@ -788,6 +1349,8 @@ export default function OfertasNova() {
       applyResponsiveStyles(frameDoc)
       enforceCurrencyNoBreak(frameDoc)
       applyUnifiedParcelaHoje(frameDoc)
+      applyOfferCardRedesignStyles(frameDoc)
+      upsertOfferCardsRedesign(frameDoc)
       upsertPocketInsight(frameDoc)
       upsertSavingsReplacement(frameDoc)
 
@@ -808,102 +1371,6 @@ export default function OfertasNova() {
           logoEl.style.cursor = 'pointer'
           logoEl.addEventListener('click', () => navigate('/ofertas'))
           frameDoc.body.dataset.consigaiLegacyLogoApplied = '1'
-        }
-      }
-
-      if (!frameDoc.body?.dataset?.consigaiCardNameStyleApplied) {
-        const styleEl = frameDoc.createElement('style')
-        styleEl.textContent = `
-          .offer-name {
-            color: #001851 !important;
-            font-size: 12px !important;
-            font-weight: 800 !important;
-            letter-spacing: .075em !important;
-          }
-          .hero-sub {
-            display: none !important;
-          }
-          .hc-col-val.old {
-            color: #d03030 !important;
-          }
-          .offer-val-num.old {
-            display: none !important;
-          }
-          .offer-values {
-            justify-content: center !important;
-            align-items: center !important;
-            text-align: center !important;
-          }
-          .offer-val-block {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 4px !important;
-            text-align: center !important;
-          }
-          .offer-val-label,
-          .offer-val-num {
-            width: 100% !important;
-            text-align: center !important;
-          }
-          .badge.pick,
-          .badge.sel {
-            display: none !important;
-          }
-          .offer-card.selected {
-            border: 2px solid #2350c8 !important;
-            box-shadow: 0 0 0 2px rgba(35, 80, 200, .16), var(--shadow-md) !important;
-          }
-          .offer-card.selected::before {
-            display: none !important;
-          }
-        `
-        frameDoc.head?.appendChild(styleEl)
-        frameDoc.body.dataset.consigaiCardNameStyleApplied = '1'
-      }
-
-      if (!frameDoc.body?.dataset?.consigaiOfferCardAdjusted) {
-        const firstCard = frameDoc.querySelector('#oc0')
-        const thirdCard = frameDoc.querySelector('#oc2')
-
-        const firstBlocks = firstCard?.querySelectorAll('.offer-val-block')
-        const firstSecondBlock = firstBlocks?.[1]
-        const firstLabel = firstSecondBlock?.querySelector('.offer-val-label')
-        const firstValue = firstSecondBlock?.querySelector('.offer-val-num.green')
-
-        const thirdBlocks = thirdCard?.querySelectorAll('.offer-val-block')
-        const thirdFirstBlock = thirdBlocks?.[0]
-        const thirdLabel = thirdFirstBlock?.querySelector('.offer-val-label')
-        const thirdValue = thirdFirstBlock?.querySelector('.offer-val-num.green')
-
-        if (firstLabel && firstValue && thirdLabel && thirdValue) {
-          firstLabel.textContent = 'ECONOMIA TOTAL'
-          firstValue.textContent = TOTAL_ECONOMIA
-
-          thirdLabel.textContent = 'ECONOMIA TOTAL'
-          thirdValue.textContent = TOTAL_ECONOMIA
-
-          frameDoc.body.dataset.consigaiOfferCardAdjusted = '1'
-        }
-      }
-
-      if (!frameDoc.body?.dataset?.consigaiThirdCardOuApplied) {
-        const thirdValues = frameDoc.querySelector('#oc2 .offer-values')
-        const blocks = thirdValues?.querySelectorAll('.offer-val-block')
-        if (thirdValues && blocks && blocks.length >= 2 && !thirdValues.querySelector('.consigai-ou')) {
-          const ou = frameDoc.createElement('span')
-          ou.className = 'consigai-ou'
-          ou.textContent = 'OU'
-          ou.style.alignSelf = 'center'
-          ou.style.fontSize = '21px'
-          ou.style.fontWeight = '800'
-          ou.style.letterSpacing = '-.03em'
-          ou.style.lineHeight = '1'
-          ou.style.color = '#2350c8'
-          ou.style.whiteSpace = 'nowrap'
-          thirdValues.insertBefore(ou, blocks[1])
-          frameDoc.body.dataset.consigaiThirdCardOuApplied = '1'
         }
       }
 
@@ -951,6 +1418,7 @@ export default function OfertasNova() {
           normalizeCtaSaving(frameDoc)
           frameWindow.requestAnimationFrame(() => {
             normalizeCtaSaving(frameDoc)
+            upsertOfferCardsRedesign(frameDoc)
             upsertPocketInsight(frameDoc)
             upsertSavingsReplacement(frameDoc)
             enforceCurrencyNoBreak(frameDoc)
@@ -971,7 +1439,15 @@ export default function OfertasNova() {
           const offerCard = target.closest('.offer-card')
           if (offerCard?.id?.startsWith('oc')) {
             const idx = Number(offerCard.id.replace('oc', ''))
-            if (!Number.isNaN(idx)) selectedOfferIndexRef.current = idx
+            if (!Number.isNaN(idx)) {
+              selectedOfferIndexRef.current = idx
+              if (typeof frameWindow.sel === 'function') {
+                event.preventDefault()
+                event.stopPropagation()
+                frameWindow.sel(idx)
+                return
+              }
+            }
           }
 
           const cta = target.closest('.btn-cta')
@@ -1026,3 +1502,5 @@ export default function OfertasNova() {
     />
   )
 }
+
+
