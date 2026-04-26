@@ -6,6 +6,11 @@ const OFFER_ROUTES = [
   { route: '/estrategia-combinada', state: { strategyType: 'refin + economia' } },
   { route: '/portabilidade' },
 ]
+const OFFER_CTA_NAMES = ['Melhor Equilíbrio', 'Mais Folga por Mês', 'Turbo Economia']
+const THIRD_CARD_SUB_OFFERS = {
+  contract: { label: 'No contrato', route: '/portabilidade' },
+  installment: { label: 'Na parcela', route: '/refinanciamento' },
+}
 const TOTAL_ECONOMIA = 'R$ 2.399'
 const PARCELA_HOJE = 284
 
@@ -16,6 +21,7 @@ export default function OfertasNova() {
   const attachedDocRef = useRef(null)
   const clickHandlerRef = useRef(null)
   const currencyObserverRef = useRef(null)
+  const selectedThirdSubOfferRef = useRef('contract')
 
   useEffect(() => {
     let intervalId = null
@@ -361,7 +367,7 @@ export default function OfertasNova() {
 
         @media (min-width: 1024px) {
           .main { padding: 18px 18px 100px !important; }
-          .hero { padding: 22px 24px !important; margin-bottom: 14px !important; gap: 20px !important; }
+          .hero { padding: 18px 24px !important; margin-bottom: 14px !important; gap: 18px !important; }
           .hero-eyebrow { margin-bottom: 6px !important; }
           .hero-title { margin-bottom: 6px !important; font-size: clamp(22px, 2.8vw, 30px) !important; }
           .consigai-hero-note { margin-top: 6px !important; font-size: 12px !important; }
@@ -394,7 +400,7 @@ export default function OfertasNova() {
 
         @media (max-width: 1080px) {
           .main { padding: 24px 16px 120px !important; }
-          .hero { padding: 22px 18px !important; gap: 18px !important; }
+          .hero { padding: 18px 18px !important; gap: 16px !important; }
           .hero-compare { justify-self: end !important; width: min(360px, 100%) !important; }
           .offers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
           .offers-grid > .offer-card:nth-child(3) {
@@ -534,10 +540,7 @@ export default function OfertasNova() {
       const ecoAnual = ecoMensal * 12
       const creditoExtra = Math.max(0, parseCurrency(creditAfter) - parseCurrency(creditToday))
 
-      const formatDeduct = (value) => {
-        const clean = value.replace(/^\s*[--]\s*/, '').trim()
-        return clean ? `- ${clean}` : value
-      }
+      const formatCurrencyClean = (value) => value.replace(/^[^0-9R$]*(?=R\$)/, '').trim()
 
       let visual = baSection.querySelector('.consigai-pocket-visual')
       if (!visual) {
@@ -578,9 +581,9 @@ export default function OfertasNova() {
                 <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/></svg>
               </span>
               <div>
-                <div class="consigai-pocket-label">Credito disponivel</div>
+                <div class="consigai-pocket-label">Crédito disponível</div>
                 <div class="consigai-pocket-val" data-k="creditToday"></div>
-                <div class="consigai-pocket-note">para emergencias</div>
+                <div class="consigai-pocket-note">para emergências</div>
               </div>
             </div>
           </article>
@@ -601,7 +604,7 @@ export default function OfertasNova() {
               </span>
               <div>
                 <div class="consigai-pocket-label">Nova parcela</div>
-                <div class="consigai-pocket-val negative" data-k="installmentAfter"></div>
+                <div class="consigai-pocket-val positive" data-k="installmentAfter"></div>
               </div>
             </div>
             <div class="consigai-pocket-metric">
@@ -618,9 +621,9 @@ export default function OfertasNova() {
                 <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/></svg>
               </span>
               <div>
-                <div class="consigai-pocket-label">Credito disponivel</div>
+                <div class="consigai-pocket-label">Crédito disponível</div>
                 <div class="consigai-pocket-val positive" data-k="creditAfter"></div>
-                <div class="consigai-pocket-note">para emergencias</div>
+                <div class="consigai-pocket-note">para emergências</div>
               </div>
             </div>
           </article>
@@ -631,9 +634,9 @@ export default function OfertasNova() {
                 <svg viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
               </span>
               <div>
-                <div class="consigai-pocket-gain-kicker">Voce ganha</div>
+                <div class="consigai-pocket-gain-kicker">Você ganha</div>
                 <div class="consigai-pocket-gain-value" data-k="ecoMensal"></div>
-                <div class="consigai-pocket-gain-copy">por mes no bolso</div>
+                <div class="consigai-pocket-gain-copy">por mês no bolso</div>
               </div>
             </div>
             <div class="consigai-pocket-gain-list">
@@ -655,7 +658,7 @@ export default function OfertasNova() {
                 <span class="consigai-pocket-gain-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/></svg>
                 </span>
-                <div class="consigai-pocket-gain-label">Credito extra disponivel</div>
+                <div class="consigai-pocket-gain-label">Crédito extra disponível</div>
                 <div class="consigai-pocket-gain-num" data-k="creditoExtra"></div>
               </div>
             </div>
@@ -667,12 +670,12 @@ export default function OfertasNova() {
 
       const values = {
         salaryToday: salaryToday || salaryUnified,
-        installmentToday: formatDeduct(installmentToday),
+        installmentToday: formatCurrencyClean(installmentToday),
         pocketToday,
         creditToday,
         salaryAfter: salaryAfter || salaryUnified,
         salaryUnified,
-        installmentAfter: formatDeduct(installmentAfter),
+        installmentAfter: formatCurrencyClean(installmentAfter),
         pocketAfter,
         creditAfter,
         ecoMensal: `+${formatCurrency(ecoMensal)}`,
@@ -743,8 +746,51 @@ export default function OfertasNova() {
     const normalizeCtaSaving = (doc) => {
       const ctaSaving = doc?.querySelector('#ctaSaving')
       if (ctaSaving?.textContent) {
-        ctaSaving.textContent = ctaSaving.textContent.replace(/^\s*[--]\s*/, '')
+        const raw = ctaSaving.textContent.trim()
+        const withPositiveSign = raw
+          .replace(/^\s*[−-]\s*/, '+')
+          .replace(/^R\$\s*/i, '+R$ ')
+        ctaSaving.textContent = withPositiveSign
       }
+    }
+
+    const normalizeComConsigaiNovaParcela = (doc) => {
+      if (!doc) return
+      const baNova = doc.querySelector('#baNova')
+      if (baNova?.textContent) {
+        baNova.textContent = baNova.textContent.replace(/^[^0-9R$]*(?=R\$)/, '').trim()
+      }
+
+      const afterRowLabel = baNova?.closest('.ba-row')?.querySelector('.ba-row-label')
+      if (afterRowLabel) {
+        afterRowLabel.textContent = 'Nova parcela'
+      }
+    }
+
+    const normalizeCtaOfferName = (doc, idx) => {
+      if (!doc) return
+      const ctaName = doc.querySelector('#ctaName')
+      if (!ctaName) return
+      if (idx === 2) {
+        const sub = THIRD_CARD_SUB_OFFERS[selectedThirdSubOfferRef.current] || THIRD_CARD_SUB_OFFERS.contract
+        ctaName.textContent = `Oferta escolhida: ${sub.label}`
+        return
+      }
+      const selectedName = OFFER_CTA_NAMES[idx] || OFFER_CTA_NAMES[0]
+      ctaName.textContent = `Oferta escolhida: ${selectedName}`
+    }
+
+    const applyThirdCardSubOfferSelection = (doc) => {
+      if (!doc) return
+      const miniCards = doc.querySelectorAll('#oc2 .consigai-offer-mini-card[data-suboffer]')
+      if (!miniCards.length) return
+
+      miniCards.forEach((card) => {
+        const key = card.getAttribute('data-suboffer')
+        const active = key === selectedThirdSubOfferRef.current
+        card.classList.toggle('is-selected', active)
+        card.setAttribute('aria-pressed', active ? 'true' : 'false')
+      })
     }
 
     const applyUnifiedParcelaHoje = (doc) => {
@@ -755,7 +801,7 @@ export default function OfertasNova() {
       if (heroOld) heroOld.textContent = parcelaHoje
 
       const todayDeduct = doc.querySelector('.ba-col.today .ba-row-val.deduct')
-      if (todayDeduct) todayDeduct.textContent = `- ${parcelaHoje}`
+      if (todayDeduct) todayDeduct.textContent = parcelaHoje
 
       const oldValuesInCards = doc.querySelectorAll('.offers-grid .offer-val-num.old')
       oldValuesInCards.forEach((el) => {
@@ -771,15 +817,19 @@ export default function OfertasNova() {
         }
       })
       normalizeCtaSaving(doc)
+      normalizeComConsigaiNovaParcela(doc)
+      normalizeCtaOfferName(doc, selectedOfferIndexRef.current)
     }
 
     const getOfferCardSnapshot = (doc) => {
       const textOf = (selector, fallback = '') => doc.querySelector(selector)?.textContent?.trim() || fallback
+      const economiaCard0 = parseCurrency(textOf('#oc0 .offer-val-num.green', 'R$ 70'))
+      const parcela0Calculada = Math.max(PARCELA_HOJE - economiaCard0, 0)
 
       return {
         money0: textOf('#oc0 .offer-val-num.blue', 'R$ 3.000'),
         money1: textOf('#oc1 .offer-val-num.blue', 'R$ 500'),
-        parcela0: textOf('#oc0 .offer-val-num.green', 'R$ 214'),
+        parcela0: formatCurrency(parcela0Calculada),
         parcela1: textOf('#oc1 .offer-val-num.green:last-child', 'R$ 168'),
       }
     }
@@ -798,7 +848,7 @@ export default function OfertasNova() {
           background-position: center !important;
           background-repeat: no-repeat !important;
           color: var(--text-main, var(--text)) !important;
-          padding: 24px !important;
+          padding: 0 24px 24px !important;
         }
         .main {
           position: relative !important;
@@ -809,7 +859,7 @@ export default function OfertasNova() {
         }
         .hero-title { color: #1a3d8f !important; }
         .hero-title em {
-          color: #ec7000 !important;
+          color: #0a7c52 !important;
           font-style: normal !important;
         }
         @media (min-width: 1024px) {
@@ -825,6 +875,10 @@ export default function OfertasNova() {
           color: #0a7c52 !important;
         }
         .ba-row-val.deduct { color: rgb(192, 0, 0) !important; }
+        .ba-col.after .ba-row-val.deduct,
+        #baNova {
+          color: #0a7c52 !important;
+        }
         .ba-section .ba-title,
         .ba-section .ba-row-label,
         .ba-section .ba-total-label,
@@ -879,21 +933,21 @@ export default function OfertasNova() {
           box-shadow: 0 8px 24px rgba(0,24,81,.06) !important;
           border-radius: 22px !important;
           padding: 18px !important;
-          min-height: 286px !important;
+          min-height: 266px !important;
           transition: all .18s ease !important;
           touch-action: manipulation !important;
           will-change: transform, box-shadow, border-color;
         }
-        .offer-card.selected {
-          border-color: #1a3d8f !important;
-          box-shadow: 0 16px 34px rgba(35,80,200,.16) !important;
-          background: #fff !important;
+        .offer-card.selected,
+        .offer-card.active {
+          border: 2px solid transparent !important;
+          background:
+            linear-gradient(180deg, #ffffff 0%, #f7fbff 100%) padding-box,
+            linear-gradient(135deg, #2454D6, #18B7E8, #00A99D) border-box !important;
+          box-shadow: 0 18px 42px rgba(13, 35, 90, 0.24) !important;
         }
-        #oc0,
-        #oc0.selected {
-          border: 0 !important;
-        }
-        .offer-card.selected::before { display: none !important; }
+        .offer-card.selected::before,
+        .offer-card.active::before { display: none !important; }
         .offer-card:hover {
           border-color: #c2d0f8 !important;
           transform: translateY(-1px) !important;
@@ -1002,7 +1056,17 @@ export default function OfertasNova() {
         .consigai-offer-lines {
           display: grid;
           gap: 3px;
-          margin-bottom: 14px;
+          margin-bottom: 10px;
+          align-content: start;
+          min-height: 112px;
+        }
+        .consigai-offer-pretext {
+          font-size: 24px;
+          line-height: 1.08;
+          letter-spacing: -.03em;
+          color: #1a3d8f;
+          font-weight: 850;
+          margin-bottom: 8px;
         }
         .consigai-offer-lines .consigai-offer-line:first-of-type {
           min-height: 50px;
@@ -1020,6 +1084,31 @@ export default function OfertasNova() {
         }
         .consigai-offer-line-main.blue { color: #1a3d8f; }
         .consigai-offer-line-main.green { color: #ec7000; }
+        .consigai-offer-line-main.brand-green { color: #0a7c52; }
+        .consigai-offer-word-orange { color: #0a7c52; }
+        .consigai-offer-value-green { color: #0a7c52; }
+        .consigai-offer-word-estimada {
+          color: #7a8db8;
+          font-size: .58em;
+          font-weight: 700;
+          letter-spacing: 0;
+          vertical-align: baseline;
+          margin-left: 2px;
+        }
+        .consigai-offer-total-stack {
+          display: inline-flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 4px;
+        }
+        .consigai-offer-total-label {
+          display: inline-flex;
+          align-items: baseline;
+          gap: 2px;
+        }
+        .consigai-offer-total-stack .consigai-offer-value-green {
+          display: block;
+        }
         .consigai-offer-line-helper {
           font-size: 11px;
           color: #1a3d8f;
@@ -1049,6 +1138,7 @@ export default function OfertasNova() {
         }
         #oc2 .consigai-offer-lines {
           display: block;
+          min-height: 112px;
         }
         .consigai-offer-mini-grid {
           display: grid;
@@ -1074,19 +1164,65 @@ export default function OfertasNova() {
           color: #1a3d8f;
           font-weight: 800;
         }
+        #oc2 .consigai-offer-mini-label {
+          font-size: 10.5px;
+          line-height: 1.22;
+          letter-spacing: 0;
+          overflow-wrap: anywhere;
+          word-break: normal;
+          text-wrap: balance;
+          min-height: 26px;
+          display: block;
+        }
         .consigai-offer-mini-value {
           font-size: 24px;
           line-height: 1;
-          color: #ec7000;
+          color: #0a7c52;
           font-weight: 900;
           letter-spacing: -.03em;
           white-space: nowrap;
         }
+        #oc2 .consigai-offer-mini-grid {
+          gap: 8px;
+          margin-top: 26px !important;
+        }
+        #oc2 .consigai-offer-mini-card {
+          gap: 4px;
+          padding: 9px 8px;
+          align-content: start;
+          overflow: hidden;
+          cursor: pointer;
+          border-color: #dbe6f7;
+          background: #f7faff;
+          box-shadow: none;
+          transition: none;
+        }
+        #oc2 .consigai-offer-mini-value {
+          font-size: clamp(18px, 2.05vw, 22px);
+          line-height: .98;
+          letter-spacing: -.015em;
+          min-width: 0;
+          color: #2a8f73;
+        }
+        #oc2.offer-card.selected .consigai-offer-mini-card {
+          border-color: #dbe6f7;
+          background: #f7faff;
+          box-shadow: none;
+          transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+        }
+        #oc2 .consigai-offer-mini-label {
+          color: #355f9a;
+        }
+        #oc2.offer-card.selected .consigai-offer-mini-card.is-selected {
+          border-color: #2454D6 !important;
+          background: #eef5ff !important;
+          box-shadow: 0 3px 10px rgba(35, 80, 200, .12) !important;
+        }
 
         .consigai-offer-note {
           display: block;
-          margin-top: 8px;
-          min-height: 0;
+          margin-top: 6px;
+          min-height: 44px;
         }
         .consigai-offer-note-dot {
           display: none;
@@ -1102,6 +1238,8 @@ export default function OfertasNova() {
           font-weight: 400;
           font-size: 12px;
           line-height: 1.35;
+          display: block;
+          min-height: 40px;
         }
 
         .consigai-offer-metric {
@@ -1132,6 +1270,9 @@ export default function OfertasNova() {
           white-space: nowrap;
         }
         .consigai-offer-metric-value.green { color: #0a7c52; }
+        #oc2 .consigai-offer-note {
+          margin-top: auto;
+        }
 
         @media (max-width: 1080px) {
           .offers-grid {
@@ -1157,6 +1298,14 @@ export default function OfertasNova() {
           .offer-card {
             min-height: auto !important;
             padding: 14px !important;
+          }
+          .consigai-offer-lines,
+          #oc2 .consigai-offer-lines {
+            min-height: 0 !important;
+          }
+          .consigai-offer-note,
+          .consigai-offer-note-sub {
+            min-height: 0 !important;
           }
           .consigai-offer-line-main {
             font-size: 22px !important;
@@ -1210,8 +1359,12 @@ export default function OfertasNova() {
               <span class="consigai-offer-line-helper">na sua conta</span>
             </div>
             <div class="consigai-offer-line">
-              <span class="consigai-offer-line-main green">Economize ${TOTAL_ECONOMIA}</span>
-              <span class="consigai-offer-line-helper">em contratos</span>
+              <span class="consigai-offer-line-main consigai-offer-total-stack">
+                <span class="consigai-offer-total-label">
+                  <span class="consigai-offer-word-orange">Economia total</span>
+                </span>
+                <span class="consigai-offer-value-green">${TOTAL_ECONOMIA}</span>
+              </span>
             </div>
           </div>
           <div class="consigai-offer-metric">
@@ -1237,8 +1390,12 @@ export default function OfertasNova() {
               <span class="consigai-offer-line-helper">na sua conta</span>
             </div>
             <div class="consigai-offer-line">
-              <span class="consigai-offer-line-main green">Economize ${totalEconomiaMensal}</span>
-              <span class="consigai-offer-line-helper">na sua parcela</span>
+              <span class="consigai-offer-line-main consigai-offer-total-stack">
+                <span class="consigai-offer-total-label">
+                  <span class="consigai-offer-word-orange">Redução na parcela</span>
+                </span>
+                <span class="consigai-offer-value-green">${totalEconomiaMensal}</span>
+              </span>
             </div>
           </div>
           <div class="consigai-offer-metric">
@@ -1259,20 +1416,17 @@ export default function OfertasNova() {
           <div class="consigai-offer-head"></div>
           <span class="consigai-offer-pill">Turbo Economia</span>
           <div class="consigai-offer-lines">
+            <div class="consigai-offer-pretext">Economize sem pegar novo crédito</div>
             <div class="consigai-offer-mini-grid">
               <div class="consigai-offer-mini-card">
-                <span class="consigai-offer-mini-label">Economizar no Contrato</span>
+                <span class="consigai-offer-mini-label">No contrato</span>
                 <span class="consigai-offer-mini-value">${TOTAL_ECONOMIA}</span>
               </div>
               <div class="consigai-offer-mini-card">
-                <span class="consigai-offer-mini-label">Reduzir Parcela</span>
+                <span class="consigai-offer-mini-label">Na parcela</span>
                 <span class="consigai-offer-mini-value">${totalEconomiaParcelas}</span>
               </div>
             </div>
-          </div>
-          <div class="consigai-offer-metric">
-            <span class="consigai-offer-metric-label">Receba no futuro</span>
-            <span class="consigai-offer-metric-value green">${receiveFuture}</span>
           </div>
           <div class="consigai-offer-note">
             <span class="consigai-offer-note-text">
@@ -1281,9 +1435,28 @@ export default function OfertasNova() {
           </div>
         </div>
       `
+
+      const subCardContract = card2.querySelector('.consigai-offer-mini-card:nth-child(1)')
+      const subCardInstallment = card2.querySelector('.consigai-offer-mini-card:nth-child(2)')
+      if (subCardContract) {
+        subCardContract.setAttribute('data-suboffer', 'contract')
+        subCardContract.setAttribute('role', 'button')
+        subCardContract.setAttribute('tabindex', '0')
+      }
+      if (subCardInstallment) {
+        subCardInstallment.setAttribute('data-suboffer', 'installment')
+        subCardInstallment.setAttribute('role', 'button')
+        subCardInstallment.setAttribute('tabindex', '0')
+      }
+      applyThirdCardSubOfferSelection(doc)
     }
 
     const goToSelectedOffer = () => {
+      if (selectedOfferIndexRef.current === 2) {
+        const thirdSub = THIRD_CARD_SUB_OFFERS[selectedThirdSubOfferRef.current] || THIRD_CARD_SUB_OFFERS.contract
+        navigate(thirdSub.route)
+        return
+      }
       const selected = OFFER_ROUTES[selectedOfferIndexRef.current] || OFFER_ROUTES[0]
       navigate(selected.route, selected.state ? { state: selected.state } : undefined)
     }
@@ -1319,8 +1492,11 @@ export default function OfertasNova() {
       applyUnifiedParcelaHoje(frameDoc)
       applyOfferCardRedesignStyles(frameDoc)
       upsertOfferCardsRedesign(frameDoc)
+      applyThirdCardSubOfferSelection(frameDoc)
       upsertPocketInsight(frameDoc)
       upsertSavingsReplacement(frameDoc)
+      normalizeComConsigaiNovaParcela(frameDoc)
+      normalizeCtaOfferName(frameDoc, selectedOfferIndexRef.current)
 
       if (!frameDoc.body?.dataset?.consigaiCurrencyObserverAttached) {
         currencyObserverRef.current?.disconnect?.()
@@ -1384,8 +1560,12 @@ export default function OfertasNova() {
           frameWindow.__consigAISelectedOffer = selectedOfferIndexRef.current
           const result = originalSel(idx)
           normalizeCtaSaving(frameDoc)
+          normalizeComConsigaiNovaParcela(frameDoc)
+          normalizeCtaOfferName(frameDoc, selectedOfferIndexRef.current)
           frameWindow.requestAnimationFrame(() => {
             normalizeCtaSaving(frameDoc)
+            normalizeComConsigaiNovaParcela(frameDoc)
+            normalizeCtaOfferName(frameDoc, selectedOfferIndexRef.current)
             upsertOfferCardsRedesign(frameDoc)
             upsertPocketInsight(frameDoc)
             upsertSavingsReplacement(frameDoc)
@@ -1403,6 +1583,23 @@ export default function OfertasNova() {
         clickHandlerRef.current = (event) => {
           const target = event.target
           if (!target || target.nodeType !== 1) return
+
+          const thirdSubCard = target.closest('#oc2 .consigai-offer-mini-card[data-suboffer]')
+          if (thirdSubCard) {
+            const subKey = thirdSubCard.getAttribute('data-suboffer')
+            if (subKey && THIRD_CARD_SUB_OFFERS[subKey]) {
+              selectedThirdSubOfferRef.current = subKey
+              selectedOfferIndexRef.current = 2
+              event.preventDefault()
+              event.stopPropagation()
+              if (typeof frameWindow.sel === 'function') {
+                frameWindow.sel(2)
+              }
+              applyThirdCardSubOfferSelection(frameDoc)
+              normalizeCtaOfferName(frameDoc, 2)
+              return
+            }
+          }
 
           const offerCard = target.closest('.offer-card')
           if (offerCard?.id?.startsWith('oc')) {
