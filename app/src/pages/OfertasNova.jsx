@@ -11,10 +11,25 @@ const THIRD_CARD_SUB_OFFERS = {
   contract: { label: 'No contrato', route: '/portabilidade' },
   installment: { label: 'Na parcela', route: '/refinanciamento' },
 }
-const TOTAL_ECONOMIA = 'R$ 2.399'
-const PARCELA_HOJE = 284
-const ECONOMIA_MENSAL_PARCELA = 'R$ 116/mês'
-const ECONOMIA_PARCELAS_REFIN = 'R$ 108/mês'
+const DADOS = {
+  usuario: { salarioBruto: 2200, parcelaAtual: 550 },
+  ofertas: [
+    { id: 'equilibrio', creditoReceber: 5033.74, parcelaNova: 496.17, economiaTotal: 2399.11 },
+    { id: 'folga', creditoReceber: 7593.9, parcelaNova: 433.19, reducaoMensal: 116.81 },
+    { id: 'turbo', economiaContrato: 2399.11, economiaParcela: 116.81 },
+  ],
+  impacto: { pocketToday: 1650, pocketAfter: 1766.81, creditToday: 2845.53, creditAfter: 7593.9 },
+}
+
+const fmt = (v) => `R$ ${Math.round(v).toLocaleString('pt-BR')}`
+const PARCELA_HOJE = DADOS.usuario.parcelaAtual
+const getParcelaNova = (idx) => {
+  const o = DADOS.ofertas[idx] ?? DADOS.ofertas[0]
+  return fmt(o.parcelaNova ?? (DADOS.usuario.parcelaAtual - (o.economiaParcela ?? 0)))
+}
+const TOTAL_ECONOMIA = fmt(DADOS.ofertas[0].economiaTotal)
+const ECONOMIA_MENSAL_PARCELA = `${fmt(DADOS.ofertas[1].reducaoMensal)}/mês`
+const ECONOMIA_PARCELAS_REFIN = `${fmt(DADOS.ofertas[2].economiaParcela)}/mês`
 
 const formatCurrencyClean = (value) => value.replace(/^[^0-9R$]*(?=R\$)/, '').trim()
 
@@ -97,25 +112,42 @@ export default function OfertasNova() {
           --cyan-brand: #18B7E8;
           --teal-brand: #00A99D;
           --aqua-brand: #6DF5D4;
-          --green-strong: #007A55;
-          --green-medium: #19966F;
+          --green-strong: #0a7c52;
+          --green-medium: #0a7c52;
           --green-soft: #EAF8F0;
           --green-border: #A8DEC3;
-          --red-negative: #B00020;
+          --red-negative: #C00000;
           --gray-text: #667399;
           --gray-border: #DCE5FF;
           --gray-bg: #F7FAFF;
           --white: #FFFFFF;
         }
         .impact-header {
-          display: flex;
+          display: grid;
+          grid-template-columns: 1fr auto;
+          grid-template-rows: auto auto;
+          gap: 2px 12px;
           align-items: center;
-          justify-content: space-between;
-          gap: 12px;
-          flex-wrap: wrap;
+          margin-bottom: 12px;
+        }
+        .impact-header .ba-title {
+          grid-column: 1;
+          grid-row: 1;
+        }
+        .impact-header .ba-sub {
+          grid-column: 1;
+          grid-row: 2;
+          color: var(--gray-text) !important;
+          font-size: 13px;
+        }
+        .impact-header .income-base {
+          grid-column: 2;
+          grid-row: 1 / 3;
+          align-self: center;
         }
         .income-base {
-          min-width: 220px;
+          min-width: 160px;
+          max-width: 160px;
           border: 1px solid var(--gray-border);
           border-radius: 12px;
           background: #f4f8ff;
@@ -551,21 +583,25 @@ export default function OfertasNova() {
       const baCols = baSection?.querySelector('.ba-cols')
       if (!baSection || !baCols) return
 
-      const textOf = (selector) => doc.querySelector(selector)?.textContent?.trim() || ''
-      const salaryToday = textOf('.ba-col.today .ba-row:first-of-type .ba-row-val') || textOf('.ba-col.after .ba-row:first-of-type .ba-row-val')
-      const installmentToday = `R$ ${PARCELA_HOJE.toLocaleString('pt-BR')}`
-      const pocketToday = textOf('.ba-col.today .ba-total-val')
-      const creditToday = textOf('.ba-col.today .ba-credit-val')
-
-      const salaryAfter = textOf('.ba-col.after .ba-row:first-of-type .ba-row-val') || salaryToday
-      const installmentAfter = textOf('#baNova') || textOf('.ba-col.after .ba-row:nth-of-type(2) .ba-row-val')
-      const salaryUnified = salaryAfter || salaryToday || 'R$ 2.200'
-      const pocketAfter = textOf('.ba-col.after .ba-total-val')
-      const creditAfter = textOf('.ba-col.after .ba-credit-val')
-
-      const ecoMensal = Math.max(0, parseCurrency(pocketAfter) - parseCurrency(pocketToday))
+      const idx = selectedOfferIndexRef.current
+      const o = DADOS.ofertas[idx] ?? DADOS.ofertas[0]
+      const parcelaNova = o.parcelaNova ?? (PARCELA_HOJE - (o.economiaParcela ?? 0))
+      const _pt = DADOS.usuario.salarioBruto - PARCELA_HOJE
+      const _pa = DADOS.usuario.salarioBruto - parcelaNova
+      const _ct = DADOS.impacto.creditToday
+      const _ca = o.creditoReceber ?? _ct
+      const salaryUnified = fmt(DADOS.usuario.salarioBruto)
+      const installmentToday = fmt(PARCELA_HOJE)
+      const installmentAfter = getParcelaNova(idx)
+      const pocketToday = fmt(_pt)
+      const pocketAfter = fmt(_pa)
+      const creditToday = fmt(_ct)
+      const creditAfter = fmt(_ca)
+      const salaryToday = salaryUnified
+      const salaryAfter = salaryUnified
+      const ecoMensal = Math.max(0, _pa - _pt)
       const ecoAnual = ecoMensal * 12
-      const creditoExtra = Math.max(0, parseCurrency(creditAfter) - parseCurrency(creditToday))
+      const creditoExtra = Math.max(0, _ca - _ct)
 
       const baHeader = baSection.querySelector('.ba-header')
       const baTitle = baSection.querySelector('.ba-title')
@@ -578,7 +614,7 @@ export default function OfertasNova() {
           const incomeBase = doc.createElement('div')
           incomeBase.className = 'income-base'
           incomeBase.innerHTML = `
-            <div class="income-base-label">Salário bruto informado</div>
+            <div class="income-base-label">Renda informada</div>
             <div class="income-base-value" id="impactSalarioBase" data-k="salaryUnified"></div>
           `
           baHeader.appendChild(incomeBase)
@@ -661,7 +697,7 @@ export default function OfertasNova() {
                 <svg viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
               </span>
               <div>
-                <div class="consigai-pocket-gain-title">Seu ganho com ConsigAI</div>
+                <div class="consigai-pocket-gain-title">Seu ganho estimado</div>
                 <div class="consigai-pocket-gain-value" id="impactGanhoMensal" data-k="ecoMensal"></div>
                 <div class="consigai-pocket-gain-copy">por mês no bolso</div>
               </div>
@@ -712,7 +748,7 @@ export default function OfertasNova() {
       }
 
       Object.entries(values).forEach(([key, val]) => {
-        visual.querySelectorAll(`[data-k="${key}"]`).forEach((el) => {
+        baSection.querySelectorAll(`[data-k="${key}"]`).forEach((el) => {
           el.textContent = val
         })
       })
@@ -828,6 +864,19 @@ export default function OfertasNova() {
       const heroOld = doc.querySelector('.hc-col-val.old')
       if (heroOld) heroOld.textContent = parcelaHoje
 
+      const heroNew = doc.querySelector('.hc-col-val.new, #hcNova')
+      if (heroNew) heroNew.textContent = getParcelaNova(selectedOfferIndexRef.current)
+
+      const heroEco = doc.querySelector('.hc-saving-value, #hcEco')
+      const idxEco = selectedOfferIndexRef.current
+      const oEco = DADOS.ofertas[idxEco] ?? DADOS.ofertas[0]
+      const parcelaNovaEco = oEco.parcelaNova ?? (PARCELA_HOJE - (oEco.economiaParcela ?? 0))
+      const ecoMensal = Math.max(0, Math.round(PARCELA_HOJE - parcelaNovaEco))
+      if (heroEco) heroEco.textContent = `R$ ${ecoMensal.toLocaleString('pt-BR')}`
+
+      const ctaSaving = doc.querySelector('#ctaSaving')
+      if (ctaSaving) ctaSaving.textContent = `+R$ ${ecoMensal.toLocaleString('pt-BR')}/mês`
+
       const todayDeduct = doc.querySelector('.ba-col.today .ba-row-val.deduct')
       if (todayDeduct) todayDeduct.textContent = parcelaHoje
 
@@ -849,18 +898,12 @@ export default function OfertasNova() {
       normalizeCtaOfferName(doc, selectedOfferIndexRef.current)
     }
 
-    const getOfferCardSnapshot = (doc) => {
-      const textOf = (selector, fallback = '') => doc.querySelector(selector)?.textContent?.trim() || fallback
-      const economiaCard0 = parseCurrency(textOf('#oc0 .offer-val-num.green', 'R$ 70'))
-      const parcela0Calculada = Math.max(PARCELA_HOJE - economiaCard0, 0)
-
-      return {
-        money0: textOf('#oc0 .offer-val-num.blue', 'R$ 3.000'),
-        money1: textOf('#oc1 .offer-val-num.blue', 'R$ 500'),
-        parcela0: formatCurrency(parcela0Calculada),
-        parcela1: textOf('#oc1 .offer-val-num.green:last-child', 'R$ 168'),
-      }
-    }
+    const getOfferCardSnapshot = () => ({
+      money0: fmt(DADOS.ofertas[0].creditoReceber),
+      money1: fmt(DADOS.ofertas[1].creditoReceber),
+      parcela0: getParcelaNova(0),
+      parcela1: getParcelaNova(1),
+    })
 
     const applyOfferCardRedesignStyles = (doc) => {
       if (doc.body?.dataset?.consigaiOfferRedesignStyleApplied) return
@@ -895,14 +938,14 @@ export default function OfertasNova() {
             white-space: nowrap !important;
           }
         }
-        .hc-col-val.old { color: rgb(192, 0, 0) !important; }
+        .hc-col-val.old { color: #C00000 !important; }
         .hc-col-val.new,
         .hc-saving-value,
         #hcNova,
         #hcEco {
           color: #0a7c52 !important;
         }
-        .ba-row-val.deduct { color: rgb(192, 0, 0) !important; }
+        .ba-row-val.deduct { color: #C00000 !important; }
         .ba-col.after .ba-row-val.deduct,
         #baNova {
           color: #0a7c52 !important;
@@ -927,6 +970,9 @@ export default function OfertasNova() {
         }
         .btn-cta {
           background: linear-gradient(160deg, #1e4aaa, #12307a) !important;
+        }
+        .hc-saving-label {
+          font-size: 15px !important;
         }
         /* Keep motion only on the 3 offer cards */
         .main * {
@@ -1187,13 +1233,13 @@ export default function OfertasNova() {
           border-color: #c2d0f8;
         }
         .consigai-offer-mini-label {
-          font-size: 11px;
+          font-size: 13px;
           line-height: 1.15;
           color: #1a3d8f;
           font-weight: 800;
         }
         #oc2 .consigai-offer-mini-label {
-          font-size: 10.5px;
+          font-size: 13px;
           line-height: 1.22;
           letter-spacing: 0;
           overflow-wrap: anywhere;
@@ -1230,7 +1276,7 @@ export default function OfertasNova() {
           line-height: .98;
           letter-spacing: -.015em;
           min-width: 0;
-          color: #2a8f73;
+          color: #0a7c52;
         }
         #oc2.offer-card.selected .consigai-offer-mini-card {
           border-color: #dbe6f7;
@@ -1239,7 +1285,7 @@ export default function OfertasNova() {
           transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
         }
         #oc2 .consigai-offer-mini-label {
-          color: #355f9a;
+          color: #1a3d8f;
         }
         #oc2.offer-card.selected .consigai-offer-mini-card.is-selected {
           border-color: #2454D6 !important;
@@ -1250,7 +1296,7 @@ export default function OfertasNova() {
         .consigai-offer-note {
           display: block;
           margin-top: 6px;
-          min-height: 44px;
+          min-height: 0;
         }
         .consigai-offer-note-dot {
           display: none;
@@ -1286,7 +1332,7 @@ export default function OfertasNova() {
           box-shadow: 0 8px 18px rgba(35,80,200,.08);
         }
         .consigai-offer-metric-label {
-          font-size: 11px;
+          font-size: 15px;
           color: #1a3d8f;
           font-weight: 800;
         }
@@ -1298,6 +1344,8 @@ export default function OfertasNova() {
           white-space: nowrap;
         }
         .consigai-offer-metric-value.green { color: #0a7c52; }
+        #oc0 .consigai-offer-metric-value,
+        #oc1 .consigai-offer-metric-value { font-size: 19px; }
         #oc2 .consigai-offer-note {
           margin-top: auto;
         }
@@ -1346,7 +1394,7 @@ export default function OfertasNova() {
             gap: 8px !important;
           }
           #oc2 .consigai-offer-mini-label {
-            font-size: 11px !important;
+            font-size: 13px !important;
           }
         }
       `
@@ -1367,7 +1415,7 @@ export default function OfertasNova() {
         card2.querySelector('.consigai-offer-card')
       if (isAlreadyRedesigned) return
 
-      const snapshot = getOfferCardSnapshot(doc)
+      const snapshot = getOfferCardSnapshot()
 
       card0.innerHTML = `
         <div class="consigai-offer-card">
@@ -1572,7 +1620,9 @@ export default function OfertasNova() {
             normalizeCtaSaving(frameDoc)
             normalizeComConsigaiNovaParcela(frameDoc)
             normalizeCtaOfferName(frameDoc, selectedOfferIndexRef.current)
+            applyUnifiedParcelaHoje(frameDoc)
             upsertOfferCardsRedesign(frameDoc)
+            applyThirdCardSubOfferSelection(frameDoc)
             upsertPocketInsight(frameDoc)
             upsertSavingsReplacement(frameDoc)
             enforceCurrencyNoBreak(frameDoc)
