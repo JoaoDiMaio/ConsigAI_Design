@@ -201,7 +201,7 @@ function DiagnosticoCard({ selectedOffer }) {
 
   return (
     <div style={{ background: C.white, borderRadius: 24, padding: '20px 24px', marginTop: 16, marginBottom: 0, boxShadow: '0 4px 24px rgba(11,31,75,.08)' }}>
-      <div style={{ fontSize: 16, fontWeight: 700, color: C.navy, marginBottom: 2 }}>O que sobra no seu bolso</div>
+      <div style={{ fontSize: 16, fontWeight: 700, color: C.navy, marginBottom: 2 }}>Veja o impacto real no seu bolso</div>
       <div style={{ fontSize: 13, color: C.muted, marginBottom: 16 }}>Comparativo mensal com a oferta escolhida.</div>
 
       <div style={{ display: 'flex', flexDirection: isTabletUp ? 'row' : 'column', gap: 12 }}>

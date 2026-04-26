@@ -766,7 +766,7 @@ export default function OfertasNova() {
       const arrowSpans = doc.querySelectorAll('.offers-grid .offer-val-block span')
       arrowSpans.forEach((el) => {
         const raw = (el.textContent || '').trim()
-        if (raw === '?' || raw === 'â†’' || raw === '->') {
+        if (raw === '?' || raw === '→' || raw === '->') {
           el.style.display = 'none'
         }
       })
@@ -791,13 +791,14 @@ export default function OfertasNova() {
       styleEl.textContent = `
         .hero-sub { display: none !important; }
         body {
-          background-image:
-            linear-gradient(180deg, rgba(0, 24, 81, .18) 0%, rgba(0, 24, 81, .12) 100%),
-            url('/consigai_fundo_logo_navy_energy.webp') !important;
+          min-height: 100vh !important;
+          font-family: Inter, Arial, Helvetica, sans-serif !important;
+          background-image: url('/fundo-ofertas.svg') !important;
           background-size: cover !important;
           background-position: center !important;
           background-repeat: no-repeat !important;
-          background-attachment: fixed !important;
+          color: var(--text-main, var(--text)) !important;
+          padding: 24px !important;
         }
         .main {
           position: relative !important;
@@ -810,6 +811,11 @@ export default function OfertasNova() {
         .hero-title em {
           color: #ec7000 !important;
           font-style: normal !important;
+        }
+        @media (min-width: 1024px) {
+          .hero-title {
+            white-space: nowrap !important;
+          }
         }
         .hc-col-val.old { color: rgb(192, 0, 0) !important; }
         .hc-col-val.new,
@@ -1044,39 +1050,31 @@ export default function OfertasNova() {
         #oc2 .consigai-offer-lines {
           display: block;
         }
-        .consigai-offer-choice-grid {
+        .consigai-offer-mini-grid {
           display: grid;
-          grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr);
-          column-gap: 12px;
-          align-items: start;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
         }
-        .consigai-offer-choice-title {
-          color: #ec7000;
-          font-size: 24px;
-          font-weight: 900;
-          letter-spacing: -.03em;
-          line-height: 1;
-          align-self: center;
-        }
-        .consigai-offer-choice-options {
+        .consigai-offer-mini-card {
           display: grid;
-          gap: 8px;
+          gap: 6px;
+          padding: 11px 10px;
+          border-radius: 12px;
+          border: 1px solid #d7e2ff;
+          background: #f6f9ff;
           min-width: 0;
         }
-        .consigai-offer-choice-row {
-          display: grid;
-          gap: 2px;
-          min-width: 0;
+        .offer-card.selected .consigai-offer-mini-card {
+          background: #edf3ff;
+          border-color: #c2d0f8;
         }
-        .consigai-offer-choice-label {
-          font-size: 12px;
-          line-height: 1.1;
+        .consigai-offer-mini-label {
+          font-size: 11px;
+          line-height: 1.15;
           color: #1a3d8f;
           font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: .03em;
         }
-        .consigai-offer-choice-value {
+        .consigai-offer-mini-value {
           font-size: 24px;
           line-height: 1;
           color: #ec7000;
@@ -1086,38 +1084,24 @@ export default function OfertasNova() {
         }
 
         .consigai-offer-note {
-          display: flex;
-          align-items: flex-start;
-          gap: 8px;
-          font-size: 14px;
-          line-height: 1.42;
-          color: #1a3d8f;
-          font-weight: 700;
-          margin-top: auto;
-          min-height: 48px;
+          display: block;
+          margin-top: 8px;
+          min-height: 0;
         }
         .consigai-offer-note-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: #1a3d8f;
-          flex-shrink: 0;
-          margin-top: 6px;
+          display: none;
         }
         .consigai-offer-note-text {
-          display: grid;
-          gap: 2px;
+          display: block;
         }
         .consigai-offer-note-title {
-          color: #1a3d8f;
-          font-weight: 850;
-          line-height: 1.15;
+          display: none;
         }
         .consigai-offer-note-sub {
-          color: #1a3d8f;
-          font-weight: 650;
+          color: #7a8db8;
+          font-weight: 400;
           font-size: 12px;
-          line-height: 1.25;
+          line-height: 1.35;
         }
 
         .consigai-offer-metric {
@@ -1177,21 +1161,14 @@ export default function OfertasNova() {
           .consigai-offer-line-main {
             font-size: 22px !important;
           }
-          .consigai-offer-choice-title {
-            font-size: 22px !important;
-            margin-bottom: 4px !important;
-          }
-          .consigai-offer-choice-value {
+          .consigai-offer-mini-value {
             font-size: 22px !important;
           }
-          #oc2 .consigai-offer-choice-grid {
+          #oc2 .consigai-offer-mini-grid {
             grid-template-columns: 1fr !important;
-            row-gap: 6px !important;
+            gap: 8px !important;
           }
-          #oc2 .consigai-offer-choice-options {
-            gap: 6px !important;
-          }
-          #oc2 .consigai-offer-choice-label {
+          #oc2 .consigai-offer-mini-label {
             font-size: 11px !important;
           }
         }
@@ -1222,7 +1199,7 @@ export default function OfertasNova() {
         <div class="consigai-offer-card">
           <span class="consigai-hidden-state-badge badge sel" id="badge0">Selecionada</span>
           <div class="consigai-offer-title-row">
-            <span class="consigai-offer-pill">Dinheiro + Economia</span>
+            <span class="consigai-offer-pill">Melhor Equilíbrio</span>
             <div class="consigai-offer-head-badges">
               <span class="consigai-offer-badge-rec">★ Recomendada</span>
             </div>
@@ -1237,16 +1214,14 @@ export default function OfertasNova() {
               <span class="consigai-offer-line-helper">em contratos</span>
             </div>
           </div>
-          <div class="consigai-offer-note">
-            <span class="consigai-offer-note-dot" aria-hidden="true"></span>
-            <span class="consigai-offer-note-text">
-              <span class="consigai-offer-note-title">Prazo mantido</span>
-              <span class="consigai-offer-note-sub">sem aumentar a divida no tempo</span>
-            </span>
-          </div>
           <div class="consigai-offer-metric">
             <span class="consigai-offer-metric-label">Parcela nova</span>
             <span class="consigai-offer-metric-value green">${snapshot.parcela0}</span>
+          </div>
+          <div class="consigai-offer-note">
+            <span class="consigai-offer-note-text">
+              <span class="consigai-offer-note-sub">Boa opção para quem quer dinheiro na conta, parcela menor e prazo mantido.</span>
+            </span>
           </div>
         </div>
       `
@@ -1255,7 +1230,7 @@ export default function OfertasNova() {
         <div class="consigai-offer-card">
           <span class="consigai-hidden-state-badge badge pick" id="badge1">Escolher</span>
           <div class="consigai-offer-head"></div>
-          <span class="consigai-offer-pill">Dinheiro + Parcela Menor</span>
+          <span class="consigai-offer-pill">Mais Folga por Mês</span>
           <div class="consigai-offer-lines">
             <div class="consigai-offer-line">
               <span class="consigai-offer-line-main blue">Receba ${snapshot.money1}</span>
@@ -1266,16 +1241,14 @@ export default function OfertasNova() {
               <span class="consigai-offer-line-helper">na sua parcela</span>
             </div>
           </div>
-          <div class="consigai-offer-note">
-            <span class="consigai-offer-note-dot" aria-hidden="true"></span>
-            <span class="consigai-offer-note-text">
-              <span class="consigai-offer-note-title">Mais alivio</span>
-              <span class="consigai-offer-note-sub">sobra mais dinheiro todo mes</span>
-            </span>
-          </div>
           <div class="consigai-offer-metric">
             <span class="consigai-offer-metric-label">Parcela nova</span>
             <span class="consigai-offer-metric-value green">${snapshot.parcela1}</span>
+          </div>
+          <div class="consigai-offer-note">
+            <span class="consigai-offer-note-text">
+              <span class="consigai-offer-note-sub">Boa opção para quem quer aliviar o orçamento mensal sem receber um valor alto.</span>
+            </span>
           </div>
         </div>
       `
@@ -1284,32 +1257,27 @@ export default function OfertasNova() {
         <div class="consigai-offer-card">
           <span class="consigai-hidden-state-badge badge pick" id="badge2">Escolher</span>
           <div class="consigai-offer-head"></div>
-          <span class="consigai-offer-pill">Turbo Economia <span aria-hidden="true">🚀</span></span>
+          <span class="consigai-offer-pill">Turbo Economia</span>
           <div class="consigai-offer-lines">
-            <div class="consigai-offer-choice-grid">
-              <div class="consigai-offer-choice-title">Economize</div>
-              <div class="consigai-offer-choice-options">
-                <div class="consigai-offer-choice-row">
-                  <span class="consigai-offer-choice-label">em contratos</span>
-                  <span class="consigai-offer-choice-value">${TOTAL_ECONOMIA}</span>
-                </div>
-                <div class="consigai-offer-choice-row">
-                  <span class="consigai-offer-choice-label">ou na sua parcela</span>
-                  <span class="consigai-offer-choice-value">${totalEconomiaParcelas}</span>
-                </div>
+            <div class="consigai-offer-mini-grid">
+              <div class="consigai-offer-mini-card">
+                <span class="consigai-offer-mini-label">Economizar no Contrato</span>
+                <span class="consigai-offer-mini-value">${TOTAL_ECONOMIA}</span>
+              </div>
+              <div class="consigai-offer-mini-card">
+                <span class="consigai-offer-mini-label">Reduzir Parcela</span>
+                <span class="consigai-offer-mini-value">${totalEconomiaParcelas}</span>
               </div>
             </div>
-          </div>
-          <div class="consigai-offer-note">
-            <span class="consigai-offer-note-dot" aria-hidden="true"></span>
-            <span class="consigai-offer-note-text">
-              <span class="consigai-offer-note-title">Sem novo credito</span>
-              <span class="consigai-offer-note-sub">voce melhora a divida sem pegar dinheiro agora</span>
-            </span>
           </div>
           <div class="consigai-offer-metric">
             <span class="consigai-offer-metric-label">Receba no futuro</span>
             <span class="consigai-offer-metric-value green">${receiveFuture}</span>
+          </div>
+          <div class="consigai-offer-note">
+            <span class="consigai-offer-note-text">
+              <span class="consigai-offer-note-sub">Boa opção para quem quer diminuir o impacto mensal no orçamento sem pegar dinheiro novo.</span>
+            </span>
           </div>
         </div>
       `
@@ -1388,7 +1356,7 @@ export default function OfertasNova() {
             note.style.lineHeight = '1.4'
             heroTextContainer.appendChild(note)
           }
-          note.textContent = 'As opções com maior foco em reduzir impacto mensal.'
+          note.textContent = 'Compare as opções disponíveis para Reduzir sua Parcela, Receber Dinheiro Agora ou Economizar mais no Total dos Contratos.'
         }
 
         const sectionHeader = frameDoc.querySelector('.section-header')
@@ -1502,5 +1470,4 @@ export default function OfertasNova() {
     />
   )
 }
-
 
