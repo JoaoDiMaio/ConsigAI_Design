@@ -13,6 +13,10 @@ const THIRD_CARD_SUB_OFFERS = {
 }
 const TOTAL_ECONOMIA = 'R$ 2.399'
 const PARCELA_HOJE = 284
+const ECONOMIA_MENSAL_PARCELA = 'R$ 116/mês'
+const ECONOMIA_PARCELAS_REFIN = 'R$ 108/mês'
+
+const formatCurrencyClean = (value) => value.replace(/^[^0-9R$]*(?=R\$)/, '').trim()
 
 export default function OfertasNova() {
   const navigate = useNavigate()
@@ -87,55 +91,103 @@ export default function OfertasNova() {
         .ba-section.consigai-pocket-redesign .ba-cols {
           display: none !important;
         }
-        .consigai-pocket-visual {
-          --cp-gap: 12px;
+        .impact-section {
+          --blue-title: #0E2F7E;
+          --blue-action: #2454D6;
+          --cyan-brand: #18B7E8;
+          --teal-brand: #00A99D;
+          --aqua-brand: #6DF5D4;
+          --green-strong: #007A55;
+          --green-medium: #19966F;
+          --green-soft: #EAF8F0;
+          --green-border: #A8DEC3;
+          --red-negative: #B00020;
+          --gray-text: #667399;
+          --gray-border: #DCE5FF;
+          --gray-bg: #F7FAFF;
+          --white: #FFFFFF;
+        }
+        .impact-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        .income-base {
+          min-width: 220px;
+          border: 1px solid var(--gray-border);
+          border-radius: 12px;
+          background: #f4f8ff;
+          padding: 8px 12px;
+        }
+        .income-base-label {
+          font-size: 11px;
+          line-height: 1.2;
+          color: var(--gray-text);
+          font-weight: 600;
+          margin-bottom: 3px;
+        }
+        .income-base-value {
+          font-size: 19px;
+          line-height: 1;
+          color: var(--blue-title);
+          font-weight: 800;
+          letter-spacing: -.02em;
+        }
+        .consigai-pocket-visual.impact-grid {
           display: grid;
-          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(260px, .95fr);
+          grid-template-columns: repeat(3, minmax(0, 1fr));
           align-items: stretch;
-          gap: var(--cp-gap);
-          position: relative;
+          gap: 12px;
         }
-        .consigai-pocket-card.today {
-          grid-column: 1;
-        }
-        .consigai-pocket-card.after {
-          grid-column: 2;
-        }
-        .consigai-pocket-gain {
-          grid-column: 3;
-        }
-        .consigai-pocket-card {
-          border: 1px solid #d7e1fb;
+        .impact-card {
           border-radius: 14px;
-          background: #f8faff;
           padding: 14px 14px 12px;
+          border: 1px solid var(--gray-border);
+          background: var(--gray-bg);
         }
-        .consigai-pocket-card.after {
-          background: linear-gradient(180deg, #f4fdf8 0%, #f8fffb 100%);
-          border-color: #aee9c8;
+        .impact-card-before {
+          background: var(--gray-bg);
+          border-color: var(--gray-border);
         }
-        .consigai-pocket-pill {
+        .impact-card-after {
+          background: linear-gradient(180deg, #F6FFFB 0%, #F7FBFF 100%);
+          border-color: var(--green-border);
+        }
+        .impact-card-gain {
+          background: #F8FFFB;
+          border: 2px solid var(--green-strong);
+        }
+        .impact-chip {
           display: inline-flex;
           align-items: center;
-          justify-content: center;
-          min-width: 84px;
+          gap: 7px;
           border-radius: 999px;
-          padding: 4px 12px;
+          padding: 5px 11px;
           margin-bottom: 10px;
           font-size: 10px;
+          line-height: 1.1;
           font-weight: 800;
-          letter-spacing: .08em;
+          letter-spacing: .05em;
           text-transform: uppercase;
+          color: var(--blue-title);
+          border: 1px solid transparent;
+          background: #e9f0ff;
         }
-        .consigai-pocket-card.today .consigai-pocket-pill {
-          background: #e8efff;
-          color: #1e4fc4;
+        .impact-card-after .impact-chip {
+          background: rgba(109, 245, 212, 0.18);
+          border-color: rgba(0, 169, 157, 0.25);
         }
-        .consigai-pocket-card.after .consigai-pocket-pill {
-          background: #dff8ea;
-          color: #0a7c52;
+        .consigai-logo-mark {
+          width: 12px;
+          height: 12px;
+          border-radius: 999px;
+          background: linear-gradient(135deg, var(--blue-action) 0%, var(--cyan-brand) 55%, var(--teal-brand) 100%);
+          box-shadow: 0 0 0 1px rgba(36, 84, 214, 0.08);
+          flex: 0 0 auto;
         }
-        .consigai-pocket-metric {
+        .impact-row {
           display: grid;
           grid-template-columns: 34px minmax(0, 1fr);
           gap: 10px;
@@ -143,22 +195,29 @@ export default function OfertasNova() {
           padding: 9px 0;
           border-bottom: 1px solid #dfe7f5;
         }
-        .consigai-pocket-metric:last-child {
+        .impact-row:last-child {
           border-bottom: 0;
           padding-bottom: 0;
         }
-        .consigai-pocket-icon {
+        .impact-icon {
           width: 34px;
           height: 34px;
           border-radius: 999px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          font-size: 14px;
-          font-weight: 800;
-          line-height: 1;
+          color: var(--blue-action);
+          background: #eaf0ff;
         }
-        .consigai-pocket-icon svg {
+        .impact-card-after .impact-icon {
+          color: var(--teal-brand);
+          background: rgba(24, 183, 232, 0.12);
+        }
+        .brand-icon {
+          color: var(--teal-brand);
+          background: rgba(24, 183, 232, 0.12);
+        }
+        .impact-icon svg {
           width: 18px;
           height: 18px;
           stroke: currentColor;
@@ -167,73 +226,47 @@ export default function OfertasNova() {
           stroke-linecap: round;
           stroke-linejoin: round;
         }
-        .consigai-pocket-card.today .consigai-pocket-icon {
-          background: #eaf0ff;
-          color: #1f51cc;
-        }
-        .consigai-pocket-card.after .consigai-pocket-icon {
-          background: #e0f8ea;
-          color: #0a7c52;
-        }
         .consigai-pocket-label {
           font-size: 11px;
           font-weight: 600;
-          color: #34508a;
+          color: var(--blue-title);
           margin-bottom: 2px;
         }
         .consigai-pocket-val {
           font-size: clamp(16px, 2.1vw, 24px);
           font-weight: 900;
           letter-spacing: -.03em;
-          color: #061a55;
+          color: var(--blue-title);
           line-height: 1.05;
         }
-        .consigai-pocket-val.negative { color: rgb(192, 0, 0); }
-        .consigai-pocket-val.positive { color: #0a7c52; }
+        .value-negative { color: var(--red-negative); }
+        .value-positive { color: var(--green-medium); }
         .consigai-pocket-note {
           margin-top: 2px;
-          color: #49649b;
+          color: var(--gray-text);
           font-size: 10px;
           line-height: 1.2;
         }
-        .consigai-pocket-gain {
-          border-radius: 14px;
-          border: 1.5px solid #0a7c52;
-          background: linear-gradient(180deg, #fbfffd 0%, #f2fbf6 100%);
-          padding: 14px 14px 12px;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-        .consigai-pocket-gain-title {
-          font-size: 12px;
-          font-weight: 900;
-          letter-spacing: .05em;
-          text-transform: uppercase;
-          color: #0a7c52;
-          text-align: center;
-        }
-        .consigai-pocket-gain-hero {
+        .gain-header {
           display: grid;
           grid-template-columns: 42px minmax(0, 1fr);
           gap: 10px;
           align-items: center;
-          border-bottom: 1px solid #aee9c8;
+          border-bottom: 1px solid var(--green-border);
           padding-bottom: 10px;
+          margin-bottom: 10px;
         }
-        .consigai-pocket-gain-main-icon {
+        .gain-icon {
           width: 42px;
           height: 42px;
           border-radius: 999px;
-          background: #0a7c52;
+          background: linear-gradient(145deg, var(--green-strong) 0%, var(--teal-brand) 100%);
           color: #fff;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          font-size: 18px;
-          font-weight: 900;
         }
-        .consigai-pocket-gain-main-icon svg {
+        .gain-icon svg {
           width: 22px;
           height: 22px;
           stroke: currentColor;
@@ -242,29 +275,29 @@ export default function OfertasNova() {
           stroke-linecap: round;
           stroke-linejoin: round;
         }
-        .consigai-pocket-gain-kicker {
-          font-size: 11px;
-          color: #061a55;
-          font-weight: 600;
-          margin-bottom: 1px;
+        .consigai-pocket-gain-title {
+          font-size: 12px;
+          font-weight: 800;
+          color: var(--blue-title);
+          margin-bottom: 2px;
         }
         .consigai-pocket-gain-value {
           font-size: clamp(20px, 2.8vw, 34px);
           line-height: 1;
           letter-spacing: -.04em;
-          color: #0a7c52;
+          color: var(--green-strong);
           font-weight: 900;
         }
         .consigai-pocket-gain-copy {
           font-size: 12px;
-          color: #061a55;
+          color: var(--blue-title);
           font-weight: 700;
         }
-        .consigai-pocket-gain-list {
+        .gain-list {
           display: grid;
           gap: 8px;
         }
-        .consigai-pocket-gain-item {
+        .gain-item {
           display: grid;
           grid-template-columns: 28px minmax(0, 1fr) auto;
           align-items: center;
@@ -278,8 +311,8 @@ export default function OfertasNova() {
           width: 28px;
           height: 28px;
           border-radius: 999px;
-          background: #e0f8ea;
-          color: #0a7c52;
+          background: var(--green-soft);
+          color: var(--green-medium);
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -296,14 +329,14 @@ export default function OfertasNova() {
         .consigai-pocket-gain-label {
           font-size: 10px;
           font-weight: 700;
-          color: #0f2057;
+          color: var(--blue-title);
           text-transform: uppercase;
           letter-spacing: .04em;
         }
         .consigai-pocket-gain-num {
           font-size: 16px;
           line-height: 1;
-          color: #0a7c52;
+          color: var(--green-medium);
           font-weight: 900;
           letter-spacing: -.03em;
           white-space: nowrap;
@@ -378,9 +411,8 @@ export default function OfertasNova() {
           .ba-header { margin-bottom: 8px !important; }
           .ba-title { font-size: 15px !important; margin-bottom: 1px !important; }
           .ba-sub { font-size: 12px !important; }
-          .consigai-pocket-visual { gap: 10px !important; }
-          .consigai-pocket-card { padding: 12px 12px 10px !important; }
-          .consigai-pocket-gain { padding: 12px 12px 10px !important; gap: 10px !important; }
+          .consigai-pocket-visual.impact-grid { gap: 10px !important; }
+          .impact-card { padding: 12px 12px 10px !important; }
           .consigai-pocket-gain-value { font-size: clamp(18px, 2.2vw, 28px) !important; }
           .consigai-pocket-gain-num { font-size: 14px !important; }
           .consigai-trust-replacement { margin-top: 8px !important; }
@@ -409,12 +441,7 @@ export default function OfertasNova() {
             width: min(520px, 100%) !important;
           }
           .ba-section { padding: 20px 16px !important; }
-          .consigai-pocket-visual { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; }
-          .consigai-pocket-card.today { grid-column: 1 !important; }
-          .consigai-pocket-card.after { grid-column: 2 !important; }
-          .consigai-pocket-gain {
-            grid-column: 1 / -1 !important;
-          }
+          .consigai-pocket-visual.impact-grid { grid-template-columns: minmax(0, 1fr) !important; }
           .consigai-trust-replacement {
             margin-top: 10px !important;
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -444,18 +471,18 @@ export default function OfertasNova() {
           }
           .offer-card { padding: 14px !important; }
           .offer-values { gap: 12px !important; }
-          .consigai-pocket-visual { grid-template-columns: minmax(0, 1fr) !important; gap: 10px !important; }
-          .consigai-pocket-card.today,
-          .consigai-pocket-card.after,
-          .consigai-pocket-gain {
+          .consigai-pocket-visual.impact-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 10px !important; }
+          .impact-card-before,
+          .impact-card-after,
+          .impact-card-gain {
             grid-column: 1 !important;
           }
-          .consigai-pocket-gain-hero {
+          .gain-header {
             grid-template-columns: 1fr !important;
             text-align: center !important;
             justify-items: center !important;
           }
-          .consigai-pocket-gain-item {
+          .gain-item {
             grid-template-columns: 28px minmax(0, 1fr) !important;
             grid-template-areas:
               "icon label"
@@ -540,44 +567,51 @@ export default function OfertasNova() {
       const ecoAnual = ecoMensal * 12
       const creditoExtra = Math.max(0, parseCurrency(creditAfter) - parseCurrency(creditToday))
 
-      const formatCurrencyClean = (value) => value.replace(/^[^0-9R$]*(?=R\$)/, '').trim()
+      const baHeader = baSection.querySelector('.ba-header')
+      const baTitle = baSection.querySelector('.ba-title')
+      const baSub = baSection.querySelector('.ba-sub')
+      if (baTitle) baTitle.textContent = 'Veja o impacto real no seu bolso'
+      if (baSub) baSub.textContent = 'Comparativo mensal com a oferta escolhida.'
+      if (baHeader) {
+        baHeader.classList.add('impact-header')
+        if (!baHeader.querySelector('.income-base')) {
+          const incomeBase = doc.createElement('div')
+          incomeBase.className = 'income-base'
+          incomeBase.innerHTML = `
+            <div class="income-base-label">Salário bruto informado</div>
+            <div class="income-base-value" id="impactSalarioBase" data-k="salaryUnified"></div>
+          `
+          baHeader.appendChild(incomeBase)
+        }
+      }
 
       let visual = baSection.querySelector('.consigai-pocket-visual')
       if (!visual) {
         visual = doc.createElement('div')
-        visual.className = 'consigai-pocket-visual'
+        visual.className = 'consigai-pocket-visual impact-grid'
         visual.innerHTML = `
-          <article class="consigai-pocket-card today">
-            <div class="consigai-pocket-pill">Hoje</div>
-            <div class="consigai-pocket-metric">
-              <span class="consigai-pocket-icon" aria-hidden="true">
+          <article class="impact-card impact-card-before">
+            <div class="impact-chip">Antes da oferta</div>
+            <div class="impact-row">
+              <span class="impact-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M3 7h16a2 2 0 0 1 2 2v10H5a2 2 0 0 1-2-2V7Z"/><path d="M16 7V5.8a2 2 0 0 0-2.7-1.9L5 7"/><path d="M17 13h4"/><circle cx="17" cy="13" r="1"/></svg>
               </span>
               <div>
-                <div class="consigai-pocket-label">Salário líquido</div>
-                <div class="consigai-pocket-val" data-k="salaryToday"></div>
-              </div>
-            </div>
-            <div class="consigai-pocket-metric">
-              <span class="consigai-pocket-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h3"/><circle cx="17" cy="17" r="2"/></svg>
-              </span>
-              <div>
                 <div class="consigai-pocket-label">Parcela atual</div>
-                <div class="consigai-pocket-val negative" data-k="installmentToday"></div>
+                <div class="consigai-pocket-val value-negative" data-k="installmentToday"></div>
               </div>
             </div>
-            <div class="consigai-pocket-metric">
-              <span class="consigai-pocket-icon" aria-hidden="true">
+            <div class="impact-row">
+              <span class="impact-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M19 10c1.2.4 2 1.5 2 2.8 0 1.7-1.3 3.2-3 3.2h-.4a6 6 0 0 1-11.2 0H6a3 3 0 0 1 0-6h.4A6 6 0 0 1 18 10Z"/><path d="M12 7v3"/><path d="M9 13h.01"/><path d="M15 13h.01"/><path d="M8 19v2"/><path d="M16 19v2"/></svg>
               </span>
               <div>
-                <div class="consigai-pocket-label">Sobra no bolso</div>
+                <div class="consigai-pocket-label">Sobra estimada</div>
                 <div class="consigai-pocket-val" data-k="pocketToday"></div>
               </div>
             </div>
-            <div class="consigai-pocket-metric">
-              <span class="consigai-pocket-icon" aria-hidden="true">
+            <div class="impact-row">
+              <span class="impact-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/></svg>
               </span>
               <div>
@@ -587,86 +621,80 @@ export default function OfertasNova() {
               </div>
             </div>
           </article>
-          <article class="consigai-pocket-card after">
-            <div class="consigai-pocket-pill">Com ConsigAI</div>
-            <div class="consigai-pocket-metric">
-              <span class="consigai-pocket-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M3 7h16a2 2 0 0 1 2 2v10H5a2 2 0 0 1-2-2V7Z"/><path d="M16 7V5.8a2 2 0 0 0-2.7-1.9L5 7"/><path d="M17 13h4"/><circle cx="17" cy="13" r="1"/></svg>
-              </span>
-              <div>
-                <div class="consigai-pocket-label">Salário líquido</div>
-                <div class="consigai-pocket-val" data-k="salaryAfter"></div>
-              </div>
+          <article class="impact-card impact-card-after">
+            <div class="impact-chip">
+              <span class="consigai-logo-mark" aria-hidden="true"></span>
+              <span>Depois com ConsigAI</span>
             </div>
-            <div class="consigai-pocket-metric">
-              <span class="consigai-pocket-icon" aria-hidden="true">
+            <div class="impact-row">
+              <span class="impact-icon brand-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h3"/><circle cx="17" cy="17" r="2"/></svg>
               </span>
               <div>
                 <div class="consigai-pocket-label">Nova parcela</div>
-                <div class="consigai-pocket-val positive" data-k="installmentAfter"></div>
+                <div class="consigai-pocket-val value-positive" id="impactNovaParcela" data-k="installmentAfter"></div>
               </div>
             </div>
-            <div class="consigai-pocket-metric">
-              <span class="consigai-pocket-icon" aria-hidden="true">
+            <div class="impact-row">
+              <span class="impact-icon brand-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M19 10c1.2.4 2 1.5 2 2.8 0 1.7-1.3 3.2-3 3.2h-.4a6 6 0 0 1-11.2 0H6a3 3 0 0 1 0-6h.4A6 6 0 0 1 18 10Z"/><path d="M12 7v3"/><path d="M9 13h.01"/><path d="M15 13h.01"/><path d="M8 19v2"/><path d="M16 19v2"/></svg>
               </span>
               <div>
-                <div class="consigai-pocket-label">Sobra no bolso</div>
-                <div class="consigai-pocket-val positive" data-k="pocketAfter"></div>
+                <div class="consigai-pocket-label">Sobra estimada</div>
+                <div class="consigai-pocket-val value-positive" id="impactSobraDepois" data-k="pocketAfter"></div>
               </div>
             </div>
-            <div class="consigai-pocket-metric">
-              <span class="consigai-pocket-icon" aria-hidden="true">
+            <div class="impact-row">
+              <span class="impact-icon brand-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/></svg>
               </span>
               <div>
                 <div class="consigai-pocket-label">Crédito disponível</div>
-                <div class="consigai-pocket-val positive" data-k="creditAfter"></div>
+                <div class="consigai-pocket-val value-positive" id="impactCreditoDepois" data-k="creditAfter"></div>
                 <div class="consigai-pocket-note">para emergências</div>
               </div>
             </div>
           </article>
-          <aside class="consigai-pocket-gain">
-            <div class="consigai-pocket-gain-title">Seu ganho com ConsigAI</div>
-            <div class="consigai-pocket-gain-hero">
-              <span class="consigai-pocket-gain-main-icon" aria-hidden="true">
+          <aside class="impact-card impact-card-gain">
+            <div class="gain-header">
+              <span class="gain-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
               </span>
               <div>
-                <div class="consigai-pocket-gain-kicker">Você ganha</div>
-                <div class="consigai-pocket-gain-value" data-k="ecoMensal"></div>
+                <div class="consigai-pocket-gain-title">Seu ganho com ConsigAI</div>
+                <div class="consigai-pocket-gain-value" id="impactGanhoMensal" data-k="ecoMensal"></div>
                 <div class="consigai-pocket-gain-copy">por mês no bolso</div>
               </div>
             </div>
-            <div class="consigai-pocket-gain-list">
-              <div class="consigai-pocket-gain-item">
+            <div class="gain-list">
+              <div class="gain-item">
                 <span class="consigai-pocket-gain-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-5"/></svg>
                 </span>
                 <div class="consigai-pocket-gain-label">Economia mensal</div>
                 <div class="consigai-pocket-gain-num" data-k="ecoMensal"></div>
               </div>
-              <div class="consigai-pocket-gain-item">
+              <div class="gain-item">
                 <span class="consigai-pocket-gain-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/></svg>
                 </span>
                 <div class="consigai-pocket-gain-label">Economia anual</div>
-                <div class="consigai-pocket-gain-num" data-k="ecoAnual"></div>
+                <div class="consigai-pocket-gain-num" id="impactEconomiaAnual" data-k="ecoAnual"></div>
               </div>
-              <div class="consigai-pocket-gain-item">
+              <div class="gain-item">
                 <span class="consigai-pocket-gain-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/></svg>
                 </span>
                 <div class="consigai-pocket-gain-label">Crédito extra disponível</div>
-                <div class="consigai-pocket-gain-num" data-k="creditoExtra"></div>
+                <div class="consigai-pocket-gain-num" id="impactCreditoExtra" data-k="creditoExtra"></div>
               </div>
             </div>
           </aside>
         `
-        baSection.classList.add('consigai-pocket-redesign')
         baSection.insertBefore(visual, baCols)
       }
+      visual.classList.add('impact-grid')
+      baSection.classList.add('consigai-pocket-redesign', 'impact-section')
 
       const values = {
         salaryToday: salaryToday || salaryUnified,
@@ -891,7 +919,7 @@ export default function OfertasNova() {
         }
         .ba-section .consigai-pocket-label,
         .ba-section .consigai-pocket-note,
-        .ba-section .consigai-pocket-val:not(.positive):not(.negative),
+        .ba-section .consigai-pocket-val:not(.positive):not(.negative):not(.value-positive):not(.value-negative),
         .ba-section .consigai-pocket-card.today .consigai-pocket-pill,
         .ba-section .consigai-pocket-card.today .consigai-pocket-icon,
         .ba-section .consigai-pocket-card.after .consigai-pocket-label {
@@ -1340,9 +1368,6 @@ export default function OfertasNova() {
       if (isAlreadyRedesigned) return
 
       const snapshot = getOfferCardSnapshot(doc)
-      const totalEconomiaMensal = 'R$ 116/mês'
-      const totalEconomiaParcelas = 'R$ 108/mês'
-      const receiveFuture = 'até R$ 5.033'
 
       card0.innerHTML = `
         <div class="consigai-offer-card">
@@ -1394,7 +1419,7 @@ export default function OfertasNova() {
                 <span class="consigai-offer-total-label">
                   <span class="consigai-offer-word-orange">Redução na parcela</span>
                 </span>
-                <span class="consigai-offer-value-green">${totalEconomiaMensal}</span>
+                <span class="consigai-offer-value-green">${ECONOMIA_MENSAL_PARCELA}</span>
               </span>
             </div>
           </div>
@@ -1424,7 +1449,7 @@ export default function OfertasNova() {
               </div>
               <div class="consigai-offer-mini-card">
                 <span class="consigai-offer-mini-label">Na parcela</span>
-                <span class="consigai-offer-mini-value">${totalEconomiaParcelas}</span>
+                <span class="consigai-offer-mini-value">${ECONOMIA_PARCELAS_REFIN}</span>
               </div>
             </div>
           </div>
@@ -1459,25 +1484,6 @@ export default function OfertasNova() {
       }
       const selected = OFFER_ROUTES[selectedOfferIndexRef.current] || OFFER_ROUTES[0]
       navigate(selected.route, selected.state ? { state: selected.state } : undefined)
-    }
-
-    const keepSelectedCardInView = (doc, win, idx) => {
-      if (!doc || !win) return
-      const card = doc.querySelector(`#oc${idx}`)
-      if (!card) return
-
-      const cardRect = card.getBoundingClientRect()
-      const topbarHeight = doc.querySelector('.topbar')?.getBoundingClientRect()?.height || 0
-      const ctaHeight = doc.querySelector('.sticky-cta')?.getBoundingClientRect()?.height || 0
-      const safeTop = topbarHeight + 8
-      const safeBottom = win.innerHeight - ctaHeight - 8
-
-      // Never auto-scroll upward on card selection. Only scroll down when needed.
-      const downDelta = cardRect.bottom - safeBottom
-      if (downDelta > 4) {
-        const behavior = win.innerWidth <= 760 ? 'auto' : 'smooth'
-        win.scrollBy({ top: downDelta + 8, behavior })
-      }
     }
 
     const attachBridge = () => {
