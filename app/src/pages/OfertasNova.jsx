@@ -1,12 +1,52 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const OFFER_ROUTES = [
-  { route: '/estrategia-combinada', state: { strategyType: 'novo contrato + economia' } },
-  { route: '/estrategia-combinada', state: { strategyType: 'refin + economia' } },
-  { route: '/portabilidade' },
+const OFFER_CARD_CONFIG = [
+  {
+    id: 'equilibrio',
+    kind: 'equilibrio',
+    ctaName: 'Melhor Equilibrio',
+    pill: 'Melhor Equilibrio',
+    route: '/estrategia-combinada',
+    state: { strategyType: 'novo contrato + economia' },
+    note: 'Boa opcao para quem quer dinheiro na conta, parcela menor e prazo mantido.',
+  },
+  {
+    id: 'folga',
+    kind: 'folga',
+    ctaName: 'Mais Folga por Mes',
+    pill: 'Mais Folga por Mes',
+    route: '/estrategia-combinada',
+    state: { strategyType: 'refin + economia' },
+    note: 'Boa opcao para quem quer aliviar o orcamento mensal sem receber um valor alto.',
+  },
+  {
+    id: 'turbo',
+    kind: 'turbo',
+    ctaName: 'Turbo Economia',
+    pill: 'Turbo Economia',
+    route: '/portabilidade',
+    note: 'Boa opcao para quem quer diminuir o impacto mensal no orcamento sem pegar dinheiro novo.',
+  },
+  {
+    id: 'apenas_novo',
+    kind: 'simples',
+    ctaName: 'Novo Contrato',
+    pill: 'Novo Contrato',
+    route: '/novo-contrato',
+    note: 'Oferta focada em liberar valor com menor complexidade.',
+  },
+  {
+    id: 'apenas_refin',
+    kind: 'simples',
+    ctaName: 'Refinanciamento',
+    pill: 'Refinanciamento',
+    route: '/refinanciamento',
+    note: 'Oferta direta para ajustar parcela e manter o fluxo mensal mais leve.',
+  },
 ]
-const OFFER_CTA_NAMES = ['Melhor Equilíbrio', 'Mais Folga por Mês', 'Turbo Economia']
+const MAX_API_CARDS = 3
+const FORCED_VISIBLE_OFFER_IDS = ['equilibrio', 'folga', 'turbo']
 const THIRD_CARD_SUB_OFFERS = {
   contract: { label: 'No contrato', route: '/portabilidade' },
   installment: { label: 'Na parcela', route: '/refinanciamento' },
@@ -16,55 +56,180 @@ const DADOS = {
   ofertas: [
     { id: 'equilibrio', creditoReceber: 5033.74, parcelaNova: 496.17, economiaTotal: 2399.11 },
     { id: 'folga', creditoReceber: 7593.9, parcelaNova: 433.19, reducaoMensal: 116.81 },
-    { id: 'turbo', economiaContrato: 2399.11, economiaParcela: 116.81 },
+    { id: 'turbo', creditoReceber: 0, parcelaNova: 401.05, economiaContrato: 2960.4, economiaParcela: 148.95 },
+    { id: 'apenas_novo', creditoReceber: 4200, parcelaNova: 522.4, economiaTotal: 1104 },
+    { id: 'apenas_refin', creditoReceber: 2500, parcelaNova: 463.75, economiaTotal: 1896 },
   ],
   impacto: { pocketToday: 1650, pocketAfter: 1766.81, creditToday: 2845.53, creditAfter: 7593.9 },
 }
 
-const fmt = (v) => `R$ ${Math.round(v).toLocaleString('pt-BR')}`
+const fmt = (v) => `R$\u00A0${Math.round(v).toLocaleString('pt-BR')}`
 const PARCELA_HOJE = DADOS.usuario.parcelaAtual
-const getParcelaNova = (idx) => {
-  const o = DADOS.ofertas[idx] ?? DADOS.ofertas[0]
+const getEcoMensal = (offer) => {
+  const parcelaNova = offer?.parcelaNova ?? (DADOS.usuario.parcelaAtual - (offer?.economiaParcela ?? offer?.reducaoMensal ?? 0))
+  return Math.max(0, DADOS.usuario.parcelaAtual - parcelaNova)
+}
+const getParcelaNova = (offer) => {
+  const o = offer ?? DADOS.ofertas[0]
   return fmt(o.parcelaNova ?? (DADOS.usuario.parcelaAtual - (o.economiaParcela ?? 0)))
 }
-const TOTAL_ECONOMIA = fmt(DADOS.ofertas[0].economiaTotal)
-const ECONOMIA_MENSAL_PARCELA = `${fmt(DADOS.ofertas[1].reducaoMensal)}/mês`
-const ECONOMIA_PARCELAS_REFIN = `${fmt(DADOS.ofertas[2].economiaParcela)}/mês`
-
 const formatCurrencyClean = (value) => value.replace(/^[^0-9R$]*(?=R\$)/, '').trim()
 
 export default function OfertasNova() {
   const navigate = useNavigate()
   const iframeRef = useRef(null)
   const selectedOfferIndexRef = useRef(0)
+  const activeOffersRef = useRef([])
+  const hasNoOfferRef = useRef(true)
   const attachedDocRef = useRef(null)
   const clickHandlerRef = useRef(null)
   const currencyObserverRef = useRef(null)
+  const docQueryCacheRef = useRef({ doc: null, nodes: new Map(), lists: new Map() })
   const selectedThirdSubOfferRef = useRef('contract')
 
   useEffect(() => {
     let intervalId = null
-
-    const parseCurrency = (text) => {
-      if (!text) return 0
-      const numeric = String(text).replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.')
-      const parsed = Number(numeric)
-      return Number.isFinite(parsed) ? parsed : 0
-    }
+    let normalizationTimer = null
+    let skipObserverUntil = 0
 
     const formatCurrency = (value) => `R$ ${Math.round(value).toLocaleString('pt-BR')}`
-
-    const enforceCurrencyNoBreak = (doc) => {
-      if (!doc?.body) return
+    const MOJIBAKE_REPLACEMENTS = [
+      ['Ã¡', 'á'], ['Ã ', 'à'], ['Ã¢', 'â'], ['Ã£', 'ã'], ['Ã¤', 'ä'],
+      ['Ã©', 'é'], ['Ã¨', 'è'], ['Ãª', 'ê'], ['Ã«', 'ë'],
+      ['Ã­', 'í'], ['Ã¬', 'ì'], ['Ã®', 'î'], ['Ã¯', 'ï'],
+      ['Ã³', 'ó'], ['Ã²', 'ò'], ['Ã´', 'ô'], ['Ãµ', 'õ'], ['Ã¶', 'ö'],
+      ['Ãº', 'ú'], ['Ã¹', 'ù'], ['Ã»', 'û'], ['Ã¼', 'ü'],
+      ['Ã§', 'ç'], ['Ã‘', 'Ñ'], ['Ã±', 'ñ'],
+      ['Ã', 'Á'], ['Ã€', 'À'], ['Ã‚', 'Â'], ['Ãƒ', 'Ã'], ['Ã„', 'Ä'],
+      ['Ã‰', 'É'], ['Ãˆ', 'È'], ['ÃŠ', 'Ê'], ['Ã‹', 'Ë'],
+      ['Ã', 'Í'], ['ÃŒ', 'Ì'], ['ÃŽ', 'Î'], ['Ã', 'Ï'],
+      ['Ã“', 'Ó'], ['Ã’', 'Ò'], ['Ã”', 'Ô'], ['Ã•', 'Õ'], ['Ã–', 'Ö'],
+      ['Ãš', 'Ú'], ['Ã™', 'Ù'], ['Ã›', 'Û'], ['Ãœ', 'Ü'],
+      ['Ã‡', 'Ç'],
+      ['Â ', '\u00A0'], ['Â°', '°'],
+      ['â€“', '–'], ['â€”', '—'], ['â€˜', '‘'], ['â€™', '’'], ['â€œ', '“'], ['â€', '”'],
+      ['â€¦', '…'], ['â€¢', '•'], ['â†’', '→'], ['âˆ’', '−'], ['â‰ˆ', '≈'], ['â˜…', '★'],
+    ]
+    const normalizeMojibakeText = (text) => {
+      if (!text) return text
+      let fixed = text
+      MOJIBAKE_REPLACEMENTS.forEach(([broken, good]) => {
+        if (fixed.includes(broken)) fixed = fixed.split(broken).join(good)
+      })
+      return fixed
+    }
+    const ensureDocCache = (doc) => {
+      if (!doc) return null
+      if (docQueryCacheRef.current.doc !== doc) {
+        docQueryCacheRef.current = { doc, nodes: new Map(), lists: new Map() }
+      }
+      return docQueryCacheRef.current
+    }
+    const clearDocCache = (doc) => {
+      const cache = ensureDocCache(doc)
+      if (!cache) return
+      cache.nodes.clear()
+      cache.lists.clear()
+    }
+    const getCachedNode = (doc, key, selector, scope = doc) => {
+      const cache = ensureDocCache(doc)
+      if (!cache) return null
+      const cached = cache.nodes.get(key)
+      if (cached && cached.isConnected) return cached
+      const found = scope?.querySelector(selector) || null
+      cache.nodes.set(key, found)
+      return found
+    }
+    const getCachedNodeList = (doc, key, selector, scope = doc) => {
+      const cache = ensureDocCache(doc)
+      if (!cache) return []
+      const cached = cache.lists.get(key)
+      if (Array.isArray(cached) && cached.every((node) => node?.isConnected)) return cached
+      const list = Array.from(scope?.querySelectorAll(selector) || [])
+      cache.lists.set(key, list)
+      return list
+    }
+    const normalizeTextNodesInDocument = (doc) => {
+      if (!doc?.body) return false
+      let changed = false
       const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT)
       let node = walker.nextNode()
       while (node) {
-        const original = node.nodeValue
-        if (original && original.includes('R$ ')) {
-          const fixed = original.replace(/R\$\s(?=\d)/g, 'R$\u00A0')
-          if (fixed !== original) node.nodeValue = fixed
+        const original = node.nodeValue || ''
+        const mojibakeFixed = normalizeMojibakeText(original)
+        const currencyFixed = mojibakeFixed.includes('R$ ')
+          ? mojibakeFixed.replace(/R\$\s(?=\d)/g, 'R$\u00A0')
+          : mojibakeFixed
+        if (currencyFixed !== original) {
+          node.nodeValue = currencyFixed
+          changed = true
         }
         node = walker.nextNode()
+      }
+      return changed
+    }
+    const likelyNeedsTextNormalization = (text) => {
+      if (!text) return false
+      return text.includes('R$ ') || text.includes('Ã') || text.includes('Â') || text.includes('â')
+    }
+    const scheduleTextNormalization = (doc) => {
+      if (!doc?.body || normalizationTimer) return
+      normalizationTimer = setTimeout(() => {
+        normalizationTimer = null
+        skipObserverUntil = Date.now() + 50
+        normalizeTextNodesInDocument(doc)
+      }, 40)
+    }
+    const getCatalogEntryById = (id) => {
+      const cfg = OFFER_CARD_CONFIG.find((item) => item.id === id)
+      const data = DADOS.ofertas.find((item) => item.id === id)
+      if (!cfg || !data) return null
+      return { config: cfg, data }
+    }
+    const getActiveOfferEntries = () => activeOffersRef.current || []
+    const getActiveOfferEntryByIndex = (idx) => {
+      const active = getActiveOfferEntries()
+      return active[idx] ?? active[0] ?? null
+    }
+    const normalizeApiOfferIds = (payload) => {
+      if (!payload) return []
+      const rawList = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload.offers)
+          ? payload.offers
+          : Array.isArray(payload.data?.offers)
+            ? payload.data.offers
+            : []
+      return rawList
+        .map((item) => (typeof item === 'string' ? item : item?.id))
+        .filter(Boolean)
+        .slice(0, MAX_API_CARDS)
+    }
+    const syncActiveOffersFromApiPayload = (payload) => {
+      const ids = normalizeApiOfferIds(payload)
+      const active = ids
+        .map((id) => getCatalogEntryById(id))
+        .filter(Boolean)
+        .slice(0, MAX_API_CARDS)
+      activeOffersRef.current = active
+      hasNoOfferRef.current = active.length === 0
+      selectedOfferIndexRef.current = active.length ? Math.min(selectedOfferIndexRef.current, active.length - 1) : 0
+    }
+    const loadOffersFromApi = async () => {
+      if (FORCED_VISIBLE_OFFER_IDS.length) {
+        syncActiveOffersFromApiPayload(FORCED_VISIBLE_OFFER_IDS)
+        return
+      }
+      try {
+        const response = await fetch('/api/ofertas')
+        if (!response.ok) {
+          syncActiveOffersFromApiPayload([])
+          return
+        }
+        const payload = await response.json()
+        syncActiveOffersFromApiPayload(payload)
+      } catch {
+        syncActiveOffersFromApiPayload([])
       }
     }
 
@@ -584,7 +749,8 @@ export default function OfertasNova() {
       if (!baSection || !baCols) return
 
       const idx = selectedOfferIndexRef.current
-      const o = DADOS.ofertas[idx] ?? DADOS.ofertas[0]
+      const selectedEntry = getActiveOfferEntryByIndex(idx)
+      const o = selectedEntry?.data ?? { creditoReceber: DADOS.impacto.creditToday, parcelaNova: PARCELA_HOJE, economiaParcela: 0 }
       const parcelaNova = o.parcelaNova ?? (PARCELA_HOJE - (o.economiaParcela ?? 0))
       const _pt = DADOS.usuario.salarioBruto - PARCELA_HOJE
       const _pa = DADOS.usuario.salarioBruto - parcelaNova
@@ -592,7 +758,7 @@ export default function OfertasNova() {
       const _ca = o.creditoReceber ?? _ct
       const salaryUnified = fmt(DADOS.usuario.salarioBruto)
       const installmentToday = fmt(PARCELA_HOJE)
-      const installmentAfter = getParcelaNova(idx)
+      const installmentAfter = getParcelaNova(o)
       const pocketToday = fmt(_pt)
       const pocketAfter = fmt(_pa)
       const creditToday = fmt(_ct)
@@ -808,11 +974,11 @@ export default function OfertasNova() {
     }
 
     const normalizeCtaSaving = (doc) => {
-      const ctaSaving = doc?.querySelector('#ctaSaving')
+      const ctaSaving = getCachedNode(doc, 'ctaSaving', '#ctaSaving')
       if (ctaSaving?.textContent) {
         const raw = ctaSaving.textContent.trim()
         const withPositiveSign = raw
-          .replace(/^\s*[−-]\s*/, '+')
+          .replace(/^\s*[-−]\s*/, '+')
           .replace(/^R\$\s*/i, '+R$ ')
         ctaSaving.textContent = withPositiveSign
       }
@@ -820,7 +986,7 @@ export default function OfertasNova() {
 
     const normalizeComConsigaiNovaParcela = (doc) => {
       if (!doc) return
-      const baNova = doc.querySelector('#baNova')
+      const baNova = getCachedNode(doc, 'baNova', '#baNova')
       if (baNova?.textContent) {
         baNova.textContent = baNova.textContent.replace(/^[^0-9R$]*(?=R\$)/, '').trim()
       }
@@ -833,20 +999,24 @@ export default function OfertasNova() {
 
     const normalizeCtaOfferName = (doc, idx) => {
       if (!doc) return
-      const ctaName = doc.querySelector('#ctaName')
+      const ctaName = getCachedNode(doc, 'ctaName', '#ctaName')
       if (!ctaName) return
-      if (idx === 2) {
+      const selectedConfig = getActiveOfferEntryByIndex(idx)?.config
+      if (!selectedConfig) {
+        ctaName.textContent = 'Oferta escolhida: sem oferta disponivel'
+        return
+      }
+      if (selectedConfig.id === 'turbo') {
         const sub = THIRD_CARD_SUB_OFFERS[selectedThirdSubOfferRef.current] || THIRD_CARD_SUB_OFFERS.contract
         ctaName.textContent = `Oferta escolhida: ${sub.label}`
         return
       }
-      const selectedName = OFFER_CTA_NAMES[idx] || OFFER_CTA_NAMES[0]
-      ctaName.textContent = `Oferta escolhida: ${selectedName}`
+      ctaName.textContent = `Oferta escolhida: ${selectedConfig.ctaName}`
     }
 
     const applyThirdCardSubOfferSelection = (doc) => {
       if (!doc) return
-      const miniCards = doc.querySelectorAll('#oc2 .consigai-offer-mini-card[data-suboffer]')
+      const miniCards = getCachedNodeList(doc, 'turboMiniCards', '.offer-card.turbo-offer .consigai-offer-mini-card[data-suboffer]')
       if (!miniCards.length) return
 
       miniCards.forEach((card) => {
@@ -861,32 +1031,32 @@ export default function OfertasNova() {
       if (!doc) return
       const parcelaHoje = `R$ ${PARCELA_HOJE.toLocaleString('pt-BR')}`
 
-      const heroOld = doc.querySelector('.hc-col-val.old')
+      const heroOld = getCachedNode(doc, 'heroOld', '.hc-col-val.old')
       if (heroOld) heroOld.textContent = parcelaHoje
 
-      const heroNew = doc.querySelector('.hc-col-val.new, #hcNova')
-      if (heroNew) heroNew.textContent = getParcelaNova(selectedOfferIndexRef.current)
+      const heroNew = getCachedNode(doc, 'heroNew', '.hc-col-val.new, #hcNova')
+      const activeForHero = getActiveOfferEntryByIndex(selectedOfferIndexRef.current)?.data
+      if (heroNew) heroNew.textContent = activeForHero ? getParcelaNova(activeForHero) : 'R$ 0'
 
-      const heroEco = doc.querySelector('.hc-saving-value, #hcEco')
+      const heroEco = getCachedNode(doc, 'heroEco', '.hc-saving-value, #hcEco')
       const idxEco = selectedOfferIndexRef.current
-      const oEco = DADOS.ofertas[idxEco] ?? DADOS.ofertas[0]
-      const parcelaNovaEco = oEco.parcelaNova ?? (PARCELA_HOJE - (oEco.economiaParcela ?? 0))
-      const ecoMensal = Math.max(0, Math.round(PARCELA_HOJE - parcelaNovaEco))
-      if (heroEco) heroEco.textContent = `R$ ${ecoMensal.toLocaleString('pt-BR')}`
+      const oEco = getActiveOfferEntryByIndex(idxEco)?.data
+      const ecoMensal = oEco ? Math.max(0, Math.round(getEcoMensal(oEco))) : 0
+      if (heroEco) heroEco.textContent = `R$\u00A0${ecoMensal.toLocaleString('pt-BR')}`
 
-      const ctaSaving = doc.querySelector('#ctaSaving')
-      if (ctaSaving) ctaSaving.textContent = `+R$ ${ecoMensal.toLocaleString('pt-BR')}/mês`
+      const ctaSaving = getCachedNode(doc, 'ctaSaving', '#ctaSaving')
+      if (ctaSaving) ctaSaving.textContent = `+R$\u00A0${ecoMensal.toLocaleString('pt-BR')}/mês`
 
-      const todayDeduct = doc.querySelector('.ba-col.today .ba-row-val.deduct')
+      const todayDeduct = getCachedNode(doc, 'todayDeduct', '.ba-col.today .ba-row-val.deduct')
       if (todayDeduct) todayDeduct.textContent = parcelaHoje
 
-      const oldValuesInCards = doc.querySelectorAll('.offers-grid .offer-val-num.old')
+      const oldValuesInCards = getCachedNodeList(doc, 'oldValuesInCards', '.offers-grid .offer-val-num.old')
       oldValuesInCards.forEach((el) => {
         el.textContent = parcelaHoje
       })
 
       // Remove arrow markers between old/new values in offer cards.
-      const arrowSpans = doc.querySelectorAll('.offers-grid .offer-val-block span')
+      const arrowSpans = getCachedNodeList(doc, 'arrowSpans', '.offers-grid .offer-val-block span')
       arrowSpans.forEach((el) => {
         const raw = (el.textContent || '').trim()
         if (raw === '?' || raw === '→' || raw === '->') {
@@ -897,13 +1067,6 @@ export default function OfertasNova() {
       normalizeComConsigaiNovaParcela(doc)
       normalizeCtaOfferName(doc, selectedOfferIndexRef.current)
     }
-
-    const getOfferCardSnapshot = () => ({
-      money0: fmt(DADOS.ofertas[0].creditoReceber),
-      money1: fmt(DADOS.ofertas[1].creditoReceber),
-      parcela0: getParcelaNova(0),
-      parcela1: getParcelaNova(1),
-    })
 
     const applyOfferCardRedesignStyles = (doc) => {
       if (doc.body?.dataset?.consigaiOfferRedesignStyleApplied) return
@@ -1008,9 +1171,11 @@ export default function OfertasNova() {
           border-radius: 22px !important;
           padding: 18px !important;
           min-height: 266px !important;
-          transition: all .18s ease !important;
+          container-type: inline-size;
+          transition: border-color .18s ease, box-shadow .18s ease, background .18s ease !important;
           touch-action: manipulation !important;
           will-change: transform, box-shadow, border-color;
+          user-select: text;
         }
         .offer-card.selected,
         .offer-card.active {
@@ -1024,16 +1189,14 @@ export default function OfertasNova() {
         .offer-card.active::before { display: none !important; }
         .offer-card:hover {
           border-color: #c2d0f8 !important;
-          transform: translateY(-1px) !important;
         }
-        .offer-card:active {
-          transform: scale(.998) !important;
-        }
+        .offer-card:active { }
 
         .consigai-offer-card {
           height: 100%;
           display: flex;
           flex-direction: column;
+          user-select: text;
         }
 
         .consigai-offer-head {
@@ -1179,6 +1342,26 @@ export default function OfertasNova() {
           display: inline-flex;
           align-items: baseline;
           gap: 2px;
+          white-space: nowrap;
+          line-height: 1.06;
+          font-size: clamp(12px, 6.2cqi, 24px);
+          max-inline-size: 100%;
+        }
+        .consigai-offer-total-label .consigai-offer-word-orange {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: clip;
+        }
+        #oc0 .consigai-offer-total-label,
+        #oc1 .consigai-offer-total-label {
+          display: block;
+          width: 100%;
+          font-size: clamp(16px, 7.6cqi, 30px);
+        }
+        #oc0 .consigai-offer-total-label .consigai-offer-word-orange,
+        #oc1 .consigai-offer-total-label .consigai-offer-word-orange {
+          display: block;
+          width: 100%;
         }
         .consigai-offer-total-stack .consigai-offer-value-green {
           display: block;
@@ -1210,7 +1393,7 @@ export default function OfertasNova() {
           white-space: nowrap;
           margin: 2px 0;
         }
-        #oc2 .consigai-offer-lines {
+        .offer-card.turbo-offer .consigai-offer-lines {
           display: block;
           min-height: 112px;
         }
@@ -1238,7 +1421,7 @@ export default function OfertasNova() {
           color: #1a3d8f;
           font-weight: 800;
         }
-        #oc2 .consigai-offer-mini-label {
+        .offer-card.turbo-offer .consigai-offer-mini-label {
           font-size: 13px;
           line-height: 1.22;
           letter-spacing: 0;
@@ -1256,11 +1439,11 @@ export default function OfertasNova() {
           letter-spacing: -.03em;
           white-space: nowrap;
         }
-        #oc2 .consigai-offer-mini-grid {
+        .offer-card.turbo-offer .consigai-offer-mini-grid {
           gap: 8px;
           margin-top: 26px !important;
         }
-        #oc2 .consigai-offer-mini-card {
+        .offer-card.turbo-offer .consigai-offer-mini-card {
           gap: 4px;
           padding: 9px 8px;
           align-content: start;
@@ -1271,23 +1454,23 @@ export default function OfertasNova() {
           box-shadow: none;
           transition: none;
         }
-        #oc2 .consigai-offer-mini-value {
+        .offer-card.turbo-offer .consigai-offer-mini-value {
           font-size: clamp(18px, 2.05vw, 22px);
           line-height: .98;
           letter-spacing: -.015em;
           min-width: 0;
           color: #0a7c52;
         }
-        #oc2.offer-card.selected .consigai-offer-mini-card {
+        .offer-card.turbo-offer.selected .consigai-offer-mini-card {
           border-color: #dbe6f7;
           background: #f7faff;
           box-shadow: none;
           transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
         }
-        #oc2 .consigai-offer-mini-label {
+        .offer-card.turbo-offer .consigai-offer-mini-label {
           color: #1a3d8f;
         }
-        #oc2.offer-card.selected .consigai-offer-mini-card.is-selected {
+        .offer-card.turbo-offer.selected .consigai-offer-mini-card.is-selected {
           border-color: #2454D6 !important;
           background: #eef5ff !important;
           box-shadow: 0 3px 10px rgba(35, 80, 200, .12) !important;
@@ -1346,18 +1529,13 @@ export default function OfertasNova() {
         .consigai-offer-metric-value.green { color: #0a7c52; }
         #oc0 .consigai-offer-metric-value,
         #oc1 .consigai-offer-metric-value { font-size: 19px; }
-        #oc2 .consigai-offer-note {
+        .offer-card.turbo-offer .consigai-offer-note {
           margin-top: auto;
         }
 
         @media (max-width: 1080px) {
           .offers-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-          }
-          .offers-grid > .offer-card:nth-child(3) {
-            grid-column: 1 / -1 !important;
-            justify-self: center !important;
-            width: min(520px, 100%) !important;
           }
         }
 
@@ -1366,17 +1544,12 @@ export default function OfertasNova() {
             grid-template-columns: minmax(0, 1fr) !important;
             gap: 10px !important;
           }
-          .offers-grid > .offer-card:nth-child(3) {
-            grid-column: auto !important;
-            justify-self: stretch !important;
-            width: 100% !important;
-          }
           .offer-card {
             min-height: auto !important;
             padding: 14px !important;
           }
           .consigai-offer-lines,
-          #oc2 .consigai-offer-lines {
+          .offer-card.turbo-offer .consigai-offer-lines {
             min-height: 0 !important;
           }
           .consigai-offer-note,
@@ -1389,11 +1562,11 @@ export default function OfertasNova() {
           .consigai-offer-mini-value {
             font-size: 22px !important;
           }
-          #oc2 .consigai-offer-mini-grid {
+          .offer-card.turbo-offer .consigai-offer-mini-grid {
             grid-template-columns: 1fr !important;
             gap: 8px !important;
           }
-          #oc2 .consigai-offer-mini-label {
+          .offer-card.turbo-offer .consigai-offer-mini-label {
             font-size: 13px !important;
           }
         }
@@ -1403,135 +1576,179 @@ export default function OfertasNova() {
     }
 
     const upsertOfferCardsRedesign = (doc) => {
-      const card0 = doc.querySelector('#oc0')
-      const card1 = doc.querySelector('#oc1')
-      const card2 = doc.querySelector('#oc2')
-      if (!card0 || !card1 || !card2) return
+      const offersGrid = getCachedNode(doc, 'offersGrid', '.offers-grid')
+      if (!offersGrid) return
 
-      // Keep cards stable after first render to improve tap/click responsiveness.
-      const isAlreadyRedesigned =
-        card0.querySelector('.consigai-offer-card') &&
-        card1.querySelector('.consigai-offer-card') &&
-        card2.querySelector('.consigai-offer-card')
-      if (isAlreadyRedesigned) return
+      const entries = getActiveOfferEntries()
+      const selectedIdx = entries.length ? Math.min(selectedOfferIndexRef.current, entries.length - 1) : 0
+      selectedOfferIndexRef.current = selectedIdx
 
-      const snapshot = getOfferCardSnapshot()
-
-      card0.innerHTML = `
-        <div class="consigai-offer-card">
-          <span class="consigai-hidden-state-badge badge sel" id="badge0">Selecionada</span>
-          <div class="consigai-offer-title-row">
-            <span class="consigai-offer-pill">Melhor Equilíbrio</span>
-            <div class="consigai-offer-head-badges">
-              <span class="consigai-offer-badge-rec">★ Recomendada</span>
-            </div>
-          </div>
-          <div class="consigai-offer-lines">
-            <div class="consigai-offer-line">
-              <span class="consigai-offer-line-main blue">Receba ${snapshot.money0}</span>
-              <span class="consigai-offer-line-helper">na sua conta</span>
-            </div>
-            <div class="consigai-offer-line">
-              <span class="consigai-offer-line-main consigai-offer-total-stack">
-                <span class="consigai-offer-total-label">
-                  <span class="consigai-offer-word-orange">Economia total</span>
-                </span>
-                <span class="consigai-offer-value-green">${TOTAL_ECONOMIA}</span>
-              </span>
-            </div>
-          </div>
-          <div class="consigai-offer-metric">
-            <span class="consigai-offer-metric-label">Parcela nova</span>
-            <span class="consigai-offer-metric-value green">${snapshot.parcela0}</span>
-          </div>
-          <div class="consigai-offer-note">
-            <span class="consigai-offer-note-text">
-              <span class="consigai-offer-note-sub">Boa opção para quem quer dinheiro na conta, parcela menor e prazo mantido.</span>
-            </span>
-          </div>
-        </div>
-      `
-
-      card1.innerHTML = `
-        <div class="consigai-offer-card">
-          <span class="consigai-hidden-state-badge badge pick" id="badge1">Escolher</span>
-          <div class="consigai-offer-head"></div>
-          <span class="consigai-offer-pill">Mais Folga por Mês</span>
-          <div class="consigai-offer-lines">
-            <div class="consigai-offer-line">
-              <span class="consigai-offer-line-main blue">Receba ${snapshot.money1}</span>
-              <span class="consigai-offer-line-helper">na sua conta</span>
-            </div>
-            <div class="consigai-offer-line">
-              <span class="consigai-offer-line-main consigai-offer-total-stack">
-                <span class="consigai-offer-total-label">
-                  <span class="consigai-offer-word-orange">Redução na parcela</span>
-                </span>
-                <span class="consigai-offer-value-green">${ECONOMIA_MENSAL_PARCELA}</span>
-              </span>
-            </div>
-          </div>
-          <div class="consigai-offer-metric">
-            <span class="consigai-offer-metric-label">Parcela nova</span>
-            <span class="consigai-offer-metric-value green">${snapshot.parcela1}</span>
-          </div>
-          <div class="consigai-offer-note">
-            <span class="consigai-offer-note-text">
-              <span class="consigai-offer-note-sub">Boa opção para quem quer aliviar o orçamento mensal sem receber um valor alto.</span>
-            </span>
-          </div>
-        </div>
-      `
-
-      card2.innerHTML = `
-        <div class="consigai-offer-card">
-          <span class="consigai-hidden-state-badge badge pick" id="badge2">Escolher</span>
-          <div class="consigai-offer-head"></div>
-          <span class="consigai-offer-pill">Turbo Economia</span>
-          <div class="consigai-offer-lines">
-            <div class="consigai-offer-pretext">Economize sem pegar novo crédito</div>
-            <div class="consigai-offer-mini-grid">
-              <div class="consigai-offer-mini-card">
-                <span class="consigai-offer-mini-label">No contrato</span>
-                <span class="consigai-offer-mini-value">${TOTAL_ECONOMIA}</span>
+      if (!entries.length) {
+        const noOfferMarkup = `
+          <div class="offer-card selected" id="oc0">
+            <div class="consigai-offer-card">
+              <div class="consigai-offer-title-row">
+                <span class="consigai-offer-pill">Sem oferta disponivel</span>
               </div>
-              <div class="consigai-offer-mini-card">
-                <span class="consigai-offer-mini-label">Na parcela</span>
-                <span class="consigai-offer-mini-value">${ECONOMIA_PARCELAS_REFIN}</span>
+              <div class="consigai-offer-lines" style="min-height:0">
+                <div class="consigai-offer-line">
+                  <span class="consigai-offer-line-main blue">Nao ha oferta para este cliente no momento</span>
+                  <span class="consigai-offer-line-helper">Tente novamente mais tarde.</span>
+                </div>
               </div>
             </div>
           </div>
-          <div class="consigai-offer-note">
-            <span class="consigai-offer-note-text">
-              <span class="consigai-offer-note-sub">Boa opção para quem quer diminuir o impacto mensal no orçamento sem pegar dinheiro novo.</span>
-            </span>
-          </div>
-        </div>
-      `
+        `
+        if (offersGrid.innerHTML !== noOfferMarkup) {
+          offersGrid.innerHTML = noOfferMarkup
+          clearDocCache(doc)
+        }
+        syncOfferSelectionUi(doc)
+        return
+      }
 
-      const subCardContract = card2.querySelector('.consigai-offer-mini-card:nth-child(1)')
-      const subCardInstallment = card2.querySelector('.consigai-offer-mini-card:nth-child(2)')
-      if (subCardContract) {
-        subCardContract.setAttribute('data-suboffer', 'contract')
-        subCardContract.setAttribute('role', 'button')
-        subCardContract.setAttribute('tabindex', '0')
+      const cardsHtml = entries.map((entry, idx) => {
+        const cfg = entry.config
+        const offer = entry.data
+
+        if (cfg.id === 'turbo') {
+          const economiaContrato = fmt(offer.economiaContrato ?? offer.economiaTotal ?? 0)
+          const economiaParcela = `${fmt(offer.economiaParcela ?? getEcoMensal(offer))}/mês`
+          return `
+            <div class="offer-card turbo-offer" id="oc${idx}">
+              <div class="consigai-offer-card">
+                <span class="consigai-hidden-state-badge badge pick" id="badge${idx}">Escolher</span>
+                <div class="consigai-offer-head"></div>
+                <span class="consigai-offer-pill">${cfg.pill}</span>
+                <div class="consigai-offer-lines">
+                  <div class="consigai-offer-pretext">Economize sem pegar novo credito</div>
+                  <div class="consigai-offer-mini-grid">
+                    <div class="consigai-offer-mini-card" data-suboffer="contract" role="button" tabindex="0">
+                      <span class="consigai-offer-mini-label">No contrato</span>
+                      <span class="consigai-offer-mini-value">${economiaContrato}</span>
+                    </div>
+                    <div class="consigai-offer-mini-card" data-suboffer="installment" role="button" tabindex="0">
+                      <span class="consigai-offer-mini-label">Na parcela</span>
+                      <span class="consigai-offer-mini-value">${economiaParcela}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="consigai-offer-note">
+                  <span class="consigai-offer-note-text">
+                    <span class="consigai-offer-note-sub">${cfg.note}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          `
+        }
+
+        const moneyValue = fmt(offer.creditoReceber ?? 0)
+        const showSecondaryLine = cfg.kind !== 'simples'
+        let totalLabel = 'Parcela estimada em'
+        let totalValue = getParcelaNova(offer)
+        let metricLabel = 'Economia de'
+        let metricValue = `${fmt(getEcoMensal(offer))}/mês`
+
+        if (cfg.id === 'equilibrio') {
+          totalLabel = 'Economize nos Contratos'
+          totalValue = fmt(offer.economiaTotal ?? (getEcoMensal(offer) * 12))
+          metricLabel = 'Parcela nova'
+          metricValue = getParcelaNova(offer)
+        } else if (cfg.id === 'folga') {
+          totalLabel = 'Reduza a parcela para'
+          totalValue = getParcelaNova(offer)
+          metricLabel = 'Economia de'
+          metricValue = `${fmt(offer.reducaoMensal ?? getEcoMensal(offer))}/mês`
+        } else if (cfg.kind === 'simples') {
+          metricLabel = 'Parcela'
+          metricValue = getParcelaNova(offer)
+        }
+
+
+        return `
+          <div class="offer-card" id="oc${idx}">
+            <div class="consigai-offer-card">
+              <span class="consigai-hidden-state-badge badge pick" id="badge${idx}">Escolher</span>
+              ${cfg.id === 'equilibrio'
+                ? `<div class="consigai-offer-title-row">
+                     <span class="consigai-offer-pill">${cfg.pill}</span>
+                     <div class="consigai-offer-head-badges">
+                       <span class="consigai-offer-badge-rec">Recomendada</span>
+                     </div>
+                   </div>`
+                : `<div class="consigai-offer-head"></div>
+                   <span class="consigai-offer-pill">${cfg.pill}</span>`}
+              <div class="consigai-offer-lines">
+                <div class="consigai-offer-line">
+                  <span class="consigai-offer-line-main blue">Receba ${moneyValue}</span>
+                  <span class="consigai-offer-line-helper">na sua conta</span>
+                </div>
+                ${showSecondaryLine
+                  ? `<div class="consigai-offer-line">
+                       <span class="consigai-offer-line-main consigai-offer-total-stack">
+                         <span class="consigai-offer-total-label">
+                           <span class="consigai-offer-word-orange">${totalLabel}</span>
+                         </span>
+                         <span class="consigai-offer-value-green">${totalValue}</span>
+                       </span>
+                     </div>`
+                  : ''}
+              </div>
+              <div class="consigai-offer-metric">
+                <span class="consigai-offer-metric-label">${metricLabel}</span>
+                <span class="consigai-offer-metric-value green">${metricValue}</span>
+              </div>
+              <div class="consigai-offer-note">
+                <span class="consigai-offer-note-text">
+                  <span class="consigai-offer-note-sub">${cfg.note}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        `
+      }).join('')
+
+      if (offersGrid.innerHTML !== cardsHtml) {
+        offersGrid.innerHTML = cardsHtml
+        clearDocCache(doc)
       }
-      if (subCardInstallment) {
-        subCardInstallment.setAttribute('data-suboffer', 'installment')
-        subCardInstallment.setAttribute('role', 'button')
-        subCardInstallment.setAttribute('tabindex', '0')
-      }
+      syncOfferSelectionUi(doc)
       applyThirdCardSubOfferSelection(doc)
     }
 
+    const syncOfferSelectionUi = (doc) => {
+      if (!doc) return
+      const offerCards = getCachedNodeList(doc, 'offerCards', '.offers-grid .offer-card')
+      if (!offerCards.length) return
+      const selectedIdx = hasNoOfferRef.current
+        ? 0
+        : Math.min(selectedOfferIndexRef.current, offerCards.length - 1)
+      selectedOfferIndexRef.current = selectedIdx
+
+      offerCards.forEach((card, idx) => {
+        const selected = idx === selectedIdx
+        card.classList.toggle('selected', selected)
+        card.classList.toggle('active', selected)
+        card.setAttribute('aria-selected', selected ? 'true' : 'false')
+        const badge = card.querySelector('.consigai-hidden-state-badge')
+        if (badge) {
+          badge.classList.toggle('sel', selected)
+          badge.classList.toggle('pick', !selected)
+          badge.textContent = selected ? 'Selecionada' : 'Escolher'
+        }
+      })
+    }
+
     const goToSelectedOffer = () => {
-      if (selectedOfferIndexRef.current === 2) {
+      const selectedConfig = getActiveOfferEntryByIndex(selectedOfferIndexRef.current)?.config
+      if (!selectedConfig) return
+      if (selectedConfig.id === 'turbo') {
         const thirdSub = THIRD_CARD_SUB_OFFERS[selectedThirdSubOfferRef.current] || THIRD_CARD_SUB_OFFERS.contract
         navigate(thirdSub.route)
         return
       }
-      const selected = OFFER_ROUTES[selectedOfferIndexRef.current] || OFFER_ROUTES[0]
-      navigate(selected.route, selected.state ? { state: selected.state } : undefined)
+      navigate(selectedConfig.route, selectedConfig.state ? { state: selectedConfig.state } : undefined)
     }
 
     const attachBridge = () => {
@@ -1540,9 +1757,22 @@ export default function OfertasNova() {
       const frameDoc = frameWindow?.document
 
       if (!frameWindow || !frameDoc) return
+      if (!getCachedNode(frameDoc, 'offersGrid', '.offers-grid')) return
+      const refreshSelectedOfferUi = (idx) => {
+        selectedOfferIndexRef.current = idx
+        normalizeCtaSaving(frameDoc)
+        normalizeComConsigaiNovaParcela(frameDoc)
+        normalizeCtaOfferName(frameDoc, idx)
+        applyUnifiedParcelaHoje(frameDoc)
+        upsertOfferCardsRedesign(frameDoc)
+        applyThirdCardSubOfferSelection(frameDoc)
+        upsertPocketInsight(frameDoc)
+        upsertSavingsReplacement(frameDoc)
+        normalizeTextNodesInDocument(frameDoc)
+      }
 
       applyResponsiveStyles(frameDoc)
-      enforceCurrencyNoBreak(frameDoc)
+      normalizeTextNodesInDocument(frameDoc)
       applyUnifiedParcelaHoje(frameDoc)
       applyOfferCardRedesignStyles(frameDoc)
       upsertOfferCardsRedesign(frameDoc)
@@ -1554,7 +1784,17 @@ export default function OfertasNova() {
 
       if (!frameDoc.body?.dataset?.consigaiCurrencyObserverAttached) {
         currencyObserverRef.current?.disconnect?.()
-        currencyObserverRef.current = new MutationObserver(() => enforceCurrencyNoBreak(frameDoc))
+        currencyObserverRef.current = new MutationObserver((mutations) => {
+          if (Date.now() < skipObserverUntil) return
+          const shouldNormalize = mutations.some((mutation) => {
+            if (mutation.type === 'characterData') {
+              return likelyNeedsTextNormalization(mutation.target?.nodeValue || '')
+            }
+            if (mutation.type !== 'childList') return false
+            return Array.from(mutation.addedNodes || []).some((node) => likelyNeedsTextNormalization(node?.textContent || ''))
+          })
+          if (shouldNormalize) scheduleTextNormalization(frameDoc)
+        })
         currencyObserverRef.current.observe(frameDoc.body, { childList: true, subtree: true, characterData: true })
         frameDoc.body.dataset.consigaiCurrencyObserverAttached = '1'
       }
@@ -1586,7 +1826,7 @@ export default function OfertasNova() {
             note.style.lineHeight = '1.4'
             heroTextContainer.appendChild(note)
           }
-          note.textContent = 'Compare as opções disponíveis para Reduzir sua Parcela, Receber Dinheiro Agora ou Economizar mais no Total dos Contratos.'
+          note.textContent = 'Compare as opcoes para reduzir parcela, economizar no total, ou seguir em ofertas diretas como apenas novo contrato e apenas refinanciamento.'
         }
 
         const sectionHeader = frameDoc.querySelector('.section-header')
@@ -1606,68 +1846,45 @@ export default function OfertasNova() {
         }
       }
 
-      if (typeof frameWindow.sel === 'function' && !frameWindow.__consigAIWrappedSel) {
-        const originalSel = frameWindow.sel.bind(frameWindow)
-        frameWindow.__consigAIWrappedSel = true
-        frameWindow.sel = (idx) => {
-          selectedOfferIndexRef.current = Number(idx) || 0
-          frameWindow.__consigAISelectedOffer = selectedOfferIndexRef.current
-          const result = originalSel(idx)
-          normalizeCtaSaving(frameDoc)
-          normalizeComConsigaiNovaParcela(frameDoc)
-          normalizeCtaOfferName(frameDoc, selectedOfferIndexRef.current)
-          frameWindow.requestAnimationFrame(() => {
-            normalizeCtaSaving(frameDoc)
-            normalizeComConsigaiNovaParcela(frameDoc)
-            normalizeCtaOfferName(frameDoc, selectedOfferIndexRef.current)
-            applyUnifiedParcelaHoje(frameDoc)
-            upsertOfferCardsRedesign(frameDoc)
-            applyThirdCardSubOfferSelection(frameDoc)
-            upsertPocketInsight(frameDoc)
-            upsertSavingsReplacement(frameDoc)
-            enforceCurrencyNoBreak(frameDoc)
-          })
-          return result
-        }
-      }
-
       if (frameDoc !== attachedDocRef.current) {
         if (attachedDocRef.current && clickHandlerRef.current) {
           attachedDocRef.current.removeEventListener('click', clickHandlerRef.current, true)
         }
 
         clickHandlerRef.current = (event) => {
-          const target = event.target
-          if (!target || target.nodeType !== 1) return
+          const rawTarget = event.target
+          const target = rawTarget?.nodeType === 1 ? rawTarget : rawTarget?.parentElement
+          if (!target) return
+          const clickedOfferCard = target.closest('.offer-card')
 
-          const thirdSubCard = target.closest('#oc2 .consigai-offer-mini-card[data-suboffer]')
+          const thirdSubCard = target.closest('.offer-card.turbo-offer .consigai-offer-mini-card[data-suboffer]')
           if (thirdSubCard) {
             const subKey = thirdSubCard.getAttribute('data-suboffer')
             if (subKey && THIRD_CARD_SUB_OFFERS[subKey]) {
+              const turboOfferCard = thirdSubCard.closest('.offer-card.turbo-offer')
+              const turboOfferIndex = turboOfferCard?.id?.startsWith('oc')
+                ? Number(turboOfferCard.id.replace('oc', ''))
+                : Number.NaN
+              if (Number.isNaN(turboOfferIndex)) return
               selectedThirdSubOfferRef.current = subKey
-              selectedOfferIndexRef.current = 2
+              selectedOfferIndexRef.current = turboOfferIndex
               event.preventDefault()
               event.stopPropagation()
-              if (typeof frameWindow.sel === 'function') {
-                frameWindow.sel(2)
-              }
-              applyThirdCardSubOfferSelection(frameDoc)
-              normalizeCtaOfferName(frameDoc, 2)
+              refreshSelectedOfferUi(turboOfferIndex)
               return
             }
           }
 
           const offerCard = target.closest('.offer-card')
           if (offerCard?.id?.startsWith('oc')) {
+            if (hasNoOfferRef.current) return
             const idx = Number(offerCard.id.replace('oc', ''))
             if (!Number.isNaN(idx)) {
               selectedOfferIndexRef.current = idx
-              if (typeof frameWindow.sel === 'function') {
-                event.preventDefault()
-                event.stopPropagation()
-                frameWindow.sel(idx)
-                return
-              }
+              event.preventDefault()
+              event.stopPropagation()
+              refreshSelectedOfferUi(idx)
+              return
             }
           }
 
@@ -1679,7 +1896,7 @@ export default function OfertasNova() {
         }
 
         frameDoc.addEventListener('click', clickHandlerRef.current, true)
-        const ctaButton = frameDoc.querySelector('.btn-cta')
+        const ctaButton = getCachedNode(frameDoc, 'ctaButton', '.btn-cta')
         if (ctaButton) {
           ctaButton.onclick = (event) => {
             event.preventDefault()
@@ -1688,23 +1905,38 @@ export default function OfertasNova() {
         }
         attachedDocRef.current = frameDoc
       }
+
+      // After the bridge is attached and cards are mounted, stop polling to avoid UI jitter.
+      if (intervalId) {
+        clearInterval(intervalId)
+        intervalId = null
+      }
     }
 
     const handleLoad = () => attachBridge()
+    const initializeOffers = async () => {
+      await loadOffersFromApi()
+      attachBridge()
+    }
 
     const iframe = iframeRef.current
     iframe?.addEventListener('load', handleLoad)
     intervalId = setInterval(attachBridge, 400)
-    attachBridge()
+    initializeOffers()
 
     return () => {
       iframe?.removeEventListener('load', handleLoad)
       if (intervalId) clearInterval(intervalId)
+      if (normalizationTimer) {
+        clearTimeout(normalizationTimer)
+        normalizationTimer = null
+      }
       currencyObserverRef.current?.disconnect?.()
       currencyObserverRef.current = null
       if (attachedDocRef.current && clickHandlerRef.current) {
         attachedDocRef.current.removeEventListener('click', clickHandlerRef.current, true)
       }
+      docQueryCacheRef.current = { doc: null, nodes: new Map(), lists: new Map() }
     }
   }, [navigate])
 
@@ -1723,4 +1955,5 @@ export default function OfertasNova() {
     />
   )
 }
+
 
