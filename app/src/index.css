@@ -14,3 +14,33 @@ body {
 #root {
   min-height: 100svh;
 }
+
+/* OfertasNova — loading bar */
+@keyframes loading-bar-slide {
+  0%   { transform: translateX(-100%); }
+  60%  { transform: translateX(0%); }
+  100% { transform: translateX(100%); }
+}
+.offers-loading-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #2454D6, #18B7E8, #00A99D);
+  z-index: 9999;
+  animation: loading-bar-slide 1.4s ease-in-out infinite;
+}
+
+/* OfertasNova — error screen */
+.offers-error-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  flex-direction: column;
+  gap: 12px;
+  color: #1a3d8f;
+  font-family: Inter, sans-serif;
+}
+.offers-error-screen__icon  { font-size: 32px; }
+.offers-error-screen__title { font-weight: 700; font-size: 16px; margin: 0; }
+.offers-error-screen__msg   { color: #667399; font-size: 13px; margin: 0; }

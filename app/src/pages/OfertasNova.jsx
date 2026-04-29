@@ -662,7 +662,6 @@ export default function OfertasNova() {
       const subOffer = selectedThirdSubOfferRef.current
       applyUnifiedParcelaHoje(docQueryCacheRef, doc, selectedEntry, u)
       upsertOfferCardsRedesign(docQueryCacheRef, doc, offers, selectedOfferIndexRef, u, subOffer)
-      applyThirdCardSubOfferSelection(docQueryCacheRef, doc, subOffer)
       upsertPocketInsight(doc, selectedEntry, u, imp)
       upsertSavingsReplacement(doc)
       normalizeCtaSaving(docQueryCacheRef, doc)
@@ -724,8 +723,8 @@ export default function OfertasNova() {
           note.textContent =
             'Compare as opcoes para reduzir parcela, economizar no total, ou seguir em ofertas diretas como apenas novo contrato e apenas refinanciamento.'
         }
-        const sectionHeader = frameDoc.querySelector('.section-header')
-        if (sectionHeader) sectionHeader.style.display = 'none'
+        // .section-header oculto via .OFFER_CARD_REDESIGN_CSS (.section-header { display:none })
+
         frameDoc.body.dataset.consigaiHeroSectionCopyAdjusted = '1'
       }
 
@@ -742,6 +741,18 @@ export default function OfertasNova() {
       if (frameDoc !== attachedDocRef.current) {
         if (attachedDocRef.current && clickHandlerRef.current) {
           attachedDocRef.current.removeEventListener('click', clickHandlerRef.current, true)
+        }
+
+        const navigateToOffer = () => {
+          const selected = activeOffersRef.current[selectedOfferIndexRef.current]
+          if (!selected) return
+          const cfg = selected.config
+          if (cfg.id === 'turbo') {
+            const sub = THIRD_CARD_SUB_OFFERS[selectedThirdSubOfferRef.current] || THIRD_CARD_SUB_OFFERS.contract
+            navigate(sub.route)
+          } else {
+            navigate(cfg.route, cfg.state ? { state: cfg.state } : undefined)
+          }
         }
 
         clickHandlerRef.current = (event) => {
@@ -783,15 +794,7 @@ export default function OfertasNova() {
           const cta = target.closest('.btn-cta')
           if (cta) {
             event.preventDefault()
-            const selected = activeOffersRef.current[selectedOfferIndexRef.current]
-            if (!selected) return
-            const cfg = selected.config
-            if (cfg.id === 'turbo') {
-              const sub = THIRD_CARD_SUB_OFFERS[selectedThirdSubOfferRef.current] || THIRD_CARD_SUB_OFFERS.contract
-              navigate(sub.route)
-            } else {
-              navigate(cfg.route, cfg.state ? { state: cfg.state } : undefined)
-            }
+            navigateToOffer()
           }
         }
 
@@ -799,18 +802,7 @@ export default function OfertasNova() {
 
         const ctaButton = getCachedNode(docQueryCacheRef, frameDoc, 'ctaButton', '.btn-cta')
         if (ctaButton) {
-          ctaButton.onclick = (event) => {
-            event.preventDefault()
-            const selected = activeOffersRef.current[selectedOfferIndexRef.current]
-            if (!selected) return
-            const cfg = selected.config
-            if (cfg.id === 'turbo') {
-              const sub = THIRD_CARD_SUB_OFFERS[selectedThirdSubOfferRef.current] || THIRD_CARD_SUB_OFFERS.contract
-              navigate(sub.route)
-            } else {
-              navigate(cfg.route, cfg.state ? { state: cfg.state } : undefined)
-            }
-          }
+          ctaButton.onclick = (event) => { event.preventDefault(); navigateToOffer() }
         }
         attachedDocRef.current = frameDoc
       }
@@ -833,12 +825,13 @@ export default function OfertasNova() {
     }
 
     const iframe = iframeRef.current
-    iframe?.addEventListener('load', () => { pollAttempts = 0; attachBridge() })
+    const handleIframeLoad = () => { pollAttempts = 0; attachBridge() }
+    iframe?.addEventListener('load', handleIframeLoad)
     intervalId = setInterval(attachBridgeWithLimit, 400)
     attachBridge()
 
     return () => {
-      iframe?.removeEventListener('load', attachBridge)
+      iframe?.removeEventListener('load', handleIframeLoad)
       if (intervalId) clearInterval(intervalId)
       if (normalizationTimer) clearTimeout(normalizationTimer)
       currencyObserverRef.current?.disconnect?.()
@@ -852,19 +845,17 @@ export default function OfertasNova() {
 
   if (error) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: 12, color: '#1a3d8f', fontFamily: 'Inter, sans-serif' }}>
-        <span style={{ fontSize: 32 }}>⚠️</span>
-        <p style={{ fontWeight: 700, fontSize: 16 }}>Erro ao carregar ofertas</p>
-        <p style={{ color: '#667399', fontSize: 13 }}>{error}</p>
+      <div className="offers-error-screen">
+        <span className="offers-error-screen__icon" aria-hidden="true">⚠️</span>
+        <p className="offers-error-screen__title">Erro ao carregar ofertas</p>
+        <p className="offers-error-screen__msg">{error}</p>
       </div>
     )
   }
 
   return (
     <>
-      {loading && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #2454D6, #18B7E8)', zIndex: 9999, animation: 'none' }} aria-hidden="true" />
-      )}
+      {loading && <div className="offers-loading-bar" aria-hidden="true" />}
       <iframe
         ref={iframeRef}
         title="Ofertas ConsigAI"

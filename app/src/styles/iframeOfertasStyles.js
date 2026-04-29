@@ -339,6 +339,7 @@ export const RESPONSIVE_STYLES_CSS = `
 
 export const OFFER_CARD_REDESIGN_CSS = `
   .hero-sub { display: none !important; }
+  .section-header { display: none !important; }
   body {
     min-height: 100vh !important;
     font-family: Inter, Arial, Helvetica, sans-serif !important;
