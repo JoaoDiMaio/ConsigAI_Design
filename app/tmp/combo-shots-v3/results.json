@@ -1,0 +1,352 @@
+[
+  {
+    "combo": [
+      "equilibrio",
+      "folga",
+      "turbo"
+    ],
+    "cards": [
+      {
+        "idx": 0,
+        "id": "oc0",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 1,
+        "id": "oc1",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 2,
+        "id": "oc2",
+        "height": 282,
+        "width": 345.34
+      }
+    ],
+    "heightMin": 282,
+    "heightMax": 282,
+    "heightDelta": 0,
+    "widthMin": 345.33,
+    "widthMax": 345.34,
+    "widthDelta": 0.01,
+    "equalHeight": true,
+    "screenshot": "C:\\Users\\joaod\\OneDrive\\Documents\\GitHub\\ConsigAI_Design\\app\\tmp\\combo-shots-v3\\equilibrio__folga__turbo.png"
+  },
+  {
+    "combo": [
+      "equilibrio",
+      "folga",
+      "apenas_novo"
+    ],
+    "cards": [
+      {
+        "idx": 0,
+        "id": "oc0",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 1,
+        "id": "oc1",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 2,
+        "id": "oc2",
+        "height": 282,
+        "width": 345.34
+      }
+    ],
+    "heightMin": 282,
+    "heightMax": 282,
+    "heightDelta": 0,
+    "widthMin": 345.33,
+    "widthMax": 345.34,
+    "widthDelta": 0.01,
+    "equalHeight": true,
+    "screenshot": "C:\\Users\\joaod\\OneDrive\\Documents\\GitHub\\ConsigAI_Design\\app\\tmp\\combo-shots-v3\\equilibrio__folga__apenas_novo.png"
+  },
+  {
+    "combo": [
+      "equilibrio",
+      "folga",
+      "apenas_refin"
+    ],
+    "cards": [
+      {
+        "idx": 0,
+        "id": "oc0",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 1,
+        "id": "oc1",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 2,
+        "id": "oc2",
+        "height": 282,
+        "width": 345.34
+      }
+    ],
+    "heightMin": 282,
+    "heightMax": 282,
+    "heightDelta": 0,
+    "widthMin": 345.33,
+    "widthMax": 345.34,
+    "widthDelta": 0.01,
+    "equalHeight": true,
+    "screenshot": "C:\\Users\\joaod\\OneDrive\\Documents\\GitHub\\ConsigAI_Design\\app\\tmp\\combo-shots-v3\\equilibrio__folga__apenas_refin.png"
+  },
+  {
+    "combo": [
+      "equilibrio",
+      "turbo",
+      "apenas_novo"
+    ],
+    "cards": [
+      {
+        "idx": 0,
+        "id": "oc0",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 1,
+        "id": "oc1",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 2,
+        "id": "oc2",
+        "height": 282,
+        "width": 345.34
+      }
+    ],
+    "heightMin": 282,
+    "heightMax": 282,
+    "heightDelta": 0,
+    "widthMin": 345.33,
+    "widthMax": 345.34,
+    "widthDelta": 0.01,
+    "equalHeight": true,
+    "screenshot": "C:\\Users\\joaod\\OneDrive\\Documents\\GitHub\\ConsigAI_Design\\app\\tmp\\combo-shots-v3\\equilibrio__turbo__apenas_novo.png"
+  },
+  {
+    "combo": [
+      "equilibrio",
+      "turbo",
+      "apenas_refin"
+    ],
+    "cards": [
+      {
+        "idx": 0,
+        "id": "oc0",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 1,
+        "id": "oc1",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 2,
+        "id": "oc2",
+        "height": 282,
+        "width": 345.34
+      }
+    ],
+    "heightMin": 282,
+    "heightMax": 282,
+    "heightDelta": 0,
+    "widthMin": 345.33,
+    "widthMax": 345.34,
+    "widthDelta": 0.01,
+    "equalHeight": true,
+    "screenshot": "C:\\Users\\joaod\\OneDrive\\Documents\\GitHub\\ConsigAI_Design\\app\\tmp\\combo-shots-v3\\equilibrio__turbo__apenas_refin.png"
+  },
+  {
+    "combo": [
+      "equilibrio",
+      "apenas_novo",
+      "apenas_refin"
+    ],
+    "cards": [
+      {
+        "idx": 0,
+        "id": "oc0",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 1,
+        "id": "oc1",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 2,
+        "id": "oc2",
+        "height": 282,
+        "width": 345.34
+      }
+    ],
+    "heightMin": 282,
+    "heightMax": 282,
+    "heightDelta": 0,
+    "widthMin": 345.33,
+    "widthMax": 345.34,
+    "widthDelta": 0.01,
+    "equalHeight": true,
+    "screenshot": "C:\\Users\\joaod\\OneDrive\\Documents\\GitHub\\ConsigAI_Design\\app\\tmp\\combo-shots-v3\\equilibrio__apenas_novo__apenas_refin.png"
+  },
+  {
+    "combo": [
+      "folga",
+      "turbo",
+      "apenas_novo"
+    ],
+    "cards": [
+      {
+        "idx": 0,
+        "id": "oc0",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 1,
+        "id": "oc1",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 2,
+        "id": "oc2",
+        "height": 282,
+        "width": 345.34
+      }
+    ],
+    "heightMin": 282,
+    "heightMax": 282,
+    "heightDelta": 0,
+    "widthMin": 345.33,
+    "widthMax": 345.34,
+    "widthDelta": 0.01,
+    "equalHeight": true,
+    "screenshot": "C:\\Users\\joaod\\OneDrive\\Documents\\GitHub\\ConsigAI_Design\\app\\tmp\\combo-shots-v3\\folga__turbo__apenas_novo.png"
+  },
+  {
+    "combo": [
+      "folga",
+      "turbo",
+      "apenas_refin"
+    ],
+    "cards": [
+      {
+        "idx": 0,
+        "id": "oc0",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 1,
+        "id": "oc1",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 2,
+        "id": "oc2",
+        "height": 282,
+        "width": 345.34
+      }
+    ],
+    "heightMin": 282,
+    "heightMax": 282,
+    "heightDelta": 0,
+    "widthMin": 345.33,
+    "widthMax": 345.34,
+    "widthDelta": 0.01,
+    "equalHeight": true,
+    "screenshot": "C:\\Users\\joaod\\OneDrive\\Documents\\GitHub\\ConsigAI_Design\\app\\tmp\\combo-shots-v3\\folga__turbo__apenas_refin.png"
+  },
+  {
+    "combo": [
+      "folga",
+      "apenas_novo",
+      "apenas_refin"
+    ],
+    "cards": [
+      {
+        "idx": 0,
+        "id": "oc0",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 1,
+        "id": "oc1",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 2,
+        "id": "oc2",
+        "height": 282,
+        "width": 345.34
+      }
+    ],
+    "heightMin": 282,
+    "heightMax": 282,
+    "heightDelta": 0,
+    "widthMin": 345.33,
+    "widthMax": 345.34,
+    "widthDelta": 0.01,
+    "equalHeight": true,
+    "screenshot": "C:\\Users\\joaod\\OneDrive\\Documents\\GitHub\\ConsigAI_Design\\app\\tmp\\combo-shots-v3\\folga__apenas_novo__apenas_refin.png"
+  },
+  {
+    "combo": [
+      "turbo",
+      "apenas_novo",
+      "apenas_refin"
+    ],
+    "cards": [
+      {
+        "idx": 0,
+        "id": "oc0",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 1,
+        "id": "oc1",
+        "height": 282,
+        "width": 345.33
+      },
+      {
+        "idx": 2,
+        "id": "oc2",
+        "height": 282,
+        "width": 345.34
+      }
+    ],
+    "heightMin": 282,
+    "heightMax": 282,
+    "heightDelta": 0,
+    "widthMin": 345.33,
+    "widthMax": 345.34,
+    "widthDelta": 0.01,
+    "equalHeight": true,
+    "screenshot": "C:\\Users\\joaod\\OneDrive\\Documents\\GitHub\\ConsigAI_Design\\app\\tmp\\combo-shots-v3\\turbo__apenas_novo__apenas_refin.png"
+  }
+]

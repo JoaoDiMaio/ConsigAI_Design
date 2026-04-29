@@ -46,7 +46,7 @@ const OFFER_CARD_CONFIG = [
   },
 ]
 const MAX_API_CARDS = 3
-const FORCED_VISIBLE_OFFER_IDS = ['equilibrio', 'folga', 'turbo']
+const FORCED_VISIBLE_OFFER_IDS = ['equilibrio', 'turbo', 'apenas_refin']
 const THIRD_CARD_SUB_OFFERS = {
   contract: { label: 'No contrato', route: '/portabilidade' },
   installment: { label: 'Na parcela', route: '/refinanciamento' },
@@ -191,7 +191,7 @@ export default function OfertasNova() {
       const active = getActiveOfferEntries()
       return active[idx] ?? active[0] ?? null
     }
-    const normalizeApiOfferIds = (payload) => {
+    const normalizeApiOffers = (payload) => {
       if (!payload) return []
       const rawList = Array.isArray(payload)
         ? payload
@@ -201,14 +201,24 @@ export default function OfertasNova() {
             ? payload.data.offers
             : []
       return rawList
-        .map((item) => (typeof item === 'string' ? item : item?.id))
+        .map((item) => {
+          if (typeof item === 'string') return { id: item, isRecommended: false }
+          const id = item?.id
+          if (!id) return null
+          const isRecommended = item?.isRecommended === true
+          return { id, isRecommended }
+        })
         .filter(Boolean)
         .slice(0, MAX_API_CARDS)
     }
     const syncActiveOffersFromApiPayload = (payload) => {
-      const ids = normalizeApiOfferIds(payload)
-      const active = ids
-        .map((id) => getCatalogEntryById(id))
+      const offers = normalizeApiOffers(payload)
+      const active = offers
+        .map((offerItem) => {
+          const base = getCatalogEntryById(offerItem.id)
+          if (!base) return null
+          return { ...base, isRecommended: offerItem.isRecommended }
+        })
         .filter(Boolean)
         .slice(0, MAX_API_CARDS)
       activeOffersRef.current = active
@@ -1170,7 +1180,8 @@ export default function OfertasNova() {
           box-shadow: 0 8px 24px rgba(0,24,81,.06) !important;
           border-radius: 22px !important;
           padding: 18px !important;
-          min-height: 266px !important;
+          height: 282px !important;
+          min-height: 282px !important;
           container-type: inline-size;
           transition: border-color .18s ease, box-shadow .18s ease, background .18s ease !important;
           touch-action: manipulation !important;
@@ -1260,6 +1271,12 @@ export default function OfertasNova() {
           text-transform: uppercase;
           line-height: 1;
           white-space: nowrap;
+        }
+        .consigai-offer-badge-rec::before {
+          content: '★';
+          font-size: 14px !important;
+          font-weight: 900;
+          line-height: 1;
         }
 
         .consigai-offer-pill {
@@ -1351,17 +1368,6 @@ export default function OfertasNova() {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: clip;
-        }
-        #oc0 .consigai-offer-total-label,
-        #oc1 .consigai-offer-total-label {
-          display: block;
-          width: 100%;
-          font-size: clamp(16px, 7.6cqi, 30px);
-        }
-        #oc0 .consigai-offer-total-label .consigai-offer-word-orange,
-        #oc1 .consigai-offer-total-label .consigai-offer-word-orange {
-          display: block;
-          width: 100%;
         }
         .consigai-offer-total-stack .consigai-offer-value-green {
           display: block;
@@ -1461,6 +1467,49 @@ export default function OfertasNova() {
           min-width: 0;
           color: #0a7c52;
         }
+        .offer-card.simple-offer .consigai-offer-mini-grid {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 6px;
+          margin-top: auto !important;
+          margin-bottom: 6px;
+        }
+        .offer-card.simple-offer .consigai-offer-lines {
+          min-height: 0 !important;
+          margin-bottom: 6px;
+        }
+        .offer-card.simple-offer .consigai-offer-mini-card {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 8px;
+          padding: 7px 8px;
+          overflow: hidden;
+          cursor: default;
+          border-color: #dbe6f7;
+          background: #f7faff;
+          box-shadow: none;
+          transition: none;
+        }
+        .offer-card.simple-offer .consigai-offer-mini-label {
+          font-size: 13px;
+          line-height: 1.15;
+          letter-spacing: 0;
+          min-height: 0;
+          display: inline-block;
+        }
+        .offer-card.simple-offer .consigai-offer-mini-value {
+          font-size: clamp(18px, 2.05vw, 22px);
+          line-height: .98;
+          letter-spacing: -.015em;
+          min-width: 0;
+          color: #0a7c52;
+          margin-left: auto;
+          white-space: nowrap;
+        }
+        .offer-card.simple-offer .consigai-offer-note-sub {
+          min-height: 20px;
+          line-height: 1.25;
+        }
         .offer-card.turbo-offer.selected .consigai-offer-mini-card {
           border-color: #dbe6f7;
           background: #f7faff;
@@ -1478,7 +1527,7 @@ export default function OfertasNova() {
 
         .consigai-offer-note {
           display: block;
-          margin-top: 6px;
+          margin-top: auto;
           min-height: 0;
         }
         .consigai-offer-note-dot {
@@ -1496,7 +1545,7 @@ export default function OfertasNova() {
           font-size: 12px;
           line-height: 1.35;
           display: block;
-          min-height: 40px;
+          min-height: 20px;
         }
 
         .consigai-offer-metric {
@@ -1527,12 +1576,6 @@ export default function OfertasNova() {
           white-space: nowrap;
         }
         .consigai-offer-metric-value.green { color: #0a7c52; }
-        #oc0 .consigai-offer-metric-value,
-        #oc1 .consigai-offer-metric-value { font-size: 19px; }
-        .offer-card.turbo-offer .consigai-offer-note {
-          margin-top: auto;
-        }
-
         @media (max-width: 1080px) {
           .offers-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -1610,6 +1653,7 @@ export default function OfertasNova() {
       const cardsHtml = entries.map((entry, idx) => {
         const cfg = entry.config
         const offer = entry.data
+        const showRecommendedBadge = entry.isRecommended === true
 
         if (cfg.id === 'turbo') {
           const economiaContrato = fmt(offer.economiaContrato ?? offer.economiaTotal ?? 0)
@@ -1664,13 +1708,17 @@ export default function OfertasNova() {
           metricLabel = 'Parcela'
           metricValue = getParcelaNova(offer)
         }
+        const simpleMiniLabelFirst = metricLabel
+        const isSimpleContractCard = cfg.id === 'apenas_novo' || cfg.id === 'apenas_refin'
+        const simpleMiniLabelSecond = isSimpleContractCard ? 'Qtd Parcelas' : metricLabel
+        const simpleMiniValueSecond = isSimpleContractCard ? '48' : metricValue
 
 
         return `
-          <div class="offer-card" id="oc${idx}">
+          <div class="offer-card${cfg.kind === 'simples' ? ' simple-offer' : ''}" id="oc${idx}">
             <div class="consigai-offer-card">
               <span class="consigai-hidden-state-badge badge pick" id="badge${idx}">Escolher</span>
-              ${cfg.id === 'equilibrio'
+              ${showRecommendedBadge
                 ? `<div class="consigai-offer-title-row">
                      <span class="consigai-offer-pill">${cfg.pill}</span>
                      <div class="consigai-offer-head-badges">
@@ -1695,10 +1743,18 @@ export default function OfertasNova() {
                      </div>`
                   : ''}
               </div>
-              <div class="consigai-offer-metric">
-                <span class="consigai-offer-metric-label">${metricLabel}</span>
-                <span class="consigai-offer-metric-value green">${metricValue}</span>
-              </div>
+              ${cfg.kind === 'simples'
+                ? `<div class="consigai-offer-mini-grid">
+                     <div class="consigai-offer-mini-card">
+                       <span class="consigai-offer-mini-label">${simpleMiniLabelFirst}</span>
+                       <span class="consigai-offer-mini-value">${metricValue}</span>
+                     </div>
+                     <div class="consigai-offer-mini-card">
+                       <span class="consigai-offer-mini-label">${simpleMiniLabelSecond}</span>
+                       <span class="consigai-offer-mini-value">${simpleMiniValueSecond}</span>
+                     </div>
+                   </div>`
+                : ''}
               <div class="consigai-offer-note">
                 <span class="consigai-offer-note-text">
                   <span class="consigai-offer-note-sub">${cfg.note}</span>
