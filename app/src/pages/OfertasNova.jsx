@@ -329,8 +329,9 @@ function upsertSavingsReplacement(doc) {
     savingsBanner.insertAdjacentElement('afterend', replacement)
   }
 
-  savingsBanner.style.display = 'none'
+  // .savings-banner oculto via OFFER_CARD_REDESIGN_CSS
 }
+
 
 // ---------------------------------------------------------------------------
 // Normalizações de texto do CTA / valores do iframe
@@ -389,7 +390,7 @@ function applyThirdCardSubOfferSelection(cacheRef, doc, selectedThirdSubOffer) {
 
 function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario) {
   if (!doc) return
-  const parcelaHoje = `R$ ${usuario.parcelaAtual.toLocaleString('pt-BR')}`
+  const parcelaHoje = fmt(usuario.parcelaAtual)
 
   const heroOld = getCachedNode(cacheRef, doc, 'heroOld', '.hc-col-val.old')
   if (heroOld) heroOld.textContent = parcelaHoje
@@ -411,6 +412,7 @@ function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario) {
 
   const ctaSaving = getCachedNode(cacheRef, doc, 'ctaSaving', '#ctaSaving')
   if (ctaSaving) ctaSaving.textContent = `+${ecoFmt}/mês`
+
   const todayDeduct = getCachedNode(cacheRef, doc, 'todayDeduct', '.ba-col.today .ba-row-val.deduct')
   if (todayDeduct) todayDeduct.textContent = parcelaHoje
 
@@ -723,7 +725,7 @@ export default function OfertasNova() {
           note.textContent =
             'Compare as opcoes para reduzir parcela, economizar no total, ou seguir em ofertas diretas como apenas novo contrato e apenas refinanciamento.'
         }
-        // .section-header oculto via .OFFER_CARD_REDESIGN_CSS (.section-header { display:none })
+        // .section-header oculto via OFFER_CARD_REDESIGN_CSS
 
         frameDoc.body.dataset.consigaiHeroSectionCopyAdjusted = '1'
       }
