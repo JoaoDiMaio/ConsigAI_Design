@@ -113,8 +113,9 @@ function upsertPocketInsight(doc, selectedEntry, usuario, impacto) {
     parcelaNova: usuario.parcelaAtual,
     economiaParcela: 0,
   }
+  const parcelaNova = o.parcelaNova ?? (usuario.parcelaAtual - (o.economiaParcela ?? 0))
   const sobraAtual = usuario.salarioBruto - usuario.parcelaAtual
-  const sobraDepois = usuario.salarioBruto - (o.parcelaNova ?? (usuario.parcelaAtual - (o.economiaParcela ?? 0)))
+  const sobraDepois = usuario.salarioBruto - parcelaNova
   const creditoAtual = impacto.creditToday
   const creditoDepois = o.creditoReceber ?? creditoAtual
   const salaryUnified = fmt(usuario.salarioBruto)
@@ -403,7 +404,7 @@ function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario) {
   }
 
   const eco = selectedEntry?.data
-    ? Math.max(0, Math.round(getEcoMensal(selectedEntry.data, usuario.parcelaAtual)))
+    ? Math.max(0, getEcoMensal(selectedEntry.data, usuario.parcelaAtual))
     : 0
   const ecoFmt = fmt(eco)
 
@@ -423,6 +424,7 @@ function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario) {
   const arrowSpans = getCachedNodeList(cacheRef, doc, 'arrowSpans', '.offers-grid .offer-val-block span')
   arrowSpans.forEach((el) => {
     const raw = (el.textContent || '').trim()
+    // Setas legadas do HTML do iframe — sem classe CSS disponível para override
     if (raw === '?' || raw === '→' || raw === '->') el.style.display = 'none'
   })
 }
