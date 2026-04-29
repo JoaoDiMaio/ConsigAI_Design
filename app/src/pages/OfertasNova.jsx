@@ -493,7 +493,7 @@ function buildOfferCardHtml(entry, idx, usuario) {
 
   const isSimpleContract = cfg.id === 'apenas_novo' || cfg.id === 'apenas_refin'
   const simpleMiniLabelSecond = isSimpleContract ? 'Qtd Parcelas' : metricLabel
-  const simpleMiniValueSecond = isSimpleContract ? '48' : metricValue
+  const simpleMiniValueSecond = isSimpleContract ? String(offer.qtdParcelas ?? '—') : metricValue
 
   return `
     <div class="offer-card${isSimple ? ' simple-offer' : ''}" id="oc${idx}">
