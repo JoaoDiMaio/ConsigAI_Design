@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+﻿import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useOffersData } from '../hooks/useOffersData.js'
 import { THIRD_CARD_SUB_OFFERS } from '../data/offersMock.js'
@@ -401,18 +401,16 @@ function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario) {
       : 'R$ 0'
   }
 
+  const eco = selectedEntry?.data
+    ? Math.max(0, Math.round(getEcoMensal(selectedEntry.data, usuario.parcelaAtual)))
+    : 0
+  const ecoFmt = fmt(eco)
+
   const heroEco = getCachedNode(cacheRef, doc, 'heroEco', '.hc-saving-value, #hcEco')
-  if (heroEco) {
-    const eco = selectedEntry?.data ? Math.max(0, Math.round(getEcoMensal(selectedEntry.data, usuario.parcelaAtual))) : 0
-    heroEco.textContent = `R$ ${eco.toLocaleString('pt-BR')}`
-  }
+  if (heroEco) heroEco.textContent = ecoFmt
 
   const ctaSaving = getCachedNode(cacheRef, doc, 'ctaSaving', '#ctaSaving')
-  if (ctaSaving) {
-    const eco = selectedEntry?.data ? Math.max(0, Math.round(getEcoMensal(selectedEntry.data, usuario.parcelaAtual))) : 0
-    ctaSaving.textContent = `+R$ ${eco.toLocaleString('pt-BR')}/mês`
-  }
-
+  if (ctaSaving) ctaSaving.textContent = `+${ecoFmt}/mês`
   const todayDeduct = getCachedNode(cacheRef, doc, 'todayDeduct', '.ba-col.today .ba-row-val.deduct')
   if (todayDeduct) todayDeduct.textContent = parcelaHoje
 
@@ -544,7 +542,7 @@ function buildOfferCardHtml(entry, idx, usuario) {
   `
 }
 
-function upsertOfferCardsRedesign(cacheRef, doc, activeOffers, selectedOfferIndexRef, usuario) {
+function upsertOfferCardsRedesign(cacheRef, doc, activeOffers, selectedOfferIndexRef, usuario, selectedThirdSubOffer) {
   const offersGrid = getCachedNode(cacheRef, doc, 'offersGrid', '.offers-grid')
   if (!offersGrid) return
 
@@ -555,12 +553,12 @@ function upsertOfferCardsRedesign(cacheRef, doc, activeOffers, selectedOfferInde
 
   if (!activeOffers.length) {
     const noOfferMarkup = `
-      <div class="offer-card selected" id="oc0">
+      <div class="offer-card selected" id="oc0" role="button" tabindex="0" aria-selected="true">
         <div class="consigai-offer-card">
           <div class="consigai-offer-title-row">
             <span class="consigai-offer-pill">Sem oferta disponivel</span>
           </div>
-          <div class="consigai-offer-lines" style="min-height:0">
+          <div class="consigai-offer-lines consigai-offer-lines--no-min-height">
             <div class="consigai-offer-line">
               <span class="consigai-offer-line-main blue">Nao ha oferta para este cliente no momento</span>
               <span class="consigai-offer-line-helper">Tente novamente mais tarde.</span>
@@ -586,7 +584,7 @@ function upsertOfferCardsRedesign(cacheRef, doc, activeOffers, selectedOfferInde
     clearDocCache(cacheRef, doc)
   }
   syncOfferSelectionUi(cacheRef, doc, selectedOfferIndexRef, false)
-  applyThirdCardSubOfferSelection(cacheRef, doc, 'contract')
+  applyThirdCardSubOfferSelection(cacheRef, doc, selectedThirdSubOffer)
 }
 
 function syncOfferSelectionUi(cacheRef, doc, selectedOfferIndexRef, hasNoOffer) {
@@ -617,7 +615,7 @@ function syncOfferSelectionUi(cacheRef, doc, selectedOfferIndexRef, hasNoOffer) 
 // ---------------------------------------------------------------------------
 export default function OfertasNova() {
   const navigate = useNavigate()
-  const { activeOffers, usuario, impacto } = useOffersData()
+  const { activeOffers, usuario, impacto, loading, error } = useOffersData()
 
   const iframeRef = useRef(null)
   const selectedOfferIndexRef = useRef(0)
@@ -627,15 +625,15 @@ export default function OfertasNova() {
   const currencyObserverRef = useRef(null)
   const docQueryCacheRef = useRef(makeDomCache())
 
-  // Expõe activeOffers via ref para uso dentro dos closures do useEffect
+  // Refs para dados da API — permitem closures do useEffect lerem sempre o valor atual
   const activeOffersRef = useRef(activeOffers)
-  useEffect(() => { activeOffersRef.current = activeOffers }, [activeOffers])
-
   const usuarioRef = useRef(usuario)
-  useEffect(() => { usuarioRef.current = usuario }, [usuario])
-
   const impactoRef = useRef(impacto)
-  useEffect(() => { impactoRef.current = impacto }, [impacto])
+  useEffect(() => {
+    activeOffersRef.current = activeOffers
+    usuarioRef.current = usuario
+    impactoRef.current = impacto
+  }, [activeOffers, usuario, impacto])
 
   useEffect(() => {
     let normalizationTimer = null
@@ -663,7 +661,7 @@ export default function OfertasNova() {
       const hasNoOffer = offers.length === 0
       const subOffer = selectedThirdSubOfferRef.current
       applyUnifiedParcelaHoje(docQueryCacheRef, doc, selectedEntry, u)
-      upsertOfferCardsRedesign(docQueryCacheRef, doc, offers, selectedOfferIndexRef, u)
+      upsertOfferCardsRedesign(docQueryCacheRef, doc, offers, selectedOfferIndexRef, u, subOffer)
       applyThirdCardSubOfferSelection(docQueryCacheRef, doc, subOffer)
       upsertPocketInsight(doc, selectedEntry, u, imp)
       upsertSavingsReplacement(doc)
@@ -852,18 +850,33 @@ export default function OfertasNova() {
     }
   }, [navigate])
 
+  if (error) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: 12, color: '#1a3d8f', fontFamily: 'Inter, sans-serif' }}>
+        <span style={{ fontSize: 32 }}>⚠️</span>
+        <p style={{ fontWeight: 700, fontSize: 16 }}>Erro ao carregar ofertas</p>
+        <p style={{ color: '#667399', fontSize: 13 }}>{error}</p>
+      </div>
+    )
+  }
+
   return (
-    <iframe
-      ref={iframeRef}
-      title="Ofertas ConsigAI"
-      src="/Ofertas_ConsigAI.html"
-      style={{
-        width: '100%',
-        height: '100vh',
-        border: 'none',
-        display: 'block',
-        background: '#EEF1F9',
-      }}
-    />
+    <>
+      {loading && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #2454D6, #18B7E8)', zIndex: 9999, animation: 'none' }} aria-hidden="true" />
+      )}
+      <iframe
+        ref={iframeRef}
+        title="Ofertas ConsigAI"
+        src="/Ofertas_ConsigAI.html"
+        style={{
+          width: '100%',
+          height: '100vh',
+          border: 'none',
+          display: 'block',
+          background: '#EEF1F9',
+        }}
+      />
+    </>
   )
 }

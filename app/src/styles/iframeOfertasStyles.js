@@ -3,6 +3,8 @@
 // Quando o HTML do iframe for migrado para JSX nativo, mover para .css normais.
 
 export const RESPONSIVE_STYLES_CSS = `
+  .consigai-offer-lines--no-min-height { min-height: 0 !important; }
+
   .topbar .logo {
     gap: 0 !important;
     font-size: 0 !important;
