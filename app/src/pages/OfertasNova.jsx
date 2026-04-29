@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useOffersData } from '../hooks/useOffersData.js'
-import { THIRD_CARD_SUB_OFFERS, MOCK_DADOS } from '../data/offersMock.js'
+import { THIRD_CARD_SUB_OFFERS } from '../data/offersMock.js'
 import {
   fmt,
   getEcoMensal,
@@ -113,21 +113,20 @@ function upsertPocketInsight(doc, selectedEntry, usuario, impacto) {
     parcelaNova: usuario.parcelaAtual,
     economiaParcela: 0,
   }
-  const parcelaNova = o.parcelaNova ?? (usuario.parcelaAtual - (o.economiaParcela ?? 0))
-  const _pt = usuario.salarioBruto - usuario.parcelaAtual
-  const _pa = usuario.salarioBruto - parcelaNova
-  const _ct = impacto.creditToday
-  const _ca = o.creditoReceber ?? _ct
+  const sobraAtual = usuario.salarioBruto - usuario.parcelaAtual
+  const sobraDepois = usuario.salarioBruto - (o.parcelaNova ?? (usuario.parcelaAtual - (o.economiaParcela ?? 0)))
+  const creditoAtual = impacto.creditToday
+  const creditoDepois = o.creditoReceber ?? creditoAtual
   const salaryUnified = fmt(usuario.salarioBruto)
   const installmentToday = fmt(usuario.parcelaAtual)
   const installmentAfter = getParcelaNova(o, usuario.parcelaAtual)
-  const pocketToday = fmt(_pt)
-  const pocketAfter = fmt(_pa)
-  const creditToday = fmt(_ct)
-  const creditAfter = fmt(_ca)
-  const ecoMensal = Math.max(0, _pa - _pt)
+  const pocketToday = fmt(sobraAtual)
+  const pocketAfter = fmt(sobraDepois)
+  const creditToday = fmt(creditoAtual)
+  const creditAfter = fmt(creditoDepois)
+  const ecoMensal = getEcoMensal(o, usuario.parcelaAtual)
   const ecoAnual = ecoMensal * 12
-  const creditoExtra = Math.max(0, _ca - _ct)
+  const creditoExtra = Math.max(0, creditoDepois - creditoAtual)
 
   const baTitle = baSection.querySelector('.ba-title')
   const baSub = baSection.querySelector('.ba-sub')
@@ -258,7 +257,6 @@ function upsertPocketInsight(doc, selectedEntry, usuario, impacto) {
   visual.classList.add('impact-grid')
   baSection.classList.add('consigai-pocket-redesign', 'impact-section')
 
-  const formatCurrency = (v) => `R$ ${Math.round(v).toLocaleString('pt-BR')}`
   const values = {
     salaryUnified,
     installmentToday: formatCurrencyClean(installmentToday),
@@ -267,9 +265,9 @@ function upsertPocketInsight(doc, selectedEntry, usuario, impacto) {
     installmentAfter: formatCurrencyClean(installmentAfter),
     pocketAfter,
     creditAfter,
-    ecoMensal: `+${formatCurrency(ecoMensal)}`,
-    ecoAnual: `+${formatCurrency(ecoAnual)}`,
-    creditoExtra: `+${formatCurrency(creditoExtra)}`,
+    ecoMensal: `+${fmt(ecoMensal)}`,
+    ecoAnual: `+${fmt(ecoAnual)}`,
+    creditoExtra: `+${fmt(creditoExtra)}`,
   }
   Object.entries(values).forEach(([key, val]) => {
     baSection.querySelectorAll(`[data-k="${key}"]`).forEach((el) => {
@@ -439,7 +437,7 @@ function buildOfferCardHtml(entry, idx, usuario) {
     const economiaContrato = fmt(offer.economiaContrato ?? offer.economiaTotal ?? 0)
     const economiaParcela = `${fmt(offer.economiaParcela ?? getEcoMensal(offer, usuario.parcelaAtual))}/mês`
     return `
-      <div class="offer-card turbo-offer" id="oc${idx}">
+      <div class="offer-card turbo-offer" id="oc${idx}" role="button" tabindex="0" aria-selected="false">
         <div class="consigai-offer-card">
           <span class="consigai-hidden-state-badge badge pick" id="badge${idx}">Escolher</span>
           <div class="consigai-offer-head"></div>
@@ -496,7 +494,7 @@ function buildOfferCardHtml(entry, idx, usuario) {
   const simpleMiniValueSecond = isSimpleContract ? String(offer.qtdParcelas ?? '—') : metricValue
 
   return `
-    <div class="offer-card${isSimple ? ' simple-offer' : ''}" id="oc${idx}">
+    <div class="offer-card${isSimple ? ' simple-offer' : ''}" id="oc${idx}" role="button" tabindex="0" aria-selected="false">
       <div class="consigai-offer-card">
         <span class="consigai-hidden-state-badge badge pick" id="badge${idx}">Escolher</span>
         ${isRecommended
@@ -659,24 +657,27 @@ export default function OfertasNova() {
       return offers[idx] ?? offers[0] ?? null
     }
 
+    const applyAllBridgeUpdates = (doc, offers, selectedEntry) => {
+      const u = usuarioRef.current
+      const imp = impactoRef.current
+      const hasNoOffer = offers.length === 0
+      const subOffer = selectedThirdSubOfferRef.current
+      applyUnifiedParcelaHoje(docQueryCacheRef, doc, selectedEntry, u)
+      upsertOfferCardsRedesign(docQueryCacheRef, doc, offers, selectedOfferIndexRef, u)
+      applyThirdCardSubOfferSelection(docQueryCacheRef, doc, subOffer)
+      upsertPocketInsight(doc, selectedEntry, u, imp)
+      upsertSavingsReplacement(doc)
+      normalizeCtaSaving(docQueryCacheRef, doc)
+      normalizeComConsigaiNovaParcela(docQueryCacheRef, doc)
+      normalizeCtaOfferName(docQueryCacheRef, doc, selectedEntry, hasNoOffer, subOffer)
+      normalizeTextNodesInDocument(doc)
+    }
+
     const refreshSelectedOfferUi = (doc, idx) => {
       selectedOfferIndexRef.current = idx
       const offers = activeOffersRef.current
       const selectedEntry = offers[idx] ?? offers[0] ?? null
-      const u = usuarioRef.current
-      const imp = impactoRef.current
-      normalizeCtaSaving(docQueryCacheRef, doc)
-      normalizeComConsigaiNovaParcela(docQueryCacheRef, doc)
-      normalizeCtaOfferName(
-        docQueryCacheRef, doc, selectedEntry,
-        offers.length === 0, selectedThirdSubOfferRef.current,
-      )
-      applyUnifiedParcelaHoje(docQueryCacheRef, doc, selectedEntry, u)
-      upsertOfferCardsRedesign(docQueryCacheRef, doc, offers, selectedOfferIndexRef, u)
-      applyThirdCardSubOfferSelection(docQueryCacheRef, doc, selectedThirdSubOfferRef.current)
-      upsertPocketInsight(doc, selectedEntry, u, imp)
-      upsertSavingsReplacement(doc)
-      normalizeTextNodesInDocument(doc)
+      applyAllBridgeUpdates(doc, offers, selectedEntry)
     }
 
     const attachBridge = () => {
@@ -685,24 +686,9 @@ export default function OfertasNova() {
       if (!frameDoc) return
       if (!getCachedNode(docQueryCacheRef, frameDoc, 'offersGrid', '.offers-grid')) return
 
-      const offers = activeOffersRef.current
-      const selectedEntry = getSelectedEntry()
-      const u = usuarioRef.current
-      const imp = impactoRef.current
-
       applyResponsiveStyles(frameDoc)
-      normalizeTextNodesInDocument(frameDoc)
-      applyUnifiedParcelaHoje(docQueryCacheRef, frameDoc, selectedEntry, u)
       applyOfferCardRedesignStyles(frameDoc)
-      upsertOfferCardsRedesign(docQueryCacheRef, frameDoc, offers, selectedOfferIndexRef, u)
-      applyThirdCardSubOfferSelection(docQueryCacheRef, frameDoc, selectedThirdSubOfferRef.current)
-      upsertPocketInsight(frameDoc, selectedEntry, u, imp)
-      upsertSavingsReplacement(frameDoc)
-      normalizeComConsigaiNovaParcela(docQueryCacheRef, frameDoc)
-      normalizeCtaOfferName(
-        docQueryCacheRef, frameDoc, selectedEntry,
-        offers.length === 0, selectedThirdSubOfferRef.current,
-      )
+      applyAllBridgeUpdates(frameDoc, activeOffersRef.current, getSelectedEntry())
 
       if (!frameDoc.body?.dataset?.consigaiCurrencyObserverAttached) {
         currencyObserverRef.current?.disconnect?.()
@@ -722,8 +708,7 @@ export default function OfertasNova() {
       if (!frameDoc.body?.dataset?.consigaiLegacyLogoApplied) {
         const logoEl = frameDoc.querySelector('.topbar .logo')
         if (logoEl) {
-          logoEl.innerHTML = '<img src="/logo-antigo.svg" alt="ConsigAI" style="height:34px;width:auto;display:block;" />'
-          logoEl.style.cssText = 'gap:0;font-size:0;line-height:0;cursor:pointer;'
+          logoEl.innerHTML = '<img src="/logo-antigo.svg" alt="ConsigAI" />'
           logoEl.addEventListener('click', () => navigate('/ofertas'))
           frameDoc.body.dataset.consigaiLegacyLogoApplied = '1'
         }
@@ -736,7 +721,6 @@ export default function OfertasNova() {
           if (!note) {
             note = frameDoc.createElement('p')
             note.className = 'consigai-hero-note'
-            note.style.cssText = 'margin:10px 0 0;font-size:13px;font-weight:500;color:#7a8db8;line-height:1.4;'
             heroTextContainer.appendChild(note)
           }
           note.textContent =
@@ -839,9 +823,20 @@ export default function OfertasNova() {
       }
     }
 
+    const MAX_POLL_ATTEMPTS = 25 // 25 × 400ms = 10s máximo
+    let pollAttempts = 0
+
+    const attachBridgeWithLimit = () => {
+      attachBridge()
+      if (++pollAttempts >= MAX_POLL_ATTEMPTS && intervalId) {
+        clearInterval(intervalId)
+        intervalId = null
+      }
+    }
+
     const iframe = iframeRef.current
-    iframe?.addEventListener('load', attachBridge)
-    intervalId = setInterval(attachBridge, 400)
+    iframe?.addEventListener('load', () => { pollAttempts = 0; attachBridge() })
+    intervalId = setInterval(attachBridgeWithLimit, 400)
     attachBridge()
 
     return () => {

@@ -3,6 +3,25 @@
 // Quando o HTML do iframe for migrado para JSX nativo, mover para .css normais.
 
 export const RESPONSIVE_STYLES_CSS = `
+  .topbar .logo {
+    gap: 0 !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    cursor: pointer !important;
+  }
+  .topbar .logo img {
+    height: 34px;
+    width: auto;
+    display: block;
+  }
+  .consigai-hero-note {
+    margin: 10px 0 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: #7a8db8;
+    line-height: 1.4;
+  }
+
   .offer-val-num,
   .hc-col-val,
   .hc-saving-value,
@@ -386,7 +405,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   .consigai-offer-head { margin-bottom: 0; min-height: 0; display: flex; align-items: flex-start; justify-content: flex-end; }
   .consigai-offer-title-row {
     display: flex; align-items: center; justify-content: space-between;
-    gap: 10px; margin-bottom: 14px; flex-wrap: nowrap;
+    gap: 10px; margin-bottom: 16px; flex-wrap: nowrap;
   }
   .consigai-offer-title-row .consigai-offer-head-badges { margin-left: auto; justify-content: flex-end; }
   .consigai-offer-head-badges {
@@ -409,19 +428,19 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .consigai-offer-badge-rec::before { content: '★'; font-size: 14px !important; font-weight: 900; line-height: 1; }
   .consigai-offer-pill {
-    display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
+    display: block; align-items: center; gap: 6px; align-self: flex-start;
     width: auto; max-width: max-content; border-radius: 999px; padding: 7px 12px;
     background: #e8eeff; border: 1px solid #c2d0f8;
     color: #1a3d8f; font-size: 11px; font-weight: 900;
     letter-spacing: .05em; text-transform: uppercase; line-height: 1;
-    white-space: nowrap; margin-bottom: 0; flex-shrink: 0;
+    white-space: nowrap; margin: 0 0 12px; flex-shrink: 0;
   }
   .offer-card.selected .consigai-offer-pill {
     background: #1a3d8f; border-color: #1a3d8f; color: #fff;
     box-shadow: 0 8px 18px rgba(35,80,200,.18);
   }
   .consigai-offer-lines {
-    display: grid; gap: 3px; margin-bottom: 10px;
+    display: grid; gap: 3px; margin-top: 2px; margin-bottom: 10px;
     align-content: start; min-height: 112px;
   }
   .consigai-offer-pretext {
