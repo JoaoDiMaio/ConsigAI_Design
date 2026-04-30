@@ -20,6 +20,11 @@ export function maskPhone(v) {
   return v
 }
 
+export function maskCEP(value) {
+  const digits = value.replace(/\D/g, '').slice(0, 8)
+  return digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits
+}
+
 export function formatFileSize(bytes) {
   if (bytes > 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
   return (bytes / 1024).toFixed(0) + ' KB'

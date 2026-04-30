@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
 import { loadProfileData } from '../lib/profileStorage'
+import { gradient } from '../ui/theme'
 
 function pickSummaryValue(summary, labels, fallback) {
   if (!Array.isArray(summary)) return fallback
@@ -140,10 +141,10 @@ export default function Contratacao() {
           min-height: 100vh;
           font-family: var(--font);
           color: var(--text);
-          background:
-            radial-gradient(900px 420px at -8% -16%, #dde8ff 0%, transparent 52%),
-            radial-gradient(640px 300px at 106% -20%, #dce7ff 0%, transparent 48%),
-            var(--bg-panel);
+          background: ${gradient.appBackground};
+          background-size: ${gradient.appBackgroundSize};
+          background-repeat: ${gradient.appBackgroundRepeat};
+          background-position: ${gradient.appBackgroundPosition};
         }
 
         .contratacao-page * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -541,7 +542,7 @@ export default function Contratacao() {
         }
 
         .panel {
-          background: var(--bg-panel);
+          background: transparent;
           border-radius: 26px 26px 0 0;
           padding: 22px 18px 24px;
         }

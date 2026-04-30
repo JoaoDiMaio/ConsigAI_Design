@@ -2,7 +2,11 @@
 // No React dependencies — safe to import anywhere including tests.
 
 /** Format number as BRL currency: "R$ X.XXX" */
-export const fmt = (v) => `R$ ${Math.round(v).toLocaleString('pt-BR')}`
+export const fmt = (v) => `R$\u00A0${Math.round(v).toLocaleString('pt-BR')}`
+
+/** Format number with Brazilian decimal separators: "1.234,56" */
+export const fmtDec = (v) =>
+  Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 /** Economia mensal de uma oferta versus parcela atual */
 export const getEcoMensal = (offer, parcelaAtual) => {

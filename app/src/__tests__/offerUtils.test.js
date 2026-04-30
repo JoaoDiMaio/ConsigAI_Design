@@ -111,8 +111,8 @@ describe('likelyNeedsTextNormalization', () => {
   })
 
   it('não detecta texto limpo (sem espaço simples após R$)', () => {
-    // fmt produz R$  (non-breaking), não "R$ " com espaço simples
-    expect(likelyNeedsTextNormalization(`R$ 500`)).toBe(false)
+    // fmt produces R$\u00A0 (non-breaking), not "R$ " with a regular space.
+    expect(likelyNeedsTextNormalization(`R$\u00A0500`)).toBe(false)
   })
 
   it('retorna false para string vazia', () => {

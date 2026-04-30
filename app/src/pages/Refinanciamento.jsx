@@ -3,98 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
 import { MiniCard } from '../components/MiniCard'
-import { appPageStyle, theme } from '../ui/theme'
-
-const t = {
-  ...theme,
-  greenSoft:   '#3d6b52',
-  gold:        '#7a5200',
-  goldBg:      '#fffbf0',
-  goldLine:    '#edddb0',
-  goldBtn:     '#a87000',
-  shadow:      '0 8px 28px rgba(0,24,81,.09)',
-}
-
-const SCENARIOS = [
-  {
-    key: 'dinheiro',
-    eyebrow: 'Cenário 1',
-    title: 'Máximo dinheiro',
-    desc: 'Receba o maior valor possível refinanciando todos os contratos elegíveis',
-    cash: 'R$ 12.930',
-    installment: 'R$ 1.191/mês',
-    margem: 'R$ 56',
-    contracts: ['Banco PAN', 'Facta', 'C6 Consig'],
-    receiptRows: [
-      ['0056347710',    'Banco PAN', 'R$ 3.200'],
-      ['0123472010087', 'Facta',     'R$ 5.550'],
-      ['0057628452',    'C6 Consig', 'R$ 4.180'],
-    ],
-    receiptCredito: 'R$ 882',
-    colors: {
-      bg: t.blueLight, border: t.blueMid, activeBorder: t.blue,
-      activeShadow: '0 10px 30px rgba(35,80,200,.20)',
-      iconBg: 'rgba(35,80,200,.12)', eyebrow: t.blue,
-      kipBg: 'rgba(35,80,200,.08)', kpiLabel: '#4a6fa8', kpiValue: t.blue,
-      pillBg: 'rgba(35,80,200,.10)', pillColor: t.blue, pillDot: t.blue,
-      radioActive: t.blue,
-    },
-  },
-  {
-    key: 'margem',
-    eyebrow: 'Cenário 2',
-    title: 'Máxima margem livre',
-    desc: 'Libere mais espaço na margem para contratar um novo empréstimo maior depois',
-    cash: 'R$ 9.730',
-    installment: 'R$ 893/mês',
-    margem: 'R$ 120',
-    contracts: ['Facta', 'C6 Consig'],
-    receiptRows: [
-      ['0123472010087', 'Facta',     'R$ 5.550'],
-      ['0057628452',    'C6 Consig', 'R$ 4.180'],
-    ],
-    receiptCredito: 'R$ 1.892',
-    colors: {
-      bg: t.greenBg, border: '#b8e0ca', activeBorder: t.greenAccent,
-      activeShadow: '0 10px 30px rgba(10,102,64,.18)',
-      iconBg: 'rgba(10,102,64,.12)', eyebrow: t.greenAccent,
-      kipBg: 'rgba(10,102,64,.08)', kpiLabel: t.greenSoft, kpiValue: t.green,
-      pillBg: 'rgba(10,102,64,.10)', pillColor: t.green, pillDot: t.greenAccent,
-      radioActive: t.greenAccent,
-    },
-  },
-  {
-    key: 'parcela',
-    eyebrow: 'Cenário 3',
-    title: 'Menor parcela total',
-    desc: 'Reduza ao máximo o comprometimento mensal da sua renda com parcelas',
-    cash: 'R$ 5.550',
-    installment: 'R$ 381/mês',
-    margem: 'R$ 389',
-    contracts: ['Facta'],
-    receiptRows: [
-      ['0123472010087', 'Facta', 'R$ 5.550'],
-    ],
-    receiptCredito: 'R$ 6.139',
-    colors: {
-      bg: t.goldBg, border: t.goldLine, activeBorder: t.gold,
-      activeShadow: '0 10px 30px rgba(122,82,0,.18)',
-      iconBg: 'rgba(122,82,0,.12)', eyebrow: t.goldBtn,
-      kipBg: 'rgba(122,82,0,.08)', kpiLabel: t.goldBtn, kpiValue: t.gold,
-      pillBg: 'rgba(122,82,0,.10)', pillColor: t.gold, pillDot: t.gold,
-      radioActive: t.gold,
-    },
-  },
-]
-
-const SCENARIO_ICONS = [
-  // dinheiro
-  <svg key="d" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke="#2350c8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  // margem
-  <svg key="m" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="#16a364" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  // parcela
-  <svg key="p" width="20" height="20" viewBox="0 0 24 24" fill="none"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" stroke="#a87000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><polyline points="17 6 23 6 23 12" stroke="#a87000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-]
+import { appPageStyle } from '../ui/theme'
+import { t } from '../lib/pageTheme'
+import { SCENARIOS, SCENARIO_ICONS } from '../data/refinanciamentoData.js'
+import { parseMoney } from '../lib/formatters'
 
 //  Desktop Header 
 
@@ -344,11 +256,6 @@ export default function Refinanciamento() {
   const scenario = SCENARIOS[activeIdx]
   const salarioBase = 2200
   const parcelaAntes = 550
-  const parseMoney = (value) => {
-    const matched = String(value ?? '').match(/R\$\s*([\d.,]+)/)
-    if (!matched) return 0
-    return Number(matched[1].replace(/\./g, '').replace(',', '.')) || 0
-  }
   const parcelaDepois = parseMoney(scenario.installment)
   const liquidoAntes = salarioBase - parcelaAntes
   const liquidoDepois = salarioBase - parcelaDepois

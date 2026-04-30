@@ -1,6 +1,7 @@
 // CSS strings injetados no documento do iframe /Ofertas_ConsigAI.html.
 // Separados aqui para poder editar sem abrir o componente principal.
 // Quando o HTML do iframe for migrado para JSX nativo, mover para .css normais.
+import { gradient } from '../ui/theme'
 
 export const RESPONSIVE_STYLES_CSS = `
   .consigai-offer-lines--no-min-height { min-height: 0 !important; }
@@ -341,15 +342,22 @@ export const OFFER_CARD_REDESIGN_CSS = `
   .hero-sub { display: none !important; }
   .section-header { display: none !important; }
   .savings-banner { display: none !important; }
+  .topbar { display: none !important; }
+  html,
+  body {
+    background: ${gradient.appBackground} !important;
+    background-size: ${gradient.appBackgroundSize} !important;
+    background-repeat: ${gradient.appBackgroundRepeat} !important;
+    background-position: ${gradient.appBackgroundPosition} !important;
+  }
   body {
     min-height: 100vh !important;
-    font-family: Inter, Arial, Helvetica, sans-serif !important;
-    background-image: url('/fundo-ofertas.svg') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
+    font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif !important;
     color: var(--text-main, var(--text)) !important;
     padding: 0 24px 24px !important;
+  }
+  *, *::before, *::after {
+    font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif !important;
   }
   .main { position: relative !important; z-index: 0 !important; }
   .main::before { display: none !important; }
@@ -385,26 +393,39 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card {
     background: #fff !important;
-    border: 2px solid transparent !important;
-    box-shadow: 0 8px 24px rgba(0,24,81,.06) !important;
-    border-radius: 22px !important;
+    border: 1.5px solid #DDE8F6 !important;
+    box-shadow: 0 8px 24px rgba(3,36,111,.07) !important;
+    border-radius: 24px !important;
     padding: 18px !important;
     height: 282px !important; min-height: 282px !important;
     container-type: inline-size;
-    transition: border-color .18s ease, box-shadow .18s ease, background .18s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease !important;
     touch-action: manipulation !important;
     will-change: transform, box-shadow, border-color;
     user-select: text;
   }
-  .offer-card.selected, .offer-card.active {
-    border: 2px solid transparent !important;
-    background:
-      linear-gradient(180deg, #ffffff 0%, #f7fbff 100%) padding-box,
-      linear-gradient(135deg, #2454D6, #18B7E8, #00A99D) border-box !important;
-    box-shadow: 0 18px 42px rgba(13, 35, 90, 0.24) !important;
+  .offer-card:hover:not(.selected):not(.active) {
+    transform: translateY(-3px) !important;
+    border-color: #b8cef5 !important;
+    box-shadow: 0 16px 40px rgba(3,36,111,.11) !important;
   }
-  .offer-card.selected::before, .offer-card.active::before { display: none !important; }
-  .offer-card:hover { border-color: #c2d0f8 !important; }
+  .offer-card.selected, .offer-card.active {
+    border: 2px solid rgba(0,231,255,.65) !important;
+    background: linear-gradient(160deg, #f0faff 0%, #ffffff 60%) !important;
+    box-shadow: 0 20px 56px rgba(5,94,206,.13), 0 0 0 4px rgba(0,231,255,.08) !important;
+    transform: none !important;
+  }
+  .offer-card.selected::before, .offer-card.active::before {
+    content: '' !important;
+    display: block !important;
+    position: absolute !important;
+    inset: 0 0 auto 0 !important;
+    height: 3px !important;
+    background: linear-gradient(90deg, #055ECE, #00E7FF) !important;
+    border-radius: 0 !important;
+  }
   .consigai-offer-card { height: 100%; display: flex; flex-direction: column; user-select: text; }
   .consigai-offer-head { margin-bottom: 0; min-height: 0; display: flex; align-items: flex-start; justify-content: flex-end; }
   .consigai-offer-title-row {

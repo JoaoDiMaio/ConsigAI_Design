@@ -1,7 +1,11 @@
 ﻿import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
 import { useOffersData } from '../hooks/useOffersData.js'
 import { THIRD_CARD_SUB_OFFERS } from '../data/offersMock.js'
+import { useMediaQuery } from '../hooks/useMediaQuery.js'
+import { loadProfileData } from '../lib/profileStorage.js'
+import { appPageStyle } from '../ui/theme.js'
 import {
   fmt,
   getEcoMensal,
@@ -620,6 +624,9 @@ function syncOfferSelectionUi(cacheRef, doc, selectedOfferIndexRef, hasNoOffer) 
 export default function OfertasNova() {
   const navigate = useNavigate()
   const { activeOffers, usuario, impacto, loading, error } = useOffersData()
+  const isDesktop = useMediaQuery('(min-width: 768px)')
+  const profile = loadProfileData()
+  const clientName = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
 
   const iframeRef = useRef(null)
   const selectedOfferIndexRef = useRef(0)
@@ -858,20 +865,45 @@ export default function OfertasNova() {
   }
 
   return (
-    <>
+    <div style={{ ...appPageStyle, minHeight: '100svh', overflow: 'hidden' }}>
       {loading && <div className="offers-loading-bar" aria-hidden="true" />}
+      {isDesktop ? (
+        <DesktopPageHeader
+          chipLabel="Ofertas"
+          title="Ofertas ConsigAI"
+          subtitle="Compare as melhores estratégias para economizar ou receber crédito."
+          clientName={clientName}
+          onLogoClick={() => navigate('/ofertas')}
+          actions={[
+            { label: 'Ofertas', onClick: () => navigate('/ofertas') },
+            { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+          ]}
+        />
+      ) : (
+        <MobilePageHeader
+          chipLabel="Ofertas"
+          title="Ofertas ConsigAI"
+          subtitle="Compare opções."
+          clientName={clientName}
+          onLogoClick={() => navigate('/ofertas')}
+          actions={[
+            { label: 'Ofertas', onClick: () => navigate('/ofertas') },
+            { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+          ]}
+        />
+      )}
       <iframe
         ref={iframeRef}
         title="Ofertas ConsigAI"
         src="/Ofertas_ConsigAI.html"
         style={{
           width: '100%',
-          height: '100vh',
+          height: 'calc(100svh - 72px)',
           border: 'none',
           display: 'block',
-          background: '#EEF1F9',
+          background: '#F6FAFF',
         }}
       />
-    </>
+    </div>
   )
 }

@@ -1,62 +1,38 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
-import { maskDate, maskPhone } from '../lib/masks'
+import { maskDate, maskPhone, maskCEP } from '../lib/masks'
+import { isValidEmail, isValidCEP } from '../lib/validators'
 import { loadProfileData, saveProfileData } from '../lib/profileStorage'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
-import { appPageStyle, theme } from '../ui/theme'
-
-const t = {
-  ...theme,
-}
-
-function maskCEP(value) {
-  const digits = value.replace(/\D/g, '').slice(0, 8)
-  if (digits.length > 5) return `${digits.slice(0, 5)}-${digits.slice(5)}`
-  return digits
-}
+import { appPageStyle } from '../ui/theme'
+import { t } from '../lib/pageTheme'
 
 function validate(form) {
   const errors = {}
   const required = [
-    ['nomeCompleto', 'Informe o nome completo.'],
-    ['dataNascimento', 'Informe a data de nascimento.'],
-    ['telefone', 'Informe o telefone.'],
-    ['email', 'Informe o e-mail.'],
-    ['cep', 'Informe o CEP.'],
-    ['endereco', 'Informe o endereco.'],
-    ['numero', 'Informe o numero.'],
-    ['bairro', 'Informe o bairro.'],
-    ['cidade', 'Informe a cidade.'],
-    ['estado', 'Informe o estado.'],
+    ['nomeCompleto',    'Informe o nome completo.'],
+    ['dataNascimento',  'Informe a data de nascimento.'],
+    ['telefone',        'Informe o telefone.'],
+    ['email',           'Informe o e-mail.'],
+    ['cep',             'Informe o CEP.'],
+    ['endereco',        'Informe o endereco.'],
+    ['numero',          'Informe o numero.'],
+    ['bairro',          'Informe o bairro.'],
+    ['cidade',          'Informe a cidade.'],
+    ['estado',          'Informe o estado.'],
   ]
-
   required.forEach(([key, message]) => {
     if (!String(form[key] || '').trim()) errors[key] = message
   })
-
-  if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email)) {
-    errors.email = 'E-mail invalido.'
-  }
-
-  const phoneDigits = String(form.telefone || '').replace(/\D/g, '')
-  if (phoneDigits && phoneDigits.length < 10) {
-    errors.telefone = 'Telefone incompleto.'
-  }
-
-  const cepDigits = String(form.cep || '').replace(/\D/g, '')
-  if (cepDigits && cepDigits.length !== 8) {
-    errors.cep = 'CEP invalido.'
-  }
-
-  if (form.dataNascimento && !/^\d{2}\/\d{2}\/\d{4}$/.test(form.dataNascimento)) {
+  if (form.email && !isValidEmail(form.email))      errors.email = 'E-mail invalido.'
+  if (form.cep   && !isValidCEP(form.cep))          errors.cep   = 'CEP invalido.'
+  if (form.dataNascimento && !/^\d{2}\/\d{2}\/\d{4}$/.test(form.dataNascimento))
     errors.dataNascimento = 'Data invalida. Use DD/MM/AAAA.'
-  }
-
-  if (form.estado && String(form.estado).trim().length !== 2) {
+  if (form.telefone && String(form.telefone).replace(/\D/g, '').length < 10)
+    errors.telefone = 'Telefone incompleto.'
+  if (form.estado && String(form.estado).trim().length !== 2)
     errors.estado = 'Use a sigla com 2 letras.'
-  }
-
   return errors
 }
 

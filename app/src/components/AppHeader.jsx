@@ -3,26 +3,12 @@ import logoSvg from '../assets/logo.svg'
 import logoIconSvg from '../assets/logo-icon.svg'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { appFontFamily, theme } from '../ui/theme'
+import { toClientCallName } from '../lib/formatters'
 
 const DESKTOP_HEADER_HEIGHT = 72
 const TABLET_HEADER_HEIGHT = 72
 const MOBILE_HEADER_HEIGHT = 72
 const MOBILE_LOGO_ICON_SIZE = 34
-
-function toClientCallName(clientName) {
-  const full = String(clientName || '').trim()
-  if (!full) return 'Cliente'
-
-  const firstName = full.split(/\s+/)[0]
-  const femaleFirstNames = new Set([
-    'maria', 'ana', 'mariana', 'juliana', 'patricia', 'fernanda', 'carla', 'paula', 'renata', 'beatriz',
-    'camila', 'bruna', 'aline', 'leticia', 'daniela', 'adriana', 'simone', 'fabiana', 'claudia',
-  ])
-
-  const normalizedFirst = firstName.toLowerCase()
-  const honorific = femaleFirstNames.has(normalizedFirst) || /a$/.test(normalizedFirst) ? 'Sra.' : 'Sr.'
-  return `${honorific} ${firstName}`
-}
 
 function ClientMenu({ clientName, actions = [], compact = false }) {
   const [open, setOpen] = useState(false)

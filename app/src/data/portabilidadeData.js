@@ -1,0 +1,26 @@
+export const stateData = {
+  eco: {
+    newInstallment: 'R$ 496',
+    mode:           'eco',
+    eyebrow:        'Menos custo sem esticar o prazo',
+    headlinePrefix: 'Economize até',
+    headlineValue:  'R$ 2.399',
+    headlineSuffix: '',
+    subhead:        'com redução real no custo total do contrato',
+    margin:         'R$ 320',
+    credit:         'R$ 5.033',
+    cta:            'Escolher economia inteligente',
+  },
+  parc: {
+    newInstallment: 'R$ 433',
+    mode:           'parc',
+    eyebrow:        'Mais folga no orçamento mensal',
+    headlinePrefix: 'Economize até',
+    headlineValue:  'R$ 117',
+    headlineSuffix: 'por mês',
+    subhead:        'alívio mensal para organizar melhor as contas',
+    margin:         'R$ 480',
+    credit:         'R$ 7.593',
+    cta:            'Escolher parcela menor',
+  },
+}

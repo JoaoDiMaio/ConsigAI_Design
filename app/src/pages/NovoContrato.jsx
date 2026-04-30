@@ -3,37 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
 import { MiniCard } from '../components/MiniCard'
-import { appPageStyle, theme } from '../ui/theme'
+import { appPageStyle } from '../ui/theme'
+import { t } from '../lib/pageTheme'
+import { OFERTA } from '../data/novoContratoData'
+import { fmt, fmtDec } from '../lib/formatters'
 
-//  Tokens 
-const t = {
-  ...theme,
-  green:       '#0a6640',
-  greenSoft:   '#3d6b52',
-  gold:        '#7a5200',
-  goldBg:      '#fffbf0',
-  goldLine:    '#edddb0',
-  goldBtn:     '#a87000',
-  shadow:      '0 8px 28px rgba(0,24,81,.09)',
-}
-
-//  Oferta data 
-const OFERTA = {
-  creditoMaximo:    8400,
-  margemDisponivel:  770,
-  taxaMensal:       1.88,
-  valorMinimo:       500,
-  ancoras: [
-    { valor: 8400, prazo: 84, parcela: 158.40 },
-    { valor: 5000, prazo: 84, parcela:  94.28 },
-    { valor: 2500, prazo: 84, parcela:  47.14 },
-  ],
-  prazosDisponiveis: [24, 48, 84],
-}
-
-//  Helpers 
-const fmt    = n => Math.round(n).toLocaleString('pt-BR')
-const fmtDec = n => n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const calcPMT = (pv, rate, n) => {
   const i = rate / 100
   return pv * (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1)

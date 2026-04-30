@@ -1,0 +1,333 @@
+================================================================================
+CONSIGAI DESIGN — INSTRUÇÕES DE REFATORAÇÃO FRONTEND
+Gerado em: 30/04/2026
+================================================================================
+
+CONTEXTO DO PROJETO
+-------------------
+Projeto React (Vite + Tailwind) — fintech de crédito consignado chamado ConsigAI.
+Stack: React 18, Vite, Tailwind (usado minimamente), inline styles predominante.
+Diretório raiz: app/src/
+Fonte padrão: Plus Jakarta Sans (importada via Google Fonts no index.html)
+
+
+================================================================================
+O QUE JÁ FOI FEITO — NÃO REFAZER
+================================================================================
+
+THEME.JS (src/ui/theme.js)
+Arquivo expandido com exports nomeados:
+  - colors       → paleta completa (blues, cyan, greens, gold, red, warning, neutrals)
+  - fontWeight   → escala nomeada (regular → heavy)
+  - spacing      → escala 4-40px indexada (spacing[1]=4 ... spacing[10]=40)
+  - radius       → sm / md / lg / xl / xxl / xxxl / pill
+  - shadow       → sm / md / lg / xl / xxl / card / cardHover / cardSelected /
+                   header / bottomBar / green / button / buttonSm
+  - gradient     → topbar / button / brand / brandAccent / cardSelected /
+                   greenCard / pageBg / mesh / grain
+  - theme        → objeto legado mantido para backward-compat
+  - appFontFamily → "'Plus Jakarta Sans', system-ui, sans-serif"
+  - appPageStyle  → style base de página
+
+COMPONENTES CRIADOS (src/components/)
+  - Badge.jsx        → variantes: gold / green / blue / cyan / muted
+                       Props: label, variant, style
+  - Button.jsx       → variantes: primary / ghost / green / link
+                       Tamanhos: sm / md
+                       Props: variant, size, fullWidth, children, style, ...props
+                       SIZES e BASE_STYLE como const fora do componente
+  - Card.jsx         → variantes: default / selected / green / flat
+                       Exporta também CardAccentLine (prop: color) e
+                       CardRow (props: label, value, valueColor, noBorder, style)
+  - PageBackground.jsx → exporta PageBackground (mesh gradient + grain),
+                         PageContent (max-width container), BottomBar (fixed bottom)
+  - AppHeader.jsx    → DesktopPageHeader e MobilePageHeader
+                       toClientCallName movido para lib/formatters.js
+
+BIBLIOTECAS (src/lib/)
+  - formatters.js   → fmtDec, parseMoney, toClientCallName
+  - validators.js   → isValidCPF, isValidBirthDate, isValidBRPhone, isValidEmail,
+                      isValidCEP, validatePersonalData, validateUploadFile,
+                      validateAddress
+  - masks.js        → maskCPF, maskDate, maskPhone, maskCEP, formatFileSize
+  - pageTheme.js    → const t = { ...theme, ...colors, shadow: shadow.card }
+                      (evita repetição do padrão t nas páginas)
+  - offerUtils.js   → fmt (CANÔNICO), getEcoMensal, getParcelaNova,
+                      formatCurrencyClean, normalizeMojibakeText,
+                      likelyNeedsTextNormalization
+
+DADOS EXTRAÍDOS PARA src/data/
+  - andamentoPropostasData.js  → statusMap, summaryCards, proposals
+  - portabilidadeData.js       → stateData (eco / parc)
+  - novoContratoData.js        → OFERTA config
+  - refinanciamentoData.js     → SCENARIOS, SCENARIO_ICONS (usando tokens)
+  - offersMock.js              → já existia, mantido
+
+PÁGINAS ATUALIZADAS
+  - OfertasComparacao.jsx → totalmente refatorada, usar como REFERÊNCIA de padrão
+  - Demais páginas: importam t de pageTheme.js, dados de src/data/,
+    parseMoney/fmt de formatters
+
+INDEX.CSS
+  - Fonte padronizada: Plus Jakarta Sans
+  - Keyframes centralizados: fadeIn, slideUp, popIn, fadeWarn, slideIn
+  - Body background: #F6FAFF
+
+
+================================================================================
+PROBLEMAS QUE AINDA EXISTEM — CORRIJA ESTES EM ORDEM
+================================================================================
+
+--------------------------------------------------------------------------------
+CRÍTICO 1 — fmt DUPLICADO (risco de import errado já em produção)
+--------------------------------------------------------------------------------
+fmt existe em DOIS lugares:
+  - src/lib/offerUtils.js:5   → CANÔNICO, usado pelo sistema de ofertas
+  - src/lib/formatters.js:5   → DUPLICATA criada por engano
+
+SOLUÇÃO:
+  1. Remover fmt e fmtDec de src/lib/formatters.js
+  2. Em formatters.js, adicionar re-export: export { fmt } from './offerUtils'
+  3. Adicionar fmtDec ao offerUtils.js se não existir lá
+  4. Verificar que todas as páginas que importam fmt de formatters
+     continuam funcionando sem quebrar
+
+--------------------------------------------------------------------------------
+CRÍTICO 2 — Button LOCAL em EstrategiaCombinada
+--------------------------------------------------------------------------------
+src/pages/EstrategiaCombinada.jsx tem um componente Button local (~60 linhas,
+por volta da linha 221) que ignora src/components/Button.jsx.
+
+SOLUÇÃO:
+  1. Adicionar import no topo: import { Button } from '../components/Button'
+  2. Remover a função Button local do arquivo
+  3. Adaptar os usos — o Button local tinha variantes 'primary' e 'ghost'
+     que mapeiam para as variantes do componente centralizado
+  4. Se o Button local tinha prop 'icon', adicionar suporte ao Button.jsx central
+
+--------------------------------------------------------------------------------
+CRÍTICO 3 — const t REDEFINIDO em EstrategiaCombinada
+--------------------------------------------------------------------------------
+src/pages/EstrategiaCombinada.jsx redefine t localmente em vez de importar
+de pageTheme. Código atual (errado):
+
+  import { appPageStyle, appFontFamily, theme, colors, ... } from '../ui/theme'
+  const t = {
+    ...theme,
+    greenSoft: colors.greenDark,
+    gold: colors.goldText,
+    ...
+  }
+
+CORRETO:
+  import { appPageStyle, appFontFamily, fontWeight, radius,
+           shadow, spacing, gradient, colors } from '../ui/theme'
+  import { t } from '../lib/pageTheme'
+
+  (Remover a definição local de t)
+
+--------------------------------------------------------------------------------
+ALTO 4 — calcPMT e calcCreditFromMargem ISOLADOS em NovoContrato
+--------------------------------------------------------------------------------
+src/pages/NovoContrato.jsx define funções matemáticas que deveriam estar em lib:
+
+  const calcPMT = (pv, rate, n) => {
+    const i = rate / 100
+    return pv * (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1)
+  }
+  const calcCreditFromMargem = (margem) => { ... }
+
+SOLUÇÃO:
+  1. Mover ambas para src/lib/offerUtils.js como exports nomeados
+  2. calcCreditFromMargem depende de OFERTA.taxaMensal e OFERTA.ancoras —
+     receber como parâmetros em vez de closure:
+     export const calcCreditFromMargem = (margem, taxaMensal, prazo) => { ... }
+  3. Atualizar import em NovoContrato.jsx
+
+--------------------------------------------------------------------------------
+ALTO 5 — formatCurrencyClean DEAD EXPORT
+--------------------------------------------------------------------------------
+src/lib/offerUtils.js exporta formatCurrencyClean mas ela não é usada em
+nenhuma página (só internamente no bridge do iframe OfertasNova).
+
+SOLUÇÃO:
+  Verificar se é usada dentro do próprio offerUtils ou OfertasNova.jsx.
+  Se sim: remover o export (manter como função interna sem export).
+  Se não: remover completamente.
+
+--------------------------------------------------------------------------------
+MÉDIO 6 — CSS INLINE em EstrategiaCombinada (320+ linhas)
+--------------------------------------------------------------------------------
+src/pages/EstrategiaCombinada.jsx tem um bloco <style> com ~320 linhas de CSS
+(classes .mix-*, .scenario-*, etc.) embutido no JSX.
+
+SOLUÇÃO:
+  1. Criar src/styles/estrategiaCombinada.css
+  2. Mover todo o conteúdo da tag <style> para esse arquivo
+  3. Remover a tag <style> do JSX
+  4. Adicionar no topo do arquivo:
+     import '../styles/estrategiaCombinada.css'
+
+--------------------------------------------------------------------------------
+MÉDIO 7 — Badge NÃO ACEITA children
+--------------------------------------------------------------------------------
+src/components/Badge.jsx só aceita label (string). Para badges com conteúdo
+composto (ícone + texto) o código atual força workarounds com style.
+
+SOLUÇÃO — editar Badge.jsx:
+
+  export function Badge({ label, variant = 'blue', style: styleProp, children }) {
+    const v = VARIANTS[variant] ?? VARIANTS.blue
+    return (
+      <span style={{ ...baseStyle, ...v, ...styleProp }}>
+        {children ?? label}
+      </span>
+    )
+  }
+
+  children tem prioridade; label é fallback para uso simples.
+
+--------------------------------------------------------------------------------
+MÉDIO 8 — AppHeader USA theme LEGADO
+--------------------------------------------------------------------------------
+src/components/AppHeader.jsx importa theme e usa theme.navy, theme.greenAccent
+diretamente em vez dos novos tokens.
+
+SOLUÇÃO:
+  1. Substituir import de theme por import de colors
+  2. theme.navy      → colors.navyDeep
+  3. theme.greenAccent → colors.greenAccent
+  4. Remover import do theme legado se não houver mais uso
+
+--------------------------------------------------------------------------------
+BAIXO 9 — Cor HARDCODED em OfertasComparacao
+--------------------------------------------------------------------------------
+src/pages/OfertasComparacao.jsx usa '#EAF2FF' hardcoded em pelo menos 1 lugar.
+
+SOLUÇÃO:
+  Usar colors.blueHaze (já existe no theme) ou adicionar
+  blueWash: '#EAF2FF' ao objeto colors em theme.js.
+
+--------------------------------------------------------------------------------
+BAIXO 10 — Magic numbers no objeto legado do theme.js
+--------------------------------------------------------------------------------
+src/ui/theme.js linhas ~173-174:
+  cardRadiusSm: radius.sm + 5,   // = 13, magic arithmetic
+  cardRadiusMd: radius.xxl - 3,  // = 21, magic arithmetic
+
+SOLUÇÃO:
+  Trocar por valores diretos sem aritmética:
+  cardRadiusSm: 13,
+  cardRadiusMd: 21,
+
+
+================================================================================
+ESTRUTURA DE ARQUIVOS ATUAL (referência)
+================================================================================
+
+app/src/
+├── components/
+│   ├── AppHeader.jsx        ← DesktopPageHeader, MobilePageHeader, ClientMenu
+│   ├── Badge.jsx            ← variantes: gold/green/blue/cyan/muted
+│   ├── Button.jsx           ← variantes: primary/ghost/green/link
+│   ├── Card.jsx             ← Card, CardAccentLine, CardRow
+│   ├── MiniCard.jsx         ← variantes: eco/refin/novo
+│   └── PageBackground.jsx   ← PageBackground, PageContent, BottomBar
+├── data/
+│   ├── andamentoPropostasData.js
+│   ├── novoContratoData.js
+│   ├── offersMock.js
+│   ├── portabilidadeData.js
+│   └── refinanciamentoData.js
+├── hooks/
+│   ├── useMediaQuery.js
+│   └── useOffersData.js
+├── lib/
+│   ├── formatters.js     ← fmtDec, parseMoney, toClientCallName
+│   │                        (fmt DEVE ser removido daqui — vem de offerUtils)
+│   ├── masks.js          ← maskCPF, maskDate, maskPhone, maskCEP, formatFileSize
+│   ├── offerUtils.js     ← fmt (CANÔNICO), getEcoMensal, getParcelaNova, etc.
+│   ├── pageTheme.js      ← const t compartilhado para páginas legadas
+│   ├── profileStorage.js
+│   └── validators.js     ← todas as validações
+├── pages/
+│   ├── AndamentoPropostas.jsx
+│   ├── Cadastro.jsx
+│   ├── Configuracoes.jsx
+│   ├── Contratacao.jsx
+│   ├── DadosBancarios.jsx
+│   ├── EstrategiaCombinada.jsx  ← PRECISA: Button local, t local, CSS inline
+│   ├── NovoContrato.jsx         ← PRECISA: calcPMT extraído para offerUtils
+│   ├── OfertasComparacao.jsx    ← REFERÊNCIA — totalmente refatorada
+│   ├── OfertasNova.jsx          ← iframe bridge, não tocar na lógica JS
+│   ├── Portabilidade.jsx
+│   └── Refinanciamento.jsx
+├── styles/
+│   └── iframeOfertasStyles.js
+└── ui/
+    └── theme.js          ← tokens completos + objeto legado backward-compat
+
+
+================================================================================
+CONVENÇÕES DO PROJETO — SEGUIR OBRIGATORIAMENTE
+================================================================================
+
+1. INLINE STYLES
+   Projeto usa inline styles. Não usar Tailwind classes nem CSS modules,
+   exceto o CSS de EstrategiaCombinada que será extraído para .css.
+
+2. FONTE
+   Sempre appFontFamily do theme. Nunca string hardcoded.
+
+3. CORES
+   Sempre via colors.xxx ou t.xxx. Nunca hex direto no JSX.
+
+4. SOMBRAS
+   Sempre via shadow.xxx do theme.
+
+5. SPACING
+   Preferencialmente spacing[n] para valores padronizados.
+
+6. BORDER-RADIUS
+   Preferencialmente radius.xxx do theme.
+
+7. t vs colors
+   Páginas com padrão legado (Portabilidade, Refinanciamento, etc.)
+   usam t de pageTheme.js.
+   Novas páginas (OfertasComparacao) usam colors diretamente.
+
+8. DADOS
+   Constantes de mock em src/data/, nunca inline na página.
+
+9. VALIDAÇÕES
+   Sempre em src/lib/validators.js. Nunca inline na página.
+
+10. FORMATAÇÃO
+    fmt vem de offerUtils.js.
+    fmtDec e parseMoney vêm de formatters.js.
+
+11. NÃO CRIAR ARQUIVOS DESNECESSÁRIOS
+    Preferir editar arquivos existentes.
+
+12. ACESSIBILIDADE
+    Botões sempre com type="button".
+    SVGs decorativos sempre com aria-hidden="true".
+    Botões com só ícone sempre com aria-label descritivo.
+
+
+================================================================================
+CHECKLIST PARA VALIDAR APÓS CADA MUDANÇA
+================================================================================
+
+[ ] Nenhum import quebrado (sem "cannot resolve module")
+[ ] fmt importado de offerUtils funciona igual ao anterior
+[ ] EstrategiaCombinada renderiza igual visualmente após trocar Button local
+[ ] CSS de EstrategiaCombinada continua aplicado após extração para .css
+[ ] NovoContrato ainda calcula PMT corretamente após mover calcPMT
+[ ] Nenhum hex hardcoded novo introduzido
+[ ] Nenhuma string de font-family introduzida (usar appFontFamily)
+
+
+================================================================================
+FIM DAS INSTRUÇÕES
+================================================================================

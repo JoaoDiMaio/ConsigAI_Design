@@ -4,11 +4,11 @@
 
 body {
   margin: 0;
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #0b0c0f;
-  color: #f0f0f0;
+  background: #F6FAFF;
+  color: #071B45;
 }
 
 #root {
@@ -39,8 +39,15 @@ body {
   flex-direction: column;
   gap: 12px;
   color: #1a3d8f;
-  font-family: Inter, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 .offers-error-screen__icon  { font-size: 32px; }
 .offers-error-screen__title { font-weight: 700; font-size: 16px; margin: 0; }
 .offers-error-screen__msg   { color: #667399; font-size: 13px; margin: 0; }
+
+/* Animações compartilhadas entre páginas */
+@keyframes fadeIn  { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes slideUp { from { transform: translateY(100%) } to { transform: translateY(0) } }
+@keyframes popIn   { from { transform: scale(.5); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+@keyframes fadeWarn { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes slideIn  { from { opacity: 0; transform: translateX(14px) } to { opacity: 1; transform: translateX(0) } }

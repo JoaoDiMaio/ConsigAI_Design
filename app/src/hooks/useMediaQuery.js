@@ -14,25 +14,20 @@ export function useMediaQuery(query) {
     const mq = window.matchMedia(query)
     const onChange = () => setMatches(mq.matches)
 
-    // Sync imediato ao montar e ao mudar query
     onChange()
 
     if (typeof mq.addEventListener === 'function') {
       mq.addEventListener('change', onChange)
-    } else if (typeof mq.addListener === 'function') {
+    } else {
       mq.addListener(onChange)
     }
-
-    // Fallback extra para ambientes que não propagam change corretamente
-    window.addEventListener('resize', onChange)
 
     return () => {
       if (typeof mq.removeEventListener === 'function') {
         mq.removeEventListener('change', onChange)
-      } else if (typeof mq.removeListener === 'function') {
+      } else {
         mq.removeListener(onChange)
       }
-      window.removeEventListener('resize', onChange)
     }
   }, [query])
 

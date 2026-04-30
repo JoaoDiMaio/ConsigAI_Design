@@ -3,45 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
 import { MiniCard } from '../components/MiniCard'
-import { appPageStyle, theme } from '../ui/theme'
-
-const t = {
-  ...theme,
-  greenSoft:   '#3d6b52',
-  danger:      '#d94b4b',
-  gold:        '#7a5200',
-  goldBg:      '#fffbf0',
-  goldLine:    '#edddb0',
-  goldBtn:     '#a87000',
-  shadow:      '0 8px 28px rgba(0,24,81,.09)',
-}
-
-const stateData = {
-  eco: {
-    newInstallment: 'R$ 496',
-    mode:           'eco',
-    eyebrow:        'Menos custo sem esticar o prazo',
-    headlinePrefix: 'Economize até',
-    headlineValue:  'R$ 2.399',
-    headlineSuffix: '',
-    subhead:        'com redução real no custo total do contrato',
-    margin:         'R$ 320',
-    credit:         'R$ 5.033',
-    cta:            'Escolher economia inteligente',
-  },
-  parc: {
-    newInstallment: 'R$ 433',
-    mode:           'parc',
-    eyebrow:        'Mais folga no orçamento mensal',
-    headlinePrefix: 'Economize até',
-    headlineValue:  'R$ 117',
-    headlineSuffix: 'por mês',
-    subhead:        'alívio mensal para organizar melhor as contas',
-    margin:         'R$ 480',
-    credit:         'R$ 7.593',
-    cta:            'Escolher parcela menor',
-  },
-}
+import { appPageStyle } from '../ui/theme'
+import { t } from '../lib/pageTheme'
+import { stateData } from '../data/portabilidadeData'
+import { parseMoney, fmtDec } from '../lib/formatters'
 
 //  Desktop Header 
 
@@ -242,18 +207,6 @@ export default function Portabilidade() {
     : { bg: '#ebf0ff', eyebrow: t.blue, headline: '#2a4a8a', big: t.blue, subhead: '#2a4a8a' }
   const salarioBase = 2200
   const parcelaAntes = 550
-
-  const parseMoney = (value) => {
-    const normalized = String(value ?? '')
-      .replace(/[^\d,.-]/g, '')
-      .replace(/\./g, '')
-      .replace(',', '.')
-    const parsed = Number(normalized)
-    return Number.isFinite(parsed) ? parsed : 0
-  }
-
-  const formatMoney = (value) =>
-    `R$ ${Number(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
   const parcelaDepois = parseMoney(d.newInstallment)
   const liquidoAntes = salarioBase - parcelaAntes
@@ -458,13 +411,13 @@ export default function Portabilidade() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           <div style={{ borderRadius: 12, border: `1px solid ${t.line}`, background: '#f7f9ff', padding: 10 }}>
             <div style={{ fontSize: 9.5, textTransform: 'uppercase', letterSpacing: '.06em', color: t.muted, fontWeight: 700, marginBottom: 5 }}>Antes</div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: t.text, lineHeight: 1.1 }}>{formatMoney(liquidoAntes)}</div>
-            <div style={{ fontSize: 10, color: t.muted, marginTop: 5, lineHeight: 1.35 }}>Com parcela de {formatMoney(parcelaAntes)}</div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: t.text, lineHeight: 1.1 }}>{fmtDec(liquidoAntes)}</div>
+            <div style={{ fontSize: 10, color: t.muted, marginTop: 5, lineHeight: 1.35 }}>Com parcela de {fmtDec(parcelaAntes)}</div>
           </div>
           <div style={{ borderRadius: 12, border: '1px solid #b8e0ca', background: '#eefaf3', padding: 10 }}>
             <div style={{ fontSize: 9.5, textTransform: 'uppercase', letterSpacing: '.06em', color: t.green, fontWeight: 700, marginBottom: 5 }}>Depois</div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: t.green, lineHeight: 1.1 }}>{formatMoney(liquidoDepois)}</div>
-            <div style={{ fontSize: 10, color: t.greenSoft, marginTop: 5, lineHeight: 1.35 }}>Com parcela de {formatMoney(parcelaDepois)}</div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: t.green, lineHeight: 1.1 }}>{fmtDec(liquidoDepois)}</div>
+            <div style={{ fontSize: 10, color: t.greenSoft, marginTop: 5, lineHeight: 1.35 }}>Com parcela de {fmtDec(parcelaDepois)}</div>
           </div>
         </div>
       </div>
