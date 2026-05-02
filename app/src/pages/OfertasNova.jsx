@@ -980,6 +980,10 @@ export default function OfertasNova() {
           note.textContent =
             'A ConsigAI comparou seus contratos e encontrou opções para reduzir parcela, economizar no total ou receber dinheiro com clareza.'
         }
+        const heroCompareLabel = frameDoc.querySelector('.hc-label')
+        if (heroCompareLabel) {
+          heroCompareLabel.innerHTML = '<span class="hc-label-main">Comparativo de oferta</span><span class="hc-label-sub">Antes e depois da ConsigAI</span>'
+        }
         // .section-header oculto via OFFER_CARD_REDESIGN_CSS
 
         frameDoc.body.dataset.consigaiHeroSectionCopyAdjusted = '1'
@@ -1011,6 +1015,9 @@ export default function OfertasNova() {
           const rawTarget = event.target
           const target = rawTarget?.nodeType === 1 ? rawTarget : rawTarget?.parentElement
           if (!target) return
+
+          const selection = frameDoc.defaultView?.getSelection?.()
+          if (selection && !selection.isCollapsed && selection.toString().trim()) return
 
           const detailsBtn = target.closest('.consigai-offer-details-btn')
           if (detailsBtn) {

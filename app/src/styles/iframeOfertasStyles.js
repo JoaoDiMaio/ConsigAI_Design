@@ -264,6 +264,7 @@ export const RESPONSIVE_STYLES_CSS = `
     .hero { padding: 18px 18px !important; gap: 16px !important; }
     .hero-compare { justify-self: end !important; width: min(332px, 100%) !important; }
     .hc-row { gap: 12px !important; }
+    .hc-col-val { font-size: 20px !important; }
     .offers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
     .offers-grid > .offer-card:nth-child(3) {
       grid-column: 1 / -1 !important; justify-self: center !important;
@@ -290,8 +291,18 @@ export const RESPONSIVE_STYLES_CSS = `
     .hero { grid-template-columns: minmax(0, 1fr) !important; }
     .hero-compare { justify-self: stretch !important; width: 100% !important; }
     .hc-row { grid-template-columns: 1fr !important; }
+    .hc-col-val { font-size: 19px !important; }
     .hc-arrow { transform: rotate(90deg) !important; }
-    .hc-saving { align-items: flex-start !important; flex-direction: column !important; gap: 8px !important; }
+    .hc-saving {
+      grid-template-columns: 1fr !important;
+      justify-items: start !important;
+      gap: 4px !important;
+    }
+    .hc-saving-value {
+      width: auto !important;
+      text-align: left !important;
+      justify-self: start !important;
+    }
     .offers-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 10px !important; }
     .offers-grid > .offer-card:nth-child(3) {
       grid-column: auto !important; justify-self: stretch !important; width: 100% !important;
@@ -373,6 +384,8 @@ export const OFFER_CARD_REDESIGN_CSS = `
     border-radius: 20px !important;
     box-shadow: 0 24px 60px rgba(3, 36, 111, 0.11) !important;
     padding: 10px !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
   }
   .hero-compare::before {
     content: '' !important;
@@ -397,21 +410,25 @@ export const OFFER_CARD_REDESIGN_CSS = `
     position: relative !important;
     font-size: 0 !important;
     line-height: 1 !important;
+    text-transform: none !important;
     margin-bottom: 6px !important;
     padding-bottom: 10px !important;
     border-bottom: 1px solid var(--line) !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    cursor: text !important;
   }
-  .hc-label::before {
-    content: 'Comparativo da oferta' !important;
+  .hc-label-main {
     display: block !important;
     color: var(--navy) !important;
     font-size: 16px !important;
     font-weight: 950 !important;
     letter-spacing: -0.02em !important;
     line-height: 1.15 !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
   }
-  .hc-label::after {
-    content: 'Antes e depois da ConsigAI' !important;
+  .hc-label-sub {
     display: block !important;
     color: var(--muted) !important;
     font-size: 11px !important;
@@ -419,21 +436,30 @@ export const OFFER_CARD_REDESIGN_CSS = `
     letter-spacing: 0 !important;
     line-height: 1.2 !important;
     margin-top: 3px !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
   }
   .hc-row {
     display: grid !important;
     grid-template-columns: 1fr 54px 1fr !important;
     gap: 6px !important;
-    align-items: stretch !important;
+    align-items: center !important;
     margin-bottom: 6px !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
   }
   .hc-col {
-    min-height: 72px !important;
-    padding: 7px !important;
+    min-height: 60px !important;
+    padding: 6px 7px !important;
     border-radius: 13px !important;
     border: 1px solid var(--line) !important;
     background: radial-gradient(circle at 88% 10%, rgba(5, 94, 206, 0.10), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
     text-align: left !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
   }
   .hc-col-label {
     display: block !important;
@@ -441,13 +467,24 @@ export const OFFER_CARD_REDESIGN_CSS = `
     font-size: 11px !important;
     font-weight: 850 !important;
     margin-bottom: 4px !important;
+    text-align: left !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
   }
   .hc-col-val {
-    font-size: 18px !important;
+    font-size: 21px !important;
     font-weight: 950 !important;
     letter-spacing: -.055em !important;
     line-height: 1 !important;
     white-space: nowrap !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    align-self: center !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    cursor: text !important;
   }
   .hc-col-val.old {
     color: #B00020 !important;
@@ -463,6 +500,8 @@ export const OFFER_CARD_REDESIGN_CSS = `
     border-radius: 50% !important;
     display: grid !important;
     place-items: center !important;
+    align-self: center !important;
+    justify-self: center !important;
     background: linear-gradient(145deg, var(--blue) 0%, #244FD1 100%) !important;
     color: #fff !important;
     box-shadow: 0 14px 30px rgba(5, 94, 206, 0.25) !important;
@@ -477,15 +516,19 @@ export const OFFER_CARD_REDESIGN_CSS = `
     border: 1px solid #BDECD7 !important;
     border-radius: 14px !important;
     padding: 8px 10px !important;
-    display: flex !important;
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) !important;
     align-items: center !important;
-    justify-content: space-between !important;
     gap: 8px !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
   }
   .hc-saving-label {
     font-size: 11px !important;
     color: var(--green) !important;
     font-weight: 950 !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
   }
   .hc-saving-value {
     font-size: 18px !important;
@@ -493,6 +536,12 @@ export const OFFER_CARD_REDESIGN_CSS = `
     color: var(--green-accent) !important;
     letter-spacing: -.055em !important;
     white-space: nowrap !important;
+    width: 100% !important;
+    text-align: center !important;
+    justify-self: center !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    cursor: text !important;
   }
   .hc-col-val.old { color: #C00000 !important; }
   .hc-col-val.new, .hc-saving-value, #hcNova, #hcEco { color: #0a7c52 !important; }
@@ -523,7 +572,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card {
     background: #fff !important;
-    border: 1.5px solid #DDE8F6 !important;
+    border: 2px solid #DDE8F6 !important;
     box-shadow: 0 8px 24px rgba(3,36,111,.07) !important;
     border-radius: 24px !important;
     padding: 22px !important;
@@ -984,7 +1033,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.folga-offer .folga-highlight small {
     display: block;
-    color: #64748B;
+    color: #03246F;
     font-size: 11px;
     line-height: 1.15;
     font-weight: 800;
