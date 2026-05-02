@@ -24,7 +24,6 @@ export const RESPONSIVE_STYLES_CSS = `
     color: #7a8db8;
     line-height: 1.4;
   }
-
   .offer-val-num,
   .hc-col-val,
   .hc-saving-value,
@@ -233,6 +232,7 @@ export const RESPONSIVE_STYLES_CSS = `
     .hero-eyebrow { margin-bottom: 6px !important; }
     .hero-title { margin-bottom: 6px !important; font-size: clamp(22px, 2.8vw, 30px) !important; }
     .consigai-hero-note { margin-top: 6px !important; font-size: 12px !important; }
+    .hero-compare { width: min(332px, 100%) !important; }
     .offers-grid { gap: 10px !important; margin-bottom: 14px !important; }
     .offer-card { padding: 14px !important; }
     .offer-desc { margin-top: 2px !important; }
@@ -262,7 +262,8 @@ export const RESPONSIVE_STYLES_CSS = `
   @media (max-width: 1080px) {
     .main { padding: 24px 16px 120px !important; }
     .hero { padding: 18px 18px !important; gap: 16px !important; }
-    .hero-compare { justify-self: end !important; width: min(360px, 100%) !important; }
+    .hero-compare { justify-self: end !important; width: min(332px, 100%) !important; }
+    .hc-row { gap: 12px !important; }
     .offers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
     .offers-grid > .offer-card:nth-child(3) {
       grid-column: 1 / -1 !important; justify-self: center !important;
@@ -288,6 +289,9 @@ export const RESPONSIVE_STYLES_CSS = `
     .main { padding: 16px 12px 132px !important; }
     .hero { grid-template-columns: minmax(0, 1fr) !important; }
     .hero-compare { justify-self: stretch !important; width: 100% !important; }
+    .hc-row { grid-template-columns: 1fr !important; }
+    .hc-arrow { transform: rotate(90deg) !important; }
+    .hc-saving { align-items: flex-start !important; flex-direction: column !important; gap: 8px !important; }
     .offers-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 10px !important; }
     .offers-grid > .offer-card:nth-child(3) {
       grid-column: auto !important; justify-self: stretch !important; width: 100% !important;
@@ -361,6 +365,135 @@ export const OFFER_CARD_REDESIGN_CSS = `
   .hero-title { color: #1a3d8f !important; }
   .hero-title em { color: #0a7c52 !important; font-style: normal !important; }
   @media (min-width: 1024px) { .hero-title { white-space: nowrap !important; } }
+  .hero-compare {
+    position: relative !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 24px 60px rgba(3, 36, 111, 0.11) !important;
+    padding: 10px !important;
+  }
+  .hero-compare::before {
+    content: '' !important;
+    position: absolute !important;
+    inset: 0 0 auto 0 !important;
+    height: 4px !important;
+    background: linear-gradient(90deg, var(--blue) 0%, var(--cyan) 55%, var(--green-accent) 100%) !important;
+  }
+  .hero-compare::after {
+    content: '' !important;
+    position: absolute !important;
+    width: 220px !important;
+    height: 220px !important;
+    right: -105px !important;
+    top: -105px !important;
+    border-radius: 50% !important;
+    background: radial-gradient(circle, rgba(0, 231, 255, 0.14), transparent 64%) !important;
+    pointer-events: none !important;
+  }
+  .hc-label {
+    display: block !important;
+    position: relative !important;
+    font-size: 0 !important;
+    line-height: 1 !important;
+    margin-bottom: 6px !important;
+    padding-bottom: 10px !important;
+    border-bottom: 1px solid var(--line) !important;
+  }
+  .hc-label::before {
+    content: 'Comparativo da oferta' !important;
+    display: block !important;
+    color: var(--navy) !important;
+    font-size: 16px !important;
+    font-weight: 950 !important;
+    letter-spacing: -0.02em !important;
+    line-height: 1.15 !important;
+  }
+  .hc-label::after {
+    content: 'Antes e depois da ConsigAI' !important;
+    display: block !important;
+    color: var(--muted) !important;
+    font-size: 11px !important;
+    font-weight: 750 !important;
+    letter-spacing: 0 !important;
+    line-height: 1.2 !important;
+    margin-top: 3px !important;
+  }
+  .hc-row {
+    display: grid !important;
+    grid-template-columns: 1fr 54px 1fr !important;
+    gap: 6px !important;
+    align-items: stretch !important;
+    margin-bottom: 6px !important;
+  }
+  .hc-col {
+    min-height: 72px !important;
+    padding: 7px !important;
+    border-radius: 13px !important;
+    border: 1px solid var(--line) !important;
+    background: radial-gradient(circle at 88% 10%, rgba(5, 94, 206, 0.10), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%) !important;
+    text-align: left !important;
+  }
+  .hc-col-label {
+    display: block !important;
+    color: var(--text-muted) !important;
+    font-size: 11px !important;
+    font-weight: 850 !important;
+    margin-bottom: 4px !important;
+  }
+  .hc-col-val {
+    font-size: 18px !important;
+    font-weight: 950 !important;
+    letter-spacing: -.055em !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+  .hc-col-val.old {
+    color: #B00020 !important;
+    text-decoration: line-through !important;
+    text-decoration-thickness: 3px !important;
+  }
+  .hc-col-val.new {
+    color: var(--green-accent) !important;
+  }
+  .hc-arrow {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 50% !important;
+    display: grid !important;
+    place-items: center !important;
+    background: linear-gradient(145deg, var(--blue) 0%, #244FD1 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 14px 30px rgba(5, 94, 206, 0.25) !important;
+  }
+  .hc-arrow svg {
+    width: 16px !important;
+    height: 16px !important;
+    stroke-width: 2.6 !important;
+  }
+  .hc-saving {
+    background: linear-gradient(180deg, #F3FFF9 0%, #FFFFFF 100%) !important;
+    border: 1px solid #BDECD7 !important;
+    border-radius: 14px !important;
+    padding: 8px 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+  .hc-saving-label {
+    font-size: 11px !important;
+    color: var(--green) !important;
+    font-weight: 950 !important;
+  }
+  .hc-saving-value {
+    font-size: 18px !important;
+    font-weight: 950 !important;
+    color: var(--green-accent) !important;
+    letter-spacing: -.055em !important;
+    white-space: nowrap !important;
+  }
   .hc-col-val.old { color: #C00000 !important; }
   .hc-col-val.new, .hc-saving-value, #hcNova, #hcEco { color: #0a7c52 !important; }
   .ba-row-val.deduct { color: #C00000 !important; }

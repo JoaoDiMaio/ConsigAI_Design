@@ -978,7 +978,7 @@ export default function OfertasNova() {
             heroTextContainer.appendChild(note)
           }
           note.textContent =
-            'Compare as opcoes para reduzir parcela, economizar no total, ou seguir em ofertas diretas como apenas novo contrato e apenas refinanciamento.'
+            'A ConsigAI comparou seus contratos e encontrou opções para reduzir parcela, economizar no total ou receber dinheiro com clareza.'
         }
         // .section-header oculto via OFFER_CARD_REDESIGN_CSS
 
