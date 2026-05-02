@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
+import { BrandName } from '../components/BrandName'
 import { MiniCard } from '../components/MiniCard'
 import { appPageStyle } from '../ui/theme'
 import { t } from '../lib/pageTheme'
@@ -149,7 +150,9 @@ function Receipt({ scenario }) {
         <div style={{ fontSize: 8, color: '#888', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.04em' }}>Protocolo</div>
         <div style={{ fontSize: 8.5, color: '#444', fontWeight: 700, fontFamily: 'ui-monospace, monospace', letterSpacing: '.05em' }}>CSG-2025-05312</div>
       </div>
-      <div style={{ textAlign: 'center', marginTop: 4, fontSize: 9.5, color: '#7a7a7a', letterSpacing: '.08em' }}>ConsigAI.com.br</div>
+      <div style={{ textAlign: 'center', marginTop: 4, fontSize: 9.5, color: '#7a7a7a', letterSpacing: '.08em' }}>
+        <BrandName as="span" style={{ color: 'inherit' }} />.com.br
+      </div>
     </div>
   )
 }
@@ -169,7 +172,7 @@ function BottomSheet({ scenario, onClose }) {
         background: '#fff', borderRadius: '24px 24px 0 0', padding: '12px 20px 32px', width: '100%',
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
         animation: 'slideUp .28s cubic-bezier(.4,0,.2,1) forwards',
-        maxHeight: '90vh', overflowY: 'auto',
+        maxHeight: '90vh', overflowY: 'auto', scrollbarGutter: 'stable',
       }}>
         <div style={{ width: 36, height: 4, borderRadius: 999, background: t.line, marginBottom: 2 }} />
         <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: t.muted, textAlign: 'center' }}>OTIMA ESCOLHA! MAS OLHA ISSO...</div>

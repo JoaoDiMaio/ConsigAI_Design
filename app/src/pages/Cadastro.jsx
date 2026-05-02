@@ -5,6 +5,7 @@ import { normalizeSpaces, sanitizeText, validatePersonalData, validateUploadFile
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { saveProfileData } from '../lib/profileStorage'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
+import { BrandName } from '../components/BrandName'
 import { appPageStyle } from '../ui/theme'
 import { t } from '../lib/pageTheme'
 
@@ -553,7 +554,7 @@ export default function Cadastro() {
             <DesktopPageHeader
               clientName={clientName}
               chipLabel="Cadastro"
-              title="Crie sua conta ConsigAI"
+              title={<>Crie sua conta <BrandName as="span" style={{ color: '#fff' }} /></>}
               subtitle="Preencha seus dados para liberar as propostas personalizadas."
               onLogoClick={() => navigate('/cadastro')}
               actions={[
@@ -564,7 +565,7 @@ export default function Cadastro() {
             <div style={{ display: 'flex', minHeight: 'calc(100vh - 146px)' }}>
             <DesktopLeftPanel step={step} />
 
-            <div style={{ flex: 1, background: t.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 32px', minHeight: 'calc(100vh - 146px)', overflowY: 'auto' }}>
+            <div style={{ flex: 1, background: t.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 32px', minHeight: 'calc(100vh - 146px)', overflowY: 'auto', scrollbarGutter: 'stable' }}>
               {/* Font toggle fixo top-right */}
               <div style={{ position: 'fixed', top: 164, right: 24, zIndex: 10 }}>
                 <FontToggle large={large} onToggle={setLarge} dark={false} />
@@ -597,7 +598,9 @@ export default function Cadastro() {
             <div style={{ background: t.navy, padding: '10px 20px 20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, gap: 10 }}>
                 <div>
-                  <div style={{ fontSize: s(11), color: 'rgba(255,255,255,.5)', marginBottom: 4 }}>Bem-vindo a ConsigAI</div>
+                  <div style={{ fontSize: s(11), color: 'rgba(255,255,255,.5)', marginBottom: 4 }}>
+                    Bem-vindo a <BrandName as="span" style={{ color: 'inherit' }} />
+                  </div>
                   <div style={{ fontSize: s(18), fontWeight: 700, color: '#fff', lineHeight: 1.1 }}>Crie sua conta</div>
                 </div>
                 <FontToggle large={large} onToggle={setLarge} dark={true} />

@@ -4,7 +4,6 @@ import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
 import { Button } from '../components/Button'
 import { MiniCard } from '../components/MiniCard'
-import { loadProfileData } from '../lib/profileStorage'
 import { t } from '../lib/pageTheme'
 import { parseMoney } from '../lib/formatters'
 import { appPageStyle } from '../ui/theme'
@@ -292,8 +291,6 @@ function LineItem({ label, value }) {
 function StrategyScreen({ variant }) {
   const navigate = useNavigate()
   const isDesktop = useMediaQuery('(min-width: 768px)')
-  const profile = useMemo(() => loadProfileData(), [])
-  const clientName = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
 
   const config = VARIANTS[variant]
   const [activeIdx, setActiveIdx] = useState(0)
@@ -828,30 +825,24 @@ function StrategyScreen({ variant }) {
       <div style={appPageStyle}>
         {isDesktop ? (
           <DesktopPageHeader
-            chipLabel="Estratégia"
-            title="Ofertas ConsigAI"
-            subtitle="Compare cenários e escolha a melhor estratégia para seu momento."
-            clientName={clientName}
             onLogoClick={() => navigate('/ofertas')}
+            fixed
             actions={[
               { label: 'Ofertas', onClick: () => navigate('/ofertas') },
               { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
             ]}
           />
         ) : (
-            <MobilePageHeader
-              chipLabel="Estratégia"
-              title="Ofertas ConsigAI"
-              subtitle="Compare cenários."
-              clientName={clientName}
+          <MobilePageHeader
             onLogoClick={() => navigate('/ofertas')}
+            fixed
             actions={[
               { label: 'Ofertas', onClick: () => navigate('/ofertas') },
               { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
             ]}
           />
         )}
-        <main style={{ maxWidth: 1100, margin: '0 auto', padding: isDesktop ? '32px 24px 56px' : '20px 18px calc(24px + env(safe-area-inset-bottom))' }}>
+        <main style={{ maxWidth: 1100, margin: '0 auto', padding: isDesktop ? '104px 24px 56px' : '92px 18px calc(24px + env(safe-area-inset-bottom))' }}>
           <div className="mix-layout">
             <div className="mix-content">
           {scenarioList}
@@ -885,5 +876,7 @@ export default function EstrategiaCombinada({ variant: forcedVariant }) {
 
   return <StrategyScreen variant={variant} />
 }
+
+
 
 

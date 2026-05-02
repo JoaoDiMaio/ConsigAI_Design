@@ -1,16 +1,14 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import logoSvg from '../assets/logo.svg'
-import logoIconSvg from '../assets/logo-icon.svg'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { appFontFamily, theme } from '../ui/theme'
-import { toClientCallName } from '../lib/formatters'
 
 const DESKTOP_HEADER_HEIGHT = 72
 const TABLET_HEADER_HEIGHT = 72
 const MOBILE_HEADER_HEIGHT = 72
 const MOBILE_LOGO_ICON_SIZE = 34
 
-function ClientMenu({ clientName, actions = [], compact = false }) {
+function ClientMenu({ actions = [], compact = false }) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
 
@@ -42,28 +40,32 @@ function ClientMenu({ clientName, actions = [], compact = false }) {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls={hasActions ? menuId : undefined}
+        aria-label={hasActions ? 'Abrir menu do cliente' : 'Menu do cliente'}
         style={{
           borderRadius: compact ? 10 : 12,
           border: '1px solid rgba(255,255,255,.14)',
           background: 'rgba(255,255,255,.08)',
-          padding: compact ? '4px 8px 5px' : '5px 12px 6px',
+          padding: compact ? 8 : 10,
           minHeight: compact ? 40 : 40,
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 8,
+          justifyContent: 'center',
           cursor: hasActions ? 'pointer' : 'default',
           boxShadow: '0 2px 10px rgba(0,0,0,.12)',
           fontFamily: appFontFamily,
         }}
       >
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: 8, textTransform: 'uppercase', letterSpacing: '.07em', color: 'rgba(255,255,255,.66)', fontWeight: 700, lineHeight: 1 }}>
-            Cliente
-          </div>
-            <div style={{ marginTop: 2, fontSize: compact ? 11 : 12, fontWeight: 700, color: '#fff', maxWidth: compact ? 136 : 170, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2 }}>
-              {clientName}
-            </div>
-          </div>
+        <svg
+          aria-hidden="true"
+          width={compact ? 16 : 18}
+          height={compact ? 16 : 18}
+          viewBox="0 0 24 24"
+          fill="none"
+          style={{ display: 'block' }}
+        >
+          <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" stroke="#fff" strokeWidth="1.8" />
+          <path d="M5 20c1.8-3.6 5-5 7-5s5.2 1.4 7 5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
         {hasActions ? (
           <svg
             aria-hidden="true"
@@ -134,23 +136,17 @@ function ClientMenu({ clientName, actions = [], compact = false }) {
 }
 
 export function DesktopPageHeader({
-  clientName,
-  chipLabel,
-  title,
-  subtitle,
   onLogoClick,
   actions = [],
+  fixed = false,
+  sticky = true,
+  minHeight: minHeightProp,
 }) {
-  const displayClientName = toClientCallName(clientName)
   const isTabletHeader = useMediaQuery('(max-width: 1079px)')
 
-  const headerMinHeight = isTabletHeader ? TABLET_HEADER_HEIGHT : DESKTOP_HEADER_HEIGHT
+  const headerMinHeight = minHeightProp ?? (isTabletHeader ? TABLET_HEADER_HEIGHT : DESKTOP_HEADER_HEIGHT)
   const headerHorizontalPadding = isTabletHeader ? 18 : 24
-  const headerGrid = isTabletHeader ? '190px minmax(0, 1fr) auto' : '214px minmax(0, 1fr) auto'
-  const logoHeight = isTabletHeader ? 36 : 40
-  const titleFontSize = isTabletHeader ? 15 : 16
-  const subtitleFontSize = 11
-  const subtitleClamp = 1
+  const logoHeight = isTabletHeader ? 36 : 72
 
   return (
     <div
@@ -161,8 +157,11 @@ export function DesktopPageHeader({
         display: 'flex',
         alignItems: 'center',
         padding: `0 ${headerHorizontalPadding}px`,
-        position: 'sticky',
-        top: 0,
+        position: fixed ? 'fixed' : sticky ? 'sticky' : 'relative',
+        top: (fixed || sticky) ? 0 : undefined,
+        left: fixed ? 0 : undefined,
+        right: fixed ? 0 : undefined,
+        width: fixed ? '100%' : undefined,
         zIndex: 40,
         boxShadow: '0 2px 16px rgba(0,0,0,.18)',
       }}
@@ -172,7 +171,7 @@ export function DesktopPageHeader({
         <div style={{ position: 'absolute', right: 80, top: 10, width: 140, height: 140, borderRadius: '50%', background: 'rgba(35,86,216,.08)' }} />
       </div>
       <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', position: 'relative' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: headerGrid, alignItems: 'center', gap: '8px 12px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', alignItems: 'center', gap: '8px 12px' }}>
           <button
             type="button"
             onClick={onLogoClick}
@@ -182,7 +181,8 @@ export function DesktopPageHeader({
               background: 'transparent',
               padding: 0,
               cursor: 'pointer',
-              minHeight: logoHeight,
+              minHeight: 0,
+              margin: 0,
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'flex-start',
@@ -190,48 +190,12 @@ export function DesktopPageHeader({
               lineHeight: 0,
             }}
           >
-            <img src={logoSvg} alt="ConsigAI" style={{ height: logoHeight, width: 'auto', display: 'block' }} />
+            <img src={logoSvg} alt="" aria-hidden="true" style={{ height: logoHeight, width: 'auto', display: 'block', margin: 0 }} />
           </button>
-
-          <div style={{ minWidth: 0 }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 999, background: 'rgba(255,255,255,.1)', border: '1px solid rgba(255,255,255,.14)', padding: '3px 10px 3px 7px', marginBottom: 4 }}>
-              <div style={{ width: 5, height: 5, borderRadius: '50%', background: theme.greenAccent }} />
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', color: 'rgba(255,255,255,.72)', textTransform: 'uppercase' }}>{chipLabel}</span>
-            </div>
-            <h1
-              style={{
-                margin: 0,
-                fontSize: titleFontSize,
-                fontWeight: 700,
-                color: '#fff',
-                letterSpacing: '-.01em',
-                lineHeight: 1.2,
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {title}
-            </h1>
-            <p
-              style={{
-                margin: '4px 0 0',
-                fontSize: subtitleFontSize,
-                color: 'rgba(255,255,255,.45)',
-                fontWeight: 500,
-                lineHeight: 1.2,
-                display: '-webkit-box',
-                WebkitLineClamp: subtitleClamp,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-              }}
-            >
-              {subtitle}
-            </p>
-          </div>
+          <div aria-hidden="true" />
 
           <div style={{ justifySelf: 'end' }}>
-            <ClientMenu clientName={displayClientName} actions={actions} />
+            <ClientMenu actions={actions} />
           </div>
         </div>
       </div>
@@ -240,27 +204,27 @@ export function DesktopPageHeader({
 }
 
 export function MobilePageHeader({
-  clientName,
-  chipLabel,
-  title,
-  subtitle,
   onLogoClick,
   actions = [],
+  fixed = false,
+  sticky = true,
+  minHeight: minHeightProp,
 }) {
-  const displayClientName = toClientCallName(clientName)
-
   return (
     <div
       style={{
         background: theme.navy,
         padding: 'max(8px, env(safe-area-inset-top)) 14px 8px',
-        minHeight: MOBILE_HEADER_HEIGHT,
+        minHeight: minHeightProp ?? MOBILE_HEADER_HEIGHT,
         boxSizing: 'border-box',
         display: 'flex',
         alignItems: 'center',
         boxShadow: '0 2px 16px rgba(0,0,0,.18)',
-        position: 'sticky',
-        top: 0,
+        position: fixed ? 'fixed' : sticky ? 'sticky' : 'relative',
+        top: (fixed || sticky) ? 0 : undefined,
+        left: fixed ? 0 : undefined,
+        right: fixed ? 0 : undefined,
+        width: fixed ? '100%' : undefined,
         zIndex: 40,
       }}
     >
@@ -271,31 +235,12 @@ export function MobilePageHeader({
           aria-label="Ir para ofertas"
           style={{ border: 0, background: 'transparent', padding: 0, display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer', minHeight: 46, lineHeight: 0 }}
         >
-          <img src={logoIconSvg} alt="" aria-hidden="true" style={{ height: MOBILE_LOGO_ICON_SIZE, width: MOBILE_LOGO_ICON_SIZE }} />
-          <span style={{ fontSize: 19, fontWeight: 700, color: '#fff', letterSpacing: '-.01em', lineHeight: 1 }}>ConsigAI</span>
+          <img src={logoSvg} alt="" aria-hidden="true" style={{ height: MOBILE_LOGO_ICON_SIZE, width: 'auto' }} />
         </button>
-
-        <div style={{ minWidth: 0 }}>
-          {chipLabel ? (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, borderRadius: 999, background: 'rgba(255,255,255,.1)', border: '1px solid rgba(255,255,255,.14)', padding: '2px 8px 2px 6px', marginBottom: 2 }}>
-              <div style={{ width: 4, height: 4, borderRadius: '50%', background: theme.greenAccent }} />
-              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.07em', color: 'rgba(255,255,255,.72)', textTransform: 'uppercase' }}>{chipLabel}</span>
-            </div>
-          ) : null}
-          {title ? (
-            <div style={{ fontSize: 13, color: '#fff', fontWeight: 700, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', lineHeight: 1.2 }}>
-              {title}
-            </div>
-          ) : null}
-          {subtitle ? (
-            <div style={{ marginTop: 1, fontSize: 10, color: 'rgba(255,255,255,.45)', fontWeight: 500, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', lineHeight: 1.2 }}>
-              {subtitle}
-            </div>
-          ) : null}
-        </div>
+        <div aria-hidden="true" />
 
         <div style={{ marginLeft: 'auto', justifySelf: 'end' }}>
-          <ClientMenu clientName={displayClientName} actions={actions} compact />
+          <ClientMenu actions={actions} compact />
         </div>
       </div>
     </div>

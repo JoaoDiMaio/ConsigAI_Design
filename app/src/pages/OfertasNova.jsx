@@ -18,6 +18,7 @@ import {
   RESPONSIVE_STYLES_CSS,
   OFFER_CARD_REDESIGN_CSS,
 } from '../styles/iframeOfertasStyles.js'
+import { brandNameHtml } from '../lib/brandNameHtml.js'
 
 // ---------------------------------------------------------------------------
 // DOM cache helpers — necessários enquanto o HTML da oferta for um iframe externo
@@ -263,9 +264,8 @@ const POCKET_VISUAL_HTML = `
       <div>
         <small>Ganho com a oferta</small>
         <strong>Mais folga no mês, mais crédito disponível e economia projetada</strong>
-        <span>A ConsigAI compara o cenário atual com a oferta para mostrar o ganho real no bolso.</span>
+        <span>A ${brandNameHtml()} compara o cenário atual com a oferta para mostrar o ganho real no bolso.</span>
       </div>
-      <div class="flow-arrow" aria-hidden="true">→</div>
     </div>
     <div class="gain-metrics">
       <div class="gain-metric">
@@ -278,7 +278,7 @@ const POCKET_VISUAL_HTML = `
       </div>
     </div>
     <div class="economy-card">
-      <small data-label="gainSecondary">Projeção de Economia ConsigAI</small>
+      <small data-label="gainSecondary">Projeção de Economia ${brandNameHtml()}</small>
       <strong data-k="ecoAnual"></strong>
       <span>economia estimada ao longo do contrato, conforme a simulação.</span>
     </div>
@@ -288,7 +288,7 @@ const POCKET_VISUAL_HTML = `
     </div>
   </article>
   <article class="impact-card impact-card-after">
-    <div class="salary-label">Depois com ConsigAI</div>
+    <div class="salary-label">Depois com ${brandNameHtml()}</div>
     <div class="salary-main">
       <small>Sobra no mês</small>
       <strong data-k="pocketAfter"></strong>
@@ -405,7 +405,7 @@ function upsertSavingsReplacement(doc) {
         </span>
         <div>
           <h3 class="consigai-trust-title">Melhores ofertas</h3>
-          <p class="consigai-trust-copy">ConsigAI busca as melhores condições para você</p>
+          <p class="consigai-trust-copy">${brandNameHtml()} busca as melhores condições para você</p>
         </div>
       </div>
     `
@@ -664,7 +664,7 @@ function buildTurboCard(cfg, offer, idx, usuario, selectedThirdSubOffer) {
     </div>
     <div class="turbo-body">
       <h2 class="turbo-heading"><span class="turbo-heading-blue">Escolha onde quer</span><span class="turbo-heading-green">Economizar</span></h2>
-      <p class="turbo-intro">A ConsigAI mostra dois caminhos para reduzir o custo do seu consignado com clareza.</p>
+      <p class="turbo-intro">A ${brandNameHtml()} mostra dois caminhos para reduzir o custo do seu consignado com clareza.</p>
       <div class="turbo-options">
         ${opt('contract', 'No contrato', economiaContrato, 'Maior economia total')}
         ${opt('installment', 'Na parcela', economiaParcela, 'Mais folga mensal')}
@@ -953,6 +953,7 @@ export default function OfertasNova() {
   const navigate = useNavigate()
   const { activeOffers, usuario, impacto, loading, error } = useOffersData()
   const isDesktop = useMediaQuery('(min-width: 768px)')
+  const headerOffset = 67
   const profile = loadProfileData()
   const clientName = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
 
@@ -968,6 +969,14 @@ export default function OfertasNova() {
   const activeOffersRef = useRef(activeOffers)
   const usuarioRef = useRef(usuario)
   const impactoRef = useRef(impacto)
+
+  useEffect(() => {
+    const html = document.documentElement
+    const prev = html.style.scrollbarGutter
+    html.style.scrollbarGutter = 'auto'
+    return () => { html.style.scrollbarGutter = prev }
+  }, [])
+
   useEffect(() => {
     activeOffersRef.current = activeOffers
     usuarioRef.current = usuario
@@ -1042,10 +1051,15 @@ export default function OfertasNova() {
         frameDoc.body.dataset.consigaiCurrencyObserverAttached = '1'
       }
 
+      if (!frameDoc.body?.dataset?.consigaiIframeHeaderOffsetApplied) {
+        frameDoc.body.style.boxSizing = 'border-box'
+        frameDoc.body.dataset.consigaiIframeHeaderOffsetApplied = '1'
+      }
+
       if (!frameDoc.body?.dataset?.consigaiLegacyLogoApplied) {
         const logoEl = frameDoc.querySelector('.topbar .logo')
         if (logoEl) {
-          logoEl.innerHTML = '<img src="/logo-antigo.svg" alt="ConsigAI" />'
+          logoEl.innerHTML = '<img src="/logo-antigo.svg" alt="" aria-hidden="true" />'
           logoEl.addEventListener('click', () => navigate('/ofertas'))
           frameDoc.body.dataset.consigaiLegacyLogoApplied = '1'
         }
@@ -1053,19 +1067,22 @@ export default function OfertasNova() {
 
       if (!frameDoc.body?.dataset?.consigaiHeroSectionCopyAdjusted) {
         const heroTextContainer = frameDoc.querySelector('.hero > div:first-child')
-        if (heroTextContainer) {
+        if (heroTextContainer && isDesktop) {
           let note = frameDoc.querySelector('.consigai-hero-note')
           if (!note) {
             note = frameDoc.createElement('p')
             note.className = 'consigai-hero-note'
             heroTextContainer.appendChild(note)
           }
-          note.textContent =
-            'A ConsigAI comparou seus contratos e encontrou opções para reduzir parcela, economizar no total ou receber dinheiro com clareza.'
+          note.innerHTML =
+            `A ${brandNameHtml()} comparou seus contratos e encontrou opções para reduzir parcela, economizar no total ou receber dinheiro com clareza.`
+        } else if (!isDesktop) {
+          const existingNote = frameDoc.querySelector('.consigai-hero-note')
+          if (existingNote?.parentElement) existingNote.parentElement.removeChild(existingNote)
         }
         const heroCompareLabel = frameDoc.querySelector('.hc-label')
         if (heroCompareLabel) {
-          heroCompareLabel.innerHTML = '<span class="hc-label-main">Comparativo de oferta</span><span class="hc-label-sub">Antes e depois da ConsigAI</span>'
+          heroCompareLabel.innerHTML = `<span class="hc-label-main">Comparativo de oferta</span><span class="hc-label-sub">Antes e depois da ${brandNameHtml()}</span>`
         }
         // .section-header oculto via OFFER_CARD_REDESIGN_CSS
 
@@ -1075,9 +1092,7 @@ export default function OfertasNova() {
       if (!frameDoc.body?.dataset?.consigaiLogoTextApplied) {
         const afterTag = frameDoc.querySelector('.ba-col.after .ba-col-tag')
         if (afterTag) {
-          const textNode = Array.from(afterTag.childNodes).find((n) => n.nodeType === Node.TEXT_NODE)
-          if (textNode) textNode.nodeValue = ' ConsigAI'
-          else afterTag.appendChild(frameDoc.createTextNode(' ConsigAI'))
+          afterTag.innerHTML = ` <span class="brand-name">Consig<span class="brand-ai">AI</span></span>`
           frameDoc.body.dataset.consigaiLogoTextApplied = '1'
         }
       }
@@ -1218,7 +1233,7 @@ export default function OfertasNova() {
       if (mobileSelectionCleanup) mobileSelectionCleanup()
       docQueryCacheRef.current = makeDomCache()
     }
-  }, [navigate])
+  }, [navigate, isDesktop])
 
   if (error) {
     return (
@@ -1231,13 +1246,15 @@ export default function OfertasNova() {
   }
 
   return (
-    <div style={{ ...appPageStyle, minHeight: '100svh', overflow: 'hidden' }}>
+    <div style={{ ...appPageStyle, minHeight: '100svh', height: '100svh', overflow: 'hidden', position: 'relative' }}>
       {loading && <div className="offers-loading-bar" aria-hidden="true" />}
       {isDesktop ? (
         <DesktopPageHeader
-          chipLabel="Ofertas"
-          title="Ofertas ConsigAI"
-          subtitle="Compare as melhores estratégias para economizar ou receber crédito."
+          sticky={false}
+          minHeight={67}
+          chipLabel={null}
+          title={null}
+          subtitle={null}
           clientName={clientName}
           onLogoClick={() => navigate('/ofertas')}
           actions={[
@@ -1247,9 +1264,11 @@ export default function OfertasNova() {
         />
       ) : (
         <MobilePageHeader
-          chipLabel="Ofertas"
-          title="Ofertas ConsigAI"
-          subtitle="Compare opções."
+          sticky={false}
+          minHeight={67}
+          chipLabel={null}
+          title={null}
+          subtitle={null}
           clientName={clientName}
           onLogoClick={() => navigate('/ofertas')}
           actions={[
@@ -1260,11 +1279,11 @@ export default function OfertasNova() {
       )}
       <iframe
         ref={iframeRef}
-        title="Ofertas ConsigAI"
+        title="Ofertas"
         src="/Ofertas_ConsigAI.html"
         style={{
           width: '100%',
-          height: 'calc(100svh - 72px)',
+          height: `calc(100svh - ${headerOffset}px)`,
           border: 'none',
           display: 'block',
           background: '#F6FAFF',

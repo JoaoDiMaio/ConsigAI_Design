@@ -150,100 +150,6 @@ export default function Contratacao() {
         .contratacao-page * { box-sizing: border-box; margin: 0; padding: 0; }
         .contratacao-page.large-font { --scale: 1.13; }
 
-        .desktop-topbar {
-          background: linear-gradient(120deg, #001851 0%, #08307f 54%, #001851 100%);
-          padding: 26px 40px 34px;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .desktop-topbar::after {
-          content: '';
-          position: absolute;
-          width: 340px;
-          height: 340px;
-          right: -110px;
-          top: -210px;
-          border-radius: 50%;
-          background: rgba(255,255,255,.08);
-        }
-
-        .desktop-topbar-inner {
-          max-width: 1200px;
-          margin: 0 auto;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 24px;
-          position: relative;
-          z-index: 1;
-        }
-
-        .desktop-head-main { flex: 1; max-width: 610px; }
-
-        .desktop-chip {
-          display: inline-flex;
-          align-items: center;
-          gap: 7px;
-          border-radius: 999px;
-          background: var(--blue-light);
-          padding: 5px 12px 5px 9px;
-          margin-bottom: 10px;
-        }
-
-        .desktop-chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); }
-
-        .desktop-chip span {
-          font-size: 10px;
-          font-weight: 800;
-          letter-spacing: .08em;
-          color: var(--blue);
-          text-transform: uppercase;
-        }
-
-        .desktop-head-title {
-          margin: 0;
-          font-size: 28px;
-          font-weight: 800;
-          color: #fff;
-          letter-spacing: -.02em;
-          line-height: 1.16;
-        }
-
-        .desktop-head-sub {
-          margin-top: 9px;
-          font-size: 13px;
-          color: rgba(255,255,255,.75);
-          font-weight: 500;
-          line-height: 1.55;
-        }
-
-        .desktop-client {
-          flex-shrink: 0;
-          border-radius: 14px;
-          background: rgba(255,255,255,.1);
-          border: 1px solid rgba(255,255,255,.16);
-          padding: 12px 18px;
-          text-align: right;
-          backdrop-filter: blur(3px);
-        }
-
-        .desktop-client small {
-          display: block;
-          font-size: 10px;
-          text-transform: uppercase;
-          letter-spacing: .07em;
-          color: rgba(255,255,255,.6);
-          font-weight: 700;
-          margin-bottom: 4px;
-        }
-
-        .desktop-client strong {
-          font-size: 16px;
-          font-weight: 600;
-          color: #fff;
-        }
-
         .desktop-content {
           max-width: 1200px;
           margin: 0 auto;
@@ -444,10 +350,9 @@ export default function Contratacao() {
           min-height: 100vh;
           overflow-y: auto;
           overflow-x: hidden;
+          scrollbar-gutter: stable;
           scroll-behavior: smooth;
         }
-
-        .screen::-webkit-scrollbar { display: none; }
 
         .header { padding: 18px 20px 0; background: transparent; }
 
@@ -1220,17 +1125,8 @@ export default function Contratacao() {
         }
 
         @media (max-width: 767px) {
-          .desktop-topbar,
           .desktop-content {
             display: none;
-          }
-
-          .desktop-shell {
-            background: linear-gradient(120deg, #001851 0%, #032970 100%);
-          }
-
-          .mobile-brand {
-            display: inline-flex;
           }
 
           .section-title {

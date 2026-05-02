@@ -5,6 +5,28 @@ import { gradient } from '../ui/theme'
 
 export const RESPONSIVE_STYLES_CSS = `
   .consigai-offer-lines--no-min-height { min-height: 0 !important; }
+  .brand-name {
+    display: inline-block;
+    white-space: nowrap;
+    gap: 0;
+  }
+  .gain-title span.brand-name,
+  .economy-card span.brand-name,
+  .salary-label span.brand-name {
+    display: inline-block !important;
+    white-space: nowrap !important;
+    margin-top: 0 !important;
+  }
+  .gain-title span.brand-consig,
+  .gain-title span.brand-ai,
+  .economy-card span.brand-consig,
+  .economy-card span.brand-ai,
+  .salary-label span.brand-consig,
+  .salary-label span.brand-ai {
+    display: inline !important;
+    white-space: nowrap !important;
+  }
+  .brand-ai { color: #1DA1EB !important; }
 
   .topbar .logo {
     gap: 0 !important;
@@ -115,9 +137,10 @@ export const RESPONSIVE_STYLES_CSS = `
   }
   .consigai-pocket-visual.impact-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.18fr) minmax(0, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: stretch;
     gap: 10px;
+    position: relative;
   }
   .impact-card {
     position: relative;
@@ -162,6 +185,28 @@ export const RESPONSIVE_STYLES_CSS = `
   .impact-card-gain::before {
     background: linear-gradient(90deg, var(--blue-action), var(--cyan-brand));
   }
+  .impact-divider-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    align-self: center;
+    justify-self: center;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: linear-gradient(145deg, var(--blue-action), var(--cyan-brand));
+    color: #fff;
+    font-size: 18px;
+    font-weight: 950;
+    line-height: 1;
+    box-shadow: 0 14px 28px rgba(5, 94, 206, 0.20);
+    z-index: 3;
+    pointer-events: none;
+  }
+  .impact-divider-arrow-left { left: calc(33.333% + 5px); }
+  .impact-divider-arrow-right { left: calc(66.666% + 5px); }
   .salary-label {
     display: inline-flex;
     align-items: center;
@@ -293,6 +338,11 @@ export const RESPONSIVE_STYLES_CSS = `
     line-height: 1.35;
     font-weight: 700;
   }
+  .gain-title span.brand-name {
+    display: inline-block !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+  }
   .flow-arrow {
     width: 38px;
     height: 38px;
@@ -389,6 +439,11 @@ export const RESPONSIVE_STYLES_CSS = `
     font-size: 11px;
     line-height: 1.35;
     font-weight: 700;
+  }
+  .economy-card span.brand-name {
+    display: inline-block !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
   }
   .salary-factor {
     margin-top: 6px;
@@ -597,8 +652,9 @@ export const RESPONSIVE_STYLES_CSS = `
       padding: 14px !important;
     }
     .offer-values { gap: 12px !important; }
-    .consigai-pocket-visual.impact-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 10px !important; }
-    .impact-card-before, .impact-card-after, .impact-card-gain { grid-column: 1 !important; }
+    .consigai-pocket-visual.impact-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 0 !important; }
+    .impact-card-before, .impact-card-after, .impact-card-gain, .impact-divider-arrow { grid-column: 1 !important; }
+    .impact-divider-arrow { display: none !important; }
     .salary-main strong { font-size: 22px !important; }
     .salary-row { grid-template-columns: minmax(0, 1fr) auto !important; }
     .salary-row strong { font-size: 13px !important; }
@@ -660,6 +716,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   body {
     min-height: 100vh !important;
+    overflow-y: overlay !important;
     font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif !important;
     color: var(--text-main, var(--text)) !important;
     padding: 0 24px 24px !important;
