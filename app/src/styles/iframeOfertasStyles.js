@@ -356,9 +356,6 @@ export const OFFER_CARD_REDESIGN_CSS = `
     color: var(--text-main, var(--text)) !important;
     padding: 0 24px 24px !important;
   }
-  *, *::before, *::after {
-    font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif !important;
-  }
   .main { position: relative !important; z-index: 0 !important; }
   .main::before { display: none !important; }
   .hero-title { color: #1a3d8f !important; }

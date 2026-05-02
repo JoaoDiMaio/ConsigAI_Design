@@ -366,9 +366,9 @@ function StepSuccess({ form, file, skipped, onPrimaryAction, ctaLabel }) {
 //  Desktop Left Panel 
 
 const valueProps = [
-  { icon: 'a', title: 'Análise em Minutos',      sub: 'Resultado da simulação na hora, sem burocracia.' },
-  { icon: 'x', title: 'Segurança LGPD',           sub: 'Dados criptografados e protegidos por lei.' },
-  { icon: 'x', title: 'Melhores Taxas do Mercado', sub: 'Comparamos dezenas de ofertas pra você.' },
+  { icon: '⚡', title: 'Análise em Minutos',      sub: 'Resultado da simulação na hora, sem burocracia.' },
+  { icon: '🔒', title: 'Segurança LGPD',           sub: 'Dados criptografados e protegidos por lei.' },
+  { icon: '📊', title: 'Melhores Taxas do Mercado', sub: 'Comparamos dezenas de ofertas pra você.' },
 ]
 
 function DesktopLeftPanel({ step }) {

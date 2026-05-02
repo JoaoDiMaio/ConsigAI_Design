@@ -38,81 +38,52 @@ function ChoiceBtn({ active, onClick, bars, title, sub }) {
   )
 }
 
-//  Receipt 
+//  Receipt
 
-function ReceiptEco() {
-  return (
-    <div style={{
-      width: 300, flexShrink: 0, borderRadius: 10, padding: '14px 12px 12px',
-      border: '1px solid #ececec', color: '#4f4f4f', fontSize: 12,
-      fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-      background: 'linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)), #f5f5f3',
-    }}>
-      <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, letterSpacing: '.02em', color: '#444' }}>RECIBO DE ECONOMIA CONSIGAI</div>
-      <div style={{ fontSize: 10, marginTop: 4, textAlign: 'center', color: '#808080' }}>19 de abril de 2025</div>
-
-      <div style={{ fontSize: 10.5, marginTop: 12, fontWeight: 700, color: '#565656' }}>CARLOS EDUARDO MARTINS</div>
-      <div style={{ fontSize: 10, marginTop: 6, lineHeight: 1.35, color: '#5f5f5f' }}>
-        CPF: 177.665.442-8<br />
-        Benefício: Aposentadoria por Tempo de Contribuição<br />
-        Nascimento: 30/07/1957<br />
-        Valor do Benefício: R$ 2.200
-      </div>
-
-      <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-      <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>PARABENS! VOCE ECONOMIZOU</div>
-      <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323', lineHeight: 1 }}>R$ 2.399</div>
-      <div style={{ textAlign: 'center', marginTop: 4, fontSize: 8.5, fontWeight: 700, letterSpacing: '.08em', color: '#888', textTransform: 'uppercase' }}>SEM AUMENTAR O PRAZO</div>
-      <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10, color: '#5b5b5b' }}>
-        <thead>
-          <tr>
-            <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767', paddingRight: 10 }}>Cód.</th>
-            <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>De   Para</th>
-            <th style={{ fontSize: 8, textAlign: 'right', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>Economia</th>
-          </tr>
-        </thead>
-        <tbody>
-          {[['0056347710','FACTA   Banrisul','R$ 779,14'],['0123472010087','Bradesco   Banrisul','R$ 550,93'],['0056346924','FACTA   Banrisul','R$ 365,63'],['0057628452','FACTA   Banrisul','R$ 167,50'],['622921912','Itaú Consig.   Banrisul','R$ 0,30']].map(([cod, de, eco]) => (
-            <tr key={cod}>
-              <td style={{ fontSize: 8, padding: '4px 0', paddingRight: 10, whiteSpace: 'nowrap' }}>{cod}</td>
-              <td style={{ padding: '4px 0' }}>{de}</td>
-              <td style={{ padding: '4px 0', textAlign: 'right' }}>{eco}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: '#555' }}>Economia Total</span>
-        <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>R$ 1.863,50</span>
-      </div>
-      <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#555', lineHeight: 1.3, flex: 1 }}>Crédito disponível após a liberação da margem</span>
-          <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>até R$ 5.033</span>
-        </div>
-        <hr style={{ border: 'none', borderTop: '1px dashed #cfcfcf', margin: 0 }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#555', lineHeight: 1.3, flex: 1 }}>Margem livre após portabilidade</span>
-          <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>até R$ 320</span>
-        </div>
-      </div>
-
-      <div style={{ marginTop: 10, padding: '8px 10px', background: '#f0f0ee', borderRadius: 6, border: '1px solid #ddd', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-        <div style={{ fontSize: 8, color: '#888', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.04em' }}>Protocolo</div>
-        <div style={{ fontSize: 8.5, color: '#444', fontWeight: 700, fontFamily: 'ui-monospace, monospace', letterSpacing: '.05em' }}>CSG-2025-04871</div>
-      </div>
-      <div style={{ textAlign: 'center', marginTop: 4, fontSize: 9.5, color: '#7a7a7a', letterSpacing: '.08em' }}>ConsigAI.com.br</div>
-    </div>
-  )
+const RECEIPT_DATA = {
+  eco: {
+    heroValue: 'R$ 2.399',
+    heroSuffix: null,
+    heroLabel: 'SEM AUMENTAR O PRAZO',
+    tableHeader: 'Economia',
+    rows: [
+      ['0056347710', 'FACTA → Banrisul', 'R$ 779,14'],
+      ['0123472010087', 'Bradesco → Banrisul', 'R$ 550,93'],
+      ['0056346924', 'FACTA → Banrisul', 'R$ 365,63'],
+      ['0057628452', 'FACTA → Banrisul', 'R$ 167,50'],
+      ['622921912', 'Itaú Consig. → Banrisul', 'R$ 0,30'],
+    ],
+    totalLabel: 'Economia Total',
+    totalValue: 'R$ 1.863,50',
+    extras: [
+      { label: 'Crédito disponível após a liberação da margem', value: 'até R$ 5.033' },
+      { label: 'Margem livre após portabilidade', value: 'até R$ 320' },
+    ],
+  },
+  parc: {
+    heroValue: 'R$ 117',
+    heroSuffix: '/mês',
+    heroLabel: 'ALÍVIO MENSAL',
+    tableHeader: 'Alívio/mês',
+    rows: [
+      ['0123472010087', 'Bradesco → Banrisul', 'R$ 25,86'],
+      ['0056347710', 'FACTA → Banrisul', 'R$ 24,85'],
+      ['0056346924', 'FACTA → Banrisul', 'R$ 12,13'],
+      ['0057628452', 'FACTA → Banrisul', 'R$ 7,95'],
+    ],
+    totalLabel: 'Alívio por mês',
+    totalValue: 'R$ 70,79/mês',
+    extras: [
+      { label: 'Margem livre após portabilidade', value: 'até R$ 480' },
+      { label: 'Crédito disponível após a liberação da margem', value: 'até R$ 7.593' },
+    ],
+  },
 }
 
-function ReceiptParc() {
+const DIVIDER = <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
+
+function Receipt({ mode }) {
+  const d = RECEIPT_DATA[mode]
   return (
     <div style={{
       width: 300, flexShrink: 0, borderRadius: 10, padding: '14px 12px 12px',
@@ -131,50 +102,51 @@ function ReceiptParc() {
         Valor do Benefício: R$ 2.200
       </div>
 
-      <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
+      {DIVIDER}
       <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>PARABENS! VOCE ECONOMIZOU</div>
       <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323', lineHeight: 1 }}>
-        R$ 117<span style={{ fontSize: '55%', fontWeight: 700, verticalAlign: 'middle' }}> /mês</span>
+        {d.heroValue}
+        {d.heroSuffix && <span style={{ fontSize: '55%', fontWeight: 700, verticalAlign: 'middle' }}> {d.heroSuffix}</span>}
       </div>
-      <div style={{ textAlign: 'center', marginTop: 4, fontSize: 8.5, fontWeight: 700, letterSpacing: '.08em', color: '#888', textTransform: 'uppercase' }}>ALÍVIO MENSAL</div>
-      <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
+      <div style={{ textAlign: 'center', marginTop: 4, fontSize: 8.5, fontWeight: 700, letterSpacing: '.08em', color: '#888', textTransform: 'uppercase' }}>{d.heroLabel}</div>
+      {DIVIDER}
 
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10, color: '#5b5b5b' }}>
         <thead>
           <tr>
             <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767', paddingRight: 10 }}>Cód.</th>
-            <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>De   Para</th>
-            <th style={{ fontSize: 8, textAlign: 'right', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>Alívio/mês</th>
+            <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>De → Para</th>
+            <th style={{ fontSize: 8, textAlign: 'right', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>{d.tableHeader}</th>
           </tr>
         </thead>
         <tbody>
-          {[['0123472010087','Bradesco   Banrisul','R$ 25,86'],['0056347710','FACTA   Banrisul','R$ 24,85'],['0056346924','FACTA   Banrisul','R$ 12,13'],['0057628452','FACTA   Banrisul','R$ 7,95']].map(([cod, de, alivio]) => (
+          {d.rows.map(([cod, de, val]) => (
             <tr key={cod}>
               <td style={{ fontSize: 8, padding: '4px 0', paddingRight: 10, whiteSpace: 'nowrap' }}>{cod}</td>
               <td style={{ padding: '4px 0' }}>{de}</td>
-              <td style={{ padding: '4px 0', textAlign: 'right' }}>{alivio}</td>
+              <td style={{ padding: '4px 0', textAlign: 'right' }}>{val}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
+      {DIVIDER}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: '#555' }}>Alívio por mês</span>
-        <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>R$ 70,79/mês</span>
+        <span style={{ fontSize: 10, fontWeight: 700, color: '#555' }}>{d.totalLabel}</span>
+        <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>{d.totalValue}</span>
       </div>
-      <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
+      {DIVIDER}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#555', lineHeight: 1.3, flex: 1 }}>Margem livre após portabilidade</span>
-          <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>até R$ 480</span>
-        </div>
-        <hr style={{ border: 'none', borderTop: '1px dashed #cfcfcf', margin: 0 }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#555', lineHeight: 1.3, flex: 1 }}>Crédito disponível após a liberação da margem</span>
-          <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>até R$ 7.593</span>
-        </div>
+        {d.extras.map((item, i) => (
+          <>
+            {i > 0 && <hr key={`hr-${i}`} style={{ border: 'none', borderTop: '1px dashed #cfcfcf', margin: 0 }} />}
+            <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#555', lineHeight: 1.3, flex: 1 }}>{item.label}</span>
+              <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>{item.value}</span>
+            </div>
+          </>
+        ))}
       </div>
 
       <div style={{ marginTop: 10, padding: '8px 10px', background: '#f0f0ee', borderRadius: 6, border: '1px solid #ddd', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
@@ -196,17 +168,13 @@ export default function Portabilidade() {
   const initialMode = location.state?.initialMode === 'parc' ? 'parc' : 'eco'
   const [mode, setMode]           = useState(initialMode)
   const [detailsOpen, setDetails] = useState(false)
-  const [hovCta, setHovCta]       = useState(false)
-  const [hovDetails, setHovDetails] = useState(false)
-  const [hovDown, setHovDown]     = useState(false)
-  const [backHover, setBackHover] = useState(false)
 
   useEffect(() => {
     const nextMode = location.state?.initialMode
     if (nextMode === 'eco' || nextMode === 'parc') {
       setMode(nextMode)
     }
-  }, [location.key])
+  }, [location.state])
 
   const d = stateData[mode]
 
@@ -318,11 +286,10 @@ export default function Portabilidade() {
         {/* CTA */}
         <button
           onClick={handleGoContratacao}
-          onMouseEnter={() => setHovCta(true)}
-          onMouseLeave={() => setHovCta(false)}
+          className="port-btn-cta"
           style={{
             width: '100%', border: 0, borderRadius: 14, padding: '15px 14px', marginBottom: 8,
-            background: hovCta ? t.blue2 : t.blue, color: '#fff', fontSize: 15, fontWeight: 600,
+            background: t.blue, color: '#fff', fontSize: 15, fontWeight: 600,
             lineHeight: 1.2, boxShadow: '0 8px 20px rgba(35,80,200,.25)', cursor: 'pointer',
             fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", transition: 'background .15s ease',
           }}
@@ -332,14 +299,13 @@ export default function Portabilidade() {
         <button
           type="button"
           onClick={() => setDetails(v => !v)}
-          onMouseEnter={() => setHovDetails(true)}
-          onMouseLeave={() => setHovDetails(false)}
+          className="port-btn-outline"
           style={{
             width: '100%', border: `1.5px solid ${t.blueMid}`, borderRadius: 14, padding: 13,
             color: t.blue, fontSize: 13.5, fontWeight: 500, cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", transition: 'background .15s ease',
-            background: hovDetails ? '#f0f5ff' : 'transparent',
+            background: 'transparent',
           }}
           aria-expanded={detailsOpen}
         >
@@ -353,15 +319,14 @@ export default function Portabilidade() {
         {detailsOpen && (
           <div style={{ marginTop: 10, animation: 'fadeIn .22s ease forwards' }}>
             <div style={{ background: '#f7f9fe', border: `1px solid ${t.line}`, borderRadius: 16, padding: 10, display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
-              {isEco ? <ReceiptEco /> : <ReceiptParc />}
+              <Receipt mode={mode} />
             </div>
             <button
               type="button"
-              onMouseEnter={() => setHovDown(true)}
-              onMouseLeave={() => setHovDown(false)}
+              className="port-btn-download"
               style={{
                 width: '100%', border: `1.5px solid #d2ddfb`, borderRadius: 14, padding: 13,
-                background: hovDown ? '#e6efff' : '#edf3ff', color: t.blue, fontSize: 13, fontWeight: 600,
+                background: '#edf3ff', color: t.blue, fontSize: 13, fontWeight: 600,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 cursor: 'pointer', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
                 transition: 'background .15s ease',
@@ -437,14 +402,13 @@ export default function Portabilidade() {
     <div style={{ marginTop: isDesktop ? 24 : 18 }}>
       <button
         onClick={() => navigate('/ofertas')}
-        onMouseEnter={() => setBackHover(true)}
-        onMouseLeave={() => setBackHover(false)}
+        className="port-btn-outline"
         style={{
           width: '100%',
           border: `1.5px solid ${t.blueMid}`,
           borderRadius: 14,
           padding: isDesktop ? '14px 16px' : '13px 14px',
-          background: backHover ? '#f0f5ff' : '#fff',
+          background: '#fff',
           color: t.blue,
           fontSize: isDesktop ? 14 : 13.5,
           fontWeight: 700,
@@ -469,6 +433,9 @@ export default function Portabilidade() {
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: translateY(0) } }
+        .port-btn-cta:hover { background: #1a3fc4 !important; }
+        .port-btn-outline:hover { background: #f0f5ff !important; }
+        .port-btn-download:hover { background: #e6efff !important; }
       `}</style>
 
       <div style={appPageStyle}>
