@@ -81,7 +81,19 @@ export const RESPONSIVE_STYLES_CSS = `
     align-items: center;
     margin-bottom: 12px;
   }
-  .impact-header .ba-title { grid-column: 1; grid-row: 1; }
+  .impact-header .ba-title {
+    grid-column: 1;
+    grid-row: 1;
+    font-weight: 950 !important;
+  }
+  .impact-header .ba-title .impact-title-eco {
+    color: #0a7c52 !important;
+    font-weight: 950 !important;
+  }
+  .impact-header .ba-title .impact-title-ai {
+    color: #18B7E8 !important;
+    font-weight: 950 !important;
+  }
   .impact-header .ba-sub {
     grid-column: 1; grid-row: 2;
     color: var(--gray-text) !important;
@@ -103,52 +115,306 @@ export const RESPONSIVE_STYLES_CSS = `
   }
   .consigai-pocket-visual.impact-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: stretch; gap: 12px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.18fr) minmax(0, 1fr);
+    align-items: stretch;
+    gap: 10px;
   }
   .impact-card {
-    border-radius: 14px; padding: 14px 14px 12px;
-    border: 1px solid var(--gray-border); background: var(--gray-bg);
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    padding: 14px;
+    border: 1px solid var(--gray-border);
+    background: #ffffff;
+    box-shadow: 0 18px 42px rgba(3, 36, 111, 0.07);
   }
-  .impact-card-before { background: var(--gray-bg); border-color: var(--gray-border); }
+  .impact-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue-action) 0%, var(--cyan-brand) 55%, var(--teal-brand) 100%);
+  }
+  .impact-card-before {
+    background:
+      radial-gradient(circle at 92% 8%, rgba(5, 94, 206, 0.07), transparent 34%),
+      linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%);
+  }
+  .impact-card-before::before {
+    background: linear-gradient(90deg, #f8b4ac, #c00000);
+  }
   .impact-card-after {
-    background: linear-gradient(180deg, #F6FFFB 0%, #F7FBFF 100%);
+    background:
+      radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.13), transparent 34%),
+      radial-gradient(circle at 12% 100%, rgba(0, 122, 82, 0.10), transparent 34%),
+      linear-gradient(180deg, #F0FFF8 0%, #FFFFFF 100%);
     border-color: var(--green-border);
   }
-  .impact-card-gain { background: #F8FFFB; border: 2px solid var(--green-strong); }
-  .impact-chip {
-    display: inline-flex; align-items: center; gap: 7px;
-    border-radius: 999px; padding: 5px 11px; margin-bottom: 10px;
-    font-size: 10px; line-height: 1.1; font-weight: 800;
-    letter-spacing: .05em; text-transform: uppercase;
-    color: var(--blue-title); border: 1px solid transparent;
-    background: #e9f0ff;
+  .impact-card-after::before {
+    background: linear-gradient(90deg, var(--cyan-brand), var(--green-strong));
   }
-  .impact-card-after .impact-chip {
-    background: rgba(109, 245, 212, 0.18);
-    border-color: rgba(0, 169, 157, 0.25);
+  .impact-card-gain {
+    border-color: rgba(0, 231, 255, 0.42);
+    background:
+      radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.16), transparent 34%),
+      linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%);
   }
-  .consigai-logo-mark {
-    width: 12px; height: 12px; border-radius: 999px;
-    background: linear-gradient(135deg, var(--blue-action) 0%, var(--cyan-brand) 55%, var(--teal-brand) 100%);
-    box-shadow: 0 0 0 1px rgba(36, 84, 214, 0.08); flex: 0 0 auto;
+  .impact-card-gain::before {
+    background: linear-gradient(90deg, var(--blue-action), var(--cyan-brand));
   }
-  .impact-row {
-    display: grid; grid-template-columns: 34px minmax(0, 1fr);
-    gap: 10px; align-items: center; padding: 9px 0;
-    border-bottom: 1px solid #dfe7f5;
+  .salary-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 11px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 950;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    background: #F4F8FF;
+    border: 1px solid var(--gray-border);
+    color: var(--blue-title);
   }
-  .impact-row:last-child { border-bottom: 0; padding-bottom: 0; }
-  .impact-icon {
-    width: 34px; height: 34px; border-radius: 999px;
-    display: inline-flex; align-items: center; justify-content: center;
-    color: var(--blue-action); background: #eaf0ff;
+  .impact-card-after .salary-label {
+    background: var(--green-soft);
+    border-color: var(--green-border);
+    color: var(--green-strong);
   }
-  .impact-card-after .impact-icon { color: var(--teal-brand); background: rgba(24, 183, 232, 0.12); }
-  .brand-icon { color: var(--teal-brand); background: rgba(24, 183, 232, 0.12); }
-  .impact-icon svg {
-    width: 18px; height: 18px; stroke: currentColor; fill: none;
-    stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round;
+  .salary-main {
+    margin-top: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(221, 232, 246, 0.95);
+  }
+  .salary-main small {
+    display: block;
+    color: var(--gray-text);
+    font-size: 11px;
+    font-weight: 750;
+  }
+  .salary-main strong {
+    display: block;
+    margin-top: 6px;
+    color: var(--blue-title);
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 950;
+    letter-spacing: -.05em;
+    white-space: nowrap;
+  }
+  .impact-card-after .salary-main strong {
+    color: var(--green-strong);
+  }
+  .salary-main span {
+    display: block;
+    margin-top: 4px;
+    color: var(--gray-text);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .salary-details {
+    display: grid;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .salary-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.80);
+    border: 1px solid var(--gray-border);
+    align-items: center;
+  }
+  .salary-row span {
+    color: var(--blue-title);
+    font-size: 11px;
+    font-weight: 850;
+  }
+  .salary-row strong {
+    color: var(--blue-title);
+    font-size: 16px;
+    font-weight: 950;
+    letter-spacing: -.04em;
+    white-space: nowrap;
+  }
+  .salary-row small {
+    grid-column: 1 / -1;
+    color: var(--gray-text);
+    font-size: 11px;
+    line-height: 1.25;
+    font-weight: 700;
+    margin-top: -4px;
+  }
+  .salary-row.negative {
+    background: rgba(255, 246, 245, 0.72);
+    border-color: rgba(248, 180, 172, 0.65);
+  }
+  .salary-row.negative strong {
+    color: var(--red-negative);
+  }
+  .salary-row.positive {
+    background: rgba(233, 248, 241, 0.58);
+    border-color: var(--green-border);
+  }
+  .salary-row.positive strong {
+    color: var(--green-strong);
+  }
+  .gain-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gray-border);
+  }
+  .gain-title small {
+    color: var(--blue-action);
+    font-size: 10px;
+    font-weight: 950;
+    letter-spacing: .10em;
+    text-transform: uppercase;
+  }
+  .gain-title strong {
+    display: block;
+    margin-top: 4px;
+    color: var(--blue-title);
+    font-size: 17px;
+    line-height: 1.1;
+    font-weight: 950;
+    letter-spacing: -.03em;
+  }
+  .gain-title span {
+    display: block;
+    margin-top: 4px;
+    color: var(--gray-text);
+    font-size: 11px;
+    line-height: 1.35;
+    font-weight: 700;
+  }
+  .flow-arrow {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: linear-gradient(145deg, var(--blue-action), var(--cyan-brand));
+    color: white;
+    font-size: 20px;
+    font-weight: 950;
+    box-shadow: 0 14px 32px rgba(5, 94, 206, 0.24);
+    flex: 0 0 auto;
+  }
+  .gain-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .gain-metric {
+    min-height: 0;
+    padding: 8px 10px 6px;
+    border-radius: 13px;
+    background:
+      radial-gradient(circle at 92% 8%, rgba(0, 122, 82, 0.10), transparent 34%),
+      linear-gradient(180deg, #F3FFF9 0%, #FFFFFF 100%);
+    border: 1px solid var(--green-border);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .gain-metric.blue {
+    background:
+      radial-gradient(circle at 92% 8%, rgba(5, 94, 206, 0.10), transparent 34%),
+      linear-gradient(180deg, #F4F8FF 0%, #FFFFFF 100%);
+    border-color: var(--gray-border);
+  }
+  .gain-metric small {
+    display: block;
+    color: var(--gray-text);
+    font-size: 11px;
+    line-height: 1.25;
+    font-weight: 750;
+  }
+  .gain-metric strong {
+    display: block;
+    margin-top: 4px;
+    color: var(--green-strong);
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 950;
+    letter-spacing: -.05em;
+    white-space: nowrap;
+  }
+  .gain-metric.blue strong {
+    color: var(--blue-action);
+  }
+  .gain-metric span {
+    display: block;
+    margin-top: 4px;
+    color: var(--gray-text);
+    font-size: 11px;
+    line-height: 1.25;
+    font-weight: 700;
+  }
+  .economy-card {
+    margin-top: 8px;
+    padding: 10px;
+    border-radius: 13px;
+    background:
+      radial-gradient(circle at 92% 8%, rgba(0, 122, 82, 0.13), transparent 34%),
+      linear-gradient(180deg, #EFFFF6 0%, #FFFFFF 100%);
+    border: 1px solid var(--green-border);
+  }
+  .economy-card small {
+    color: var(--blue-title);
+    font-size: 11px;
+    font-weight: 850;
+  }
+  .economy-card strong {
+    display: block;
+    margin-top: 4px;
+    color: var(--green-strong);
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 950;
+    letter-spacing: -.05em;
+    white-space: nowrap;
+  }
+  .economy-card span {
+    display: block;
+    margin-top: 3px;
+    color: var(--gray-text);
+    font-size: 11px;
+    line-height: 1.35;
+    font-weight: 700;
+  }
+  .salary-factor {
+    margin-top: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    padding: 9px 10px;
+    border-radius: 13px;
+    background:
+      radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.13), transparent 34%),
+      linear-gradient(180deg, #EFFFFF 0%, #FFFFFF 100%);
+    border: 1px solid rgba(0, 231, 255, 0.38);
+  }
+  .salary-factor span {
+    color: var(--blue-title);
+    font-size: 11px;
+    font-weight: 850;
+  }
+  .salary-factor strong {
+    color: var(--blue-action);
+    font-size: 20px;
+    line-height: 1;
+    font-weight: 950;
+    letter-spacing: -.05em;
+    white-space: nowrap;
   }
   .consigai-pocket-label { font-size: 11px; font-weight: 600; color: var(--blue-title); margin-bottom: 2px; }
   .consigai-pocket-val {
@@ -158,21 +424,6 @@ export const RESPONSIVE_STYLES_CSS = `
   .value-negative { color: var(--red-negative); }
   .value-positive { color: var(--green-medium); }
   .consigai-pocket-note { margin-top: 2px; color: var(--gray-text); font-size: 10px; line-height: 1.2; }
-  .gain-header {
-    display: grid; grid-template-columns: 42px minmax(0, 1fr);
-    gap: 10px; align-items: center;
-    border-bottom: 1px solid var(--green-border);
-    padding-bottom: 10px; margin-bottom: 10px;
-  }
-  .gain-icon {
-    width: 42px; height: 42px; border-radius: 999px;
-    background: linear-gradient(145deg, var(--green-strong) 0%, var(--teal-brand) 100%);
-    color: #fff; display: inline-flex; align-items: center; justify-content: center;
-  }
-  .gain-icon svg {
-    width: 22px; height: 22px; stroke: currentColor; fill: none;
-    stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
-  }
   .consigai-pocket-gain-title { font-size: 12px; font-weight: 800; color: var(--blue-title); margin-bottom: 2px; }
   .consigai-pocket-gain-value {
     font-size: clamp(20px, 2.8vw, 34px); line-height: 1;
@@ -241,7 +492,24 @@ export const RESPONSIVE_STYLES_CSS = `
     .ba-title { font-size: 15px !important; margin-bottom: 1px !important; }
     .ba-sub { font-size: 12px !important; }
     .consigai-pocket-visual.impact-grid { gap: 10px !important; }
-    .impact-card { padding: 12px 12px 10px !important; }
+    .impact-card { padding: 12px !important; }
+    .salary-main { margin-top: 10px !important; padding-bottom: 8px !important; }
+    .salary-main strong { font-size: 20px !important; }
+    .salary-details { margin-top: 8px !important; gap: 5px !important; }
+    .salary-row { padding: 8px 9px !important; border-radius: 12px !important; gap: 7px !important; }
+    .salary-row span { font-size: 10px !important; }
+    .salary-row strong { font-size: 14px !important; }
+    .gain-title { padding-bottom: 8px !important; gap: 8px !important; }
+    .gain-title strong { font-size: 15px !important; }
+    .gain-title span { font-size: 10px !important; }
+    .flow-arrow { width: 36px !important; height: 36px !important; font-size: 18px !important; }
+    .gain-metrics { margin-top: 8px !important; gap: 5px !important; }
+    .gain-metric { min-height: 0 !important; padding: 8px 9px 5px !important; }
+    .gain-metric strong { font-size: 20px !important; }
+    .economy-card { margin-top: 7px !important; padding: 9px !important; border-radius: 12px !important; }
+    .economy-card strong { font-size: 20px !important; }
+    .salary-factor { margin-top: 5px !important; padding: 8px 9px !important; border-radius: 12px !important; }
+    .salary-factor strong { font-size: 18px !important; }
     .consigai-pocket-gain-value { font-size: clamp(18px, 2.2vw, 28px) !important; }
     .consigai-pocket-gain-num { font-size: 14px !important; }
     .consigai-trust-replacement { margin-top: 8px !important; }
@@ -303,25 +571,50 @@ export const RESPONSIVE_STYLES_CSS = `
       text-align: left !important;
       justify-self: start !important;
     }
-    .offers-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 10px !important; }
-    .offers-grid > .offer-card:nth-child(3) {
-      grid-column: auto !important; justify-self: stretch !important; width: 100% !important;
+    .offers-grid {
+      display: flex !important;
+      gap: 10px !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      scroll-snap-type: x mandatory !important;
+      scroll-padding-left: 12px !important;
+      -webkit-overflow-scrolling: touch !important;
+      overscroll-behavior-x: contain !important;
+      padding: 2px 0 10px !important;
+      margin: 0 -12px 10px !important;
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+      scrollbar-width: none !important;
     }
-    .offer-card { padding: 14px !important; }
+    .offers-grid::-webkit-scrollbar { display: none !important; }
+    .offers-grid > .offer-card:nth-child(3) {
+      grid-column: auto !important; justify-self: stretch !important; width: auto !important;
+    }
+    .offer-card {
+      flex: 0 0 min(84vw, 340px) !important;
+      width: min(84vw, 340px) !important;
+      scroll-snap-align: start !important;
+      padding: 14px !important;
+    }
     .offer-values { gap: 12px !important; }
     .consigai-pocket-visual.impact-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 10px !important; }
     .impact-card-before, .impact-card-after, .impact-card-gain { grid-column: 1 !important; }
-    .gain-header {
-      grid-template-columns: 1fr !important; text-align: center !important; justify-items: center !important;
+    .salary-main strong { font-size: 22px !important; }
+    .salary-row { grid-template-columns: minmax(0, 1fr) auto !important; }
+    .salary-row strong { font-size: 13px !important; }
+    .gain-title {
+      flex-direction: column !important;
+      align-items: flex-start !important;
     }
-    .gain-item {
-      grid-template-columns: 28px minmax(0, 1fr) !important;
-      grid-template-areas: "icon label" "icon value" !important;
-      align-items: flex-start !important; gap: 3px !important;
+    .gain-title span { font-size: 10px !important; }
+    .gain-metrics { grid-template-columns: minmax(0, 1fr) !important; }
+    .gain-metric { min-height: 0 !important; padding: 8px 9px 5px !important; }
+    .economy-card strong { font-size: 20px !important; }
+    .salary-factor {
+      flex-direction: column !important;
+      align-items: flex-start !important;
     }
-    .consigai-pocket-gain-icon { grid-area: icon !important; }
-    .consigai-pocket-gain-label { grid-area: label !important; }
-    .consigai-pocket-gain-num { grid-area: value !important; }
+    .salary-factor strong { font-size: 18px !important; }
     .consigai-trust-replacement {
       grid-template-columns: minmax(0, 1fr) !important;
       padding: 12px !important; gap: 10px !important;
@@ -1815,8 +2108,28 @@ export const OFFER_CARD_REDESIGN_CSS = `
     .offers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   }
   @media (max-width: 760px) {
-    .offers-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 10px !important; }
-    .offer-card { min-height: auto !important; padding: 14px !important; }
+    .offers-grid {
+      display: flex !important;
+      gap: 10px !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      scroll-snap-type: x mandatory !important;
+      -webkit-overflow-scrolling: touch !important;
+      overscroll-behavior-x: contain !important;
+      padding: 2px 0 10px !important;
+      margin: 0 -12px 10px !important;
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+      scrollbar-width: none !important;
+    }
+    .offers-grid::-webkit-scrollbar { display: none !important; }
+    .offer-card {
+      flex: 0 0 min(84vw, 340px) !important;
+      width: min(84vw, 340px) !important;
+      min-height: auto !important;
+      padding: 14px !important;
+      scroll-snap-align: start !important;
+    }
     .offer-card.turbo-offer {
       height: auto !important;
       min-height: 0 !important;

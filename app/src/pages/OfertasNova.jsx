@@ -203,9 +203,15 @@ function calcImpactValues(selectedEntry, usuario, impacto, selectedThirdSubOffer
     installmentAfter: formatCurrencyClean(installmentAfter),
     pocketAfter: fmt(usuario.salarioBruto - (o.parcelaNova ?? (usuario.parcelaAtual - (o.economiaParcela ?? 0)))),
     creditAfter: fmt(creditoDepois),
+    marginToday: 'R$ 0',
+    marginAfter: fmt(ecoMensal),
     ecoMensal: `+${fmt(ecoMensal)}`,
     ecoAnual: `+${fmt(ecoMensal * 12)}`,
     creditoExtra: `+${fmt(Math.max(0, creditoDepois - creditoAtual))}`,
+    salaryFactor: `${((ecoMensal * 12) / Math.max(1, usuario.salarioBruto)).toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })} salários`,
   }
 
   if (turboSnapshot) {
@@ -219,7 +225,7 @@ function calcImpactValues(selectedEntry, usuario, impacto, selectedThirdSubOffer
   return { values, turboSnapshot }
 }
 
-function applyTurboLabels(baSection, baPill, ctaSavingLabel, turboSnapshot, values) {
+function applyTurboLabels(baSection, baPill, ctaSavingLabel, turboSnapshot) {
   const isParc = turboSnapshot.label === 'Na parcela'
   const gainPrimary = baSection.querySelector('[data-label="gainPrimary"]')
   const gainSecondary = baSection.querySelector('[data-label="gainSecondary"]')
@@ -231,58 +237,78 @@ function applyTurboLabels(baSection, baPill, ctaSavingLabel, turboSnapshot, valu
 
 const POCKET_VISUAL_HTML = `
   <article class="impact-card impact-card-before">
-    <div class="impact-chip">Antes da oferta</div>
-    <div class="impact-row">
-      <span class="impact-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 7h16a2 2 0 0 1 2 2v10H5a2 2 0 0 1-2-2V7Z"/><path d="M16 7V5.8a2 2 0 0 0-2.7-1.9L5 7"/><path d="M17 13h4"/><circle cx="17" cy="13" r="1"/></svg></span>
-      <div><div class="consigai-pocket-label">Parcela atual</div><div class="consigai-pocket-val value-negative" data-k="installmentToday"></div></div>
+    <div class="salary-label">Hoje</div>
+    <div class="salary-main">
+      <small>Sobra no mês</small>
+      <strong data-k="pocketToday"></strong>
+      <span>após pagar a parcela atual</span>
     </div>
-    <div class="impact-row">
-      <span class="impact-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 10c1.2.4 2 1.5 2 2.8 0 1.7-1.3 3.2-3 3.2h-.4a6 6 0 0 1-11.2 0H6a3 3 0 0 1 0-6h.4A6 6 0 0 1 18 10Z"/><path d="M12 7v3"/><path d="M9 13h.01"/><path d="M15 13h.01"/><path d="M8 19v2"/><path d="M16 19v2"/></svg></span>
-      <div><div class="consigai-pocket-label">Sobra estimada</div><div class="consigai-pocket-val" data-k="pocketToday"></div></div>
+    <div class="salary-details">
+      <div class="salary-row negative">
+        <span>Parcela atual</span>
+        <strong data-k="installmentToday"></strong>
+      </div>
+      <div class="salary-row negative">
+        <span>Margem livre</span>
+        <strong data-k="marginToday"></strong>
+      </div>
+      <div class="salary-row">
+        <span>Crédito para emergência</span>
+        <strong data-k="creditToday"></strong>
+      </div>
     </div>
-    <div class="impact-row">
-      <span class="impact-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/></svg></span>
-      <div><div class="consigai-pocket-label">Crédito disponível</div><div class="consigai-pocket-val" data-k="creditToday"></div><div class="consigai-pocket-note">para emergências</div></div>
+  </article>
+  <article class="impact-card impact-card-gain">
+    <div class="gain-title">
+      <div>
+        <small>Ganho com a oferta</small>
+        <strong>Mais folga no mês, mais crédito disponível e economia projetada</strong>
+        <span>A ConsigAI compara o cenário atual com a oferta para mostrar o ganho real no bolso.</span>
+      </div>
+      <div class="flow-arrow" aria-hidden="true">→</div>
+    </div>
+    <div class="gain-metrics">
+      <div class="gain-metric">
+        <small data-label="gainPrimary">Ganho mensal no bolso</small>
+        <strong data-k="ecoMensal"></strong>
+      </div>
+      <div class="gain-metric blue">
+        <small>Crédito extra disponível</small>
+        <strong data-k="creditoExtra"></strong>
+      </div>
+    </div>
+    <div class="economy-card">
+      <small data-label="gainSecondary">Projeção de Economia ConsigAI</small>
+      <strong data-k="ecoAnual"></strong>
+      <span>economia estimada ao longo do contrato, conforme a simulação.</span>
+    </div>
+    <div class="salary-factor">
+      <span>Economia equivalente a</span>
+      <strong id="impactSalaryFactor" data-k="salaryFactor"></strong>
     </div>
   </article>
   <article class="impact-card impact-card-after">
-    <div class="impact-chip"><span class="consigai-logo-mark" aria-hidden="true"></span><span>Depois com ConsigAI</span></div>
-    <div class="impact-row">
-      <span class="impact-icon brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h3"/><circle cx="17" cy="17" r="2"/></svg></span>
-      <div><div class="consigai-pocket-label">Nova parcela</div><div class="consigai-pocket-val value-positive" id="impactNovaParcela" data-k="installmentAfter"></div></div>
+    <div class="salary-label">Depois com ConsigAI</div>
+    <div class="salary-main">
+      <small>Sobra no mês</small>
+      <strong data-k="pocketAfter"></strong>
+      <span>após a nova parcela estimada</span>
     </div>
-    <div class="impact-row">
-      <span class="impact-icon brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 10c1.2.4 2 1.5 2 2.8 0 1.7-1.3 3.2-3 3.2h-.4a6 6 0 0 1-11.2 0H6a3 3 0 0 1 0-6h.4A6 6 0 0 1 18 10Z"/><path d="M12 7v3"/><path d="M9 13h.01"/><path d="M15 13h.01"/><path d="M8 19v2"/><path d="M16 19v2"/></svg></span>
-      <div><div class="consigai-pocket-label">Sobra estimada</div><div class="consigai-pocket-val value-positive" id="impactSobraDepois" data-k="pocketAfter"></div></div>
-    </div>
-    <div class="impact-row">
-      <span class="impact-icon brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/></svg></span>
-      <div><div class="consigai-pocket-label">Crédito disponível</div><div class="consigai-pocket-val value-positive" id="impactCreditoDepois" data-k="creditAfter"></div><div class="consigai-pocket-note">para emergências</div></div>
+    <div class="salary-details">
+      <div class="salary-row positive">
+        <span>Nova parcela</span>
+        <strong id="impactNovaParcela" data-k="installmentAfter"></strong>
+      </div>
+      <div class="salary-row positive">
+        <span>Margem livre</span>
+        <strong data-k="marginAfter"></strong>
+      </div>
+      <div class="salary-row positive">
+        <span>Crédito para emergência</span>
+        <strong id="impactCreditoDepois" data-k="creditAfter"></strong>
+      </div>
     </div>
   </article>
-  <aside class="impact-card impact-card-gain">
-    <div class="gain-header">
-      <span class="gain-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></span>
-      <div><div class="consigai-pocket-gain-title">Seu ganho estimado</div><div class="consigai-pocket-gain-value" id="impactGanhoMensal" data-k="ecoMensal"></div><div class="consigai-pocket-gain-copy">por mês no bolso</div></div>
-    </div>
-    <div class="gain-list">
-      <div class="gain-item">
-        <span class="consigai-pocket-gain-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-5"/></svg></span>
-        <div class="consigai-pocket-gain-label" data-label="gainPrimary">Economia mensal</div>
-        <div class="consigai-pocket-gain-num" data-k="ecoMensal"></div>
-      </div>
-      <div class="gain-item">
-        <span class="consigai-pocket-gain-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/></svg></span>
-        <div class="consigai-pocket-gain-label" data-label="gainSecondary">Economia anual</div>
-        <div class="consigai-pocket-gain-num" id="impactEconomiaAnual" data-k="ecoAnual"></div>
-      </div>
-      <div class="gain-item">
-        <span class="consigai-pocket-gain-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/></svg></span>
-        <div class="consigai-pocket-gain-label" data-label="gainTertiary">Crédito extra disponível</div>
-        <div class="consigai-pocket-gain-num" id="impactCreditoExtra" data-k="creditoExtra"></div>
-      </div>
-    </div>
-  </aside>
 `
 
 function upsertPocketInsight(doc, selectedEntry, usuario, impacto, selectedThirdSubOffer) {
@@ -292,14 +318,15 @@ function upsertPocketInsight(doc, selectedEntry, usuario, impacto, selectedThird
   if (!baSection || !baCols) return
 
   const { values, turboSnapshot } = calcImpactValues(selectedEntry, usuario, impacto, selectedThirdSubOffer)
-
   // Header setup (one-time)
   const baTitle = baSection.querySelector('.ba-title')
   const baSub = baSection.querySelector('.ba-sub')
   const baPill = baSection.querySelector('#baPill')
   const ctaSavingLabel = baSection.ownerDocument?.querySelector?.('#ctaSaving')?.parentElement?.querySelector?.('.cta-saving-label') || doc.querySelector('.cta-saving-label')
   const baHeader = baSection.querySelector('.ba-header')
-  if (baTitle) baTitle.textContent = 'Veja o impacto real no seu bolso'
+  if (baTitle) {
+    baTitle.innerHTML = 'Projecao de <span class="impact-title-eco">Economia</span> Consig<span class="impact-title-ai">AI</span>'
+  }
   if (baSub) baSub.textContent = turboSnapshot ? `Turbo Economia · ${turboSnapshot.label}` : 'Comparativo mensal com a oferta escolhida.'
   if (baHeader) {
     baHeader.classList.add('impact-header')
@@ -405,12 +432,10 @@ function normalizeCtaSaving(cacheRef, doc) {
 
 function normalizeComConsigaiNovaParcela(cacheRef, doc) {
   if (!doc) return
-  const baNova = getCachedNode(cacheRef, doc, 'baNova', '#baNova')
+  const baNova = getCachedNode(cacheRef, doc, 'baNova', '#impactNovaParcela, #baNova')
   if (baNova?.textContent) {
     baNova.textContent = baNova.textContent.replace(/^[^0-9R$]*(?=R\$)/, '').trim()
   }
-  const afterRowLabel = baNova?.closest('.ba-row')?.querySelector('.ba-row-label')
-  if (afterRowLabel) afterRowLabel.textContent = 'Nova parcela'
 }
 
 function normalizeCtaOfferName(cacheRef, doc, selectedEntry, hasNoOffer, selectedThirdSubOffer) {
@@ -864,6 +889,63 @@ function syncOfferSelectionUi(cacheRef, doc, selectedOfferIndexRef, hasNoOffer) 
   })
 }
 
+function syncMobileOfferSelection(cacheRef, doc, selectedOfferIndexRef, refreshSelectedOfferUi) {
+  if (!doc?.defaultView) return null
+  const grid = getCachedNode(cacheRef, doc, 'offersGridMobileSync', '.offers-grid')
+  const cards = getCachedNodeList(cacheRef, doc, 'offerCardsMobileSync', '.offers-grid .offer-card')
+  if (!grid || !cards.length) return null
+
+  const view = doc.defaultView
+
+  let rafId = 0
+
+  const updateSelectionFromViewport = () => {
+    rafId = 0
+    if (!view.matchMedia?.('(max-width: 760px)')?.matches) return
+    const currentCards = Array.from(grid.querySelectorAll('.offer-card'))
+    if (!currentCards.length) return
+
+    const gridRect = grid.getBoundingClientRect()
+    const targetCenter = gridRect.left + (gridRect.width / 2)
+
+    let bestIdx = 0
+    let bestDistance = Number.POSITIVE_INFINITY
+
+    currentCards.forEach((card, idx) => {
+      const rect = card.getBoundingClientRect()
+      if (!rect.width) return
+      const cardCenter = rect.left + (rect.width / 2)
+      const distance = Math.abs(cardCenter - targetCenter)
+      if (distance < bestDistance) {
+        bestDistance = distance
+        bestIdx = idx
+      }
+    })
+
+    if (bestIdx !== selectedOfferIndexRef.current) {
+      refreshSelectedOfferUi(doc, bestIdx)
+    }
+  }
+
+  const requestUpdate = () => {
+    if (rafId) return
+    rafId = view.requestAnimationFrame(updateSelectionFromViewport)
+  }
+
+  const onScroll = requestUpdate
+  const onResize = requestUpdate
+
+  grid.addEventListener('scroll', onScroll, { passive: true })
+  view.addEventListener('resize', onResize, { passive: true })
+  requestUpdate()
+
+  return () => {
+    if (rafId) view.cancelAnimationFrame(rafId)
+    grid.removeEventListener('scroll', onScroll)
+    view.removeEventListener('resize', onResize)
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Componente principal
 // ---------------------------------------------------------------------------
@@ -896,6 +978,7 @@ export default function OfertasNova() {
     let normalizationTimer = null
     let skipObserverUntil = 0
     let intervalId = null
+    let mobileSelectionCleanup = null
 
     const scheduleTextNormalization = (doc) => {
       if (!doc?.body || normalizationTimer) return
@@ -1003,6 +1086,10 @@ export default function OfertasNova() {
         if (attachedDocRef.current && clickHandlerRef.current) {
           attachedDocRef.current.removeEventListener('click', clickHandlerRef.current, true)
         }
+        if (mobileSelectionCleanup) {
+          mobileSelectionCleanup()
+          mobileSelectionCleanup = null
+        }
 
         const navigateToContract = () => {
           const selected = activeOffersRef.current[selectedOfferIndexRef.current]
@@ -1085,6 +1172,17 @@ export default function OfertasNova() {
         attachedDocRef.current = frameDoc
       }
 
+      if (!frameDoc.body?.dataset?.consigaiMobileSelectionSyncAttached) {
+        mobileSelectionCleanup?.()
+        mobileSelectionCleanup = syncMobileOfferSelection(
+          docQueryCacheRef,
+          frameDoc,
+          selectedOfferIndexRef,
+          refreshSelectedOfferUi,
+        )
+        frameDoc.body.dataset.consigaiMobileSelectionSyncAttached = '1'
+      }
+
       if (intervalId) {
         clearInterval(intervalId)
         intervalId = null
@@ -1117,6 +1215,7 @@ export default function OfertasNova() {
       if (attachedDocRef.current && clickHandlerRef.current) {
         attachedDocRef.current.removeEventListener('click', clickHandlerRef.current, true)
       }
+      if (mobileSelectionCleanup) mobileSelectionCleanup()
       docQueryCacheRef.current = makeDomCache()
     }
   }, [navigate])
