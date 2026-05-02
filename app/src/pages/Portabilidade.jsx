@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
 import { MiniCard } from '../components/MiniCard'
@@ -190,14 +190,23 @@ function ReceiptParc() {
 
 export default function Portabilidade() {
   const navigate    = useNavigate()
+  const location    = useLocation()
   const isDesktop   = useMediaQuery('(min-width: 768px)')
   const clientName  = 'Carlos Eduardo'
-  const [mode, setMode]           = useState('eco')
+  const initialMode = location.state?.initialMode === 'parc' ? 'parc' : 'eco'
+  const [mode, setMode]           = useState(initialMode)
   const [detailsOpen, setDetails] = useState(false)
   const [hovCta, setHovCta]       = useState(false)
   const [hovDetails, setHovDetails] = useState(false)
   const [hovDown, setHovDown]     = useState(false)
   const [backHover, setBackHover] = useState(false)
+
+  useEffect(() => {
+    const nextMode = location.state?.initialMode
+    if (nextMode === 'eco' || nextMode === 'parc') {
+      setMode(nextMode)
+    }
+  }, [location.key])
 
   const d = stateData[mode]
 

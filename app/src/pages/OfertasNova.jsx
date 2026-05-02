@@ -103,10 +103,85 @@ function applyOfferCardRedesignStyles(doc) {
   doc.body.dataset.consigaiOfferRedesignStyleApplied = '1'
 }
 
+function buildContractState(entry, usuario, selectedThirdSubOffer) {
+  if (!entry?.config || !entry?.data || !usuario) return null
+
+  const offer = entry.data
+  const config = entry.config
+  if (config.id === 'turbo') {
+    const turbo = getTurboSubOfferSnapshot(entry, selectedThirdSubOffer, usuario)
+    if (!turbo) return null
+    return {
+      sourcePath: '/ofertas',
+      offerId: config.id,
+      offerTitle: turbo.ctaLabel,
+      offerSubtitle: turbo.subtitle,
+      primaryValue: turbo.benefitDisplay,
+      summary: [
+        { label: 'Oferta', value: turbo.label },
+        { label: turbo.benefitLabel, value: turbo.benefitDisplay },
+        { label: 'Detalhe', value: turbo.detailsMode === 'parc' ? 'Parcela menor' : 'Economizar agora' },
+      ],
+    }
+  }
+  const monthlyGain = Math.max(0, getEcoMensal(offer, usuario.parcelaAtual))
+  const installmentAfter = getParcelaNova(offer, usuario.parcelaAtual)
+  const cashValue = Number(offer.creditoReceber || 0)
+
+  return {
+    sourcePath: '/ofertas',
+    offerId: config.id,
+    offerTitle: config.ctaName || config.pill || 'Oferta',
+    offerSubtitle: 'Resumo da oferta selecionada antes da contratacao',
+    primaryValue: cashValue > 0 ? fmt(cashValue) : installmentAfter,
+    summary: [
+      { label: 'Oferta', value: config.ctaName || config.pill || config.id || 'Oferta' },
+      cashValue > 0 ? { label: 'Voce recebe', value: fmt(cashValue) } : null,
+      { label: 'Nova parcela', value: installmentAfter },
+      { label: 'Economia mensal', value: fmt(monthlyGain) },
+    ].filter(Boolean),
+  }
+}
+
+function getTurboSubOfferSnapshot(entry, selectedThirdSubOffer, usuario) {
+  if (!entry?.data || entry?.config?.id !== 'turbo') return null
+  const offer = entry.data
+  const variantKey = selectedThirdSubOffer === 'installment' ? 'installment' : 'contract'
+  const variant = offer.subOffers?.[variantKey] || {}
+  const benefitValue = Number(variant.benefitValue ?? 0)
+  const fallbackContract = Number(offer.economiaContrato ?? offer.economiaTotal ?? 0)
+  const fallbackInstallment = Number(offer.economiaParcela ?? getEcoMensal(offer, usuario.parcelaAtual))
+  const rawValue = benefitValue || (variantKey === 'installment' ? fallbackInstallment : fallbackContract)
+  const displayValue = fmt(rawValue)
+  const displayValueMonthly = variantKey === 'installment' ? `${displayValue}/mês` : displayValue
+  const ctaLabel = variant.ctaName || `Turbo Economia - ${variant.label || (variantKey === 'installment' ? 'Na parcela' : 'No contrato')}`
+
+  return {
+    label: variant.label || (variantKey === 'installment' ? 'Na parcela' : 'No contrato'),
+    ctaLabel,
+    benefitLabel: variant.benefitLabel || (variantKey === 'installment' ? 'Alívio mensal' : 'Economia no contrato'),
+    benefitValue: rawValue,
+    benefitDisplay: displayValue,
+    benefitDisplayMonthly: displayValueMonthly,
+    detailsMode: variant.detailsMode || (variantKey === 'installment' ? 'parc' : 'eco'),
+    subtitle: variantKey === 'installment'
+      ? 'Turbo com foco em alívio mensal.'
+      : 'Turbo com foco em economia total no contrato.',
+  }
+}
+
+function getOfferNavigationTarget(entry) {
+  if (!entry?.config) return null
+  return {
+    path: entry.config.route || '/ofertas',
+    state: entry.config.state || undefined,
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Seção de impacto no bolso
 // ---------------------------------------------------------------------------
-function upsertPocketInsight(doc, selectedEntry, usuario, impacto) {
+function upsertPocketInsight(doc, selectedEntry, usuario, impacto, selectedThirdSubOffer) {
   if (!doc) return
   const baSection = doc.querySelector('.ba-section')
   const baCols = baSection?.querySelector('.ba-cols')
@@ -132,12 +207,21 @@ function upsertPocketInsight(doc, selectedEntry, usuario, impacto) {
   const ecoMensal = getEcoMensal(o, usuario.parcelaAtual)
   const ecoAnual = ecoMensal * 12
   const creditoExtra = Math.max(0, creditoDepois - creditoAtual)
+  const turboSnapshot = selectedEntry?.config?.id === 'turbo'
+    ? getTurboSubOfferSnapshot(selectedEntry, selectedThirdSubOffer, usuario)
+    : null
 
   const baTitle = baSection.querySelector('.ba-title')
   const baSub = baSection.querySelector('.ba-sub')
+  const baPill = baSection.querySelector('#baPill')
+  const ctaSavingLabel = baSection.ownerDocument?.querySelector?.('#ctaSaving')?.parentElement?.querySelector?.('.cta-saving-label') || doc.querySelector('.cta-saving-label')
   const baHeader = baSection.querySelector('.ba-header')
   if (baTitle) baTitle.textContent = 'Veja o impacto real no seu bolso'
-  if (baSub) baSub.textContent = 'Comparativo mensal com a oferta escolhida.'
+  if (baSub) {
+    baSub.textContent = turboSnapshot
+      ? `Turbo Economia · ${turboSnapshot.label}`
+      : 'Comparativo mensal com a oferta escolhida.'
+  }
   if (baHeader) {
     baHeader.classList.add('impact-header')
     if (!baHeader.querySelector('.income-base')) {
@@ -237,21 +321,21 @@ function upsertPocketInsight(doc, selectedEntry, usuario, impacto) {
             <span class="consigai-pocket-gain-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-5"/></svg>
             </span>
-            <div class="consigai-pocket-gain-label">Economia mensal</div>
+            <div class="consigai-pocket-gain-label" data-label="gainPrimary">Economia mensal</div>
             <div class="consigai-pocket-gain-num" data-k="ecoMensal"></div>
           </div>
           <div class="gain-item">
             <span class="consigai-pocket-gain-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/></svg>
             </span>
-            <div class="consigai-pocket-gain-label">Economia anual</div>
+            <div class="consigai-pocket-gain-label" data-label="gainSecondary">Economia anual</div>
             <div class="consigai-pocket-gain-num" id="impactEconomiaAnual" data-k="ecoAnual"></div>
           </div>
           <div class="gain-item">
             <span class="consigai-pocket-gain-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/></svg>
             </span>
-            <div class="consigai-pocket-gain-label">Crédito extra disponível</div>
+            <div class="consigai-pocket-gain-label" data-label="gainTertiary">Crédito extra disponível</div>
             <div class="consigai-pocket-gain-num" id="impactCreditoExtra" data-k="creditoExtra"></div>
           </div>
         </div>
@@ -273,6 +357,21 @@ function upsertPocketInsight(doc, selectedEntry, usuario, impacto) {
     ecoMensal: `+${fmt(ecoMensal)}`,
     ecoAnual: `+${fmt(ecoAnual)}`,
     creditoExtra: `+${fmt(creditoExtra)}`,
+  }
+  if (turboSnapshot) {
+    const turboPrimary = turboSnapshot.benefitValue
+    values.ecoMensal = `+${turboSnapshot.benefitDisplay}`
+    values.ecoAnual = selectedThirdSubOffer === 'installment'
+      ? `+${fmt(turboPrimary * 12)}`
+      : `+${turboSnapshot.benefitDisplay}`
+    const gainPrimary = baSection.querySelector('[data-label="gainPrimary"]')
+    const gainSecondary = baSection.querySelector('[data-label="gainSecondary"]')
+    const gainTertiary = baSection.querySelector('[data-label="gainTertiary"]')
+    if (gainPrimary) gainPrimary.textContent = turboSnapshot.label === 'Na parcela' ? 'Alivio mensal' : 'Economia no contrato'
+    if (gainSecondary) gainSecondary.textContent = turboSnapshot.label === 'Na parcela' ? 'Economia anual' : 'Economia projetada'
+    if (gainTertiary) gainTertiary.textContent = 'Crédito extra disponível'
+    if (baPill) baPill.textContent = turboSnapshot.benefitDisplay
+    if (ctaSavingLabel) ctaSavingLabel.textContent = turboSnapshot.label === 'Na parcela' ? 'de economia mensal' : 'de economia no contrato'
   }
   Object.entries(values).forEach(([key, val]) => {
     baSection.querySelectorAll(`[data-k="${key}"]`).forEach((el) => {
@@ -389,11 +488,12 @@ function applyThirdCardSubOfferSelection(cacheRef, doc, selectedThirdSubOffer) {
     const key = card.getAttribute('data-suboffer')
     const active = key === selectedThirdSubOffer
     card.classList.toggle('is-selected', active)
+    card.classList.toggle('active', active)
     card.setAttribute('aria-pressed', active ? 'true' : 'false')
   })
 }
 
-function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario) {
+function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario, selectedThirdSubOffer) {
   if (!doc) return
   const parcelaHoje = fmt(usuario.parcelaAtual)
 
@@ -418,6 +518,27 @@ function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario) {
   const ctaSaving = getCachedNode(cacheRef, doc, 'ctaSaving', '#ctaSaving')
   if (ctaSaving) ctaSaving.textContent = `+${ecoFmt}/mês`
 
+  const ctaSavingLabel = getCachedNode(cacheRef, doc, 'ctaSavingLabel', '.cta-saving-label')
+  const heroSub = getCachedNode(cacheRef, doc, 'heroSub', '#heroSub')
+  const baPill = getCachedNode(cacheRef, doc, 'baPill', '#baPill')
+  const turboSnapshot = selectedEntry?.config?.id === 'turbo'
+    ? getTurboSubOfferSnapshot(selectedEntry, selectedThirdSubOffer, usuario)
+    : null
+  if (turboSnapshot) {
+    const turboValue = turboSnapshot.benefitDisplay
+    if (heroEco) heroEco.textContent = turboValue
+    if (ctaSaving) ctaSaving.textContent = `+${turboValue}`
+    if (ctaSavingLabel) ctaSavingLabel.textContent = turboSnapshot.label === 'Na parcela'
+      ? 'de economia mensal'
+      : 'de economia no contrato'
+    if (heroSub) {
+      heroSub.textContent = turboSnapshot.label === 'Na parcela'
+        ? 'Turbo Economia focado em aliviar sua parcela.'
+        : 'Turbo Economia focado em economizar no contrato.'
+    }
+    if (baPill) baPill.textContent = turboValue
+  }
+
   const todayDeduct = getCachedNode(cacheRef, doc, 'todayDeduct', '.ba-col.today .ba-row-val.deduct')
   if (todayDeduct) todayDeduct.textContent = parcelaHoje
 
@@ -436,35 +557,658 @@ function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario) {
 // ---------------------------------------------------------------------------
 // Renderização dos cards de oferta no grid do iframe
 // ---------------------------------------------------------------------------
-function buildOfferCardHtml(entry, idx, usuario) {
+function buildOfferCardHtml(entry, idx, usuario, selectedThirdSubOffer) {
   const { config: cfg, data: offer, isRecommended } = entry
 
   if (cfg.id === 'turbo') {
     const economiaContrato = fmt(offer.economiaContrato ?? offer.economiaTotal ?? 0)
-    const economiaParcela = `${fmt(offer.economiaParcela ?? getEcoMensal(offer, usuario.parcelaAtual))}/mês`
+    const economiaParcela = `${fmt(offer.economiaParcela ?? getEcoMensal(offer, usuario.parcelaAtual))}<span class="turbo-suffix">/mês</span>`
+    const turboSelected = selectedThirdSubOffer === 'installment' ? 'installment' : 'contract'
     return `
       <div class="offer-card turbo-offer" id="oc${idx}" role="button" tabindex="0" aria-selected="false">
-        <div class="consigai-offer-card">
+        <div class="consigai-offer-card turbo-card-shell">
           <span class="consigai-hidden-state-badge badge pick" id="badge${idx}">Escolher</span>
-          <div class="consigai-offer-head"></div>
-          <span class="consigai-offer-pill">${cfg.pill}</span>
-          <div class="consigai-offer-lines">
-            <div class="consigai-offer-pretext">Economize sem pegar novo credito</div>
-            <div class="consigai-offer-mini-grid">
-              <div class="consigai-offer-mini-card" data-suboffer="contract" role="button" tabindex="0">
-                <span class="consigai-offer-mini-label">No contrato</span>
-                <span class="consigai-offer-mini-value">${economiaContrato}</span>
-              </div>
-              <div class="consigai-offer-mini-card" data-suboffer="installment" role="button" tabindex="0">
-                <span class="consigai-offer-mini-label">Na parcela</span>
-                <span class="consigai-offer-mini-value">${economiaParcela}</span>
+          <div class="turbo-module-header">
+            <div class="turbo-module-title">
+              <img class="turbo-module-logo" src="/ConsigIA_logo_only_no_background.svg" alt="" aria-hidden="true" />
+              <div>
+                <strong>${cfg.ctaName || cfg.pill || 'Turbo Economia'}</strong>
+                <span>${cfg.subtitle || 'Foco em pagar menos'}</span>
               </div>
             </div>
           </div>
-          <div class="consigai-offer-note">
-            <span class="consigai-offer-note-text">
-              <span class="consigai-offer-note-sub">${cfg.note}</span>
-            </span>
+
+          <div class="turbo-body">
+            <h2 class="turbo-heading">
+              <span class="turbo-heading-blue">Escolha onde quer</span>
+              <span class="turbo-heading-green">Economizar</span>
+            </h2>
+            <p class="turbo-intro">A ConsigAI mostra dois caminhos para reduzir o custo do seu consignado com clareza.</p>
+
+            <div class="turbo-options">
+              <button
+                type="button"
+                class="consigai-offer-mini-card turbo-option option${turboSelected === 'contract' ? ' active is-selected' : ''}"
+                data-suboffer="contract"
+                role="button"
+                tabindex="0"
+                aria-pressed="${turboSelected === 'contract' ? 'true' : 'false'}"
+              >
+                <span class="option-label">No contrato</span>
+                <strong>${economiaContrato}</strong>
+                <small>Maior economia total</small>
+              </button>
+              <button
+                type="button"
+                class="consigai-offer-mini-card turbo-option option${turboSelected === 'installment' ? ' active is-selected' : ''}"
+                data-suboffer="installment"
+                role="button"
+                tabindex="0"
+                aria-pressed="${turboSelected === 'installment' ? 'true' : 'false'}"
+              >
+                <span class="option-label">Na parcela</span>
+                <strong>${economiaParcela}</strong>
+                <small>Mais folga mensal</small>
+              </button>
+            </div>
+
+            <div class="consigai-offer-note turbo-note">
+              <span class="note-icon" aria-hidden="true">✓</span>
+              <p>Boa opção para quem quer economizar sem contratar novo crédito.</p>
+            </div>
+
+            <div class="consigai-offer-actions turbo-actions">
+              <button
+                type="button"
+                class="consigai-offer-details-btn turbo-details-button"
+              >Ver detalhes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  }
+
+  if (cfg.id === 'equilibrio') {
+    const valorNaConta = fmt(offer.creditoReceber ?? 0)
+    const economiaNosContratos = fmt(offer.economiaTotal ?? (getEcoMensal(offer, usuario.parcelaAtual) * 12))
+    return `
+      <div class="offer-card equilibrio-offer" id="oc${idx}" role="button" tabindex="0" aria-selected="false">
+        <div class="consigai-offer-card equilibrio-shell">
+          <span class="consigai-hidden-state-badge badge pick" id="badge${idx}">Escolher</span>
+          <div class="equilibrio-header">
+            <div class="equilibrio-title">
+              <div class="equilibrio-icon" aria-hidden="true">
+                <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="blueGradient-${idx}" x1="34" y1="20" x2="94" y2="108" gradientUnits="userSpaceOnUse">
+                      <stop offset="0" stop-color="#00E7FF"/>
+                      <stop offset="0.42" stop-color="#1DA1EB"/>
+                      <stop offset="0.72" stop-color="#1878DE"/>
+                      <stop offset="1" stop-color="#055ECE"/>
+                    </linearGradient>
+                  </defs>
+
+                  <path
+                    d="M64 24V91"
+                    stroke="#000000"
+                    stroke-width="12"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M64 24V91"
+                    stroke="url(#blueGradient-${idx})"
+                    stroke-width="8"
+                    stroke-linecap="round"
+                  />
+
+                  <path
+                    d="M34 42H94"
+                    stroke="#000000"
+                    stroke-width="12"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M34 42H94"
+                    stroke="url(#blueGradient-${idx})"
+                    stroke-width="8"
+                    stroke-linecap="round"
+                  />
+
+                  <path
+                    d="M46 96H82"
+                    stroke="#000000"
+                    stroke-width="12"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M46 96H82"
+                    stroke="url(#blueGradient-${idx})"
+                    stroke-width="8"
+                    stroke-linecap="round"
+                  />
+
+                  <path
+                    d="M45 42L31 72"
+                    stroke="#000000"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M45 42L31 72"
+                    stroke="url(#blueGradient-${idx})"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                  />
+
+                  <path
+                    d="M45 42L59 72"
+                    stroke="#000000"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M45 42L59 72"
+                    stroke="url(#blueGradient-${idx})"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                  />
+
+                  <path
+                    d="M28 72H62"
+                    stroke="#000000"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M28 72H62"
+                    stroke="url(#blueGradient-${idx})"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                  />
+
+                  <path
+                    d="M83 42L69 72"
+                    stroke="#000000"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M83 42L69 72"
+                    stroke="url(#blueGradient-${idx})"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M83 42L97 72"
+                    stroke="#000000"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M83 42L97 72"
+                    stroke="url(#blueGradient-${idx})"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M66 72H100"
+                    stroke="#000000"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M66 72H100"
+                    stroke="url(#blueGradient-${idx})"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <div>
+                <strong>Melhor Equilíbrio</strong>
+                <span>Dinheiro + economia</span>
+              </div>
+            </div>
+            ${isRecommended ? '<div class="equilibrio-status">★ Recomendado</div>' : ''}
+          </div>
+
+          <div class="equilibrio-body">
+            <h2 class="equilibrio-heading">Receba dinheiro e <span>economize</span></h2>
+            <p class="equilibrio-intro">Boa opção para quem quer dinheiro na conta, parcela menor e prazo mantido.</p>
+
+            <div class="equilibrio-benefit-grid">
+              <div class="equilibrio-benefit money">
+                <span class="equilibrio-benefit-label">Na conta</span>
+                <strong>${valorNaConta}</strong>
+                <small>valor estimado liberado</small>
+              </div>
+
+              <div class="equilibrio-benefit economy">
+                <span class="equilibrio-benefit-label">Nos contratos</span>
+                <strong>${economiaNosContratos}</strong>
+                <small>economia estimada</small>
+              </div>
+            </div>
+
+            <div class="equilibrio-note">
+              <span class="equilibrio-note-icon">✓</span>
+              <p>Recomendado por equilibrar dinheiro na conta, economia e prazo mantido.</p>
+            </div>
+
+            <div class="consigai-offer-actions equilibrio-actions">
+              <button
+                type="button"
+                class="consigai-offer-details-btn equilibrio-details-button"
+              >Ver detalhes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  }
+
+  if (cfg.id === 'folga') {
+    const valorNaConta = fmt(offer.creditoReceber ?? 0)
+    const parcelaNova = getParcelaNova(offer, usuario.parcelaAtual)
+    const reducaoMensal = fmt(offer.reducaoMensal ?? getEcoMensal(offer, usuario.parcelaAtual))
+    return `
+      <div class="offer-card folga-offer" id="oc${idx}" role="button" tabindex="0" aria-selected="false">
+        <div class="consigai-offer-card folga-shell">
+          <span class="consigai-hidden-state-badge badge pick" id="badge${idx}">Escolher</span>
+          <div class="folga-header">
+            <div class="folga-title">
+              <div class="folga-icon" aria-hidden="true">
+                <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="folgaBlue-${idx}" x1="28" y1="20" x2="100" y2="104" gradientUnits="userSpaceOnUse">
+                      <stop offset="0" stop-color="#00E7FF"/>
+                      <stop offset="0.42" stop-color="#1DA1EB"/>
+                      <stop offset="1" stop-color="#055ECE"/>
+                    </linearGradient>
+                    <linearGradient id="folgaGreen-${idx}" x1="46" y1="88" x2="82" y2="56" gradientUnits="userSpaceOnUse">
+                      <stop offset="0" stop-color="#007A52"/>
+                      <stop offset="1" stop-color="#22C987"/>
+                    </linearGradient>
+                  </defs>
+                  <rect
+                    x="25"
+                    y="30"
+                    width="78"
+                    height="78"
+                    rx="20"
+                    fill="#F8FBFF"
+                    stroke="#000000"
+                    stroke-width="6"
+                  />
+                  <path
+                    d="M25 52V46C25 37.2 32.2 30 41 30H87C95.8 30 103 37.2 103 46V52H25Z"
+                    fill="url(#folgaBlue-${idx})"
+                    stroke="#000000"
+                    stroke-width="6"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M47 21V38"
+                    stroke="#000000"
+                    stroke-width="11"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M81 21V38"
+                    stroke="#000000"
+                    stroke-width="11"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M47 21V38"
+                    stroke="url(#folgaBlue-${idx})"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M81 21V38"
+                    stroke="url(#folgaBlue-${idx})"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M40 64H88"
+                    stroke="#DDE8F6"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                  />
+                  <circle cx="45" cy="76" r="3.8" fill="#DDE8F6"/>
+                  <circle cx="64" cy="76" r="3.8" fill="#DDE8F6"/>
+                  <circle cx="83" cy="76" r="3.8" fill="#DDE8F6"/>
+                  <circle cx="45" cy="92" r="3.8" fill="#DDE8F6"/>
+                  <circle cx="83" cy="92" r="3.8" fill="#DDE8F6"/>
+                  <path
+                    d="M64 58V92"
+                    stroke="#000000"
+                    stroke-width="12"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M64 58V92"
+                    stroke="url(#folgaGreen-${idx})"
+                    stroke-width="8"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M49 77L64 93L79 77"
+                    stroke="#000000"
+                    stroke-width="12"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M49 77L64 93L79 77"
+                    stroke="url(#folgaGreen-${idx})"
+                    stroke-width="8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <div>
+                <strong>Mais Folga por Mês</strong>
+                <span>Dinheiro + Redução de Parcela</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="folga-body">
+            <h2 class="folga-heading">Receba dinheiro e <span>reduza a parcela</span></h2>
+            <p class="folga-intro">Boa opção para quem quer dinheiro na conta e mais espaço no orçamento todos os meses.</p>
+
+            <div class="folga-highlight-grid">
+              <div class="folga-highlight money">
+                <small>Na conta</small>
+                <strong>${valorNaConta}</strong>
+                <span>valor estimado liberado</span>
+              </div>
+
+              <div class="folga-highlight installment">
+                <small>Nova parcela estimada</small>
+                <strong>${parcelaNova}</strong>
+                <span>menor impacto mensal</span>
+              </div>
+            </div>
+
+            <div class="folga-note">
+              <span class="folga-note-icon">✓</span>
+              <p>Indicada para aliviar o orçamento mensal, com dinheiro na conta e parcela reduzida.</p>
+            </div>
+
+            <div class="consigai-offer-actions folga-actions">
+              <button
+                type="button"
+                class="consigai-offer-details-btn folga-details-button"
+              >Ver detalhes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  }
+
+  if (cfg.id === 'apenas_novo') {
+    const valorEstimado = fmt(offer.creditoReceber ?? 0)
+    return `
+      <div class="offer-card new-contract-offer" id="oc${idx}" role="button" tabindex="0" aria-selected="false">
+        <div class="consigai-offer-card new-contract-shell">
+          <span class="consigai-hidden-state-badge badge pick" id="badge${idx}">Escolher</span>
+          <div class="new-contract-header">
+            <div class="new-contract-title">
+              <div class="new-contract-icon" aria-hidden="true">
+                <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="consigaiGradient" x1="30" y1="18" x2="96" y2="112" gradientUnits="userSpaceOnUse">
+                      <stop offset="0" stop-color="#00E7FF"/>
+                      <stop offset="0.38" stop-color="#1DA1EB"/>
+                      <stop offset="0.72" stop-color="#1878DE"/>
+                      <stop offset="1" stop-color="#055ECE"/>
+                    </linearGradient>
+                  </defs>
+
+                  <path
+                    d="M64 12C68.1 12 71.4 15.3 71.4 19.4V108.6C71.4 112.7 68.1 116 64 116C59.9 116 56.6 112.7 56.6 108.6V19.4C56.6 15.3 59.9 12 64 12Z"
+                    fill="url(#consigaiGradient)"
+                    stroke="#000000"
+                    stroke-width="3"
+                    stroke-linejoin="round"
+                  />
+
+                  <path
+                    d="M92.6 30.4C84.7 23.4 74.1 19.6 62.5 19.6C42.6 19.6 28.6 30.1 28.6 45.5C28.6 61.9 41.3 68.1 60.3 71.8L72.3 74.1C82.4 76.1 87.4 79.4 87.4 85.5C87.4 93.1 79.4 98.2 66.7 98.2C53.4 98.2 42.1 93.7 33.7 86.1C30.6 83.3 25.9 83.6 23.1 86.7C20.3 89.8 20.6 94.5 23.7 97.3C35.2 107.7 50.3 113.2 66.7 113.2C87.7 113.2 102.7 102.3 102.7 85.1C102.7 68.5 91.1 61.2 74.6 58L62.2 55.6C50.2 53.3 43.9 50.2 43.9 44.7C43.9 38.1 51.3 33.9 62.5 33.9C70.6 33.9 77.5 36.3 82.6 40.8C85.7 43.6 90.4 43.3 93.2 40.2C96 37.1 95.7 33.1 92.6 30.4Z"
+                    fill="url(#consigaiGradient)"
+                    stroke="#000000"
+                    stroke-width="3"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <div>
+                <strong>Novo Contrato</strong>
+                <span>Use sua margem livre</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="new-contract-body">
+            <h2 class="new-contract-heading">Receba dinheiro <span>na sua conta</span></h2>
+            <p class="new-contract-intro">Oferta focada em liberar valor novo, com parcela clara e prazo informado antes de continuar.</p>
+
+            <div class="new-contract-highlight">
+              <small>Valor estimado disponível</small>
+              <strong>R$ ${valorEstimado}</strong>
+              <span>simulação sem compromisso</span>
+            </div>
+
+            <div class="new-contract-note">
+              <span class="new-contract-note-icon">i</span>
+              <p>Nova contratação usando margem livre. Você verá taxa, custo total e condições antes de confirmar.</p>
+            </div>
+
+            <div class="consigai-offer-actions new-contract-actions">
+              <button
+                type="button"
+                class="consigai-offer-details-btn new-contract-details-button"
+              >Ver detalhes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  }
+
+  if (cfg.id === 'apenas_refin') {
+    const valorEstimado = fmt(offer.creditoReceber ?? 0)
+    const custoTotal = fmt(offer.economiaTotal ?? 0)
+    const refinBlueId = `refinBlue-${idx}`
+    const refinDarkId = `refinDark-${idx}`
+    const refinShadowId = `softShadow-${idx}`
+    return `
+      <div class="offer-card refin-offer" id="oc${idx}" role="button" tabindex="0" aria-selected="false">
+        <div class="consigai-offer-card refin-shell">
+          <span class="consigai-hidden-state-badge badge pick" id="badge${idx}">Escolher</span>
+          <div class="refin-header">
+            <div class="refin-title">
+              <div class="refin-icon" aria-hidden="true">
+                <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="${refinBlueId}" x1="22" y1="18" x2="106" y2="112" gradientUnits="userSpaceOnUse">
+                      <stop offset="0" stop-color="#00E7FF"/>
+                      <stop offset="0.42" stop-color="#1DA1EB"/>
+                      <stop offset="0.72" stop-color="#1878DE"/>
+                      <stop offset="1" stop-color="#055ECE"/>
+                    </linearGradient>
+
+                    <linearGradient id="${refinDarkId}" x1="30" y1="108" x2="98" y2="18" gradientUnits="userSpaceOnUse">
+                      <stop offset="0" stop-color="#03246F"/>
+                      <stop offset="0.48" stop-color="#055ECE"/>
+                      <stop offset="1" stop-color="#00E7FF"/>
+                    </linearGradient>
+
+                  </defs>
+
+                  <circle
+                    cx="64"
+                    cy="64"
+                    r="54"
+                    fill="#FFFFFF"
+                  />
+
+                  <path
+                    d="M95.6 38.4C87.8 28.9 76.1 23 63.2 23C42.7 23 25.8 37.8 22.4 57.2"
+                    stroke="#000000"
+                    stroke-width="13"
+                    stroke-linecap="round"
+                  />
+
+                  <path
+                    d="M95.6 38.4C87.8 28.9 76.1 23 63.2 23C42.7 23 25.8 37.8 22.4 57.2"
+                    stroke="url(#${refinBlueId})"
+                    stroke-width="9"
+                    stroke-linecap="round"
+                  />
+
+                  <path
+                    d="M93.8 24.8L98.4 39.8L82.9 41.9"
+                    stroke="#000000"
+                    stroke-width="12"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+
+                  <path
+                    d="M93.8 24.8L98.4 39.8L82.9 41.9"
+                    stroke="url(#${refinBlueId})"
+                    stroke-width="8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+
+                  <path
+                    d="M32.4 89.6C40.2 99.1 51.9 105 64.8 105C85.3 105 102.2 90.2 105.6 70.8"
+                    stroke="#000000"
+                    stroke-width="13"
+                    stroke-linecap="round"
+                  />
+
+                  <path
+                    d="M32.4 89.6C40.2 99.1 51.9 105 64.8 105C85.3 105 102.2 90.2 105.6 70.8"
+                    stroke="url(#${refinDarkId})"
+                    stroke-width="9"
+                    stroke-linecap="round"
+                  />
+
+                  <path
+                    d="M34.2 103.2L29.6 88.2L45.1 86.1"
+                    stroke="#000000"
+                    stroke-width="12"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+
+                  <path
+                    d="M34.2 103.2L29.6 88.2L45.1 86.1"
+                    stroke="url(#${refinDarkId})"
+                    stroke-width="8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+
+                  <rect
+                    x="42"
+                    y="34"
+                    width="44"
+                    height="60"
+                    rx="10"
+                    fill="#F4F8FF"
+                    stroke="#000000"
+                    stroke-width="3"
+                  />
+
+                  <path
+                    d="M54 50H74"
+                    stroke="#000000"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                  />
+
+                  <path
+                    d="M54 50H74"
+                    stroke="#055ECE"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                  />
+
+                  <path
+                    d="M54 62H72"
+                    stroke="#000000"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                    opacity="0.9"
+                  />
+
+                  <path
+                    d="M54 62H72"
+                    stroke="#1878DE"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    opacity="0.85"
+                  />
+
+                  <path
+                    d="M54 74H66"
+                    stroke="#000000"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                    opacity="0.9"
+                  />
+
+                  <path
+                    d="M54 74H66"
+                    stroke="#1DA1EB"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    opacity="0.8"
+                  />
+                </svg>
+              </div>
+              <div>
+                <strong>Refinanciamento</strong>
+                <span>Use seu contrato atual</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="refin-body">
+            <h2 class="refin-heading">
+              <span>Dinheiro ajustando seu</span>
+              <span class="refin-heading-light">contrato</span>
+            </h2>
+            <p class="refin-intro">Oferta direta para liberar valor ou reorganizar sua parcela usando um contrato existente.</p>
+
+            <div class="refin-highlight">
+              <small>Valor estimado disponível</small>
+              <strong>R$ ${valorEstimado}</strong>
+              <span>simulação sem compromisso</span>
+            </div>
+
+            <div class="refin-note">
+              <span class="refin-note-icon">i</span>
+              <p>Pode alterar prazo e custo total. Você verá taxa, parcelas e condições antes de confirmar.</p>
+            </div>
+
+            <div class="consigai-offer-actions refin-actions">
+              <button
+                type="button"
+                class="consigai-offer-details-btn refin-details-button"
+              >Ver detalhes</button>
+            </div>
           </div>
         </div>
       </div>
@@ -545,6 +1289,13 @@ function buildOfferCardHtml(entry, idx, usuario) {
             <span class="consigai-offer-note-sub">${cfg.note}</span>
           </span>
         </div>
+        <div class="consigai-offer-actions" style="margin-top: 12px;">
+          <button
+            type="button"
+            class="consigai-offer-details-btn"
+            style="width: 100%; border-radius: 12px; border: 1px solid rgba(35,80,200,.20); background: #edf3ff; color: #2350c8; padding: 11px 14px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;"
+          >Ver detalhes</button>
+        </div>
       </div>
     </div>
   `
@@ -584,7 +1335,7 @@ function upsertOfferCardsRedesign(cacheRef, doc, activeOffers, selectedOfferInde
   }
 
   const cardsHtml = activeOffers
-    .map((entry, idx) => buildOfferCardHtml(entry, idx, usuario))
+    .map((entry, idx) => buildOfferCardHtml(entry, idx, usuario, selectedThirdSubOffer))
     .join('')
 
   if (offersGrid.innerHTML !== cardsHtml) {
@@ -671,9 +1422,9 @@ export default function OfertasNova() {
       const imp = impactoRef.current
       const hasNoOffer = offers.length === 0
       const subOffer = selectedThirdSubOfferRef.current
-      applyUnifiedParcelaHoje(docQueryCacheRef, doc, selectedEntry, u)
+      applyUnifiedParcelaHoje(docQueryCacheRef, doc, selectedEntry, u, subOffer)
       upsertOfferCardsRedesign(docQueryCacheRef, doc, offers, selectedOfferIndexRef, u, subOffer)
-      upsertPocketInsight(doc, selectedEntry, u, imp)
+      upsertPocketInsight(doc, selectedEntry, u, imp, subOffer)
       upsertSavingsReplacement(doc)
       normalizeCtaSaving(docQueryCacheRef, doc)
       normalizeComConsigaiNovaParcela(docQueryCacheRef, doc)
@@ -754,22 +1505,41 @@ export default function OfertasNova() {
           attachedDocRef.current.removeEventListener('click', clickHandlerRef.current, true)
         }
 
-        const navigateToOffer = () => {
+        const navigateToContract = () => {
           const selected = activeOffersRef.current[selectedOfferIndexRef.current]
           if (!selected) return
-          const cfg = selected.config
-          if (cfg.id === 'turbo') {
-            const sub = THIRD_CARD_SUB_OFFERS[selectedThirdSubOfferRef.current] || THIRD_CARD_SUB_OFFERS.contract
-            navigate(sub.route)
-          } else {
-            navigate(cfg.route, cfg.state ? { state: cfg.state } : undefined)
-          }
+          const contractState = buildContractState(selected, usuarioRef.current, selectedThirdSubOfferRef.current)
+          navigate('/contratacao', contractState ? { state: contractState } : undefined)
         }
 
         clickHandlerRef.current = (event) => {
           const rawTarget = event.target
           const target = rawTarget?.nodeType === 1 ? rawTarget : rawTarget?.parentElement
           if (!target) return
+
+          const detailsBtn = target.closest('.consigai-offer-details-btn')
+          if (detailsBtn) {
+            const offerCard = target.closest('.offer-card')
+            if (!offerCard?.id?.startsWith('oc')) return
+            const idx = Number(offerCard.id.replace('oc', ''))
+            const selected = activeOffersRef.current[idx]
+            if (!selected?.config) return
+            const cfg = selected.config
+            if (cfg.id === 'turbo') {
+              const subKey = selectedThirdSubOfferRef.current
+              const initialMode = subKey === 'installment' ? 'parc' : 'eco'
+              event.preventDefault()
+              event.stopPropagation()
+              navigate('/portabilidade', { state: { initialMode } })
+              return
+            }
+            const routeTarget = getOfferNavigationTarget(selected)
+            if (!routeTarget) return
+            event.preventDefault()
+            event.stopPropagation()
+            navigate(routeTarget.path, routeTarget.state ? { state: routeTarget.state } : undefined)
+            return
+          }
 
           const thirdSubCard = target.closest('.offer-card.turbo-offer .consigai-offer-mini-card[data-suboffer]')
           if (thirdSubCard) {
@@ -805,7 +1575,7 @@ export default function OfertasNova() {
           const cta = target.closest('.btn-cta')
           if (cta) {
             event.preventDefault()
-            navigateToOffer()
+            navigateToContract()
           }
         }
 
@@ -813,7 +1583,7 @@ export default function OfertasNova() {
 
         const ctaButton = getCachedNode(docQueryCacheRef, frameDoc, 'ctaButton', '.btn-cta')
         if (ctaButton) {
-          ctaButton.onclick = (event) => { event.preventDefault(); navigateToOffer() }
+          ctaButton.onclick = (event) => { event.preventDefault(); navigateToContract() }
         }
         attachedDocRef.current = frameDoc
       }

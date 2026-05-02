@@ -6,7 +6,6 @@ import NovoContrato from './pages/NovoContrato'
 import Portabilidade from './pages/Portabilidade'
 import Refinanciamento from './pages/Refinanciamento'
 import OfertasNova from './pages/OfertasNova'
-import OfertasComparacao from './pages/OfertasComparacao'
 import EstrategiaCombinada from './pages/EstrategiaCombinada'
 import Configuracoes from './pages/Configuracoes'
 import AndamentoPropostas from './pages/AndamentoPropostas'
@@ -23,7 +22,6 @@ export default function App() {
         <Route path="/portabilidade" element={<Portabilidade />} />
         <Route path="/refinanciamento" element={<Refinanciamento />} />
         <Route path="/ofertas" element={<OfertasNova />} />
-        <Route path="/ofertas-comparacao" element={<OfertasComparacao />} />
         <Route path="/configuracoes" element={<Configuracoes />} />
         <Route path="/acompanhamento" element={<AndamentoPropostas />} />
         <Route path="/estrategia-combinada" element={<EstrategiaCombinada />} />

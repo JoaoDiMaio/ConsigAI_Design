@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { maskCPF, maskDate, maskPhone, formatFileSize } from '../lib/masks'
-import { sanitizeText, validatePersonalData, validateUploadFile } from '../lib/validators'
+import { normalizeSpaces, sanitizeText, validatePersonalData, validateUploadFile } from '../lib/validators'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { saveProfileData } from '../lib/profileStorage'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
@@ -448,8 +448,8 @@ export default function Cadastro() {
 
   const setField = (key, val) => {
     let nextValue = val
-    if (key === 'nome') nextValue = sanitizeTextInput(val).slice(0, 120)
-    if (key === 'email') nextValue = sanitizeTextInput(val).slice(0, 254)
+    if (key === 'nome') nextValue = sanitizeText(val).slice(0, 120)
+    if (key === 'email') nextValue = sanitizeText(val).slice(0, 254)
     setForm((f) => ({ ...f, [key]: nextValue }))
   }
 
@@ -555,7 +555,7 @@ export default function Cadastro() {
               chipLabel="Cadastro"
               title="Crie sua conta ConsigAI"
               subtitle="Preencha seus dados para liberar as propostas personalizadas."
-              onLogoClick={() => navigate('/ofertas')}
+              onLogoClick={() => navigate('/cadastro')}
               actions={[
                 { label: 'Ofertas', onClick: () => navigate('/ofertas') },
                 { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
@@ -591,7 +591,7 @@ export default function Cadastro() {
           <div style={{ background: t.bg }}>
                         <MobilePageHeader
               clientName={clientName}
-              onLogoClick={() => navigate('/ofertas')}
+              onLogoClick={() => navigate('/cadastro')}
               actions={[{ label: 'Configuracoes', onClick: () => navigate('/configuracoes') }]}
             />
             <div style={{ background: t.navy, padding: '10px 20px 20px' }}>

@@ -25,8 +25,25 @@ export const OFFER_CARD_CONFIG = [
     kind: 'turbo',
     ctaName: 'Turbo Economia',
     pill: 'Turbo Economia',
+    subtitle: 'Foco em pagar menos',
     route: '/portabilidade',
-    note: 'Boa opcao para quem quer diminuir o impacto mensal no orcamento sem pegar dinheiro novo.',
+    note: 'Boa opção para quem quer economizar sem contratar novo crédito.',
+    subOffers: {
+      contract: {
+        label: 'No contrato',
+        ctaName: 'Turbo Economia - No contrato',
+        benefitLabel: 'Economia no contrato',
+        benefitValue: 2960.4,
+        detailsMode: 'eco',
+      },
+      installment: {
+        label: 'Na parcela',
+        ctaName: 'Turbo Economia - Na parcela',
+        benefitLabel: 'Alivio mensal',
+        benefitValue: 148.95,
+        detailsMode: 'parc',
+      },
+    },
   },
   {
     id: 'apenas_novo',
@@ -50,7 +67,7 @@ export const MAX_API_CARDS = 3
 
 // IDs a mostrar sem chamada à API. Limpar quando o endpoint /api/ofertas estiver pronto.
 // Para desabilitar: setar como array vazio [].
-export const FORCED_VISIBLE_OFFER_IDS = ['equilibrio', 'turbo', 'apenas_refin']
+export const FORCED_VISIBLE_OFFER_IDS = ['equilibrio', 'folga', 'turbo']
 
 export const THIRD_CARD_SUB_OFFERS = {
   contract: { label: 'No contrato', route: '/portabilidade' },
