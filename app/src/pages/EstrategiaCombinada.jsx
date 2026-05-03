@@ -6,6 +6,7 @@ import { Button } from '../components/Button'
 import { MiniCard } from '../components/MiniCard'
 import { t } from '../lib/pageTheme'
 import { parseMoney } from '../lib/formatters'
+import { loadProfileData } from '../lib/profileStorage'
 import { appPageStyle } from '../ui/theme'
 
 const VARIANTS = {
@@ -291,6 +292,8 @@ function LineItem({ label, value }) {
 function StrategyScreen({ variant }) {
   const navigate = useNavigate()
   const isDesktop = useMediaQuery('(min-width: 768px)')
+  const profile = useMemo(() => loadProfileData(), [])
+  const clientName = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
 
   const config = VARIANTS[variant]
   const [activeIdx, setActiveIdx] = useState(0)
@@ -825,6 +828,7 @@ function StrategyScreen({ variant }) {
       <div style={appPageStyle}>
         {isDesktop ? (
           <DesktopPageHeader
+            clientName={clientName}
             onLogoClick={() => navigate('/ofertas')}
             fixed
             actions={[
@@ -834,6 +838,7 @@ function StrategyScreen({ variant }) {
           />
         ) : (
           <MobilePageHeader
+            clientName={clientName}
             onLogoClick={() => navigate('/ofertas')}
             fixed
             actions={[

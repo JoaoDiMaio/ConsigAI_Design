@@ -18,8 +18,16 @@ const FEMALE_FIRST_NAMES = new Set([
 ])
 
 export function toClientCallName(clientName) {
-  const full = String(clientName || '').trim()
-  if (!full) return 'Cliente'
+  const full = String(clientName || '').trim().replace(/\s+/g, ' ')
+  if (!full || full === 'Cliente') return 'Cliente'
+
+  const explicit = full.match(/^(sr\.?|senhor|sra\.?|senhora)\s+(.+)$/i)
+  if (explicit) {
+    const honorific = /^sra|^senhora/i.test(explicit[1]) ? 'Sra.' : 'Sr.'
+    const firstName = explicit[2].trim().split(/\s+/)[0] || 'Cliente'
+    return firstName === 'Cliente' ? firstName : `${honorific} ${firstName}`
+  }
+
   const firstName = full.split(/\s+/)[0]
   const norm = firstName.toLowerCase()
   const honorific = FEMALE_FIRST_NAMES.has(norm) || /a$/.test(norm) ? 'Sra.' : 'Sr.'

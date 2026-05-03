@@ -8,6 +8,7 @@ import { appPageStyle } from '../ui/theme'
 import { t } from '../lib/pageTheme'
 import { stateData } from '../data/portabilidadeData'
 import { parseMoney, fmtDec } from '../lib/formatters'
+import { loadProfileData } from '../lib/profileStorage'
 
 //  Desktop Header 
 
@@ -167,7 +168,8 @@ export default function Portabilidade() {
   const navigate    = useNavigate()
   const location    = useLocation()
   const isDesktop   = useMediaQuery('(min-width: 768px)')
-  const clientName  = 'Carlos Eduardo'
+  const profile     = loadProfileData()
+  const clientName  = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
   const initialMode = location.state?.initialMode === 'parc' ? 'parc' : 'eco'
   const [mode, setMode]           = useState(initialMode)
   const [detailsOpen, setDetails] = useState(false)

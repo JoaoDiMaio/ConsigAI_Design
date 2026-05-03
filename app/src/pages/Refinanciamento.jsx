@@ -8,6 +8,7 @@ import { appPageStyle } from '../ui/theme'
 import { t } from '../lib/pageTheme'
 import { SCENARIOS, SCENARIO_ICONS } from '../data/refinanciamentoData.js'
 import { parseMoney } from '../lib/formatters'
+import { loadProfileData } from '../lib/profileStorage'
 
 //  Desktop Header 
 
@@ -247,7 +248,8 @@ function BottomSheet({ scenario, onClose }) {
 export default function Refinanciamento() {
   const navigate      = useNavigate()
   const isDesktop     = useMediaQuery('(min-width: 768px)')
-  const clientName    = 'Carlos Eduardo'
+  const profile       = loadProfileData()
+  const clientName    = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
   const [activeIdx, setActiveIdx]     = useState(0)
   const [detailsOpen, setDetails]     = useState(false)
   const [sheetOpen, setSheet]         = useState(false)

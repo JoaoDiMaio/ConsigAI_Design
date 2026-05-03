@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef } from 'react'
+﻿import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
 import { useOffersData } from '../hooks/useOffersData.js'
@@ -237,78 +237,53 @@ function applyTurboLabels(baSection, baPill, ctaSavingLabel, turboSnapshot) {
 }
 
 const POCKET_VISUAL_HTML = `
-  <article class="impact-card impact-card-before">
-    <div class="salary-label">Hoje</div>
-    <div class="salary-main">
-      <small>Sobra no mês</small>
-      <strong data-k="pocketToday"></strong>
-      <span>após pagar a parcela atual</span>
-    </div>
-    <div class="salary-details">
-      <div class="salary-row negative">
-        <span>Parcela atual</span>
-        <strong data-k="installmentToday"></strong>
+  <div class="projection-flow">
+    <article class="projection-state projection-state-today">
+      <h3>Hoje</h3>
+      <div class="projection-state-value">
+        <strong data-k="pocketToday"></strong>
+        <span>por mês</span>
       </div>
-      <div class="salary-row negative">
-        <span>Margem livre</span>
-        <strong data-k="marginToday"></strong>
-      </div>
-      <div class="salary-row">
-        <span>Crédito para emergência</span>
-        <strong data-k="creditToday"></strong>
-      </div>
-    </div>
-  </article>
-  <article class="impact-card impact-card-gain">
-    <div class="gain-title">
-      <div>
-        <small>Ganho com a oferta</small>
-        <strong>Mais folga no mês, mais crédito disponível e economia projetada</strong>
-        <span>A ${brandNameHtml()} compara o cenário atual com a oferta para mostrar o ganho real no bolso.</span>
-      </div>
-    </div>
-    <div class="gain-metrics">
-      <div class="gain-metric">
-        <small data-label="gainPrimary">Ganho mensal no bolso</small>
+      <p>Sobra no mês após pagar a parcela atual.</p>
+    </article>
+
+    <div class="projection-symbol projection-symbol-arrow" aria-hidden="true">›</div>
+
+    <div class="projection-metric projection-gain">
+      <h4 data-label="gainPrimary">Ganho mensal no bolso</h4>
+      <div class="projection-number">
         <strong data-k="ecoMensal"></strong>
+        <span>por mês</span>
       </div>
-      <div class="gain-metric blue">
-        <small>Crédito extra disponível</small>
-        <strong data-k="creditoExtra"></strong>
+      <p>Mais margem livre após a redução da parcela.</p>
+    </div>
+
+    <div class="projection-metric projection-economy">
+      <h4 data-label="gainSecondary">Projeção de Economia ${brandNameHtml()}</h4>
+      <div class="projection-number">
+        <strong data-k="ecoAnual"></strong>
+        <span>economia total</span>
       </div>
+      <p>Equivale a <strong id="impactSalaryFactor" data-k="salaryFactor"></strong></p>
     </div>
-    <div class="economy-card">
-      <small data-label="gainSecondary">Projeção de Economia ${brandNameHtml()}</small>
-      <strong data-k="ecoAnual"></strong>
-      <span>economia estimada ao longo do contrato, conforme a simulação.</span>
-    </div>
-    <div class="salary-factor">
-      <span>Economia equivalente a</span>
-      <strong id="impactSalaryFactor" data-k="salaryFactor"></strong>
-    </div>
-  </article>
-  <article class="impact-card impact-card-after">
-    <div class="salary-label">Depois com ${brandNameHtml()}</div>
-    <div class="salary-main">
-      <small>Sobra no mês</small>
+
+  <div class="projection-symbol projection-symbol-equal" aria-hidden="true">=</div>
+
+  <article class="projection-state projection-state-after">
+    <h3>Depois com ${brandNameHtml()}</h3>
+    <div class="projection-state-value">
       <strong data-k="pocketAfter"></strong>
-      <span>após a nova parcela estimada</span>
-    </div>
-    <div class="salary-details">
-      <div class="salary-row positive">
-        <span>Nova parcela</span>
-        <strong id="impactNovaParcela" data-k="installmentAfter"></strong>
+        <span>por mês</span>
       </div>
-      <div class="salary-row positive">
-        <span>Margem livre</span>
-        <strong data-k="marginAfter"></strong>
-      </div>
-      <div class="salary-row positive">
-        <span>Crédito para emergência</span>
-        <strong id="impactCreditoDepois" data-k="creditAfter"></strong>
-      </div>
-    </div>
+      <p>Sobra estimada após a nova parcela.</p>
   </article>
+
+  </div>
+
+  <p class="projection-transparency">
+    <strong>Transparência ${brandNameHtml()}:</strong> esta é uma simulação e não representa aprovação final.
+    Você verá taxa, parcelas, prazo, custo total e condições antes de confirmar.
+  </p>
 `
 
 function upsertPocketInsight(doc, selectedEntry, usuario, impacto, selectedThirdSubOffer) {
@@ -330,12 +305,7 @@ function upsertPocketInsight(doc, selectedEntry, usuario, impacto, selectedThird
   if (baSub) baSub.textContent = turboSnapshot ? `Turbo Economia · ${turboSnapshot.label}` : 'Comparativo mensal com a oferta escolhida.'
   if (baHeader) {
     baHeader.classList.add('impact-header')
-    if (!baHeader.querySelector('.income-base')) {
-      const incomeBase = doc.createElement('div')
-      incomeBase.className = 'income-base'
-      incomeBase.innerHTML = '<div class="income-base-label">Renda informada</div><div class="income-base-value" id="impactSalarioBase" data-k="salaryUnified"></div>'
-      baHeader.appendChild(incomeBase)
-    }
+    baHeader.querySelector('.income-base')?.remove()
   }
 
   // Visual panel (one-time creation)
@@ -682,7 +652,7 @@ function buildEquilibrioCard(offer, idx, usuario, isRecommended) {
   return cardShell('equilibrio', idx, `
     ${cardHeader('equilibrio', svgEquilibrio(idx), 'Melhor Equilíbrio', 'Dinheiro + economia', badge)}
     <div class="equilibrio-body">
-      <h2 class="equilibrio-heading">Receba dinheiro e <span>economize</span></h2>
+      <h2 class="equilibrio-heading">Receba dinheiro e <span>Economize</span></h2>
       <p class="equilibrio-intro">Boa opção para quem quer dinheiro na conta, parcela menor e prazo mantido.</p>
       <div class="equilibrio-benefit-grid">
         <div class="equilibrio-benefit money">
@@ -708,7 +678,7 @@ function buildFolgaCard(offer, idx, usuario) {
   return cardShell('folga', idx, `
     ${cardHeader('folga', svgFolga(idx), 'Mais Folga por Mês', 'Dinheiro + Redução de Parcela')}
     <div class="folga-body">
-      <h2 class="folga-heading">Receba dinheiro e <span>reduza a parcela</span></h2>
+      <h2 class="folga-heading">Receba dinheiro e <span>Reduza a Parcela</span></h2>
       <p class="folga-intro">Boa opção para quem quer dinheiro na conta e mais espaço no orçamento todos os meses.</p>
       <div class="folga-highlight-grid">
         <div class="folga-highlight money">
@@ -953,10 +923,12 @@ export default function OfertasNova() {
   const navigate = useNavigate()
   const { activeOffers, usuario, impacto, loading, error } = useOffersData()
   const isDesktop = useMediaQuery('(min-width: 768px)')
-  const headerOffset = 67
   const profile = loadProfileData()
   const clientName = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
 
+  const [ctaBar, setCtaBar] = useState(null) // { name, saving, savingLabel } | null
+  const setCtaBarRef = useRef(setCtaBar)
+  setCtaBarRef.current = setCtaBar
   const iframeRef = useRef(null)
   const selectedOfferIndexRef = useRef(0)
   const selectedThirdSubOfferRef = useRef('contract')
@@ -971,10 +943,29 @@ export default function OfertasNova() {
   const impactoRef = useRef(impacto)
 
   useEffect(() => {
-    const html = document.documentElement
-    const prev = html.style.scrollbarGutter
-    html.style.scrollbarGutter = 'auto'
-    return () => { html.style.scrollbarGutter = prev }
+    const iframe = iframeRef.current
+    if (!iframe) return
+    let ro = null
+    const sync = () => {
+      const fd = iframe.contentDocument
+      if (!fd) return
+      iframe.style.height = '1px'
+      iframe.style.height = fd.documentElement.scrollHeight + 'px'
+    }
+    const setup = () => {
+      const fd = iframe.contentDocument
+      if (!fd) return
+      ro = new ResizeObserver(sync)
+      ro.observe(fd.documentElement)
+      sync()
+    }
+    iframe.addEventListener('load', setup)
+    window.addEventListener('resize', sync)
+    return () => {
+      iframe.removeEventListener('load', setup)
+      window.removeEventListener('resize', sync)
+      ro?.disconnect()
+    }
   }, [])
 
   useEffect(() => {
@@ -1017,6 +1008,18 @@ export default function OfertasNova() {
       normalizeComConsigaiNovaParcela(docQueryCacheRef, doc)
       normalizeCtaOfferName(docQueryCacheRef, doc, selectedEntry, hasNoOffer, subOffer)
       normalizeTextNodesInDocument(doc)
+      const ctaName = doc.querySelector('#ctaName')
+      const ctaSub = doc.querySelector('#ctaSub')
+      const ctaSaving = doc.querySelector('#ctaSaving')
+      const ctaSavingLabel = doc.querySelector('.cta-saving-label')
+      if (ctaName) {
+        setCtaBarRef.current(hasNoOffer ? null : {
+          name: ctaName.textContent,
+          sub: ctaSub?.textContent || '',
+          saving: ctaSaving?.textContent || '',
+          savingLabel: ctaSavingLabel?.textContent || '',
+        })
+      }
     }
 
     const refreshSelectedOfferUi = (doc, idx) => {
@@ -1246,12 +1249,10 @@ export default function OfertasNova() {
   }
 
   return (
-    <div style={{ ...appPageStyle, minHeight: '100svh', height: '100svh', overflow: 'hidden', position: 'relative' }}>
+    <div style={{ ...appPageStyle, minHeight: '100svh' }}>
       {loading && <div className="offers-loading-bar" aria-hidden="true" />}
       {isDesktop ? (
         <DesktopPageHeader
-          sticky={false}
-          minHeight={67}
           chipLabel={null}
           title={null}
           subtitle={null}
@@ -1264,8 +1265,6 @@ export default function OfertasNova() {
         />
       ) : (
         <MobilePageHeader
-          sticky={false}
-          minHeight={67}
           chipLabel={null}
           title={null}
           subtitle={null}
@@ -1283,12 +1282,131 @@ export default function OfertasNova() {
         src="/Ofertas_ConsigAI.html"
         style={{
           width: '100%',
-          height: `calc(100svh - ${headerOffset}px)`,
+          height: '0',
           border: 'none',
           display: 'block',
-          background: '#F6FAFF',
+          background: 'transparent',
+          overflow: 'hidden',
         }}
       />
+      {ctaBar && (
+        <div style={{
+          position: 'fixed',
+          bottom: 0,
+          left: isDesktop ? '50%' : 0,
+          right: isDesktop ? 'auto' : 0,
+          width: isDesktop ? '100vw' : 'auto',
+          transform: isDesktop ? 'translateX(-50%)' : 'none',
+          zIndex: 50,
+          background: 'rgba(255,255,255,.95)',
+          backdropFilter: 'blur(12px)',
+          borderTop: '1px solid #dde6f5',
+          boxShadow: '0 -4px 24px rgba(0,24,81,.1)',
+          padding: '14px 32px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: isDesktop ? 76 : undefined,
+          fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+        }}>
+          <div style={{
+            display: 'grid',
+            alignItems: 'center',
+            gridTemplateColumns: isDesktop
+              ? 'auto 1px 180px 320px'
+              : 'minmax(0, 1fr) 132px',
+            columnGap: isDesktop ? 28 : 16,
+            rowGap: 10,
+            width: 'fit-content',
+            maxWidth: '100%',
+            margin: '0 auto',
+          }}>
+            <div style={{
+              width: 'fit-content',
+              maxWidth: isDesktop ? 320 : 'none',
+              minWidth: 0,
+              justifySelf: isDesktop ? 'start' : 'stretch',
+              paddingLeft: 0,
+              paddingRight: 0,
+              textAlign: 'left',
+            }}>
+              <div style={{
+                fontSize: 12,
+                fontWeight: 700,
+                color: '#071B45',
+                lineHeight: '16px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                textAlign: 'left',
+              }}>{ctaBar.name}</div>
+              {ctaBar.sub && <div style={{
+                fontSize: 11,
+                fontWeight: 500,
+                color: '#667399',
+                marginTop: 1,
+                lineHeight: '15px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                textAlign: 'left',
+              }}>{ctaBar.sub}</div>}
+            </div>
+            {isDesktop && <div style={{ width: 1, height: 36, background: '#dde6f5', justifySelf: 'center' }} />}
+            <div style={{
+              width: isDesktop ? 180 : 132,
+              minWidth: isDesktop ? 180 : 132,
+              textAlign: 'left',
+            }}>
+              <div style={{
+                width: isDesktop ? 180 : 132,
+                minWidth: isDesktop ? 180 : 132,
+                fontSize: 22,
+                fontWeight: 800,
+                color: '#0a7c52',
+                letterSpacing: '-.02em',
+                lineHeight: '25px',
+                whiteSpace: 'nowrap',
+                fontVariantNumeric: 'tabular-nums',
+              }}>{ctaBar.saving}</div>
+              <div style={{
+                width: isDesktop ? 180 : 132,
+                fontSize: 11,
+                fontWeight: 500,
+                color: '#667399',
+                lineHeight: '13px',
+                whiteSpace: 'nowrap',
+              }}>{ctaBar.savingLabel}</div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const selected = activeOffers[selectedOfferIndexRef.current]
+                if (!selected) return
+                const contractState = buildContractState(selected, usuario, selectedThirdSubOfferRef.current)
+                navigate('/contratacao', contractState ? { state: contractState } : undefined)
+              }}
+              style={{
+                background: 'linear-gradient(160deg, #2f59d0, #1d43b0)',
+                color: '#fff', border: 0, borderRadius: 14,
+                padding: '14px 32px', fontSize: 15, fontWeight: 700, lineHeight: 1.2,
+                cursor: 'pointer', whiteSpace: 'nowrap',
+                boxShadow: '0 8px 20px rgba(30,60,180,.3)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                gridColumn: isDesktop ? undefined : '1 / -1',
+                width: isDesktop ? 320 : '100%',
+                minWidth: isDesktop ? 320 : undefined,
+                maxWidth: isDesktop ? 320 : undefined,
+                minHeight: 44,
+                fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+              }}
+            >
+              Continuar com esta oferta
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

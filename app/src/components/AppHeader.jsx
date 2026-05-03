@@ -1,16 +1,18 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import logoSvg from '../assets/logo.svg'
 import { useMediaQuery } from '../hooks/useMediaQuery'
+import { toClientCallName } from '../lib/formatters'
 import { appFontFamily, theme } from '../ui/theme'
 
 const DESKTOP_HEADER_HEIGHT = 72
 const TABLET_HEADER_HEIGHT = 72
 const MOBILE_HEADER_HEIGHT = 72
-const MOBILE_LOGO_ICON_SIZE = 34
+const MOBILE_LOGO_ICON_SIZE = 52
 
-function ClientMenu({ actions = [], compact = false }) {
+function ClientMenu({ actions = [], compact = false, clientName = 'Cliente' }) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
+  const displayName = toClientCallName(clientName)
 
   useEffect(() => {
     function handleDocumentClick(event) {
@@ -45,14 +47,16 @@ function ClientMenu({ actions = [], compact = false }) {
           borderRadius: compact ? 10 : 12,
           border: '1px solid rgba(255,255,255,.14)',
           background: 'rgba(255,255,255,.08)',
-          padding: compact ? 8 : 10,
+          padding: compact ? '8px 10px' : '8px 12px',
           minHeight: compact ? 40 : 40,
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
+          gap: compact ? 7 : 9,
           cursor: hasActions ? 'pointer' : 'default',
           boxShadow: '0 2px 10px rgba(0,0,0,.12)',
           fontFamily: appFontFamily,
+          maxWidth: compact ? 190 : 260,
         }}
       >
         <svg
@@ -66,6 +70,42 @@ function ClientMenu({ actions = [], compact = false }) {
           <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" stroke="#fff" strokeWidth="1.8" />
           <path d="M5 20c1.8-3.6 5-5 7-5s5.2 1.4 7 5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" />
         </svg>
+        <span
+          style={{
+            display: 'grid',
+            gap: 1,
+            minWidth: 0,
+            textAlign: 'left',
+            lineHeight: 1.1,
+          }}
+        >
+          {!compact ? (
+            <span
+              style={{
+                color: 'rgba(255,255,255,.48)',
+                fontSize: 9,
+                fontWeight: 800,
+                letterSpacing: '.06em',
+                textTransform: 'uppercase',
+              }}
+            >
+              Cliente
+            </span>
+          ) : null}
+          <span
+            style={{
+              color: '#fff',
+              fontSize: compact ? 12 : 14,
+              fontWeight: 700,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              maxWidth: compact ? 118 : 180,
+            }}
+          >
+            {displayName}
+          </span>
+        </span>
         {hasActions ? (
           <svg
             aria-hidden="true"
@@ -138,9 +178,11 @@ function ClientMenu({ actions = [], compact = false }) {
 export function DesktopPageHeader({
   onLogoClick,
   actions = [],
+  clientName = 'Cliente',
   fixed = false,
   sticky = true,
   minHeight: minHeightProp,
+  paddingRight,
 }) {
   const isTabletHeader = useMediaQuery('(max-width: 1079px)')
 
@@ -156,7 +198,7 @@ export function DesktopPageHeader({
         boxSizing: 'border-box',
         display: 'flex',
         alignItems: 'center',
-        padding: `0 ${headerHorizontalPadding}px`,
+        padding: `0 ${paddingRight != null ? paddingRight : headerHorizontalPadding}px 0 ${headerHorizontalPadding}px`,
         position: fixed ? 'fixed' : sticky ? 'sticky' : 'relative',
         top: (fixed || sticky) ? 0 : undefined,
         left: fixed ? 0 : undefined,
@@ -195,7 +237,7 @@ export function DesktopPageHeader({
           <div aria-hidden="true" />
 
           <div style={{ justifySelf: 'end' }}>
-            <ClientMenu actions={actions} />
+            <ClientMenu actions={actions} clientName={clientName} />
           </div>
         </div>
       </div>
@@ -206,15 +248,17 @@ export function DesktopPageHeader({
 export function MobilePageHeader({
   onLogoClick,
   actions = [],
+  clientName = 'Cliente',
   fixed = false,
   sticky = true,
   minHeight: minHeightProp,
+  paddingRight,
 }) {
   return (
     <div
       style={{
         background: theme.navy,
-        padding: 'max(8px, env(safe-area-inset-top)) 14px 8px',
+        padding: `max(8px, env(safe-area-inset-top)) ${paddingRight != null ? paddingRight : 14}px 8px 14px`,
         minHeight: minHeightProp ?? MOBILE_HEADER_HEIGHT,
         boxSizing: 'border-box',
         display: 'flex',
@@ -240,7 +284,7 @@ export function MobilePageHeader({
         <div aria-hidden="true" />
 
         <div style={{ marginLeft: 'auto', justifySelf: 'end' }}>
-          <ClientMenu actions={actions} compact />
+          <ClientMenu actions={actions} compact clientName={clientName} />
         </div>
       </div>
     </div>

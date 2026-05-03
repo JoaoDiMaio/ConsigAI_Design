@@ -8,6 +8,7 @@ import { appPageStyle } from '../ui/theme'
 import { t } from '../lib/pageTheme'
 import { OFERTA } from '../data/novoContratoData'
 import { fmt, fmtDec } from '../lib/formatters'
+import { loadProfileData } from '../lib/profileStorage'
 
 const calcPMT = (pv, rate, n) => {
   const i = rate / 100
@@ -231,7 +232,8 @@ function BottomSheet({ valor, onClose }) {
 export default function NovoContrato() {
   const navigate   = useNavigate()
   const isDesktop  = useMediaQuery('(min-width: 768px)')
-  const clientName = 'Carlos Eduardo'
+  const profile    = loadProfileData()
+  const clientName = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
 
   // Anchor state: 0=main, 1=mid, 2=low, null=custom
   const [activeAnchor, setActiveAnchor] = useState(0)
