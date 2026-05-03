@@ -53,6 +53,19 @@ body {
 .offers-error-screen__msg   { color: #667399; font-size: 13px; margin: 0; }
 
 /* Animações compartilhadas entre páginas */
+@keyframes ctaFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+.cta-btn-float {
+  animation: ctaFloat 3.4s ease-in-out infinite;
+  transition: transform .18s ease, box-shadow .18s ease !important;
+}
+.cta-btn-float:hover {
+  animation-play-state: paused;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 14px 32px rgba(30,60,180,.40) !important;
+}
 @keyframes fadeIn  { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: translateY(0) } }
 @keyframes slideUp { from { transform: translateY(100%) } to { transform: translateY(0) } }
 @keyframes popIn   { from { transform: scale(.5); opacity: 0 } to { transform: scale(1); opacity: 1 } }

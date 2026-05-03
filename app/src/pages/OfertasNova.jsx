@@ -773,8 +773,8 @@ function buildGenericCard(cfg, offer, idx, usuario, isRecommended) {
         </div>
         ${isSimple ? `<div class="consigai-offer-mini-grid"><div class="consigai-offer-mini-card"><span class="consigai-offer-mini-label">${metricLabel}</span><span class="consigai-offer-mini-value">${metricValue}</span></div><div class="consigai-offer-mini-card"><span class="consigai-offer-mini-label">${miniLabelSecond}</span><span class="consigai-offer-mini-value">${miniValueSecond}</span></div></div>` : ''}
         <div class="consigai-offer-note"><span class="consigai-offer-note-text"><span class="consigai-offer-note-sub">${cfg.note}</span></span></div>
-        <div class="consigai-offer-actions" style="margin-top: 12px;">
-          <button type="button" class="consigai-offer-details-btn" style="width: 100%; border-radius: 12px; border: 1px solid rgba(35,80,200,.20); background: #edf3ff; color: #2350c8; padding: 11px 14px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;">Ver detalhes</button>
+        <div class="consigai-offer-actions generic-actions">
+          <button type="button" class="consigai-offer-details-btn generic-details-button">Ver detalhes</button>
         </div>
       </div>
     </div>
@@ -903,14 +903,22 @@ function syncMobileOfferSelection(cacheRef, doc, selectedOfferIndexRef, refreshS
   }
 
   const onScroll = requestUpdate
+  const onScrollEnd = updateSelectionFromViewport
   const onResize = requestUpdate
 
+  // scrollend dispara após snap concluído — seleção precisa e imediata
+  // scroll como fallback para browsers sem scrollend (Safari < 16.4)
+  const hasScrollEnd = 'onscrollend' in grid
+  if (hasScrollEnd) {
+    grid.addEventListener('scrollend', onScrollEnd, { passive: true })
+  }
   grid.addEventListener('scroll', onScroll, { passive: true })
   view.addEventListener('resize', onResize, { passive: true })
   requestUpdate()
 
   return () => {
     if (rafId) view.cancelAnimationFrame(rafId)
+    if (hasScrollEnd) grid.removeEventListener('scrollend', onScrollEnd)
     grid.removeEventListener('scroll', onScroll)
     view.removeEventListener('resize', onResize)
   }
@@ -950,7 +958,9 @@ export default function OfertasNova() {
       const fd = iframe.contentDocument
       if (!fd) return
       iframe.style.height = '1px'
-      iframe.style.height = fd.documentElement.scrollHeight + 'px'
+      // body.scrollHeight é mais preciso que documentElement.scrollHeight a zoom != 100%
+      const h = Math.max(fd.body?.scrollHeight ?? 0, fd.documentElement.scrollHeight)
+      iframe.style.height = h + 'px'
     }
     const setup = () => {
       const fd = iframe.contentDocument
@@ -1171,6 +1181,9 @@ export default function OfertasNova() {
             if (activeOffersRef.current.length === 0) return
             const idx = Number(offerCard.id.replace('oc', ''))
             if (!Number.isNaN(idx)) {
+              // mobile: scroll já seleciona via syncMobileOfferSelection — tap é redundante
+              const isMobile = frameDoc.defaultView?.matchMedia?.('(max-width: 760px)')?.matches
+              if (isMobile) return
               selectedOfferIndexRef.current = idx
               event.preventDefault()
               event.stopPropagation()
@@ -1380,6 +1393,7 @@ export default function OfertasNova() {
             </div>
             <button
               type="button"
+              className="cta-btn-float"
               onClick={() => {
                 const selected = activeOffers[selectedOfferIndexRef.current]
                 if (!selected) return
