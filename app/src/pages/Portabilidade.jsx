@@ -9,24 +9,28 @@ import { t } from '../lib/pageTheme'
 import { stateData } from '../data/portabilidadeData'
 import { parseMoney, fmtDec } from '../lib/formatters'
 import { loadProfileData } from '../lib/profileStorage'
+import { getSelectableCardStyle } from '../ui/cardSelection'
 
 //  Desktop Header 
 
 //  Choice button 
 
 function ChoiceBtn({ active, onClick, bars, title, sub }) {
+  const [hovered, setHovered] = useState(false)
+  const selectionStyle = getSelectableCardStyle({ selected: active, hovered })
   return (
     <button
       onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
         padding: '14px 12px 12px', borderRadius: 16,
         background: active ? t.blue : '#eaeff8',
-        border: active ? `1.5px solid ${t.blue2}` : '1.5px solid transparent',
-        boxShadow: active ? '0 8px 24px rgba(35,80,200,.28)' : 'none',
-        transform: active ? 'translateY(-1px)' : 'none',
-        cursor: 'pointer', transition: 'all .22s cubic-bezier(.4,0,.2,1)',
+        border: '1.5px solid',
+        cursor: 'pointer',
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
         textAlign: 'center', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+        ...selectionStyle,
       }}
     >
       <div style={{ display: 'flex', gap: 3, alignItems: 'flex-end', height: 14, justifyContent: 'center' }}>

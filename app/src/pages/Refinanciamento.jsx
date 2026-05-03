@@ -9,6 +9,7 @@ import { t } from '../lib/pageTheme'
 import { SCENARIOS, SCENARIO_ICONS } from '../data/refinanciamentoData.js'
 import { parseMoney } from '../lib/formatters'
 import { loadProfileData } from '../lib/profileStorage'
+import { getSelectableCardStyle } from '../ui/cardSelection'
 
 //  Desktop Header 
 
@@ -16,18 +17,20 @@ import { loadProfileData } from '../lib/profileStorage'
 
 function ScenarioCard({ scenario, icon, active, onClick }) {
   const c = scenario.colors
+  const [hovered, setHovered] = useState(false)
+  const selectionStyle = getSelectableCardStyle({ selected: active, hovered })
   return (
     <button
       onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       aria-pressed={active}
       style={{
-        width: '100%', textAlign: 'left', border: `2px solid ${active ? c.activeBorder : c.border}`,
+        width: '100%', textAlign: 'left', border: '2px solid',
         borderRadius: 20, background: c.bg, cursor: 'pointer', padding: 0, overflow: 'hidden',
-        boxShadow: active ? c.activeShadow : 'none',
-        transform: active ? 'none' : 'none',
-        transition: 'border-color .2s ease, box-shadow .2s ease',
         fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
         outline: 'none',
+        ...selectionStyle,
       }}
     >
       <div style={{ padding: 14 }}>
