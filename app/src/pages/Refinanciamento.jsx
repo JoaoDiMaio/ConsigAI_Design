@@ -1,552 +1,402 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+﻿import { useEffect, useMemo, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
-import { BrandName } from '../components/BrandName'
-import { MiniCard } from '../components/MiniCard'
 import { appPageStyle } from '../ui/theme'
-import { t } from '../lib/pageTheme'
-import { SCENARIOS, SCENARIO_ICONS } from '../data/refinanciamentoData.js'
-import { parseMoney } from '../lib/formatters'
 import { loadProfileData } from '../lib/profileStorage'
+import { SCENARIOS } from '../data/refinanciamentoData'
+import { parseMoney } from '../lib/formatters'
 import { getSelectableCardStyle } from '../ui/cardSelection'
 
-//  Desktop Header 
-
-//  Scenario Card 
-
-function ScenarioCard({ scenario, icon, active, onClick }) {
-  const c = scenario.colors
-  const [hovered, setHovered] = useState(false)
-  const selectionStyle = getSelectableCardStyle({ selected: active, hovered })
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      aria-pressed={active}
-      style={{
-        width: '100%', textAlign: 'left', border: '2px solid',
-        borderRadius: 20, background: c.bg, cursor: 'pointer', padding: 0, overflow: 'hidden',
-        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-        outline: 'none',
-        ...selectionStyle,
-      }}
-    >
-      <div style={{ padding: 14 }}>
-        {/* Head */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 12, background: c.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            {icon}
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: c.eyebrow, marginBottom: 1 }}>{scenario.eyebrow}</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: t.text, lineHeight: 1.2, marginBottom: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{scenario.title}</div>
-            <div style={{ fontSize: 10, fontWeight: 500, color: t.muted, lineHeight: 1.35 }}>{scenario.desc}</div>
-          </div>
-          {/* Radio */}
-          <div style={{
-            width: 20, height: 20, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: active ? `6px solid ${c.radioActive}` : `2px solid ${t.line}`,
-            background: '#fff', transition: 'all .18s ease',
-          }} />
-        </div>
-
-        {/* KPIs */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginBottom: 10 }}>
-          {[
-            ['Você recebe', scenario.cash],
-            ['Nova parcela', scenario.installment],
-            ['Margem livre', scenario.margem],
-            ['Contratos', scenario.contracts.length + (scenario.contracts.length === 1 ? ' contrato' : ' contratos')],
-          ].map(([label, value]) => (
-            <div key={label} style={{ borderRadius: 12, padding: '7px 4px', textAlign: 'center', background: c.kipBg, display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
-              <div style={{ fontSize: 8.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.04em', lineHeight: 1.2, color: c.kpiLabel }}>{label}</div>
-              <div style={{ fontSize: 12, fontWeight: 700, lineHeight: 1, letterSpacing: '-.01em', color: c.kpiValue, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{value}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Contract pills */}
-        <div style={{ paddingTop: 10, borderTop: '1px solid rgba(0,0,0,.06)' }}>
-          <div style={{ fontSize: 8.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em', color: t.muted, marginBottom: 6 }}>Contratos incluídos</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-            {scenario.contracts.map(bank => (
-              <span key={bank} style={{ borderRadius: 999, padding: '3px 9px', fontSize: 9, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4, background: c.pillBg, color: c.pillColor }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: c.pillDot, flexShrink: 0, display: 'inline-block' }} />
-                {bank}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </button>
-  )
-}
-
-//  Receipt 
-
-function Receipt({ scenario }) {
-  const today = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
-  return (
-    <div style={{
-      width: 300, flexShrink: 0, borderRadius: 10, padding: '14px 12px 12px',
-      border: '1px solid #ececec', color: '#4f4f4f', fontSize: 12,
-      fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-      background: 'linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)), #f5f5f3',
-    }}>
-      <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, letterSpacing: '.02em', color: '#444' }}>SIMULACAO DE REFINANCIAMENTO - CONSIGAI</div>
-      <div style={{ fontSize: 10, marginTop: 4, textAlign: 'center', color: '#808080' }}>{today}</div>
-
-      <div style={{ fontSize: 10.5, marginTop: 12, fontWeight: 700, color: '#565656' }}>CARLOS EDUARDO MARTINS</div>
-      <div style={{ fontSize: 10, marginTop: 6, lineHeight: 1.35, color: '#5f5f5f' }}>
-        CPF: 177.665.442-8<br />
-        Benefício: Aposentadoria por Tempo de Contribuição<br />
-        Nascimento: 30/07/1957<br />
-        Valor do Benefício: R$ 2.200
-      </div>
-
-      <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-      <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>VOCE VAI RECEBER HOJE</div>
-      <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323', lineHeight: 1 }}>{scenario.cash}</div>
-      <div style={{ textAlign: 'center', marginTop: 4, fontSize: 8.5, fontWeight: 700, letterSpacing: '.08em', color: '#888', textTransform: 'uppercase' }}>REFINANCIAMENTO CONSIGNADO</div>
-
-      <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10, color: '#5b5b5b' }}>
-        <thead>
-          <tr>
-            <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767', paddingRight: 10 }}>Cód.</th>
-            <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>Banco</th>
-            <th style={{ fontSize: 8, textAlign: 'right', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>Troco</th>
-          </tr>
-        </thead>
-        <tbody>
-          {scenario.receiptRows.map(([cod, bank, troco]) => (
-            <tr key={cod}>
-              <td style={{ fontSize: 8, padding: '4px 0', paddingRight: 10, whiteSpace: 'nowrap' }}>{cod}</td>
-              <td style={{ padding: '4px 0' }}>{bank}</td>
-              <td style={{ padding: '4px 0', textAlign: 'right', fontWeight: 700, color: '#3b3b3b' }}>{troco}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: '#555' }}>Nova parcela total</span>
-        <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>{scenario.installment}</span>
-      </div>
-
-      <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#555', lineHeight: 1.3, flex: 1 }}>Margem livre após refinanciamento</span>
-          <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>{scenario.margem}</span>
-        </div>
-        <hr style={{ border: 'none', borderTop: '1px dashed #cfcfcf', margin: 0 }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#555', lineHeight: 1.3, flex: 1 }}>Crédito disponível após liberação da margem</span>
-          <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>{scenario.receiptCredito}</span>
-        </div>
-      </div>
-
-      <div style={{ marginTop: 10, padding: '8px 10px', background: '#f0f0ee', borderRadius: 6, border: '1px solid #ddd', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-        <div style={{ fontSize: 8, color: '#888', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.04em' }}>Protocolo</div>
-        <div style={{ fontSize: 8.5, color: '#444', fontWeight: 700, fontFamily: 'ui-monospace, monospace', letterSpacing: '.05em' }}>CSG-2025-05312</div>
-      </div>
-      <div style={{ textAlign: 'center', marginTop: 4, fontSize: 9.5, color: '#7a7a7a', letterSpacing: '.08em' }}>
-        <BrandName as="span" style={{ color: 'inherit' }} />.com.br
-      </div>
-    </div>
-  )
-}
-
-//  Bottom Sheet 
-
-function BottomSheet({ scenario, onClose }) {
-  return (
-    <div
-      onClick={e => { if (e.target === e.currentTarget) onClose() }}
-      style={{
-        position: 'fixed', inset: 0, background: 'rgba(0,18,51,.55)', zIndex: 200,
-        display: 'flex', alignItems: 'flex-end', animation: 'fadeIn .2s ease forwards',
-      }}
-    >
-      <div style={{
-        background: '#fff', borderRadius: '24px 24px 0 0', padding: '12px 20px 32px', width: '100%',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
-        animation: 'slideUp .28s cubic-bezier(.4,0,.2,1) forwards',
-        maxHeight: '90vh', overflowY: 'auto', scrollbarGutter: 'stable',
-      }}>
-        <div style={{ width: 36, height: 4, borderRadius: 999, background: t.line, marginBottom: 2 }} />
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: t.muted, textAlign: 'center' }}>OTIMA ESCOLHA! MAS OLHA ISSO...</div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: t.text, textAlign: 'center', lineHeight: 1.2 }}>Faça ainda mais pelo seu futuro</div>
-        <div style={{ fontSize: 11, fontWeight: 500, color: t.muted, textAlign: 'center', lineHeight: 1.5, maxWidth: 320 }}>
-          Com a portabilidade você garante um limite maior disponível quando precisar de crédito de novo.
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, width: '100%', maxWidth: 420 }}>
-          {/* Green card */}
-          <button onClick={onClose} style={{
-            border: `2px solid #b8e0ca`, borderRadius: 18, padding: '14px 10px', cursor: 'pointer',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, textAlign: 'center',
-            background: t.greenBg, boxShadow: '0 6px 18px rgba(10,102,64,.12)',
-            fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-          }}>
-            <div style={{ fontSize: 8.5, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', background: '#c0e8d4', color: t.green, borderRadius: 999, padding: '3px 8px', marginBottom: 6 }}>Recomendado</div>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: t.greenSoft }}>Refinanciamento</div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: t.blue }}>{scenario.cash}</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: t.greenAccent }}>+</div>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: t.greenSoft }}>Economia Inteligente</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: t.green }}>R$ 2.399</div>
-            <div style={{ fontSize: 9, fontWeight: 500, color: t.greenSoft }}>de economia</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: t.greenAccent }}>+</div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, width: '100%' }}>
-              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: t.greenSoft }}>Novo contrato depois</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: t.green }}>R$ 5.033</div>
-              <div style={{ fontSize: 9, fontWeight: 500, color: t.greenSoft }}>disponível</div>
-            </div>
-          </button>
-
-          {/* Blue card */}
-          <button onClick={onClose} style={{
-            border: `2px solid ${t.blueMid}`, borderRadius: 18, padding: '14px 10px', cursor: 'pointer',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, textAlign: 'center',
-            background: t.blueLight, boxShadow: '0 6px 18px rgba(35,80,200,.10)',
-            fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-          }}>
-            <div style={{ fontSize: 8.5, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', background: t.blueLight, color: t.blue, border: `1px solid ${t.blueMid}`, borderRadius: 999, padding: '3px 8px', marginBottom: 6 }}>Mais alívio</div>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: '#4a6fa8' }}>Refinanciamento</div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: t.blue }}>{scenario.cash}</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: t.blue }}>+</div>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: '#4a6fa8' }}>Parcela Menor</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: t.blue }}>R$ 117<span style={{ fontSize: 9, fontWeight: 600 }}>/mês</span></div>
-            <div style={{ fontSize: 9, fontWeight: 500, color: '#4a6fa8' }}>a menos por mês</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: t.blue }}>+</div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, width: '100%' }}>
-              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: '#4a6fa8' }}>Novo contrato depois</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: t.blue }}>R$ 7.593</div>
-              <div style={{ fontSize: 9, fontWeight: 500, color: '#4a6fa8' }}>disponível</div>
-            </div>
-          </button>
-        </div>
-
-        <button
-          onClick={onClose}
-          style={{
-            width: '100%', maxWidth: 420, border: `1.5px solid ${t.line}`, borderRadius: 14,
-            background: 'transparent', color: t.muted, padding: 13,
-            fontSize: 12, fontWeight: 500, cursor: 'pointer',
-            fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-            transition: 'border-color .15s ease, color .15s ease',
-          }}
-        >Não, só o refinanciamento por agora</button>
-      </div>
-    </div>
-  )
-}
-
-//  Main
+const ICONS = ['$', '↯', '↗']
 
 export default function Refinanciamento() {
-  const navigate      = useNavigate()
-  const isDesktop     = useMediaQuery('(min-width: 768px)')
-  const profile       = loadProfileData()
-  const clientName    = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
-  const [activeIdx, setActiveIdx]     = useState(0)
-  const [detailsOpen, setDetails]     = useState(false)
-  const [sheetOpen, setSheet]         = useState(false)
-  const [hovCta, setHovCta]           = useState(false)
-  const [hovDetails, setHovDetails]   = useState(false)
-  const [hovDown, setHovDown]         = useState(false)
-  const [backHover, setBackHover] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const isDesktop = useMediaQuery('(min-width: 768px)')
+  const profile = loadProfileData()
+  const clientName = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
 
-  const scenario = SCENARIOS[activeIdx]
+  const [activeIdx, setActiveIdx] = useState(0)
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const [hoveredIdx, setHoveredIdx] = useState(-1)
+
+  const fmtCurrency = (value) => {
+    const n = Number(value)
+    if (Number.isFinite(n)) return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    if (typeof value === 'string' && value.trim()) return value
+    return 'R$ 0'
+  }
+
+  const fmtInstallment = (value) => {
+    const s = fmtCurrency(value)
+    return s.includes('/mês') || s.includes('/mes') ? s : `${s}/mês`
+  }
+
+  const normalizeScenario = (raw, index) => {
+    const contractsRaw = raw?.contracts ?? raw?.contratos ?? []
+    const receiptRowsRaw = raw?.receiptRows ?? raw?.recibo ?? raw?.contratosDetalhes ?? []
+
+    const contractDetailsFromRows = Array.isArray(receiptRowsRaw)
+      ? receiptRowsRaw.map((row, rowIdx) => {
+          if (Array.isArray(row)) {
+            const [code, bank, troco] = row
+            return {
+              key: `${index}-${rowIdx}-${bank || code || 'contrato'}`,
+              bank: bank || `Contrato ${rowIdx + 1}`,
+              code: code || '-',
+              troco: troco || '-',
+              result: 'Compõe a proposta',
+            }
+          }
+          return {
+            key: `${index}-${rowIdx}-${row?.bank || row?.banco || 'contrato'}`,
+            bank: row?.bank || row?.banco || `Contrato ${rowIdx + 1}`,
+            code: row?.code || row?.codigo || '-',
+            troco: row?.troco || row?.cashback || '-',
+            result: row?.result || row?.resultado || 'Compõe a proposta',
+          }
+        })
+      : []
+
+    const contractDetailsFromContracts = Array.isArray(contractsRaw)
+      ? contractsRaw.map((c, cIdx) => {
+          if (typeof c === 'string') {
+            return {
+              key: `${index}-c-${cIdx}-${c}`,
+              bank: c,
+              code: '-',
+              troco: '-',
+              result: 'Compõe a proposta',
+            }
+          }
+          return {
+            key: `${index}-c-${cIdx}-${c?.bank || c?.banco || 'contrato'}`,
+            bank: c?.bank || c?.banco || `Contrato ${cIdx + 1}`,
+            code: c?.code || c?.codigo || '-',
+            troco: c?.troco || c?.cashback || '-',
+            result: c?.result || c?.resultado || 'Compõe a proposta',
+          }
+        })
+      : []
+
+    const contractDetails = contractDetailsFromRows.length > 0 ? contractDetailsFromRows : contractDetailsFromContracts
+    const contracts = contractDetails.map((c) => c.bank)
+
+    return {
+      key: raw?.key || raw?.id || `cenario_${index + 1}`,
+      eyebrow: raw?.eyebrow || raw?.label || `Cenário ${index + 1}`,
+      title: raw?.title || raw?.nome || raw?.name || `Cenário ${index + 1}`,
+      desc: raw?.desc || raw?.descricao || raw?.description || 'Simulação de refinanciamento',
+      cash: raw?.cash || raw?.creditoReceber || raw?.valorLiberado || fmtCurrency(raw?.valor),
+      installment: raw?.installment || raw?.parcelaNova || fmtInstallment(raw?.parcela),
+      margem: raw?.margem || raw?.margemLivre || fmtCurrency(raw?.margem_valor),
+      contracts,
+      contractDetails,
+    }
+  }
+
+  const scenarios = useMemo(() => {
+    const state = location.state || {}
+    const apiCandidates =
+      state.scenarios ||
+      state.ofertasRefinanciamento ||
+      state.ofertas_refinanciamento ||
+      state.refinanciamentoOfertas ||
+      state.refinOffers ||
+      state.ofertas
+
+    if (Array.isArray(apiCandidates) && apiCandidates.length > 0) {
+      return apiCandidates.slice(0, 3).map((raw, idx) => normalizeScenario(raw, idx))
+    }
+
+    return SCENARIOS.map((raw, idx) =>
+      normalizeScenario(
+        {
+          ...raw,
+          contracts: raw.contracts,
+          receiptRows: raw.receiptRows,
+          margemLivre: raw.margem,
+          parcelaNova: raw.installment,
+          creditoReceber: raw.cash,
+        },
+        idx,
+      ),
+    )
+  }, [location.state])
+
+  useEffect(() => {
+    if (activeIdx > scenarios.length - 1) setActiveIdx(0)
+  }, [activeIdx, scenarios.length])
+
+  const scenario = scenarios[activeIdx] || scenarios[0]
+
   const salarioBase = 2200
   const parcelaAntes = 550
   const parcelaDepois = parseMoney(scenario.installment)
   const liquidoAntes = salarioBase - parcelaAntes
   const liquidoDepois = salarioBase - parcelaDepois
-  const ctaNames = ['Máximo Dinheiro', 'Máxima Margem', 'Menor Parcela']
-
-  const handleGoContratacao = () => {
-    navigate('/dados-bancarios', {
-      state: {
-        sourcePath: '/refinanciamento',
-        nextPath: '/contratacao',
-        offerState: {
-          sourcePath: '/refinanciamento',
-          offerTitle: 'Refinanciamento',
-          offerSubtitle: 'Resumo da oferta selecionada antes da contratacao',
-          primaryValue: scenario.cash,
-          ctaLabel: 'Confirmar Refinanciamento',
-          summary: [
-            { label: 'Cenario', value: ctaNames[activeIdx] },
-            { label: 'Voce recebe', value: scenario.cash },
-            { label: 'Nova parcela', value: scenario.installment },
-            { label: 'Margem livre', value: scenario.margem },
-            { label: 'Contratos', value: String(scenario.contracts.length) },
-          ],
-        },
-      },
-    })
-  }
-
-  const scenarioList = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: isDesktop ? 0 : 24 }}>
-      {/* Tag */}
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: t.blueLight, borderRadius: 999, padding: '4px 12px 4px 8px', marginBottom: 4, alignSelf: 'flex-start' }}>
-        <div style={{ width: 6, height: 6, borderRadius: '50%', background: t.blue }} />
-        <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', color: t.blue, textTransform: 'uppercase' }}>Refinanciamento por Contrato</span>
-      </div>
-      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: t.muted, marginBottom: 4 }}>Escolha o cenário com melhor impacto na sua rotina</div>
-
-      {SCENARIOS.map((s, i) => (
-        <ScenarioCard
-          key={s.key}
-          scenario={s}
-          icon={SCENARIO_ICONS[i]}
-          active={activeIdx === i}
-          onClick={() => { setActiveIdx(i); setDetails(false) }}
-        />
-      ))}
-    </div>
-  )
-
-  const offerCard = (
-    <div style={{ background: '#fff', borderRadius: 20, border: `1px solid ${t.line}`, boxShadow: t.shadow, padding: 16 }}>
-      {/* Selected scenario summary */}
-      <div style={{ marginBottom: 14, padding: '12px 14px', borderRadius: 16, background: scenario.colors.bg, border: `1px solid ${scenario.colors.border}` }}>
-        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: scenario.colors.eyebrow, marginBottom: 4 }}>{scenario.eyebrow} selecionado</div>
-        <div style={{ fontSize: 15, fontWeight: 700, color: t.text, marginBottom: 10 }}>{scenario.title}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          <div style={{ textAlign: 'center', background: 'rgba(255,255,255,.6)', borderRadius: 12, padding: '8px 4px' }}>
-            <div style={{ fontSize: 8.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.04em', color: t.muted, marginBottom: 4 }}>Você recebe</div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: scenario.colors.kpiValue, letterSpacing: '-.02em', lineHeight: 1 }}>{scenario.cash}</div>
-          </div>
-          <div style={{ textAlign: 'center', background: 'rgba(255,255,255,.6)', borderRadius: 12, padding: '8px 4px' }}>
-            <div style={{ fontSize: 8.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.04em', color: t.muted, marginBottom: 4 }}>Nova parcela</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: scenario.colors.kpiValue, letterSpacing: '-.02em', lineHeight: 1 }}>{scenario.installment}</div>
-          </div>
-        </div>
-      </div>
-
-      {/* CTA */}
-      <button
-        onMouseEnter={() => setHovCta(true)}
-        onMouseLeave={() => setHovCta(false)}
-        onClick={handleGoContratacao}
-        style={{
-          width: '100%', border: 0, borderRadius: 14, padding: '15px 14px', marginBottom: 8,
-          background: hovCta ? t.blue2 : t.blue, color: '#fff', fontSize: 15, fontWeight: 600,
-          lineHeight: 1.2, boxShadow: '0 8px 20px rgba(35,80,200,.25)', cursor: 'pointer',
-          fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", transition: 'background .15s ease',
-        }}
-      >Escolher cenário {ctaNames[activeIdx]}</button>
-
-      {/* Toggle details */}
-      <button
-        onClick={() => setDetails(v => !v)}
-        onMouseEnter={() => setHovDetails(true)}
-        onMouseLeave={() => setHovDetails(false)}
-        style={{
-          width: '100%', border: `1.5px solid ${t.blueMid}`, borderRadius: 14, padding: 13,
-          background: hovDetails ? '#f0f5ff' : 'transparent', color: t.blue, fontSize: 13.5, fontWeight: 500,
-          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-          fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", transition: 'background .15s ease',
-        }}
-        aria-expanded={detailsOpen}
-      >
-        <span>Ver detalhes da oferta</span>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, transition: 'transform .25s cubic-bezier(.4,0,.2,1)', transform: detailsOpen ? 'rotate(180deg)' : 'none', display: 'block' }}>
-          <path d="M3 6l5 5 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
-
-      {/* Details */}
-      {detailsOpen && (
-        <div style={{ marginTop: 12, animation: 'fadeIn .22s ease forwards' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
-            <div>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.10em', textTransform: 'uppercase', color: t.muted, marginBottom: 4 }}>Detalhes da oferta</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: t.text }}>Extrato da simulação</div>
-            </div>
-            <div style={{ borderRadius: 999, background: t.blueLight, border: `1px solid ${t.blueMid}`, padding: '5px 12px', fontSize: 10, fontWeight: 700, color: t.blue, whiteSpace: 'nowrap', flexShrink: 0 }}>
-              {scenario.contracts.length} {scenario.contracts.length === 1 ? 'contrato' : 'contratos'}
-            </div>
-          </div>
-          <div style={{ background: '#f7f9fe', border: `1px solid ${t.line}`, borderRadius: 16, padding: 10, display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
-            <Receipt scenario={scenario} />
-          </div>
-          <button
-            onMouseEnter={() => setHovDown(true)}
-            onMouseLeave={() => setHovDown(false)}
-            style={{
-              width: '100%', border: `1.5px solid #d2ddfb`, borderRadius: 14, padding: 13,
-              background: hovDown ? '#e6efff' : '#edf3ff', color: t.blue, fontSize: 13, fontWeight: 600,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              cursor: 'pointer', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-              transition: 'background .15s ease',
-            }}
-            onClick={() => window.print()}
-          >
-            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none">
-              <path d="M3 11h10M8 3v8M5 8l3 3 3-3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <span>Fazer download da simulação</span>
-          </button>
-        </div>
-      )}
-
-      <p style={{ fontSize: 8, color: t.muted, textAlign: 'right', marginTop: 10, opacity: .68, fontStyle: 'italic', lineHeight: 1.4 }}>
-        Valores estimados. Sujeitos à análise e aprovação de crédito.
-      </p>
-    </div>
-  )
-
-  const summarySidebar = (
-    <div style={{ background: '#fff', borderRadius: 16, border: `1px solid ${t.line}`, boxShadow: t.shadow, padding: 14 }}>
-      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: t.muted, marginBottom: 10 }}>
-        Resumo da oferta
-      </div>
-      {[
-        ['Cenário', ctaNames[activeIdx]],
-        ['Você recebe', scenario.cash],
-        ['Nova parcela', scenario.installment],
-        ['Margem livre', scenario.margem],
-        ['Contratos', String(scenario.contracts.length)],
-      ].map(([label, value]) => (
-        <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '7px 0', borderBottom: `1px solid ${t.line}` }}>
-          <span style={{ fontSize: 11, color: t.muted, fontWeight: 600 }}>{label}</span>
-          <strong style={{ fontSize: 11.5, color: t.text, fontWeight: 700, textAlign: 'right' }}>{value}</strong>
-        </div>
-      ))}
-
-      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: t.muted, marginTop: 12, marginBottom: 10 }}>
-        Salário líquido
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-        <div style={{ borderRadius: 12, border: `1px solid ${t.line}`, background: '#f7f9ff', padding: 10 }}>
-          <div style={{ fontSize: 9.5, textTransform: 'uppercase', letterSpacing: '.06em', color: t.muted, fontWeight: 700, marginBottom: 5 }}>Antes</div>
-          <div style={{ fontSize: 17, fontWeight: 700, color: t.text, lineHeight: 1.1 }}>R$ {liquidoAntes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-          <div style={{ fontSize: 10, color: t.muted, marginTop: 5, lineHeight: 1.35 }}>Com parcela de R$ {parcelaAntes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-        </div>
-        <div style={{ borderRadius: 12, border: '1px solid #b8e0ca', background: '#eefaf3', padding: 10 }}>
-          <div style={{ fontSize: 9.5, textTransform: 'uppercase', letterSpacing: '.06em', color: t.green, fontWeight: 700, marginBottom: 5 }}>Depois</div>
-          <div style={{ fontSize: 17, fontWeight: 700, color: t.green, lineHeight: 1.1 }}>R$ {liquidoDepois.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-          <div style={{ fontSize: 10, color: t.greenSoft, marginTop: 5, lineHeight: 1.35 }}>Com parcela de R$ {parcelaDepois.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-        </div>
-      </div>
-    </div>
-  )
-
-  const otherOptions = (
-    <div style={{ marginTop: isDesktop ? 28 : 24 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: t.text, flex: 1 }}>Outras opções para comparar</div>
-        <div style={{ fontSize: 10, color: t.muted, fontWeight: 500 }}>2 disponíveis</div>
-      </div>
-      <MiniCard variant="eco"  name="Economia Inteligente" desc="Faça a portabilidade dos seus contratos e economize" value="2.399" detail="estimado de economia" onNav={() => navigate('/portabilidade')} />
-      <MiniCard variant="novo" name="Novo Empréstimo"       desc="Mais dinheiro disponível com pequeno ajuste na parcela" value="2.845" detail="estimado disponível" onNav={() => navigate('/novo-contrato')} />
-    </div>
-  )
-
-  const bottomBack = (
-    <div style={{ marginTop: isDesktop ? 24 : 18 }}>
-      <button
-        onClick={() => navigate('/ofertas')}
-        onMouseEnter={() => setBackHover(true)}
-        onMouseLeave={() => setBackHover(false)}
-        style={{
-          width: '100%',
-          border: `1.5px solid ${t.blueMid}`,
-          borderRadius: 14,
-          padding: isDesktop ? '14px 16px' : '13px 14px',
-          background: backHover ? '#f0f5ff' : '#fff',
-          color: t.blue,
-          fontSize: isDesktop ? 14 : 13.5,
-          fontWeight: 700,
-          cursor: 'pointer',
-          fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-          transition: 'background .15s ease',
-        }}
-      >
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
-          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          Voltar para ofertas
-        </span>
-      </button>
-    </div>
-  )
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-        * { box-sizing: border-box; }
-        @keyframes fadeIn  { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: translateY(0) } }
-        @keyframes slideUp { from { transform: translateY(100%) } to { transform: translateY(0) } }
-        button:focus-visible { outline: 3px solid rgba(35,80,200,.4); outline-offset: 2px; }
+        :root { --blue-dark:#03246F; --blue-main:#055ECE; --logo-blue:#1DA1EB; --cyan:#00E7FF; --green:#007A52; --green-soft:#E9F8F1; --green-line:#BDECD7; --muted:#64748B; --line:#DDE8F6; --blue-soft:#F4F8FF; --shadow:0 18px 48px rgba(3,36,111,.08); }
+        .rf-page * { box-sizing:border-box; margin:0; padding:0; }
+        .rf-page { min-height:100vh; position:relative; overflow-x:hidden; padding-bottom:48px; background:radial-gradient(circle at 12% 10%, rgba(0,231,255,.14), transparent 28%), radial-gradient(circle at 88% 18%, rgba(29,161,235,.12), transparent 30%), linear-gradient(180deg, #EAF5FF 0%, #F8FBFF 46%, #FFFFFF 100%); }
+        .rf-shell { width:calc(100% - 96px); max-width:1280px; margin:0 auto; position:relative; z-index:1; padding-top:30px; }
+        .main-layout { display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:30px; align-items:start; }
+        .strategy-hero { margin-bottom:20px; padding:26px 30px; border-radius:30px; background:radial-gradient(circle at 92% 8%, rgba(0,231,255,.15), transparent 34%), radial-gradient(circle at 10% 100%, rgba(0,122,82,.07), transparent 34%), linear-gradient(180deg, rgba(255,255,255,.98) 0%, #FFF 100%); border:1px solid var(--line); box-shadow:var(--shadow); position:relative; overflow:hidden; }
+        .strategy-hero::before { content:''; position:absolute; inset:0 0 auto 0; height:5px; background:linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--cyan), var(--green)); }
+        .hero-kicker { color:var(--blue-main); font-size:12px; font-weight:950; letter-spacing:.13em; text-transform:uppercase; }
+        .hero-heading { margin-top:10px; color:var(--blue-dark); font-size:clamp(32px,3.3vw,44px); line-height:.98; font-weight:950; letter-spacing:-.07em; }
+        .hero-heading span { color:var(--green); }
+        .hero-copy { max-width:720px; margin-top:12px; color:var(--muted); font-size:15px; line-height:1.45; font-weight:650; }
+        .hero-trust-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+        .hero-chip { padding:8px 11px; border-radius:999px; background:var(--blue-soft); border:1px solid var(--line); color:var(--blue-dark); font-size:12px; font-weight:850; }
+        .offer-flow-card { padding:20px; border-radius:30px; background:radial-gradient(circle at 92% 8%, rgba(0,231,255,.10), transparent 34%), linear-gradient(180deg, rgba(255,255,255,.98) 0%, #FFF 100%); border:1px solid var(--line); box-shadow:none; position:relative; overflow:hidden; }
+        .offer-flow-card::before { content:''; position:absolute; inset:0 0 auto 0; height:5px; background:linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--cyan), var(--green)); }
+        .offer-flow-card > * { position:relative; z-index:1; }
+        .offer-flow-header { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
+        .offer-flow-header h2 { color:var(--blue-dark); font-size:20px; line-height:1.05; font-weight:950; letter-spacing:-.04em; }
+        .offer-flow-header p { margin-top:5px; color:var(--muted); font-size:12.5px; line-height:1.35; font-weight:650; }
+        .offer-flow-badge { padding:8px 11px; border-radius:999px; background:rgba(0,231,255,.12); border:1px solid rgba(0,231,255,.30); color:var(--blue-main); font-size:11px; font-weight:950; text-transform:uppercase; letter-spacing:.08em; }
+        .scenario-list { display:grid; gap:14px; }
+        .scenario-card { padding:22px; border-radius:28px; background:rgba(255,255,255,.96); border:1px solid var(--line); box-shadow:0 16px 38px rgba(3,36,111,.07); position:relative; overflow:hidden; cursor:pointer; }
+        .scenario-card::before { content:''; position:absolute; inset:0 0 auto 0; height:5px; background:linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--cyan)); }
+        .scenario-card.selected { border:2px solid var(--cyan); background:radial-gradient(circle at 92% 8%, rgba(0,231,255,.12), transparent 34%), linear-gradient(180deg, #F8FEFF 0%, #FFF 100%); }
+        .scenario-card.green { background:radial-gradient(circle at 92% 8%, rgba(29,161,235,.14), transparent 34%), linear-gradient(180deg, #F4FBFF 0%, #FFF 100%); }
+        .scenario-card.gold { background:radial-gradient(circle at 92% 8%, rgba(0,122,82,.11), transparent 34%), radial-gradient(circle at 8% 100%, rgba(0,231,255,.08), transparent 32%), linear-gradient(180deg, #F3FFF9 0%, #FFF 100%); }
+        .scenario-header { display:grid; grid-template-columns:44px 1fr; gap:14px; align-items:start; }
+        .scenario-icon { width:42px; height:42px; border-radius:15px; display:grid; place-items:center; background:linear-gradient(145deg, var(--blue-main), var(--cyan)); color:#fff; font-size:19px; font-weight:950; }
+        .scenario-eyebrow { color:var(--blue-main); font-size:10.5px; font-weight:950; letter-spacing:.12em; text-transform:uppercase; }
+        .scenario-title { margin-top:3px; color:var(--blue-dark); font-size:20px; line-height:1.05; font-weight:950; letter-spacing:-.04em; }
+        .scenario-copy { margin-top:5px; color:var(--muted); font-size:12.5px; line-height:1.35; font-weight:650; }
+        .scenario-metrics { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; margin-top:18px; }
+        .scenario-metric { min-height:74px; padding:13px; border-radius:18px; background:var(--blue-soft); border:1px solid var(--line); }
+        .scenario-metric small { display:block; color:var(--muted); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.04em; }
+        .scenario-metric strong { display:block; margin-top:6px; color:var(--blue-main); font-size:18px; font-weight:950; letter-spacing:-.04em; }
+        .contract-tags { margin-top:16px; padding-top:14px; border-top:1px solid var(--line); }
+        .contract-tags small { display:block; color:var(--muted); font-size:10.5px; font-weight:950; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+        .tag-list { display:flex; flex-wrap:wrap; gap:7px; }
+        .tag { padding:7px 10px; border-radius:999px; background:var(--blue-soft); color:var(--blue-main); border:1px solid var(--line); font-size:11px; font-weight:850; }
+        .scenario-actions { margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
+        .consigai-cta-animated { position:relative; overflow:hidden; transform:translateY(0); transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease, background-position .35s ease, filter .18s ease; animation:consigaiDetailsFloat 3.8s ease-in-out infinite; background-size:220% 100%; background-position:0% 0%; cursor:pointer; }
+        .consigai-cta-animated:hover { background-position:100% 0%; animation-play-state:paused; transform:translateY(-2px) scale(1.01) !important; filter:saturate(1.05); }
+        .consigai-cta-animated:active { transform:translateY(0) scale(.985); }
+        .consigai-cta-animated::after { content:''; position:absolute; inset:0; background:linear-gradient(115deg, transparent 0%, rgba(255,255,255,.55) 45%, transparent 60%); transform:translateX(-120%) skewX(-18deg); opacity:0; pointer-events:none; }
+        .consigai-cta-animated:hover::after { opacity:1; animation:consigaiDetailsShine .9s ease forwards; }
+        @keyframes consigaiDetailsFloat { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-1px); } }
+        @keyframes consigaiDetailsShine { 0% { transform:translateX(-120%) skewX(-18deg); } 100% { transform:translateX(120%) skewX(-18deg); } }
+        .primary-cta { width:100%; min-height:54px; border:0; border-radius:18px; background:linear-gradient(145deg, var(--blue-main), var(--blue-dark)); color:#fff; font-size:15px; font-weight:950; cursor:pointer; }
+        .secondary-cta,.back-offers-cta { width:100%; min-height:50px; margin-top:12px; border-radius:17px; border:1px solid #BFD4F6; background:#fff; color:var(--blue-main); font-size:14px; font-weight:900; cursor:pointer; }
+        .back-offers-cta { min-height:46px; margin-top:10px; border-radius:14px; border:1px solid #BFD4F6; background:#fff; color:#055ECE; font-size:14px; font-weight:900; box-shadow:0 8px 20px rgba(30,60,180,.12); }
+        .safe-note { margin-top:12px; color:var(--muted); text-align:center; font-size:10.5px; font-weight:650; }
+        .side-card { padding:22px; border-radius:26px; background:rgba(255,255,255,.98); border:1px solid var(--line); box-shadow:0 18px 46px rgba(3,36,111,.08); }
+        .side-card + .side-card { margin-top:16px; }
+        .side-card h3 { color:var(--blue-dark); font-size:15px; font-weight:950; text-transform:uppercase; }
+        .side-card p { margin-top:5px; color:var(--muted); font-size:12px; line-height:1.35; font-weight:650; }
+        .proposal-highlight { margin-top:16px; padding:16px; border-radius:20px; background:radial-gradient(circle at 92% 8%, rgba(0,231,255,.12), transparent 34%), linear-gradient(180deg,#F8FBFF 0%, #FFF 100%); border:1px solid rgba(0,231,255,.34); }
+        .proposal-highlight small { display:block; color:var(--blue-main); font-size:10.5px; font-weight:950; letter-spacing:.08em; text-transform:uppercase; }
+        .proposal-highlight strong { display:block; margin-top:6px; color:var(--blue-dark); font-size:21px; font-weight:950; }
+        .proposal-highlight span { display:block; margin-top:8px; color:var(--muted); font-size:12px; line-height:1.35; font-weight:700; }
+        .summary-list { margin-top:12px; }
+        .summary-row { display:flex; justify-content:space-between; gap:16px; padding:13px 0; border-bottom:1px solid var(--line); color:var(--muted); font-size:13px; font-weight:800; }
+        .summary-row strong { color:var(--blue-dark); font-weight:950; }
+        .contract-accordion { margin-top:16px; display:grid; gap:10px; }
+        .accordion-title { color:var(--blue-dark); font-size:12px; font-weight:950; letter-spacing:.06em; text-transform:uppercase; }
+        .contract-detail { border-radius:16px; border:1px solid var(--line); background:var(--blue-soft); overflow:hidden; }
+        .contract-detail[open] { background:#fff; border-color:rgba(0,231,255,.34); box-shadow:0 12px 26px rgba(3,36,111,.06); }
+        .contract-detail summary { list-style:none; min-height:46px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; gap:12px; cursor:pointer; }
+        .contract-detail summary::-webkit-details-marker { display:none; }
+        .contract-detail summary::after { content:'⌄'; color:var(--blue-main); font-weight:950; transition:transform 160ms ease; }
+        .contract-detail[open] summary::after { transform:rotate(180deg); }
+        .contract-detail summary span { color:var(--blue-dark); font-size:13px; font-weight:950; }
+        .contract-detail summary strong { margin-left:auto; color:var(--green); font-size:11px; font-weight:950; text-transform:uppercase; letter-spacing:.04em; }
+        .contract-detail-body { display:grid; gap:8px; padding:0 14px 14px; }
+        .contract-detail-body div { display:flex; justify-content:space-between; gap:12px; padding:9px 10px; border-radius:12px; background:#F8FBFF; border:1px solid var(--line); }
+        .contract-detail-body span { color:var(--muted); font-size:11px; font-weight:800; }
+        .contract-detail-body strong { color:var(--blue-dark); font-size:11px; font-weight:950; text-align:right; }
+        .salary-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+        .salary-box { padding:14px; border-radius:18px; background:#F8FBFF; border:1px solid var(--line); }
+        .salary-box.green { background:var(--green-soft); border-color:var(--green-line); }
+        .salary-box small { display:block; color:var(--muted); font-size:11px; font-weight:850; }
+        .salary-box strong { display:block; margin-top:7px; color:var(--blue-dark); font-size:21px; font-weight:950; }
+        .salary-box.green strong { color:var(--green); }
+        .salary-box span { display:block; margin-top:6px; color:var(--muted); font-size:10.5px; line-height:1.25; font-weight:700; }
+        .installment-impact { margin-top:12px; padding:13px 14px; border-radius:18px; background:var(--blue-soft); border:1px solid var(--line); }
+        .installment-impact span { display:block; color:var(--muted); font-size:11px; font-weight:850; }
+        .installment-impact strong { display:block; margin-top:6px; color:var(--blue-main); font-size:20px; font-weight:950; }
+        @media (max-width:1100px){ .main-layout{ grid-template-columns:1fr; } .sidebar{ display:grid; grid-template-columns:1fr 1fr; gap:16px; } .side-card + .side-card{ margin-top:0; } }
+        @media (max-width:900px){ .rf-shell{ width:calc(100% - 32px); } .scenario-metrics,.salary-grid,.sidebar{ grid-template-columns:1fr; } }
+        @media (max-width:560px){ .hero-heading{ font-size:34px; } .strategy-hero,.scenario-card{ padding:22px; } .scenario-header{ grid-template-columns:42px 1fr; } }
       `}</style>
 
       <div style={appPageStyle}>
         {isDesktop ? (
-          <>
-            <DesktopPageHeader
-              clientName={clientName}
-              chipLabel="Refinanciamento"
-              title="Refinancie com inteligencia e escolha o melhor impacto no seu mes"
-              subtitle="Compare cenario por cenario com clareza antes de confirmar."
-              onLogoClick={() => navigate('/ofertas')}
-              actions={[
-                { label: 'Ofertas', onClick: () => navigate('/ofertas') },
-                { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
-              ]}
-            />
-            <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px 56px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 340px', gap: 24, alignItems: 'start' }}>
-                <div>
-                  {scenarioList}
-                  {otherOptions}
-                  {bottomBack}
-                </div>
-                <div style={{ position: 'sticky', top: 24 }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    {summarySidebar}
-                    {offerCard}
+          <DesktopPageHeader clientName={clientName} chipLabel="Refinanciamento" title="Refinancie com inteligencia e escolha o melhor impacto no seu mes" subtitle="Compare cenario por cenario com clareza antes de confirmar." onLogoClick={() => navigate('/ofertas')} actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configuracoes', onClick: () => navigate('/configuracoes') }]} />
+        ) : (
+          <MobilePageHeader clientName={clientName} chipLabel="Refinanciamento" title="Refinancie com inteligencia e escolha o melhor impacto no seu mes" subtitle="Compare cenario por cenario com clareza antes de confirmar." onLogoClick={() => navigate('/ofertas')} actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configuracoes', onClick: () => navigate('/configuracoes') }]} />
+        )}
+
+        <div className="rf-page">
+          <main className="rf-shell">
+            <div className="main-layout">
+              <section>
+                <section className="strategy-hero">
+                  <div className="hero-kicker">Refinanciamento por contrato</div>
+                  <h1 className="hero-heading">Escolha o cenário com <span>melhor impacto</span></h1>
+                  <p className="hero-copy">A ConsigAI compara seus contratos e organiza as melhores estratégias para liberar dinheiro, reduzir parcela ou preservar sua margem com transparência.</p>
+                  <div className="hero-trust-row">
+                    <span className="hero-chip">Simulação sem compromisso</span>
+                    <span className="hero-chip">Você compara antes de decidir</span>
+                    <span className="hero-chip">Nenhuma contratação automática</span>
+                  </div>
+                </section>
+
+                <section className="offer-flow-card">
+                  <div className="offer-flow-header">
+                    <div>
+                      <h2>Cenários disponíveis</h2>
+                      <p>Escolha uma estratégia e veja o resumo da proposta ao lado.</p>
+                    </div>
+                    <span className="offer-flow-badge">{scenarios.length} opções</span>
+                  </div>
+
+                  <div className="scenario-list">
+                    {scenarios.map((s, i) => (
+                      <article
+                        key={s.key}
+                        className={`scenario-card ${i === 1 ? 'green' : ''} ${i === 2 ? 'gold' : ''} ${activeIdx === i ? 'selected' : ''}`}
+                        onClick={() => { setActiveIdx(i); setDetailsOpen(false) }}
+                        onMouseEnter={() => setHoveredIdx(i)}
+                        onMouseLeave={() => setHoveredIdx(-1)}
+                        style={getSelectableCardStyle({ selected: activeIdx === i, hovered: hoveredIdx === i })}
+                      >
+                        <div className="scenario-header">
+                          <div className="scenario-icon">{ICONS[i] || '$'}</div>
+                          <div>
+                            <div className="scenario-eyebrow">{s.eyebrow}</div>
+                            <h2 className="scenario-title">{s.title}</h2>
+                            <p className="scenario-copy">{s.desc}</p>
+                          </div>
+                        </div>
+                        <div className="scenario-metrics">
+                          <div className="scenario-metric"><small>Você recebe</small><strong>{s.cash}</strong></div>
+                          <div className="scenario-metric"><small>Nova parcela</small><strong>{s.installment}</strong></div>
+                          <div className="scenario-metric"><small>Margem livre</small><strong>{s.margem}</strong></div>
+                          <div className="scenario-metric"><small>Contratos</small><strong>{s.contracts.length} {s.contracts.length === 1 ? 'contrato' : 'contratos'}</strong></div>
+                        </div>
+                        <div className="contract-tags"><small>Contratos incluídos</small><div className="tag-list">{s.contracts.map((c) => <span key={c} className="tag">{c}</span>)}</div></div>
+                      </article>
+                    ))}
+                  </div>
+
+                  <div className="scenario-actions">
+                    <button className="primary-cta consigai-cta-animated">Escolher cenário {scenario.title}</button>
+                    <button className="secondary-cta consigai-cta-animated" onClick={() => setDetailsOpen((v) => !v)}>Ver detalhes da oferta</button>
+                    {detailsOpen && (
+                      <div style={{ marginTop: 12, background: '#f7f9fe', border: '1px solid var(--line)', borderRadius: 16, padding: 10, display: 'flex', justifyContent: 'center' }}>
+                        <div style={{ width: 300, borderRadius: 10, padding: '14px 12px 12px', border: '1px solid #ececec', color: '#4f4f4f', fontSize: 12, background: 'linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)), #f5f5f3' }}>
+                          <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, color: '#444' }}>SIMULACAO DE REFINANCIAMENTO - CONSIGAI</div>
+                          <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
+                          <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>VOCE VAI RECEBER HOJE</div>
+                          <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323', lineHeight: 1 }}>{scenario.cash}</div>
+                          <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
+                          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10, color: '#5b5b5b' }}>
+                            <thead>
+                              <tr>
+                                <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767', paddingRight: 10 }}>Cod.</th>
+                                <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>Banco</th>
+                                <th style={{ fontSize: 8, textAlign: 'right', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>Troco</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {scenario.contractDetails.map((item) => (
+                                <tr key={item.key}>
+                                  <td style={{ fontSize: 8, padding: '4px 0', paddingRight: 10, whiteSpace: 'nowrap' }}>{item.code}</td>
+                                  <td style={{ padding: '4px 0' }}>{item.bank}</td>
+                                  <td style={{ padding: '4px 0', textAlign: 'right', fontWeight: 700, color: '#3b3b3b' }}>{item.troco}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                          <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: '#555' }}>Nova parcela total</span>
+                            <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>{scenario.installment}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <p className="safe-note">Valores estimados. Sujeitos à análise e aprovação de crédito.</p>
+                    <button className="back-offers-cta consigai-cta-animated" onClick={() => navigate('/ofertas')}>Voltar para ofertas</button>
+                  </div>
+                </section>
+              </section>
+
+              <aside className="sidebar">
+                <div className="side-card proposal-card">
+                  <h3>Resumo da proposta</h3>
+                  <p>Veja o cenário escolhido e o que acontece com cada contrato antes de avançar.</p>
+                  <div className="proposal-highlight"><small>Cenário selecionado</small><strong>{scenario.title}</strong><span>{scenario.desc}</span></div>
+                  <div className="summary-list">
+                    <div className="summary-row"><span>Você recebe</span><strong>{scenario.cash}</strong></div>
+                    <div className="summary-row"><span>Nova parcela total</span><strong>{scenario.installment}</strong></div>
+                    <div className="summary-row"><span>Margem livre</span><strong>{scenario.margem}</strong></div>
+                    <div className="summary-row"><span>Contratos</span><strong>{scenario.contracts.length} refinanciados</strong></div>
+                  </div>
+                  <div className="contract-accordion">
+                    <div className="accordion-title">O que acontece com cada contrato</div>
+                    {scenario.contractDetails.map((item) => (
+                      <details key={item.key} className="contract-detail">
+                        <summary>
+                          <span>{item.bank}</span>
+                          <strong>Refinancia</strong>
+                        </summary>
+                        <div className="contract-detail-body">
+                          <div><span>Código</span><strong>{item.code}</strong></div>
+                          <div><span>Troco</span><strong>{item.troco}</strong></div>
+                          <div><span>Resultado</span><strong>{item.result}</strong></div>
+                        </div>
+                      </details>
+                    ))}
                   </div>
                 </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <MobilePageHeader
-              clientName={clientName}
-              chipLabel="Refinanciamento"
-              title="Refinancie com inteligencia e escolha o melhor impacto no seu mes"
-              subtitle="Compare cenario por cenario com clareza antes de confirmar."
-              onLogoClick={() => navigate('/ofertas')}
-              actions={[
-                { label: 'Ofertas', onClick: () => navigate('/ofertas') },
-                { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
-              ]}
-            />
-            <div style={{ background: t.bg, borderRadius: '26px 26px 0 0', marginTop: 0, padding: '20px 18px calc(24px + env(safe-area-inset-bottom))' }}>
-              {scenarioList}
-              {offerCard}
-              {otherOptions}
-                  {bottomBack}
-            </div>
-          </>
-        )}
-      </div>
 
-      {sheetOpen && <BottomSheet scenario={scenario} onClose={() => setSheet(false)} />}
+                <div className="side-card">
+                  <h3>Impacto no bolso</h3>
+                  <p>Veja quanto sobra depois da nova parcela.</p>
+                  <div className="salary-grid">
+                    <div className="salary-box"><small>Antes</small><strong>{liquidoAntes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong><span>com parcela atual de {parcelaAntes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span></div>
+                    <div className="salary-box green"><small>Depois</small><strong>{liquidoDepois.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong><span>com nova parcela estimada</span></div>
+                  </div>
+                  <div className="installment-impact"><span>Nova parcela total</span><strong>{scenario.installment}</strong></div>
+                </div>
+
+                <div style={{ padding: 22, borderRadius: 26, background: 'radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.10), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)', border: '1px solid #DDE8F6', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
+                  <h3 style={{ color: '#03246F', fontSize: 15, fontWeight: 950, textTransform: 'uppercase' }}>Voce esta no controle</h3>
+                  <p style={{ marginTop: 5, color: '#64748B', fontSize: 12 }}>Antes de avancar, a ConsigAI mostra as condicoes principais para voce decidir com calma e clareza.</p>
+                  <div style={{ display: 'grid', gap: 10, marginTop: 14 }}>
+                    {[
+                      ['Sem compromisso', 'Esta etapa e apenas uma simulacao.'],
+                      ['Sem contratacao automatica', 'Nada e enviado sem sua confirmacao.'],
+                      ['Transparencia total', 'Voce vera taxa, prazo, parcela e custo total.'],
+                    ].map(([title, text]) => (
+                      <div key={title} style={{ display: 'flex', gap: 10, padding: '11px 12px', borderRadius: 16, background: '#F4F8FF', border: '1px solid #DDE8F6' }}>
+                        <span style={{ width: 22, height: 22, borderRadius: '50%', display: 'grid', placeItems: 'center', background: '#E9F8F1', color: '#007A52', border: '1px solid #BDECD7', fontSize: 12, fontWeight: 950 }}>✓</span>
+                        <div>
+                          <strong style={{ display: 'block', color: '#03246F', fontSize: 12, fontWeight: 950 }}>{title}</strong>
+                          <small style={{ display: 'block', marginTop: 3, color: '#64748B', fontSize: 11 }}>{text}</small>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </main>
+        </div>
+      </div>
     </>
   )
 }
-
-

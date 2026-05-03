@@ -66,7 +66,7 @@ export const OFFER_CARD_CONFIG = [
 export const MAX_API_CARDS = 3
 
 // IDs a mostrar sem chamada à API. Limpar quando o endpoint /api/ofertas estiver pronto.
-export const FORCED_VISIBLE_OFFER_IDS = ['apenas_novo', 'apenas_refin', 'equilibrio']
+export const FORCED_VISIBLE_OFFER_IDS = ['apenas_novo', 'apenas_refin', 'turbo']
 
 export const THIRD_CARD_SUB_OFFERS = {
   contract: { label: 'No contrato', route: '/portabilidade' },

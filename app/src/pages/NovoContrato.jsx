@@ -143,111 +143,132 @@ export default function NovoContrato() {
         <p style={{ marginTop: 12, color: '#64748B', fontSize: 15, lineHeight: 1.45, fontWeight: 650 }}>Escolha um valor, veja a parcela e confirme apenas se fizer sentido para voce. Nenhuma contratacao e feita sem sua confirmacao.</p>
       </section>
 
-      <div style={{ marginBottom: 12 }}><AnchorBtn idx={0} /></div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-        <AnchorBtn idx={1} />
-        <AnchorBtn idx={2} />
-      </div>
-
-      <button
-        onClick={() => setCustomOpen(v => !v)}
-        onMouseEnter={() => setCustomBtnHover(true)}
-        onMouseLeave={() => setCustomBtnHover(false)}
-        style={{
-          width: '100%',
-          minHeight: 58,
-          marginTop: 6,
-          marginBottom: customOpen ? 10 : 14,
-          borderRadius: 22,
-          border: '1px solid',
-          background: 'radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.12), transparent 34%), linear-gradient(180deg, #F4FBFF 0%, #FFFFFF 100%)',
-          color: '#055ECE',
-          fontWeight: 950,
-          fontSize: 15,
-          cursor: 'pointer',
-          ...getSelectableCardStyle({ selected: customOpen, hovered: customBtnHover }),
-        }}
-      >
-        + Personalizar valor e prazo
-      </button>
-      {customOpen && (
-        <div style={{ marginBottom: 14, background: '#fff', border: '1.5px solid #BFD4F6', borderRadius: 20, padding: 14 }}>
-          <div style={{ fontSize: 10, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: 8 }}>Qual valor voce quer?</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#F8FBFF', border: '1px solid #DDE8F6', borderRadius: 12, padding: '10px 12px' }}>
-            <span style={{ color: '#64748B', fontWeight: 800 }}>R$</span>
-            <input
-              type="number"
-              value={customRaw}
-              onChange={(e) => setCustomRaw(e.target.value)}
-              placeholder="0"
-              style={{ border: 0, outline: 'none', background: 'transparent', width: '100%', fontSize: 22, fontWeight: 900, color: '#03246F' }}
-            />
-          </div>
-          <div style={{ marginTop: 8, fontSize: 11, color: customValid || !customRaw ? '#64748B' : '#b42318' }}>
-            {!customRaw && `Digite um valor entre R$ ${fmt(OFERTA.valorMinimo)} e R$ ${fmt(OFERTA.creditoMaximo)}`}
-            {customRaw && !customValid && `Valor deve ficar entre R$ ${fmt(OFERTA.valorMinimo)} e R$ ${fmt(OFERTA.creditoMaximo)}`}
-            {customRaw && customValid && `${selectedPrazo}x de R$ ${fmtDec(calcPMT(customValue, OFERTA.taxaMensal, selectedPrazo))}/mes`}
-          </div>
-          <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
-            {OFERTA.prazosDisponiveis.map((prazo) => {
-              const activePrazo = selectedPrazo === prazo
-              return (
-                <button
-                  key={prazo}
-                  onClick={() => setSelectedPrazo(prazo)}
-                  style={{ borderRadius: 12, border: `1px solid ${activePrazo ? '#055ECE' : '#DDE8F6'}`, background: activePrazo ? '#EAF2FF' : '#fff', color: activePrazo ? '#055ECE' : '#64748B', padding: '10px 6px', fontWeight: 800, cursor: 'pointer' }}
-                >
-                  {prazo}x
-                </button>
-              )
-            })}
-          </div>
+      <section style={{ marginBottom: 12, padding: isDesktop ? '20px 18px' : '16px 14px', borderRadius: 26, border: '1px solid #DDE8F6', background: '#FFFFFF', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
+        <div style={{ marginBottom: 12 }}><AnchorBtn idx={0} /></div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+          <AnchorBtn idx={1} />
+          <AnchorBtn idx={2} />
         </div>
-      )}
 
-      <button
-        className="consigai-cta-animated"
-        onClick={goContratacao}
-        onMouseEnter={() => setCtaHover(true)}
-        onMouseLeave={() => setCtaHover(false)}
-        style={{ width: '100%', minHeight: 52, border: 0, borderRadius: 18, background: ctaHover ? 'linear-gradient(145deg, #0A66E8, #03246F)' : 'linear-gradient(145deg, #055ECE, #03246F)', color: '#fff', fontSize: 16, fontWeight: 950, boxShadow: ctaHover ? '0 12px 24px rgba(35,80,200,.12)' : '0 8px 20px rgba(30,60,180,.3)', cursor: 'pointer' }}
-      >
-        Continuar com esta oferta
-      </button>
+        <button
+          onClick={() => setCustomOpen(v => !v)}
+          onMouseEnter={() => setCustomBtnHover(true)}
+          onMouseLeave={() => setCustomBtnHover(false)}
+          style={{
+            width: '100%',
+            minHeight: 58,
+            marginTop: 6,
+            marginBottom: customOpen ? 10 : 14,
+            borderRadius: 22,
+            border: '1px solid',
+            background: 'radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.12), transparent 34%), linear-gradient(180deg, #F4FBFF 0%, #FFFFFF 100%)',
+            color: '#055ECE',
+            fontWeight: 950,
+            fontSize: 15,
+            cursor: 'pointer',
+            ...getSelectableCardStyle({ selected: customOpen, hovered: customBtnHover }),
+          }}
+        >
+          + Personalizar valor e prazo
+        </button>
+        {customOpen && (
+          <div style={{ marginBottom: 14, background: '#fff', border: '1.5px solid #BFD4F6', borderRadius: 20, padding: 14 }}>
+            <div style={{ fontSize: 10, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: 8 }}>Qual valor voce quer?</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#F8FBFF', border: '1px solid #DDE8F6', borderRadius: 12, padding: '10px 12px' }}>
+              <span style={{ color: '#64748B', fontWeight: 800 }}>R$</span>
+              <input
+                type="number"
+                value={customRaw}
+                onChange={(e) => setCustomRaw(e.target.value)}
+                placeholder="0"
+                style={{ border: 0, outline: 'none', background: 'transparent', width: '100%', fontSize: 22, fontWeight: 900, color: '#03246F' }}
+              />
+            </div>
+            <div style={{ marginTop: 8, fontSize: 11, color: customValid || !customRaw ? '#64748B' : '#b42318' }}>
+              {!customRaw && `Digite um valor entre R$ ${fmt(OFERTA.valorMinimo)} e R$ ${fmt(OFERTA.creditoMaximo)}`}
+              {customRaw && !customValid && `Valor deve ficar entre R$ ${fmt(OFERTA.valorMinimo)} e R$ ${fmt(OFERTA.creditoMaximo)}`}
+              {customRaw && customValid && `${selectedPrazo}x de R$ ${fmtDec(calcPMT(customValue, OFERTA.taxaMensal, selectedPrazo))}/mes`}
+            </div>
+            <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+              {OFERTA.prazosDisponiveis.map((prazo) => {
+                const activePrazo = selectedPrazo === prazo
+                return (
+                  <button
+                    key={prazo}
+                    onClick={() => setSelectedPrazo(prazo)}
+                    style={{ borderRadius: 12, border: `1px solid ${activePrazo ? '#055ECE' : '#DDE8F6'}`, background: activePrazo ? '#EAF2FF' : '#fff', color: activePrazo ? '#055ECE' : '#64748B', padding: '10px 6px', fontWeight: 800, cursor: 'pointer' }}
+                  >
+                    {prazo}x
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+        <div style={{ margin: '4px 0 14px', borderTop: '1px solid #DDE8F6' }} />
 
-      <button
-        className="consigai-cta-animated"
-        onClick={() => setShowReceipt(v => !v)}
-        onMouseEnter={() => setSecondHover(true)}
-        onMouseLeave={() => setSecondHover(false)}
-        style={{ width: '100%', minHeight: 48, marginTop: 10, borderRadius: 17, border: '1px solid #BFD4F6', background: secondHover ? '#F4F8FF' : '#fff', color: '#055ECE', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: secondHover ? '0 12px 24px rgba(35,80,200,.12)' : '0 8px 20px rgba(30,60,180,.12)' }}
-      >
-        Gerar recibo da simulacao
-      </button>
-      {showReceipt && <Receipt offer={offer} />}
-      {showReceipt && (
         <button
           className="consigai-cta-animated"
-          onClick={() => window.print()}
+          onClick={goContratacao}
+          onMouseEnter={() => setCtaHover(true)}
+          onMouseLeave={() => setCtaHover(false)}
+          style={{ width: '100%', minHeight: 52, border: 0, borderRadius: 18, background: ctaHover ? 'linear-gradient(145deg, #0A66E8, #03246F)' : 'linear-gradient(145deg, #055ECE, #03246F)', color: '#fff', fontSize: 16, fontWeight: 950, boxShadow: ctaHover ? '0 12px 24px rgba(35,80,200,.12)' : '0 8px 20px rgba(30,60,180,.3)', cursor: 'pointer' }}
+        >
+          Continuar com esta oferta
+        </button>
+
+        <button
+          className="consigai-cta-animated"
+          onClick={() => setShowReceipt(v => !v)}
+          onMouseEnter={() => setSecondHover(true)}
+          onMouseLeave={() => setSecondHover(false)}
+          style={{ width: '100%', minHeight: 48, marginTop: 10, borderRadius: 17, border: '1px solid #BFD4F6', background: secondHover ? '#F4F8FF' : '#fff', color: '#055ECE', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: secondHover ? '0 12px 24px rgba(35,80,200,.12)' : '0 8px 20px rgba(30,60,180,.12)' }}
+        >
+          Gerar recibo da simulacao
+        </button>
+        {showReceipt && <Receipt offer={offer} />}
+        {showReceipt && (
+          <button
+            className="consigai-cta-animated"
+            onClick={() => window.print()}
+            style={{
+              width: '100%',
+              minHeight: 46,
+              marginTop: 8,
+              borderRadius: 14,
+              border: 0,
+              background: 'linear-gradient(145deg, #055ECE, #03246F)',
+              color: '#fff',
+              fontSize: 13.5,
+              fontWeight: 900,
+              cursor: 'pointer',
+              boxShadow: '0 8px 20px rgba(30,60,180,.3)',
+            }}
+          >
+            Baixar recibo da simulacao
+          </button>
+        )}
+        <p style={{ marginTop: 8, color: '#64748B', textAlign: 'center', fontSize: 11, fontWeight: 650 }}>Valores estimados. Sujeitos a analise e aprovacao de credito.</p>
+        <button
+          className="consigai-cta-animated"
+          onClick={() => navigate('/ofertas')}
           style={{
             width: '100%',
             minHeight: 46,
-            marginTop: 8,
+            marginTop: 10,
             borderRadius: 14,
-            border: 0,
-            background: 'linear-gradient(145deg, #055ECE, #03246F)',
-            color: '#fff',
-            fontSize: 13.5,
+            border: '1px solid #BFD4F6',
+            background: '#fff',
+            color: '#055ECE',
+            fontSize: 14,
             fontWeight: 900,
             cursor: 'pointer',
-            boxShadow: '0 8px 20px rgba(30,60,180,.3)',
+            boxShadow: '0 8px 20px rgba(30,60,180,.12)',
           }}
         >
-          Baixar recibo da simulacao
+          Voltar para ofertas
         </button>
-      )}
-
-      <p style={{ marginTop: 8, color: '#64748B', textAlign: 'center', fontSize: 11, fontWeight: 650 }}>Valores estimados. Sujeitos a analise e aprovacao de credito.</p>
+      </section>
     </div>
   )
 
