@@ -153,28 +153,28 @@ export default function Refinanciamento() {
         .hero-copy { max-width:720px; margin-top:12px; color:var(--muted); font-size:15px; line-height:1.45; font-weight:650; }
         .hero-trust-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
         .hero-chip { padding:8px 11px; border-radius:999px; background:var(--blue-soft); border:1px solid var(--line); color:var(--blue-dark); font-size:12px; font-weight:850; }
-        .offer-flow-card { padding:20px; border-radius:30px; background:radial-gradient(circle at 92% 8%, rgba(0,231,255,.10), transparent 34%), linear-gradient(180deg, rgba(255,255,255,.98) 0%, #FFF 100%); border:1px solid var(--line); box-shadow:none; position:relative; overflow:hidden; }
-        .offer-flow-card::before { content:''; position:absolute; inset:0 0 auto 0; height:5px; background:linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--cyan), var(--green)); }
+        .offer-flow-card { padding:20px; border-radius:30px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); position:relative; overflow:hidden; }
+        .offer-flow-card::before { content:none; }
         .offer-flow-card > * { position:relative; z-index:1; }
         .offer-flow-header { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
         .offer-flow-header h2 { color:var(--blue-dark); font-size:20px; line-height:1.05; font-weight:950; letter-spacing:-.04em; }
         .offer-flow-header p { margin-top:5px; color:var(--muted); font-size:12.5px; line-height:1.35; font-weight:650; }
         .offer-flow-badge { padding:8px 11px; border-radius:999px; background:rgba(0,231,255,.12); border:1px solid rgba(0,231,255,.30); color:var(--blue-main); font-size:11px; font-weight:950; text-transform:uppercase; letter-spacing:.08em; }
         .scenario-list { display:grid; gap:14px; }
-        .scenario-card { padding:22px; border-radius:28px; background:rgba(255,255,255,.96); border:1px solid var(--line); box-shadow:0 16px 38px rgba(3,36,111,.07); position:relative; overflow:hidden; cursor:pointer; }
-        .scenario-card::before { content:''; position:absolute; inset:0 0 auto 0; height:5px; background:linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--cyan)); }
-        .scenario-card.selected { border:2px solid var(--cyan); background:radial-gradient(circle at 92% 8%, rgba(0,231,255,.12), transparent 34%), linear-gradient(180deg, #F8FEFF 0%, #FFF 100%); }
-        .scenario-card.green { background:radial-gradient(circle at 92% 8%, rgba(29,161,235,.14), transparent 34%), linear-gradient(180deg, #F4FBFF 0%, #FFF 100%); }
-        .scenario-card.gold { background:radial-gradient(circle at 92% 8%, rgba(0,122,82,.11), transparent 34%), radial-gradient(circle at 8% 100%, rgba(0,231,255,.08), transparent 32%), linear-gradient(180deg, #F3FFF9 0%, #FFF 100%); }
+        .scenario-card { --card-accent: var(--blue-dark); --card-glow: rgba(3,36,111,.12); padding:22px; border-radius:28px; background:radial-gradient(circle at 92% 8%, var(--card-glow), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFF 100%); border:1px solid var(--line); box-shadow:0 16px 38px rgba(3,36,111,.07); position:relative; overflow:hidden; cursor:pointer; }
+        .scenario-card::before { content:''; position:absolute; inset:0 0 auto 0; height:5px; background:var(--card-accent); }
+        .scenario-card.selected { border:2px solid var(--card-accent); background:radial-gradient(circle at 92% 8%, var(--card-glow), transparent 34%), linear-gradient(180deg, #F8FEFF 0%, #FFF 100%); }
+        .scenario-card.green { --card-accent: var(--blue-main); --card-glow: rgba(5,94,206,.14); }
+        .scenario-card.gold { --card-accent: var(--green); --card-glow: rgba(0,122,82,.12); }
         .scenario-header { display:grid; grid-template-columns:44px 1fr; gap:14px; align-items:start; }
-        .scenario-icon { width:42px; height:42px; border-radius:15px; display:grid; place-items:center; background:linear-gradient(145deg, var(--blue-main), var(--cyan)); color:#fff; font-size:19px; font-weight:950; }
-        .scenario-eyebrow { color:var(--blue-main); font-size:10.5px; font-weight:950; letter-spacing:.12em; text-transform:uppercase; }
+        .scenario-icon { width:42px; height:42px; border-radius:15px; display:grid; place-items:center; background:var(--card-accent); color:#fff; font-size:19px; font-weight:950; }
+        .scenario-eyebrow { color:var(--card-accent); font-size:10.5px; font-weight:950; letter-spacing:.12em; text-transform:uppercase; }
         .scenario-title { margin-top:3px; color:var(--blue-dark); font-size:20px; line-height:1.05; font-weight:950; letter-spacing:-.04em; }
         .scenario-copy { margin-top:5px; color:var(--muted); font-size:12.5px; line-height:1.35; font-weight:650; }
         .scenario-metrics { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; margin-top:18px; }
         .scenario-metric { min-height:74px; padding:13px; border-radius:18px; background:var(--blue-soft); border:1px solid var(--line); }
         .scenario-metric small { display:block; color:var(--muted); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.04em; }
-        .scenario-metric strong { display:block; margin-top:6px; color:var(--blue-main); font-size:18px; font-weight:950; letter-spacing:-.04em; }
+        .scenario-metric strong { display:block; margin-top:6px; color:var(--card-accent); font-size:18px; font-weight:950; letter-spacing:-.04em; }
         .contract-tags { margin-top:16px; padding-top:14px; border-top:1px solid var(--line); }
         .contract-tags small { display:block; color:var(--muted); font-size:10.5px; font-weight:950; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
         .tag-list { display:flex; flex-wrap:wrap; gap:7px; }

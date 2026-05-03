@@ -707,7 +707,7 @@ function buildNovoCard(offer, idx) {
       <p class="new-contract-intro">Oferta focada em liberar valor novo, com parcela clara e prazo informado antes de continuar.</p>
       <div class="new-contract-highlight">
         <small>Valor estimado disponível</small>
-        <strong>R$ ${valorEstimado}</strong>
+        <strong>${valorEstimado}</strong>
         <span>simulação sem compromisso</span>
       </div>
       ${cardNote('new-contract', 'i', 'Nova contratação usando margem livre. Você verá taxa, custo total e condições antes de confirmar.')}
@@ -725,7 +725,7 @@ function buildRefinCard(offer, idx) {
       <p class="refin-intro">Oferta direta para liberar valor ou reorganizar sua parcela usando um contrato existente.</p>
       <div class="refin-highlight">
         <small>Valor estimado disponível</small>
-        <strong>R$ ${valorEstimado}</strong>
+        <strong>${valorEstimado}</strong>
         <span>simulação sem compromisso</span>
       </div>
       ${cardNote('refin', 'i', 'Pode alterar prazo e custo total. Você verá taxa, parcelas e condições antes de confirmar.')}
