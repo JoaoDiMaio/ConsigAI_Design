@@ -133,11 +133,11 @@ function buildContractState(entry, usuario, selectedThirdSubOffer) {
     sourcePath: '/ofertas',
     offerId: config.id,
     offerTitle: config.ctaName || config.pill || 'Oferta',
-    offerSubtitle: 'Resumo da oferta selecionada antes da contratacao',
+    offerSubtitle: 'Resumo da oferta selecionada antes da contratação',
     primaryValue: cashValue > 0 ? fmt(cashValue) : installmentAfter,
     summary: [
       { label: 'Oferta', value: config.ctaName || config.pill || config.id || 'Oferta' },
-      cashValue > 0 ? { label: 'Voce recebe', value: fmt(cashValue) } : null,
+      cashValue > 0 ? { label: 'Você recebe', value: fmt(cashValue) } : null,
       { label: 'Nova parcela', value: installmentAfter },
       { label: 'Economia mensal', value: fmt(monthlyGain) },
     ].filter(Boolean),
@@ -1273,7 +1273,7 @@ export default function OfertasNova() {
           onLogoClick={() => navigate('/ofertas')}
           actions={[
             { label: 'Ofertas', onClick: () => navigate('/ofertas') },
-            { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+            { label: 'Configurações', onClick: () => navigate('/configuracoes') },
           ]}
         />
       ) : (
@@ -1285,7 +1285,7 @@ export default function OfertasNova() {
           onLogoClick={() => navigate('/ofertas')}
           actions={[
             { label: 'Ofertas', onClick: () => navigate('/ofertas') },
-            { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+            { label: 'Configurações', onClick: () => navigate('/configuracoes') },
           ]}
         />
       )}
@@ -1315,12 +1315,11 @@ export default function OfertasNova() {
           backdropFilter: 'blur(12px)',
           borderTop: '1px solid #dde6f5',
           boxShadow: '0 -4px 24px rgba(0,24,81,.1)',
-          padding: '14px 32px',
+          padding: '16px 28px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           minHeight: isDesktop ? 76 : undefined,
-          fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
         }}>
           <div style={{
             display: 'grid',
@@ -1376,7 +1375,7 @@ export default function OfertasNova() {
                 minWidth: isDesktop ? 180 : 132,
                 fontSize: 22,
                 fontWeight: 800,
-                color: '#0a7c52',
+                color: '#007A52',
                 letterSpacing: '-.02em',
                 lineHeight: '25px',
                 whiteSpace: 'nowrap',
@@ -1401,9 +1400,9 @@ export default function OfertasNova() {
                 navigate('/contratacao', contractState ? { state: contractState } : undefined)
               }}
               style={{
-                background: 'linear-gradient(160deg, #2f59d0, #1d43b0)',
-                color: '#fff', border: 0, borderRadius: 14,
-                padding: '14px 32px', fontSize: 15, fontWeight: 700, lineHeight: 1.2,
+                background: 'linear-gradient(145deg, #055ECE, #03246F)',
+                color: '#fff', border: 0, borderRadius: 21,
+                padding: '14px 28px', fontSize: 15, fontWeight: 900, lineHeight: 1.2,
                 cursor: 'pointer', whiteSpace: 'nowrap',
                 boxShadow: '0 8px 20px rgba(30,60,180,.3)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -1412,7 +1411,6 @@ export default function OfertasNova() {
                 minWidth: isDesktop ? 320 : undefined,
                 maxWidth: isDesktop ? 320 : undefined,
                 minHeight: 44,
-                fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
               }}
             >
               Continuar com esta oferta

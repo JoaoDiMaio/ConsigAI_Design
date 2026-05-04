@@ -30,7 +30,7 @@ function StatusBadge({ status }) {
 
 function OfferPanel({ title, offer }) {
   return (
-    <div style={{ borderRadius: 14, border: `1px solid ${t.line}`, background: '#fff', padding: 12 }}>
+    <div style={{ borderRadius: 13, border: `1px solid ${t.line}`, background: '#fff', padding: 12 }}>
       <div style={{ fontSize: 10, color: t.muted, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', marginBottom: 8 }}>{title}</div>
       <div style={{ display: 'grid', gap: 6 }}>
         <div style={{ fontSize: 12, color: t.muted }}>Valor liberado: <strong style={{ color: t.text }}>{offer.cashOut}</strong></div>
@@ -60,9 +60,9 @@ export default function AndamentoPropostas() {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? 'repeat(4, minmax(0, 1fr))' : 'repeat(2, minmax(0, 1fr))', gap: 10, marginBottom: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? 'repeat(4, minmax(0, 1fr))' : 'repeat(2, minmax(0, 1fr))', gap: 12, marginBottom: 20 }}>
         {summaryCards.map((item) => (
-          <div key={item.title} style={{ borderRadius: 14, border: `1px solid ${t.cardBorder}`, background: '#fff', boxShadow: t.cardShadow, padding: '12px 12px 11px' }}>
+          <div key={item.title} style={{ borderRadius: 21, border: `1px solid ${t.cardBorder}`, background: '#fff', boxShadow: t.cardShadow, padding: '14px 14px 12px' }}>
             <StatusBadge status={item.status} />
             <div style={{ marginTop: 9, fontSize: 24, lineHeight: 1, fontWeight: 700, color: t.text }}>{item.value}</div>
             <div style={{ marginTop: 5, fontSize: 11, color: t.muted, lineHeight: 1.4 }}>{item.title}</div>
@@ -70,7 +70,7 @@ export default function AndamentoPropostas() {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gap: 12 }}>
+      <div style={{ display: 'grid', gap: 16 }}>
         {proposals.map((proposal) => {
           const changed =
             proposal.initialOffer.cashOut !== proposal.fulfilledOffer.cashOut ||
@@ -78,7 +78,7 @@ export default function AndamentoPropostas() {
             proposal.initialOffer.term !== proposal.fulfilledOffer.term
 
           return (
-            <div key={proposal.id} style={{ borderRadius: 18, border: `1px solid ${t.cardBorder}`, background: '#fff', boxShadow: t.cardShadow, padding: isDesktop ? 16 : 14 }}>
+            <div key={proposal.id} style={{ borderRadius: 28, border: `1px solid ${t.cardBorder}`, background: '#fff', boxShadow: t.cardShadow, padding: isDesktop ? 20 : 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
                 <div>
                   <div style={{ fontSize: 10, color: t.muted, letterSpacing: '.07em', textTransform: 'uppercase', fontWeight: 700 }}>

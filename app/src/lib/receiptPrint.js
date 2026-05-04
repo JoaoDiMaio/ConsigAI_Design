@@ -27,7 +27,7 @@ export function printSimulationReceipt({
         @page { size: auto; margin: 0; }
         * { box-sizing: border-box; }
         html, body { width: 100%; height: 100%; }
-        body { margin: 0; font-family: Arial, sans-serif; color: #4f4f4f; background: #fff; }
+        body { margin: 0; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #4f4f4f; background: #fff; }
         .wrap { width: 100%; min-height: 100%; display: flex; justify-content: center; align-items: flex-start; padding: 24px 24px 48px; }
         .ticket { width: min(760px, 100%); border-radius: 14px; padding: 34px 30px 30px; border: 1px solid #ececec; font-size: 28px; background: linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)), #f5f5f3; }
         .title { text-align: center; font-size: 28px; font-weight: 800; color: #444; }

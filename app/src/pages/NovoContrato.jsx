@@ -119,14 +119,14 @@ export default function NovoContrato() {
         onMouseLeave={() => setHovered(false)}
         style={{
           width: '100%',
-          minHeight: idx === 0 ? 124 : 84,
-          borderRadius: idx === 0 ? 30 : 22,
+          minHeight: idx === 0 ? 130 : 80,
+          borderRadius: idx === 0 ? 34 : 21,
           border: '1px solid',
           background:
             idx === 0
               ? 'radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.13), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)'
               : 'radial-gradient(circle at 92% 8%, rgba(29, 161, 235, 0.10), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)',
-          padding: idx === 0 ? '18px 16px' : '14px 16px',
+          padding: idx === 0 ? '20px 18px' : '14px 16px',
           cursor: 'pointer',
           ...selectionStyle,
         }}
@@ -136,10 +136,10 @@ export default function NovoContrato() {
             Sugestão ConsigAI
           </div>
         )}
-        <div style={{ marginTop: idx === 0 ? 10 : 0, color: '#055ECE', fontSize: idx === 0 ? 42 : 26, fontWeight: 950, letterSpacing: idx === 0 ? '-.07em' : '-.04em', lineHeight: 1 }}>
+        <div style={{ marginTop: idx === 0 ? 10 : 0, color: '#055ECE', fontSize: idx === 0 ? 38 : 26, fontWeight: 900, letterSpacing: idx === 0 ? '-.07em' : '-.04em', lineHeight: 1 }}>
           R$ {fmt(a.valor)}
         </div>
-        <div style={{ marginTop: 7, color: '#64748B', fontSize: idx === 0 ? 13 : 12, fontWeight: 750 }}>
+        <div style={{ marginTop: 7, color: '#64748B', fontSize: idx === 0 ? 13 : 12, fontWeight: 700 }}>
           {a.prazo}x de <strong style={{ color: '#055ECE' }}>R$ {fmtDec(a.parcela)}</strong>
         </div>
         {idx === 0 && (
@@ -161,7 +161,7 @@ export default function NovoContrato() {
         chips={['Simulação sem compromisso', 'Você escolhe antes de decidir', 'Nenhuma contratação automática']}
       />
 
-      <section style={{ marginBottom: 12, padding: isDesktop ? '20px 18px' : '16px 14px', borderRadius: 26, border: '1px solid #DDE8F6', background: '#FFFFFF', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
+      <section style={{ marginBottom: 12, padding: isDesktop ? '20px 18px' : '16px 14px', borderRadius: 28, border: '1px solid #DDE8F6', background: '#FFFFFF', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
         <div style={{ marginBottom: 12 }}><AnchorBtn idx={0} /></div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
           <AnchorBtn idx={1} />
@@ -177,11 +177,11 @@ export default function NovoContrato() {
             minHeight: 58,
             marginTop: 6,
             marginBottom: customOpen ? 10 : 14,
-            borderRadius: 22,
+            borderRadius: 21,
             border: '1px solid',
             background: 'radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.12), transparent 34%), linear-gradient(180deg, #F4FBFF 0%, #FFFFFF 100%)',
             color: '#055ECE',
-            fontWeight: 950,
+            fontWeight: 900,
             fontSize: 15,
             cursor: 'pointer',
             ...getSelectableCardStyle({ selected: customOpen, hovered: customBtnHover }),
@@ -190,9 +190,9 @@ export default function NovoContrato() {
           + Personalizar valor e prazo
         </button>
         {customOpen && (
-          <div style={{ marginBottom: 14, background: '#fff', border: '1.5px solid #BFD4F6', borderRadius: 20, padding: 14 }}>
+          <div style={{ marginBottom: 14, background: '#fff', border: '1.5px solid #BFD4F6', borderRadius: 21, padding: 16 }}>
             <div style={{ fontSize: 10, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: 8 }}>Qual valor você quer?</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#F8FBFF', border: '1px solid #DDE8F6', borderRadius: 12, padding: '10px 12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#F8FBFF', border: '1px solid #DDE8F6', borderRadius: 13, padding: '10px 12px' }}>
               <span style={{ color: '#64748B', fontWeight: 800 }}>R$</span>
               <input
                 type="number"
@@ -214,7 +214,7 @@ export default function NovoContrato() {
                   <button
                     key={prazo}
                     onClick={() => setSelectedPrazo(prazo)}
-                    style={{ borderRadius: 12, border: `1px solid ${activePrazo ? '#055ECE' : '#DDE8F6'}`, background: activePrazo ? '#EAF2FF' : '#fff', color: activePrazo ? '#055ECE' : '#64748B', padding: '10px 6px', fontWeight: 800, cursor: 'pointer' }}
+                    style={{ borderRadius: 13, border: `1px solid ${activePrazo ? '#055ECE' : '#DDE8F6'}`, background: activePrazo ? '#EAF2FF' : '#fff', color: activePrazo ? '#055ECE' : '#64748B', padding: '10px 6px', fontWeight: 800, cursor: 'pointer' }}
                   >
                     {prazo}x
                   </button>
@@ -230,7 +230,7 @@ export default function NovoContrato() {
           onClick={goContratacao}
           onMouseEnter={() => setCtaHover(true)}
           onMouseLeave={() => setCtaHover(false)}
-          style={{ width: '100%', minHeight: 52, border: 0, borderRadius: 18, background: ctaHover ? 'linear-gradient(145deg, #0A66E8, #03246F)' : 'linear-gradient(145deg, #055ECE, #03246F)', color: '#fff', fontSize: 16, fontWeight: 950, boxShadow: ctaHover ? '0 12px 24px rgba(35,80,200,.12)' : '0 8px 20px rgba(30,60,180,.3)', cursor: 'pointer' }}
+          style={{ width: '100%', minHeight: 52, border: 0, borderRadius: 21, background: ctaHover ? 'linear-gradient(145deg, #0A66E8, #03246F)' : 'linear-gradient(145deg, #055ECE, #03246F)', color: '#fff', fontSize: 16, fontWeight: 900, boxShadow: ctaHover ? '0 12px 24px rgba(35,80,200,.12)' : '0 8px 20px rgba(30,60,180,.3)', cursor: 'pointer' }}
         >
           Continuar com esta oferta
         </button>
@@ -240,7 +240,7 @@ export default function NovoContrato() {
           onClick={() => setShowReceipt(v => !v)}
           onMouseEnter={() => setSecondHover(true)}
           onMouseLeave={() => setSecondHover(false)}
-          style={{ width: '100%', minHeight: 48, marginTop: 10, borderRadius: 17, border: '1px solid #BFD4F6', background: secondHover ? '#F4F8FF' : '#fff', color: '#055ECE', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: secondHover ? '0 12px 24px rgba(35,80,200,.12)' : '0 8px 20px rgba(30,60,180,.12)' }}
+          style={{ width: '100%', minHeight: 48, marginTop: 10, borderRadius: 21, border: '1px solid #BFD4F6', background: secondHover ? '#F4F8FF' : '#fff', color: '#055ECE', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: secondHover ? '0 12px 24px rgba(35,80,200,.12)' : '0 8px 20px rgba(30,60,180,.12)' }}
         >
           Gerar recibo da simulação
         </button>
@@ -253,11 +253,11 @@ export default function NovoContrato() {
               width: '100%',
               minHeight: 46,
               marginTop: 8,
-              borderRadius: 14,
+              borderRadius: 13,
               border: 0,
               background: 'linear-gradient(145deg, #055ECE, #03246F)',
               color: '#fff',
-              fontSize: 13.5,
+              fontSize: 13,
               fontWeight: 900,
               cursor: 'pointer',
               boxShadow: '0 8px 20px rgba(30,60,180,.3)',
@@ -266,7 +266,7 @@ export default function NovoContrato() {
             Baixar recibo da simulação
           </button>
         )}
-        <p style={{ marginTop: 8, color: '#64748B', textAlign: 'center', fontSize: 11, fontWeight: 650 }}>Valores estimados. Sujeitos à análise e aprovação de crédito.</p>
+        <p style={{ marginTop: 8, color: '#64748B', textAlign: 'center', fontSize: 11, fontWeight: 600 }}>Valores estimados. Sujeitos à análise e aprovação de crédito.</p>
         <button
           className="consigai-cta-animated"
           onClick={() => navigate('/ofertas')}
@@ -274,7 +274,7 @@ export default function NovoContrato() {
             width: '100%',
             minHeight: 46,
             marginTop: 10,
-            borderRadius: 14,
+            borderRadius: 13,
             border: '1px solid #BFD4F6',
             background: '#fff',
             color: '#055ECE',
@@ -291,7 +291,7 @@ export default function NovoContrato() {
   )
 
   const sidebar = (
-    <aside style={{ display: 'grid', gap: 16 }}>
+    <aside style={{ display: 'grid', gap: 20 }}>
       <ResumoCard
         rows={[
           { label: 'Produto', value: 'Novo contrato' },

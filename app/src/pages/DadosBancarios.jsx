@@ -64,7 +64,7 @@ function InputField({ value, onChange, placeholder, error, maxLength }) {
         style={{
           width: '100%',
           border: `1.5px solid ${error ? t.danger : t.line}`,
-          borderRadius: 12,
+          borderRadius: 13,
           padding: '12px 14px',
           fontSize: 14,
           fontWeight: 500,

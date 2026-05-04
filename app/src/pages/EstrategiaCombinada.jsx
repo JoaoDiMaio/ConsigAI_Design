@@ -213,7 +213,7 @@ function Kpi({ label, value }) {
 
 function Card({ children }) {
   return (
-    <div style={{ background: '#fff', border: `1px solid ${t.line}`, borderRadius: 22, boxShadow: t.shadow, padding: 20 }}>
+    <div style={{ background: '#fff', border: `1px solid ${t.line}`, borderRadius: 28, boxShadow: t.shadow, padding: 22 }}>
       {children}
     </div>
   )
@@ -248,21 +248,21 @@ function Receipt({ label, scenario, economyValue, futureCreditValue }) {
       <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
       <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>VOCÊ RECEBE E AINDA ECONOMIZA</div>
       <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323' }}>{scenario.cash}</div>
-      <div style={{ textAlign: 'center', marginTop: 4, fontSize: 8.5, fontWeight: 700, letterSpacing: 0, color: '#888', textTransform: 'uppercase' }}>{label}</div>
+      <div style={{ textAlign: 'center', marginTop: 4, fontSize: 10, fontWeight: 700, letterSpacing: 0, color: '#888', textTransform: 'uppercase' }}>{label}</div>
 
       <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10, color: '#5b5b5b' }}>
         <thead>
           <tr>
-            <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767', paddingRight: 10 }}>Cód.</th>
-            <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>Fonte</th>
-            <th style={{ fontSize: 8, textAlign: 'right', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>Valor</th>
+            <th style={{ fontSize: 10, textAlign: 'left', fontWeight: 600, padding: '4px 0 8px', color: '#676767', paddingRight: 10 }}>Cód.</th>
+            <th style={{ fontSize: 10, textAlign: 'left', fontWeight: 600, padding: '4px 0 8px', color: '#676767' }}>Fonte</th>
+            <th style={{ fontSize: 10, textAlign: 'right', fontWeight: 600, padding: '4px 0 8px', color: '#676767' }}>Valor</th>
           </tr>
         </thead>
         <tbody>
           {scenario.rows.map(([cod, source, value]) => (
             <tr key={`${cod}-${source}`}>
-              <td style={{ fontSize: 8, padding: '4px 0', paddingRight: 10 }}>{cod}</td>
+              <td style={{ fontSize: 10, padding: '4px 0', paddingRight: 10 }}>{cod}</td>
               <td style={{ padding: '4px 0' }}>{source}</td>
               <td style={{ padding: '4px 0', textAlign: 'right', fontWeight: 700 }}>{value}</td>
             </tr>
@@ -440,16 +440,16 @@ function StrategyScreen({ variant }) {
 
       <Card>
         <CardSection title="Salário líquido">
-          <div className="grid grid-cols-2 gap-2 mt-1">
-            <div className="rounded-xs border border-line bg-surface-soft p-2.5">
-              <p className="text-[9px] font-bold uppercase text-muted mb-1">Antes</p>
-              <p className="text-base font-bold text-ink">R$ {liquidoAntes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-              <p className="text-[10px] text-muted mt-1">Parcela R$ {parcelaAntes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 4 }}>
+            <div style={{ borderRadius: 13, border: '1px solid #DDE8F6', background: '#F8FBFF', padding: '10px 12px' }}>
+              <p style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: '#64748B', marginBottom: 4 }}>Antes</p>
+              <p style={{ fontSize: 15, fontWeight: 800, color: '#03246F' }}>R$ {liquidoAntes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+              <p style={{ fontSize: 11, color: '#64748B', marginTop: 4 }}>Parcela R$ {parcelaAntes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
-            <div className="rounded-xs border border-success-mid bg-success-bg p-2.5">
-              <p className="text-[9px] font-bold uppercase text-success mb-1">Depois</p>
-              <p className="text-base font-bold text-success">R$ {liquidoDepois.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-              <p className="text-[10px] text-success/70 mt-1">Parcela R$ {parcelaDepois.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            <div style={{ borderRadius: 13, border: '1px solid #BDECD7', background: '#E9F8F1', padding: '10px 12px' }}>
+              <p style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: '#007A52', marginBottom: 4 }}>Depois</p>
+              <p style={{ fontSize: 15, fontWeight: 800, color: '#007A52' }}>R$ {liquidoDepois.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+              <p style={{ fontSize: 11, color: '#007A52', opacity: 0.7, marginTop: 4 }}>Parcela R$ {parcelaDepois.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
           </div>
         </CardSection>
@@ -504,7 +504,7 @@ function StrategyScreen({ variant }) {
           max-width: 760px;
           display: flex;
           flex-direction: column;
-          gap: 14px;
+          gap: 16px;
         }
         .mix-layout {
           display: grid;
@@ -519,8 +519,8 @@ function StrategyScreen({ variant }) {
         .mix-hero {
           background: #fff;
           border: 1px solid #dce5ff;
-          border-radius: 22px;
-          padding: 18px 24px;
+          border-radius: 28px;
+          padding: 20px 24px;
           box-shadow: 0 8px 24px rgba(0,24,81,.06);
         }
         .mix-eyebrow,

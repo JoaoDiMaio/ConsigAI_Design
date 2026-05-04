@@ -200,8 +200,8 @@ export const RESPONSIVE_STYLES_CSS = `
   .impact-card {
     position: relative;
     overflow: hidden;
-    border-radius: 24px;
-    padding: 14px;
+    border-radius: 28px;
+    padding: 18px;
     border: 1px solid var(--gray-border);
     background: #ffffff;
     box-shadow: 0 18px 42px rgba(3, 36, 111, 0.07);
@@ -282,7 +282,7 @@ export const RESPONSIVE_STYLES_CSS = `
     color: var(--green-strong);
   }
   .salary-main {
-    margin-top: 12px;
+    margin-top: 16px;
     padding-bottom: 10px;
     border-bottom: 1px solid rgba(221, 232, 246, 0.95);
   }
@@ -290,7 +290,7 @@ export const RESPONSIVE_STYLES_CSS = `
     display: block;
     color: var(--gray-text);
     font-size: 11px;
-    font-weight: 750;
+    font-weight: 700;
   }
   .salary-main strong {
     display: block;
@@ -298,7 +298,7 @@ export const RESPONSIVE_STYLES_CSS = `
     color: var(--blue-title);
     font-size: 22px;
     line-height: 1;
-    font-weight: 950;
+    font-weight: 800;
     letter-spacing: -.05em;
     white-space: nowrap;
   }
@@ -314,7 +314,7 @@ export const RESPONSIVE_STYLES_CSS = `
   }
   .salary-details {
     display: grid;
-    gap: 6px;
+    gap: 8px;
     margin-top: 10px;
   }
   .salary-row {
@@ -330,12 +330,12 @@ export const RESPONSIVE_STYLES_CSS = `
   .salary-row span {
     color: var(--blue-title);
     font-size: 11px;
-    font-weight: 850;
+    font-weight: 700;
   }
   .salary-row strong {
     color: var(--blue-title);
     font-size: 16px;
-    font-weight: 950;
+    font-weight: 800;
     letter-spacing: -.04em;
     white-space: nowrap;
   }
@@ -372,7 +372,7 @@ export const RESPONSIVE_STYLES_CSS = `
   .gain-title small {
     color: var(--blue-action);
     font-size: 10px;
-    font-weight: 950;
+    font-weight: 900;
     letter-spacing: .10em;
     text-transform: uppercase;
   }
@@ -382,7 +382,7 @@ export const RESPONSIVE_STYLES_CSS = `
     color: var(--blue-title);
     font-size: 17px;
     line-height: 1.1;
-    font-weight: 950;
+    font-weight: 800;
     letter-spacing: -.03em;
   }
   .gain-title span {
@@ -414,7 +414,7 @@ export const RESPONSIVE_STYLES_CSS = `
   .gain-metrics {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
+    gap: 8px;
     margin-top: 10px;
   }
   .gain-metric {
@@ -440,7 +440,7 @@ export const RESPONSIVE_STYLES_CSS = `
     color: var(--gray-text);
     font-size: 11px;
     line-height: 1.25;
-    font-weight: 750;
+    font-weight: 700;
   }
   .gain-metric strong {
     display: block;
@@ -448,7 +448,7 @@ export const RESPONSIVE_STYLES_CSS = `
     color: var(--green-strong);
     font-size: 22px;
     line-height: 1;
-    font-weight: 950;
+    font-weight: 800;
     letter-spacing: -.05em;
     white-space: nowrap;
   }
@@ -464,8 +464,8 @@ export const RESPONSIVE_STYLES_CSS = `
     font-weight: 700;
   }
   .economy-card {
-    margin-top: 8px;
-    padding: 10px;
+    margin-top: 12px;
+    padding: 12px;
     border-radius: 13px;
     background:
       radial-gradient(circle at 92% 8%, rgba(0, 122, 82, 0.13), transparent 34%),
@@ -475,7 +475,7 @@ export const RESPONSIVE_STYLES_CSS = `
   .economy-card small {
     color: var(--blue-title);
     font-size: 11px;
-    font-weight: 850;
+    font-weight: 700;
   }
   .economy-card strong {
     display: block;
@@ -483,7 +483,7 @@ export const RESPONSIVE_STYLES_CSS = `
     color: var(--green-strong);
     font-size: 22px;
     line-height: 1;
-    font-weight: 950;
+    font-weight: 800;
     letter-spacing: -.05em;
     white-space: nowrap;
   }
@@ -615,7 +615,7 @@ export const RESPONSIVE_STYLES_CSS = `
   .projection-state {
     min-height: 164px;
     padding: 18px 20px;
-    border-radius: 24px;
+    border-radius: 28px;
     display: grid;
     grid-template-rows: 30px 54px 1fr;
     align-content: stretch;
@@ -683,7 +683,7 @@ export const RESPONSIVE_STYLES_CSS = `
     display: block;
     margin-top: 7px;
     color: var(--gray-text);
-    font-size: 9.5px;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: .05em;
     text-transform: uppercase;
@@ -1054,7 +1054,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   body {
     overflow-x: hidden !important;
     overflow-y: visible !important;
-    font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif !important;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
     color: var(--text-main, var(--text)) !important;
     padding: 0 24px 24px !important;
   }

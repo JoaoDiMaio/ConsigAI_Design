@@ -83,7 +83,7 @@ function ClientMenu({ actions = [], compact = false, clientName = 'Cliente' }) {
             <span
               style={{
                 color: 'rgba(255,255,255,.48)',
-                fontSize: 9,
+                fontSize: 10,
                 fontWeight: 800,
                 letterSpacing: '.06em',
                 textTransform: 'uppercase',
@@ -188,7 +188,7 @@ export function DesktopPageHeader({
 
   const headerMinHeight = minHeightProp ?? (isTabletHeader ? TABLET_HEADER_HEIGHT : DESKTOP_HEADER_HEIGHT)
   const headerHorizontalPadding = isTabletHeader ? 18 : 24
-  const logoHeight = isTabletHeader ? 36 : 72
+  const logoHeight = isTabletHeader ? 36 : 40
 
   return (
     <div

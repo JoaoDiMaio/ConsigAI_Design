@@ -207,15 +207,15 @@ export default function Refinanciamento() {
         .rf-page { min-height:100vh; position:relative; overflow-x:hidden; padding-bottom:48px; background:radial-gradient(circle at 12% 10%, rgba(0,231,255,.14), transparent 28%), radial-gradient(circle at 88% 18%, rgba(29,161,235,.12), transparent 30%), linear-gradient(180deg, #EAF5FF 0%, #F8FBFF 46%, #FFFFFF 100%); }
         .rf-shell { width:calc(100% - 96px); max-width:1280px; margin:0 auto; position:relative; z-index:1; padding-top:30px; }
         .main-layout { display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:30px; align-items:start; }
-        .sidebar { display:grid; gap:16px; align-content:start; }
+        .sidebar { display:grid; gap:20px; align-content:start; }
 .offer-flow-card { padding:20px; border-radius:30px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); position:relative; overflow:hidden; }
         .offer-flow-card::before { content:none; }
         .offer-flow-card > * { position:relative; z-index:1; }
         .offer-flow-header { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
-        .offer-flow-header h2 { color:var(--blue-dark); font-size:20px; line-height:1.05; font-weight:950; letter-spacing:-.04em; }
-        .offer-flow-header p { margin-top:5px; color:var(--muted); font-size:12.5px; line-height:1.35; font-weight:650; }
-        .offer-flow-badge { padding:8px 11px; border-radius:999px; background:rgba(0,231,255,.12); border:1px solid rgba(0,231,255,.30); color:var(--blue-main); font-size:11px; font-weight:950; text-transform:uppercase; letter-spacing:.08em; }
-        .scenario-list { display:grid; gap:14px; }
+        .offer-flow-header h2 { color:var(--blue-dark); font-size:20px; line-height:1.05; font-weight:900; letter-spacing:-.04em; }
+        .offer-flow-header p { margin-top:5px; color:var(--muted); font-size:12px; line-height:1.35; font-weight:600; }
+        .offer-flow-badge { padding:8px 11px; border-radius:999px; background:rgba(0,231,255,.12); border:1px solid rgba(0,231,255,.30); color:var(--blue-main); font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; }
+        .scenario-list { display:grid; gap:16px; }
         .scenario-card { --card-accent: var(--blue-dark); --card-glow: rgba(3,36,111,.12); padding:22px; border-radius:28px; background:#fff; border:1px solid var(--line); box-shadow:0 16px 38px rgba(3,36,111,.07); position:relative; overflow:hidden; cursor:pointer; }
         .scenario-card::before { content:''; position:absolute; inset:0 0 auto 0; height:5px; background:var(--card-accent); }
         .scenario-card::after { content:''; position:absolute; top:0; right:0; width:220px; height:130px; background:radial-gradient(circle at 100% 0%, var(--card-glow), transparent 70%); pointer-events:none; }
@@ -230,24 +230,24 @@ export default function Refinanciamento() {
         .scenario-card.green { --card-accent: var(--blue-main); --card-glow: rgba(5,94,206,.14); }
         .scenario-card.gold { --card-accent: var(--green); --card-glow: rgba(0,122,82,.12); }
         .scenario-header { display:grid; grid-template-columns:44px 1fr; gap:14px; align-items:start; }
-        .scenario-icon { width:42px; height:42px; border-radius:15px; display:grid; place-items:center; background:var(--card-accent); color:#fff; font-size:19px; font-weight:950; }
-        .scenario-eyebrow { color:var(--card-accent); font-size:10.5px; font-weight:950; letter-spacing:.12em; text-transform:uppercase; }
-        .scenario-title { margin-top:3px; color:var(--blue-dark); font-size:20px; line-height:1.05; font-weight:950; letter-spacing:-.04em; }
-        .scenario-copy { margin-top:5px; color:var(--muted); font-size:12.5px; line-height:1.35; font-weight:650; }
-        .scenario-metrics { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; margin-top:18px; }
-        .scenario-metric { min-height:74px; padding:13px; border-radius:18px; background:var(--blue-soft); border:1px solid var(--line); }
-        .scenario-metric small { display:block; color:var(--muted); font-size:clamp(8.5px, 0.9vw, 10px); font-weight:900; text-transform:uppercase; letter-spacing:.04em; }
-        .scenario-metric strong { display:block; margin-top:6px; color:var(--card-accent); font-size:clamp(14px, 1.7vw, 18px); font-weight:950; letter-spacing:-.04em; white-space:nowrap; word-break:keep-all; }
+        .scenario-icon { width:42px; height:42px; border-radius:13px; display:grid; place-items:center; background:var(--card-accent); color:#fff; font-size:19px; font-weight:900; }
+        .scenario-eyebrow { color:var(--card-accent); font-size:10px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
+        .scenario-title { margin-top:3px; color:var(--blue-dark); font-size:20px; line-height:1.05; font-weight:900; letter-spacing:-.04em; }
+        .scenario-copy { margin-top:5px; color:var(--muted); font-size:12px; line-height:1.35; font-weight:600; }
+        .scenario-metrics { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px; margin-top:18px; }
+        .scenario-metric { min-height:68px; padding:13px; border-radius:13px; background:var(--blue-soft); border:1px solid var(--line); }
+        .scenario-metric small { display:block; color:var(--muted); font-size:clamp(10px, 0.9vw, 10px); font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
+        .scenario-metric strong { display:block; margin-top:6px; color:var(--card-accent); font-size:clamp(14px, 1.7vw, 18px); font-weight:800; letter-spacing:-.04em; white-space:nowrap; word-break:keep-all; }
         .contract-tags-row { margin-top:16px; padding-top:14px; border-top:1px solid var(--line); }
         .contract-tags { min-width:0; }
-        .contract-tags small { display:block; color:var(--muted); font-size:10.5px; font-weight:950; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+        .contract-tags small { display:block; color:var(--muted); font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
         .contract-tags-actions { display:flex; justify-content:space-between; align-items:center; gap:12px; }
-        .tag-list { display:flex; flex-wrap:wrap; gap:7px; }
-        .tag { padding:7px 10px; border-radius:999px; background:var(--blue-soft); color:var(--blue-main); border:1px solid var(--line); font-size:11px; font-weight:850; }
+        .tag-list { display:flex; flex-wrap:wrap; gap:8px; }
+        .tag { padding:7px 10px; border-radius:999px; background:var(--blue-soft); color:var(--blue-main); border:1px solid var(--line); font-size:11px; font-weight:800; }
         .scenario-card-footer { flex:0 0 auto; display:flex; justify-content:flex-end; }
-        .scenario-details-btn { min-height:36px; padding:0 12px; border-radius:12px; border:1px solid color-mix(in srgb, var(--card-accent) 28%, #ffffff); background:#fff; color:var(--card-accent); font-size:12px; font-weight:900; cursor:pointer; }
-        .compact-contract-list { display:grid; gap:10px; margin-top:8px; }
-        .compact-refin-card { padding:14px; border-radius:20px; background:#fff; border:1px solid var(--line); box-shadow:none; position:relative; overflow:hidden; cursor:auto; }
+        .scenario-details-btn { min-height:36px; padding:0 12px; border-radius:13px; border:1px solid color-mix(in srgb, var(--card-accent) 28%, #ffffff); background:#fff; color:var(--card-accent); font-size:12px; font-weight:900; cursor:pointer; }
+        .compact-contract-list { display:grid; gap:12px; margin-top:8px; }
+        .compact-refin-card { padding:16px; border-radius:21px; background:#fff; border:1px solid var(--line); box-shadow:none; position:relative; overflow:hidden; cursor:auto; }
         .compact-refin-card h3,
         .compact-refin-card small,
         .compact-refin-card span,
@@ -256,25 +256,25 @@ export default function Refinanciamento() {
         .compact-refin-card b { cursor:text; user-select:text; }
         .compact-refin-card::before { content:''; position:absolute; inset:0 0 auto 0; height:4px; background:linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--cyan), var(--green)); }
         .compact-header { display:flex; justify-content:space-between; align-items:center; gap:10px; padding-bottom:10px; border-bottom:1px solid var(--line); }
-        .compact-header small { color:var(--blue-main); font-size:9px; font-weight:950; letter-spacing:.12em; text-transform:uppercase; }
-        .compact-header h3 { margin-top:2px; color:var(--blue-dark); font-size:16px; line-height:1; font-weight:950; letter-spacing:-.04em; }
-        .money-highlight { margin-top:10px; padding:9px 10px; border-radius:14px; background:rgba(233,248,241,.62); border:1px solid var(--green-line); display:flex; align-items:center; justify-content:space-between; gap:12px; }
+        .compact-header small { color:var(--blue-main); font-size:10px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
+        .compact-header h3 { margin-top:2px; color:var(--blue-dark); font-size:16px; line-height:1; font-weight:900; letter-spacing:-.04em; }
+        .money-highlight { margin-top:10px; padding:10px 12px; border-radius:13px; background:rgba(233,248,241,.62); border:1px solid var(--green-line); display:flex; align-items:center; justify-content:space-between; gap:12px; }
         .money-copy { min-width:0; }
-        .money-highlight span { display:block; color:var(--green); font-size:9.5px; font-weight:950; text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
+        .money-highlight span { display:block; color:var(--green); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
         .money-highlight small { display:block; margin-top:2px; color:var(--muted); font-size:10px; line-height:1.25; font-weight:700; }
-        .money-highlight strong { flex:0 0 auto; color:var(--green); font-size:21px; line-height:1; font-weight:950; letter-spacing:-.055em; white-space:nowrap; }
-        .compare-lines { display:grid; margin-top:10px; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:#fff; }
+        .money-highlight strong { flex:0 0 auto; color:var(--green); font-size:21px; line-height:1; font-weight:800; letter-spacing:-.055em; white-space:nowrap; }
+        .compare-lines { display:grid; margin-top:10px; border:1px solid var(--line); border-radius:13px; overflow:hidden; background:#fff; }
         .compare-head, .compare-line { display:grid; grid-template-columns:74px 1fr 1fr; align-items:center; gap:8px; }
-        .compare-head { padding:8px 10px; background:var(--blue-soft); border-bottom:1px solid var(--line); color:var(--muted); font-size:9px; font-weight:950; text-transform:uppercase; letter-spacing:.07em; }
+        .compare-head { padding:8px 10px; background:var(--blue-soft); border-bottom:1px solid var(--line); color:var(--muted); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.07em; }
         .compare-head span:nth-child(2),
         .compare-head span:nth-child(3) { text-align:center; }
         .compare-line { padding:9px 10px; border-bottom:1px solid var(--line); }
         .compare-line:last-child { border-bottom:0; }
-        .compare-label { color:var(--blue-dark); font-size:11px; font-weight:950; }
-        .compare-value { color:var(--blue-dark); font-size:12px; line-height:1; font-weight:950; white-space:nowrap; letter-spacing:-.025em; text-align:center; }
+        .compare-label { color:var(--blue-dark); font-size:11px; font-weight:800; }
+        .compare-value { color:var(--blue-dark); font-size:12px; line-height:1; font-weight:800; white-space:nowrap; letter-spacing:-.025em; text-align:center; }
         .compare-value.after { color:var(--blue-main); }
-        .compact-note { margin-top:10px; padding:9px 10px; border-radius:12px; background:#F8FBFF; border:1px solid var(--line); color:var(--muted); font-size:10.5px; line-height:1.3; font-weight:650; }
-        .compact-note strong { color:var(--blue-dark); font-weight:950; }
+        .compact-note { margin-top:10px; padding:9px 10px; border-radius:13px; background:#F8FBFF; border:1px solid var(--line); color:var(--muted); font-size:11px; line-height:1.3; font-weight:600; }
+        .compact-note strong { color:var(--blue-dark); font-weight:900; }
         .scenario-actions { margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
         .consigai-cta-animated { position:relative; overflow:hidden; transform:translateY(0); transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease, background-position .35s ease, filter .18s ease; animation:consigaiDetailsFloat 3.8s ease-in-out infinite; background-size:220% 100%; background-position:0% 0%; cursor:pointer; }
         .consigai-cta-animated:hover { background-position:100% 0%; animation-play-state:paused; transform:translateY(-2px) scale(1.01) !important; filter:saturate(1.05); }
@@ -283,31 +283,11 @@ export default function Refinanciamento() {
         .consigai-cta-animated:hover::after { opacity:1; animation:consigaiDetailsShine .9s ease forwards; }
         @keyframes consigaiDetailsFloat { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-1px); } }
         @keyframes consigaiDetailsShine { 0% { transform:translateX(-120%) skewX(-18deg); } 100% { transform:translateX(120%) skewX(-18deg); } }
-        .primary-cta { width:100%; min-height:54px; border:0; border-radius:18px; background:linear-gradient(145deg, var(--blue-main), var(--blue-dark)); color:#fff; font-size:15px; font-weight:950; cursor:pointer; }
-        .secondary-cta,.back-offers-cta { width:100%; min-height:50px; margin-top:12px; border-radius:17px; border:1px solid #BFD4F6; background:#fff; color:var(--blue-main); font-size:14px; font-weight:900; cursor:pointer; }
-        .back-offers-cta { min-height:46px; margin-top:10px; border-radius:14px; border:1px solid #BFD4F6; background:#fff; color:#055ECE; font-size:14px; font-weight:900; box-shadow:0 8px 20px rgba(30,60,180,.12); }
-        .safe-note { margin-top:12px; color:var(--muted); text-align:center; font-size:10.5px; font-weight:650; }
-        .side-card { padding:22px; border-radius:26px; background:rgba(255,255,255,.98); border:1px solid var(--line); box-shadow:0 18px 46px rgba(3,36,111,.08); }
-        .side-card h3 { color:var(--blue-dark); font-size:15px; font-weight:950; text-transform:uppercase; }
-        .side-card p { margin-top:5px; color:var(--muted); font-size:12px; line-height:1.35; font-weight:650; }
-        .proposal-highlight { margin-top:16px; padding:16px; border-radius:20px; background:radial-gradient(circle at 92% 8%, rgba(0,231,255,.12), transparent 34%), linear-gradient(180deg,#F8FBFF 0%, #FFF 100%); border:1px solid rgba(0,231,255,.34); }
-        .proposal-highlight small { display:block; color:var(--blue-main); font-size:10.5px; font-weight:950; letter-spacing:.08em; text-transform:uppercase; }
-        .proposal-highlight strong { display:block; margin-top:6px; color:var(--blue-dark); font-size:21px; font-weight:950; }
-        .proposal-highlight span { display:block; margin-top:8px; color:var(--muted); font-size:12px; line-height:1.35; font-weight:700; }
-        .summary-list { margin-top:12px; }
-        .summary-row { display:flex; justify-content:space-between; gap:16px; padding:13px 0; border-bottom:1px solid var(--line); color:var(--muted); font-size:13px; font-weight:800; }
-        .summary-row strong { color:var(--blue-dark); font-weight:950; }
-        .salary-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
-        .salary-box { padding:14px; border-radius:18px; background:#F8FBFF; border:1px solid var(--line); }
-        .salary-box.green { background:var(--green-soft); border-color:var(--green-line); }
-        .salary-box small { display:block; color:var(--muted); font-size:11px; font-weight:850; }
-        .salary-box strong { display:block; margin-top:7px; color:var(--blue-dark); font-size:21px; font-weight:950; }
-        .salary-box.green strong { color:var(--green); }
-        .salary-box span { display:block; margin-top:6px; color:var(--muted); font-size:10.5px; line-height:1.25; font-weight:700; }
-        .installment-impact { margin-top:12px; padding:13px 14px; border-radius:18px; background:var(--blue-soft); border:1px solid var(--line); }
-        .installment-impact span { display:block; color:var(--muted); font-size:11px; font-weight:850; }
-        .installment-impact strong { display:block; margin-top:6px; color:var(--blue-main); font-size:20px; font-weight:950; }
-        @media (max-width:1100px){ .main-layout{ grid-template-columns:1fr; } .sidebar{ display:grid; grid-template-columns:1fr 1fr; gap:16px; } .side-card + .side-card{ margin-top:0; } }
+        .primary-cta { width:100%; min-height:54px; border:0; border-radius:21px; background:linear-gradient(145deg, var(--blue-main), var(--blue-dark)); color:#fff; font-size:15px; font-weight:900; cursor:pointer; }
+        .secondary-cta,.back-offers-cta { width:100%; min-height:50px; margin-top:12px; border-radius:21px; border:1px solid #BFD4F6; background:#fff; color:var(--blue-main); font-size:14px; font-weight:900; cursor:pointer; }
+        .back-offers-cta { min-height:46px; margin-top:10px; border-radius:13px; border:1px solid #BFD4F6; background:#fff; color:#055ECE; font-size:14px; font-weight:900; box-shadow:0 8px 20px rgba(30,60,180,.12); }
+        .safe-note { margin-top:12px; color:var(--muted); text-align:center; font-size:11px; font-weight:600; }
+        @media (max-width:1100px){ .main-layout{ grid-template-columns:1fr; } .sidebar{ display:grid; grid-template-columns:1fr 1fr; gap:16px; } }
         @media (max-width:900px){ .rf-shell{ width:calc(100% - 32px); } .scenario-metrics,.salary-grid,.sidebar{ grid-template-columns:1fr; } }
         @media (max-width:560px){ .hero-heading{ font-size:34px; } .strategy-hero,.scenario-card{ padding:22px; } .scenario-header{ grid-template-columns:42px 1fr; } .money-highlight{ align-items:flex-start; flex-direction:column; } .compare-head,.compare-line{ grid-template-columns:1fr; gap:6px; } .compare-head span:first-child{ display:none; } }
       `}</style>

@@ -89,11 +89,12 @@ export const spacing = {
 // ─── Border radius (px) ───────────────────────────────────────────────────────
 export const radius = {
   sm:   8,
-  md:   12,
-  lg:   16,
-  xl:   20,
-  xxl:  24,
-  xxxl: 28,
+  md:   13,
+  lg:   21,
+  xl:   28,
+  xxl:  28,
+  xxxl: 34,
+  hero: 34,
   pill: 999,
 }
 

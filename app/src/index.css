@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+:root {
+  --fs-xs:   10px;
+  --fs-sm:   12px;
+  --fs-base: 15px;
+  --fs-md:   19px;
+  --fs-lg:   24px;
+  --fs-xl:   30px;
+  --fs-2xl:  38px;
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 
 html {

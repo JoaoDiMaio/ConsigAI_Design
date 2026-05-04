@@ -121,22 +121,22 @@ export default function Contratacao() {
         .contratacao-page {
           --scale: 1;
           --font: 'Plus Jakarta Sans', system-ui, sans-serif;
-          --navy: #001851;
-          --blue: #2350c8;
+          --navy: #03246F;
+          --blue: #055ECE;
           --blue-light: #e8eeff;
           --blue-mid: #c2d0f8;
-          --text: #0f2057;
-          --muted: #7082af;
-          --line: #dfe7f8;
-          --green: #0a6640;
-          --green-bg: #e8f5ee;
+          --text: #071B45;
+          --muted: #64748B;
+          --line: #DDE8F6;
+          --green: #007A52;
+          --green-bg: #E9F8F1;
           --green-accent: #16a364;
           --whatsapp: #25d366;
           --bg-panel: #f3f6fd;
           --card-bg: #ffffff;
           --shadow-soft: 0 8px 28px rgba(0,24,81,.08);
-          --shadow-cta: 0 10px 24px rgba(24,68,184,.28);
-          --r-card: 20px;
+          --shadow-cta: 0 10px 24px rgba(5,94,206,.28);
+          --r-card: 21px;
 
           min-height: 100vh;
           font-family: var(--font);
@@ -175,11 +175,11 @@ export default function Contratacao() {
         }
 
         .sidebar-card {
-          border-radius: 16px;
+          border-radius: 21px;
           border: 1px solid #e2eafa;
           background: #fff;
           box-shadow: var(--shadow-soft);
-          padding: 14px;
+          padding: 16px;
         }
 
         .sidebar-title {
@@ -292,7 +292,7 @@ export default function Contratacao() {
         }
 
         .life-card {
-          border-radius: 12px;
+          border-radius: 13px;
           padding: 10px;
           border: 1px solid var(--line);
         }
@@ -329,7 +329,7 @@ export default function Contratacao() {
         }
 
         .life-copy {
-          font-size: calc(10.5px * var(--scale));
+          font-size: calc(11px * var(--scale));
           line-height: 1.35;
           color: var(--muted);
           font-weight: 600;
@@ -337,7 +337,7 @@ export default function Contratacao() {
 
         .life-caption {
           margin-top: 9px;
-          font-size: calc(10.5px * var(--scale));
+          font-size: calc(11px * var(--scale));
           line-height: 1.35;
           color: #4f6395;
           font-weight: 600;
@@ -435,7 +435,7 @@ export default function Contratacao() {
 
         .benefit-chip small {
           display: block;
-          font-size: calc(9.5px * var(--scale));
+          font-size: calc(10px * var(--scale));
           color: rgba(255,255,255,.55);
           margin-bottom: 3px;
         }
@@ -582,7 +582,7 @@ export default function Contratacao() {
         }
 
         .offer-hero-value {
-          font-size: calc(33px * var(--scale));
+          font-size: calc(30px * var(--scale));
           font-weight: 800;
           color: #fff;
           line-height: 1;
@@ -608,7 +608,7 @@ export default function Contratacao() {
         }
 
         .offer-badge-label {
-          font-size: calc(9px * var(--scale));
+          font-size: calc(10px * var(--scale));
           color: rgba(255,255,255,.62);
           font-weight: 700;
           margin-bottom: 4px;
@@ -635,7 +635,7 @@ export default function Contratacao() {
         .offer-item { text-align: center; padding: 0 4px; }
 
         .offer-item-label {
-          font-size: calc(9.5px * var(--scale));
+          font-size: calc(10px * var(--scale));
           color: rgba(255,255,255,.62);
           font-weight: 500;
           margin-bottom: 3px;
@@ -658,7 +658,7 @@ export default function Contratacao() {
         .insight-item {
           background: #fff;
           border: 1px solid var(--line);
-          border-radius: 14px;
+          border-radius: 13px;
           padding: 10px 12px;
           display: flex;
           align-items: center;
@@ -789,7 +789,7 @@ export default function Contratacao() {
         .wa-icon {
           width: 44px;
           height: 44px;
-          border-radius: 14px;
+          border-radius: 13px;
           background: var(--whatsapp);
           color: #fff;
           display: flex;
@@ -823,7 +823,7 @@ export default function Contratacao() {
           border-radius: 50%;
           background: #c8eeda;
           color: var(--green);
-          font-size: calc(9px * var(--scale));
+          font-size: calc(10px * var(--scale));
           font-weight: 700;
           display: flex;
           align-items: center;
@@ -847,7 +847,7 @@ export default function Contratacao() {
           gap: 8px;
           background: #fff;
           border: 1px solid #b8e8cb;
-          border-radius: 12px;
+          border-radius: 13px;
           padding: 10px 12px;
         }
 
@@ -860,7 +860,7 @@ export default function Contratacao() {
         }
 
         .wa-phone-tag {
-          font-size: calc(9.5px * var(--scale));
+          font-size: calc(10px * var(--scale));
           font-weight: 700;
           background: var(--green-bg);
           color: var(--green);
@@ -922,7 +922,7 @@ export default function Contratacao() {
         .btn {
           width: 100%;
           border: 0;
-          border-radius: 14px;
+          border-radius: 21px;
           font-family: var(--font);
           cursor: pointer;
           transition: .16s ease;
@@ -948,7 +948,7 @@ export default function Contratacao() {
         .btn-primary:hover { filter: brightness(1.05); }
 
         .btn-primary:disabled {
-          opacity: .45;
+          opacity: .55;
           cursor: not-allowed;
           transform: none;
           filter: none;
@@ -960,7 +960,7 @@ export default function Contratacao() {
           color: var(--blue);
           border: 1.5px solid var(--blue-mid);
           padding: 13px;
-          font-size: calc(13.5px * var(--scale));
+          font-size: calc(13px * var(--scale));
           font-weight: 700;
         }
 
@@ -1003,7 +1003,7 @@ export default function Contratacao() {
         }
 
         .success-sub {
-          font-size: calc(12.5px * var(--scale));
+          font-size: calc(12px * var(--scale));
           color: var(--muted);
           font-weight: 500;
           line-height: 1.5;
@@ -1013,7 +1013,7 @@ export default function Contratacao() {
 
         .success-wa {
           background: var(--whatsapp);
-          border-radius: 16px;
+          border-radius: 21px;
           padding: 16px;
           margin-bottom: 14px;
           text-align: left;
@@ -1026,7 +1026,7 @@ export default function Contratacao() {
         .success-wa-icon {
           width: 44px;
           height: 44px;
-          border-radius: 12px;
+          border-radius: 13px;
           background: rgba(255,255,255,.22);
           color: #fff;
           display: flex;
