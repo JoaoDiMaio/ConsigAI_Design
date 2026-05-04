@@ -1,4 +1,4 @@
-import { createElement as h } from 'react'
+﻿import { createElement as h } from 'react'
 import { colors } from '../ui/theme'
 
 export const SCENARIOS = [
@@ -29,8 +29,8 @@ export const SCENARIOS = [
   {
     key: 'margem',
     eyebrow: 'Cenário 2',
-    title: 'Máxima margem livre',
-    desc: 'Libere mais espaço na margem para contratar um novo empréstimo maior depois',
+    title: 'Equilíbrio Inteligente',
+    desc: 'Um meio-termo entre receber mais dinheiro e preservar sua renda: refinancia apenas parte dos contratos para liberar um bom valor sem levar tudo para o prazo máximo.',
     cash: 'R$ 9.730',
     installment: 'R$ 893/mês',
     margem: 'R$ 120',
@@ -52,8 +52,8 @@ export const SCENARIOS = [
   {
     key: 'parcela',
     eyebrow: 'Cenário 3',
-    title: 'Menor parcela total',
-    desc: 'Reduza ao máximo o comprometimento mensal da sua renda com parcelas',
+    title: 'Mais Folga no Mês',
+    desc: 'Pegue o máximo possível sem comprometer sua renda mensal, priorizando uma parcela que cabe melhor no seu orçamento.',
     cash: 'R$ 5.550',
     installment: 'R$ 381/mês',
     margem: 'R$ 389',
@@ -85,3 +85,4 @@ export const SCENARIO_ICONS = [
     h('polyline', { points: '17 6 23 6 23 12', stroke: colors.goldBtn, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }),
   ),
 ]
+

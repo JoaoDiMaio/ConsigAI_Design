@@ -18,8 +18,8 @@ export default function Refinanciamento() {
   const clientName = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
 
   const [activeIdx, setActiveIdx] = useState(0)
-  const [detailsOpen, setDetailsOpen] = useState(false)
-  const [hoveredIdx, setHoveredIdx] = useState(-1)
+  const [openDetailsCardIdx, setOpenDetailsCardIdx] = useState(null)
+  const [showReceipt, setShowReceipt] = useState(false)
 
   const fmtCurrency = (value) => {
     const n = Number(value)
@@ -40,12 +40,18 @@ export default function Refinanciamento() {
     const contractDetailsFromRows = Array.isArray(receiptRowsRaw)
       ? receiptRowsRaw.map((row, rowIdx) => {
           if (Array.isArray(row)) {
-            const [code, bank, troco] = row
+            const [code, bank, troco, taxaAntiga, taxaNova, parcelasAbertas, parcelasTotais, parcelaAntiga, parcelaNova] = row
             return {
               key: `${index}-${rowIdx}-${bank || code || 'contrato'}`,
               bank: bank || `Contrato ${rowIdx + 1}`,
               code: code || '-',
               troco: troco || '-',
+              taxaAntiga: taxaAntiga || '-',
+              taxaNova: taxaNova || '-',
+              parcelasAbertas: parcelasAbertas || '-',
+              parcelasTotais: parcelasTotais || '-',
+              parcelaAntiga: parcelaAntiga || '-',
+              parcelaNova: parcelaNova || '-',
               result: 'Compõe a proposta',
             }
           }
@@ -54,6 +60,12 @@ export default function Refinanciamento() {
             bank: row?.bank || row?.banco || `Contrato ${rowIdx + 1}`,
             code: row?.code || row?.codigo || '-',
             troco: row?.troco || row?.cashback || '-',
+            taxaAntiga: row?.taxaAntiga || row?.oldRate || row?.taxa_antiga || '-',
+            taxaNova: row?.taxaNova || row?.newRate || row?.taxa_nova || '-',
+            parcelasAbertas: row?.parcelasAbertas || row?.openInstallments || row?.parcelas_abertas || '-',
+            parcelasTotais: row?.parcelasTotais || row?.totalInstallments || row?.parcelas_totais || '-',
+            parcelaAntiga: row?.parcelaAntiga || row?.oldInstallment || row?.parcela_antiga || '-',
+            parcelaNova: row?.parcelaNova || row?.newInstallment || row?.parcela_nova || '-',
             result: row?.result || row?.resultado || 'Compõe a proposta',
           }
         })
@@ -62,19 +74,31 @@ export default function Refinanciamento() {
     const contractDetailsFromContracts = Array.isArray(contractsRaw)
       ? contractsRaw.map((c, cIdx) => {
           if (typeof c === 'string') {
-            return {
-              key: `${index}-c-${cIdx}-${c}`,
-              bank: c,
-              code: '-',
-              troco: '-',
-              result: 'Compõe a proposta',
-            }
+          return {
+            key: `${index}-c-${cIdx}-${c}`,
+            bank: c,
+            code: '-',
+            troco: '-',
+            taxaAntiga: '-',
+            taxaNova: '-',
+            parcelasAbertas: '-',
+            parcelasTotais: '-',
+            parcelaAntiga: '-',
+            parcelaNova: '-',
+            result: 'Compõe a proposta',
+          }
           }
           return {
             key: `${index}-c-${cIdx}-${c?.bank || c?.banco || 'contrato'}`,
             bank: c?.bank || c?.banco || `Contrato ${cIdx + 1}`,
             code: c?.code || c?.codigo || '-',
             troco: c?.troco || c?.cashback || '-',
+            taxaAntiga: c?.taxaAntiga || c?.oldRate || c?.taxa_antiga || '-',
+            taxaNova: c?.taxaNova || c?.newRate || c?.taxa_nova || '-',
+            parcelasAbertas: c?.parcelasAbertas || c?.openInstallments || c?.parcelas_abertas || '-',
+            parcelasTotais: c?.parcelasTotais || c?.totalInstallments || c?.parcelas_totais || '-',
+            parcelaAntiga: c?.parcelaAntiga || c?.oldInstallment || c?.parcela_antiga || '-',
+            parcelaNova: c?.parcelaNova || c?.newInstallment || c?.parcela_nova || '-',
             result: c?.result || c?.resultado || 'Compõe a proposta',
           }
         })
@@ -137,6 +161,85 @@ export default function Refinanciamento() {
   const liquidoAntes = salarioBase - parcelaAntes
   const liquidoDepois = salarioBase - parcelaDepois
 
+  const goContratacao = () => {
+    navigate('/dados-bancarios', {
+      state: {
+        sourcePath: '/refinanciamento',
+        nextPath: '/contratacao',
+        offerState: {
+          sourcePath: '/refinanciamento',
+          offerTitle: scenario.title || 'Refinanciamento',
+          offerSubtitle: 'Resumo da oferta selecionada antes da contratação',
+          primaryValue: scenario.cash || 'R$ 0',
+          ctaLabel: 'Confirmar Refinanciamento',
+          summary: [
+            { label: 'Você recebe', value: scenario.cash || 'R$ 0' },
+            { label: 'Nova parcela', value: scenario.installment || 'R$ 0/mês' },
+            { label: 'Margem livre', value: scenario.margem || 'R$ 0' },
+            { label: 'Contratos', value: `${scenario.contracts?.length || 0}` },
+          ],
+        },
+      },
+    })
+  }
+
+  const downloadReceiptPdf = () => {
+    const today = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+    const receiptHtml = `
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Recibo de Simulação - Refinanciamento</title>
+        <style>
+          @page { size: auto; margin: 0; }
+          * { box-sizing: border-box; }
+          html, body { width: 100%; height: 100%; }
+          body { margin: 0; font-family: Arial, sans-serif; color: #4f4f4f; background: #fff; }
+          .wrap { width: 100%; min-height: 100%; display: flex; justify-content: center; align-items: flex-start; padding: 24px 24px 48px; }
+          .ticket { width: min(760px, 100%); border-radius: 14px; padding: 34px 30px 30px; border: 1px solid #ececec; font-size: 28px; background: linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)), #f5f5f3; }
+          .title { text-align: center; font-size: 28px; font-weight: 800; color: #444; }
+          .date { font-size: 20px; margin-top: 8px; text-align: center; color: #808080; }
+          .sep { border-top: 2px dashed #cfcfcf; margin: 20px 0; }
+          .label { text-align: center; font-size: 22px; font-weight: 800; }
+          .value { text-align: center; margin-top: 6px; font-size: 56px; font-weight: 900; color: #232323; }
+          .grid { display: grid; gap: 12px; font-size: 22px; }
+          .row { display: flex; justify-content: space-between; gap: 16px; }
+        </style>
+      </head>
+      <body>
+        <div class="wrap">
+          <div class="ticket">
+            <div class="title">SIMULAÇÃO DE REFINANCIAMENTO - CONSIGAI</div>
+            <div class="date">${today}</div>
+            <div class="sep"></div>
+            <div class="label">VOCÊ PODE RECEBER HOJE</div>
+            <div class="value">${scenario.cash}</div>
+            <div class="sep"></div>
+            <div class="grid">
+              <div class="row"><span>Cenário</span><strong>${scenario.title}</strong></div>
+              <div class="row"><span>Nova parcela</span><strong>${scenario.installment}</strong></div>
+              <div class="row"><span>Margem livre</span><strong>${scenario.margem}</strong></div>
+              <div class="row"><span>Contratos</span><strong>${scenario.contracts.length}</strong></div>
+            </div>
+          </div>
+        </div>
+        <script>
+          window.onload = () => {
+            window.print();
+            window.onafterprint = () => window.close();
+          };
+        </script>
+      </body>
+      </html>
+    `
+    const printWindow = window.open('', '_blank', 'width=900,height=700')
+    if (!printWindow) return
+    printWindow.document.open()
+    printWindow.document.write(receiptHtml)
+    printWindow.document.close()
+  }
+
   return (
     <>
       <style>{`
@@ -145,6 +248,7 @@ export default function Refinanciamento() {
         .rf-page { min-height:100vh; position:relative; overflow-x:hidden; padding-bottom:48px; background:radial-gradient(circle at 12% 10%, rgba(0,231,255,.14), transparent 28%), radial-gradient(circle at 88% 18%, rgba(29,161,235,.12), transparent 30%), linear-gradient(180deg, #EAF5FF 0%, #F8FBFF 46%, #FFFFFF 100%); }
         .rf-shell { width:calc(100% - 96px); max-width:1280px; margin:0 auto; position:relative; z-index:1; padding-top:30px; }
         .main-layout { display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:30px; align-items:start; }
+        .sidebar { display:grid; gap:16px; align-content:start; }
         .strategy-hero { margin-bottom:20px; padding:26px 30px; border-radius:30px; background:radial-gradient(circle at 92% 8%, rgba(0,231,255,.15), transparent 34%), radial-gradient(circle at 10% 100%, rgba(0,122,82,.07), transparent 34%), linear-gradient(180deg, rgba(255,255,255,.98) 0%, #FFF 100%); border:1px solid var(--line); box-shadow:var(--shadow); position:relative; overflow:hidden; }
         .strategy-hero::before { content:''; position:absolute; inset:0 0 auto 0; height:5px; background:linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--cyan), var(--green)); }
         .hero-kicker { color:var(--blue-main); font-size:12px; font-weight:950; letter-spacing:.13em; text-transform:uppercase; }
@@ -161,9 +265,17 @@ export default function Refinanciamento() {
         .offer-flow-header p { margin-top:5px; color:var(--muted); font-size:12.5px; line-height:1.35; font-weight:650; }
         .offer-flow-badge { padding:8px 11px; border-radius:999px; background:rgba(0,231,255,.12); border:1px solid rgba(0,231,255,.30); color:var(--blue-main); font-size:11px; font-weight:950; text-transform:uppercase; letter-spacing:.08em; }
         .scenario-list { display:grid; gap:14px; }
-        .scenario-card { --card-accent: var(--blue-dark); --card-glow: rgba(3,36,111,.12); padding:22px; border-radius:28px; background:radial-gradient(circle at 92% 8%, var(--card-glow), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFF 100%); border:1px solid var(--line); box-shadow:0 16px 38px rgba(3,36,111,.07); position:relative; overflow:hidden; cursor:pointer; }
+        .scenario-card { --card-accent: var(--blue-dark); --card-glow: rgba(3,36,111,.12); padding:22px; border-radius:28px; background:#fff; border:1px solid var(--line); box-shadow:0 16px 38px rgba(3,36,111,.07); position:relative; overflow:hidden; cursor:pointer; }
         .scenario-card::before { content:''; position:absolute; inset:0 0 auto 0; height:5px; background:var(--card-accent); }
-        .scenario-card.selected { border:2px solid var(--card-accent); background:radial-gradient(circle at 92% 8%, var(--card-glow), transparent 34%), linear-gradient(180deg, #F8FEFF 0%, #FFF 100%); }
+        .scenario-card::after { content:''; position:absolute; top:0; right:0; width:220px; height:130px; background:radial-gradient(circle at 100% 0%, var(--card-glow), transparent 70%); pointer-events:none; }
+        .scenario-card.selected { border:2px solid var(--card-accent); background:#fff; }
+        .scenario-card.selected, .scenario-card.selected * { user-select:text; }
+        .scenario-card.selected .scenario-header,
+        .scenario-card.selected .scenario-metrics,
+        .scenario-card.selected .contract-tags,
+        .scenario-card.selected .tag-list,
+        .scenario-card.selected .tag { cursor:text; }
+        .scenario-card.selected .scenario-details-btn { cursor:pointer; user-select:none; }
         .scenario-card.green { --card-accent: var(--blue-main); --card-glow: rgba(5,94,206,.14); }
         .scenario-card.gold { --card-accent: var(--green); --card-glow: rgba(0,122,82,.12); }
         .scenario-header { display:grid; grid-template-columns:44px 1fr; gap:14px; align-items:start; }
@@ -173,12 +285,45 @@ export default function Refinanciamento() {
         .scenario-copy { margin-top:5px; color:var(--muted); font-size:12.5px; line-height:1.35; font-weight:650; }
         .scenario-metrics { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; margin-top:18px; }
         .scenario-metric { min-height:74px; padding:13px; border-radius:18px; background:var(--blue-soft); border:1px solid var(--line); }
-        .scenario-metric small { display:block; color:var(--muted); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.04em; }
-        .scenario-metric strong { display:block; margin-top:6px; color:var(--card-accent); font-size:18px; font-weight:950; letter-spacing:-.04em; }
-        .contract-tags { margin-top:16px; padding-top:14px; border-top:1px solid var(--line); }
+        .scenario-metric small { display:block; color:var(--muted); font-size:clamp(8.5px, 0.9vw, 10px); font-weight:900; text-transform:uppercase; letter-spacing:.04em; }
+        .scenario-metric strong { display:block; margin-top:6px; color:var(--card-accent); font-size:clamp(14px, 1.7vw, 18px); font-weight:950; letter-spacing:-.04em; white-space:nowrap; word-break:keep-all; }
+        .contract-tags-row { margin-top:16px; padding-top:14px; border-top:1px solid var(--line); }
+        .contract-tags { min-width:0; }
         .contract-tags small { display:block; color:var(--muted); font-size:10.5px; font-weight:950; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+        .contract-tags-actions { display:flex; justify-content:space-between; align-items:center; gap:12px; }
         .tag-list { display:flex; flex-wrap:wrap; gap:7px; }
         .tag { padding:7px 10px; border-radius:999px; background:var(--blue-soft); color:var(--blue-main); border:1px solid var(--line); font-size:11px; font-weight:850; }
+        .scenario-card-footer { flex:0 0 auto; display:flex; justify-content:flex-end; }
+        .scenario-details-btn { min-height:36px; padding:0 12px; border-radius:12px; border:1px solid color-mix(in srgb, var(--card-accent) 28%, #ffffff); background:#fff; color:var(--card-accent); font-size:12px; font-weight:900; cursor:pointer; }
+        .compact-contract-list { display:grid; gap:10px; margin-top:8px; }
+        .compact-refin-card { padding:14px; border-radius:20px; background:#fff; border:1px solid var(--line); box-shadow:none; position:relative; overflow:hidden; cursor:auto; }
+        .compact-refin-card h3,
+        .compact-refin-card small,
+        .compact-refin-card span,
+        .compact-refin-card strong,
+        .compact-refin-card p,
+        .compact-refin-card b { cursor:text; user-select:text; }
+        .compact-refin-card::before { content:''; position:absolute; inset:0 0 auto 0; height:4px; background:linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--cyan), var(--green)); }
+        .compact-header { display:flex; justify-content:space-between; align-items:center; gap:10px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+        .compact-header small { color:var(--blue-main); font-size:9px; font-weight:950; letter-spacing:.12em; text-transform:uppercase; }
+        .compact-header h3 { margin-top:2px; color:var(--blue-dark); font-size:16px; line-height:1; font-weight:950; letter-spacing:-.04em; }
+        .money-highlight { margin-top:10px; padding:9px 10px; border-radius:14px; background:rgba(233,248,241,.62); border:1px solid var(--green-line); display:flex; align-items:center; justify-content:space-between; gap:12px; }
+        .money-copy { min-width:0; }
+        .money-highlight span { display:block; color:var(--green); font-size:9.5px; font-weight:950; text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
+        .money-highlight small { display:block; margin-top:2px; color:var(--muted); font-size:10px; line-height:1.25; font-weight:700; }
+        .money-highlight strong { flex:0 0 auto; color:var(--green); font-size:21px; line-height:1; font-weight:950; letter-spacing:-.055em; white-space:nowrap; }
+        .compare-lines { display:grid; margin-top:10px; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:#fff; }
+        .compare-head, .compare-line { display:grid; grid-template-columns:74px 1fr 1fr; align-items:center; gap:8px; }
+        .compare-head { padding:8px 10px; background:var(--blue-soft); border-bottom:1px solid var(--line); color:var(--muted); font-size:9px; font-weight:950; text-transform:uppercase; letter-spacing:.07em; }
+        .compare-head span:nth-child(2),
+        .compare-head span:nth-child(3) { text-align:center; }
+        .compare-line { padding:9px 10px; border-bottom:1px solid var(--line); }
+        .compare-line:last-child { border-bottom:0; }
+        .compare-label { color:var(--blue-dark); font-size:11px; font-weight:950; }
+        .compare-value { color:var(--blue-dark); font-size:12px; line-height:1; font-weight:950; white-space:nowrap; letter-spacing:-.025em; text-align:center; }
+        .compare-value.after { color:var(--blue-main); }
+        .compact-note { margin-top:10px; padding:9px 10px; border-radius:12px; background:#F8FBFF; border:1px solid var(--line); color:var(--muted); font-size:10.5px; line-height:1.3; font-weight:650; }
+        .compact-note strong { color:var(--blue-dark); font-weight:950; }
         .scenario-actions { margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
         .consigai-cta-animated { position:relative; overflow:hidden; transform:translateY(0); transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease, background-position .35s ease, filter .18s ease; animation:consigaiDetailsFloat 3.8s ease-in-out infinite; background-size:220% 100%; background-position:0% 0%; cursor:pointer; }
         .consigai-cta-animated:hover { background-position:100% 0%; animation-play-state:paused; transform:translateY(-2px) scale(1.01) !important; filter:saturate(1.05); }
@@ -192,7 +337,6 @@ export default function Refinanciamento() {
         .back-offers-cta { min-height:46px; margin-top:10px; border-radius:14px; border:1px solid #BFD4F6; background:#fff; color:#055ECE; font-size:14px; font-weight:900; box-shadow:0 8px 20px rgba(30,60,180,.12); }
         .safe-note { margin-top:12px; color:var(--muted); text-align:center; font-size:10.5px; font-weight:650; }
         .side-card { padding:22px; border-radius:26px; background:rgba(255,255,255,.98); border:1px solid var(--line); box-shadow:0 18px 46px rgba(3,36,111,.08); }
-        .side-card + .side-card { margin-top:16px; }
         .side-card h3 { color:var(--blue-dark); font-size:15px; font-weight:950; text-transform:uppercase; }
         .side-card p { margin-top:5px; color:var(--muted); font-size:12px; line-height:1.35; font-weight:650; }
         .proposal-highlight { margin-top:16px; padding:16px; border-radius:20px; background:radial-gradient(circle at 92% 8%, rgba(0,231,255,.12), transparent 34%), linear-gradient(180deg,#F8FBFF 0%, #FFF 100%); border:1px solid rgba(0,231,255,.34); }
@@ -202,20 +346,6 @@ export default function Refinanciamento() {
         .summary-list { margin-top:12px; }
         .summary-row { display:flex; justify-content:space-between; gap:16px; padding:13px 0; border-bottom:1px solid var(--line); color:var(--muted); font-size:13px; font-weight:800; }
         .summary-row strong { color:var(--blue-dark); font-weight:950; }
-        .contract-accordion { margin-top:16px; display:grid; gap:10px; }
-        .accordion-title { color:var(--blue-dark); font-size:12px; font-weight:950; letter-spacing:.06em; text-transform:uppercase; }
-        .contract-detail { border-radius:16px; border:1px solid var(--line); background:var(--blue-soft); overflow:hidden; }
-        .contract-detail[open] { background:#fff; border-color:rgba(0,231,255,.34); box-shadow:0 12px 26px rgba(3,36,111,.06); }
-        .contract-detail summary { list-style:none; min-height:46px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; gap:12px; cursor:pointer; }
-        .contract-detail summary::-webkit-details-marker { display:none; }
-        .contract-detail summary::after { content:'⌄'; color:var(--blue-main); font-weight:950; transition:transform 160ms ease; }
-        .contract-detail[open] summary::after { transform:rotate(180deg); }
-        .contract-detail summary span { color:var(--blue-dark); font-size:13px; font-weight:950; }
-        .contract-detail summary strong { margin-left:auto; color:var(--green); font-size:11px; font-weight:950; text-transform:uppercase; letter-spacing:.04em; }
-        .contract-detail-body { display:grid; gap:8px; padding:0 14px 14px; }
-        .contract-detail-body div { display:flex; justify-content:space-between; gap:12px; padding:9px 10px; border-radius:12px; background:#F8FBFF; border:1px solid var(--line); }
-        .contract-detail-body span { color:var(--muted); font-size:11px; font-weight:800; }
-        .contract-detail-body strong { color:var(--blue-dark); font-size:11px; font-weight:950; text-align:right; }
         .salary-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
         .salary-box { padding:14px; border-radius:18px; background:#F8FBFF; border:1px solid var(--line); }
         .salary-box.green { background:var(--green-soft); border-color:var(--green-line); }
@@ -228,14 +358,14 @@ export default function Refinanciamento() {
         .installment-impact strong { display:block; margin-top:6px; color:var(--blue-main); font-size:20px; font-weight:950; }
         @media (max-width:1100px){ .main-layout{ grid-template-columns:1fr; } .sidebar{ display:grid; grid-template-columns:1fr 1fr; gap:16px; } .side-card + .side-card{ margin-top:0; } }
         @media (max-width:900px){ .rf-shell{ width:calc(100% - 32px); } .scenario-metrics,.salary-grid,.sidebar{ grid-template-columns:1fr; } }
-        @media (max-width:560px){ .hero-heading{ font-size:34px; } .strategy-hero,.scenario-card{ padding:22px; } .scenario-header{ grid-template-columns:42px 1fr; } }
+        @media (max-width:560px){ .hero-heading{ font-size:34px; } .strategy-hero,.scenario-card{ padding:22px; } .scenario-header{ grid-template-columns:42px 1fr; } .money-highlight{ align-items:flex-start; flex-direction:column; } .compare-head,.compare-line{ grid-template-columns:1fr; gap:6px; } .compare-head span:first-child{ display:none; } }
       `}</style>
 
       <div style={appPageStyle}>
         {isDesktop ? (
-          <DesktopPageHeader clientName={clientName} chipLabel="Refinanciamento" title="Refinancie com inteligencia e escolha o melhor impacto no seu mes" subtitle="Compare cenario por cenario com clareza antes de confirmar." onLogoClick={() => navigate('/ofertas')} actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configuracoes', onClick: () => navigate('/configuracoes') }]} />
+          <DesktopPageHeader clientName={clientName} chipLabel="Refinanciamento" title="Refinancie com inteligência e escolha o melhor impacto no seu mês" subtitle="Compare cenário por cenário com clareza antes de confirmar." onLogoClick={() => navigate('/ofertas')} actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }]} />
         ) : (
-          <MobilePageHeader clientName={clientName} chipLabel="Refinanciamento" title="Refinancie com inteligencia e escolha o melhor impacto no seu mes" subtitle="Compare cenario por cenario com clareza antes de confirmar." onLogoClick={() => navigate('/ofertas')} actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configuracoes', onClick: () => navigate('/configuracoes') }]} />
+          <MobilePageHeader clientName={clientName} chipLabel="Refinanciamento" title="Refinancie com inteligência e escolha o melhor impacto no seu mês" subtitle="Compare cenário por cenário com clareza antes de confirmar." onLogoClick={() => navigate('/ofertas')} actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }]} />
         )}
 
         <div className="rf-page">
@@ -259,18 +389,15 @@ export default function Refinanciamento() {
                       <h2>Cenários disponíveis</h2>
                       <p>Escolha uma estratégia e veja o resumo da proposta ao lado.</p>
                     </div>
-                    <span className="offer-flow-badge">{scenarios.length} opções</span>
                   </div>
 
                   <div className="scenario-list">
                     {scenarios.map((s, i) => (
+                      <div key={s.key}>
                       <article
-                        key={s.key}
                         className={`scenario-card ${i === 1 ? 'green' : ''} ${i === 2 ? 'gold' : ''} ${activeIdx === i ? 'selected' : ''}`}
-                        onClick={() => { setActiveIdx(i); setDetailsOpen(false) }}
-                        onMouseEnter={() => setHoveredIdx(i)}
-                        onMouseLeave={() => setHoveredIdx(-1)}
-                        style={getSelectableCardStyle({ selected: activeIdx === i, hovered: hoveredIdx === i })}
+                        onClick={() => { setActiveIdx(i) }}
+                        style={getSelectableCardStyle({ selected: activeIdx === i, hovered: false })}
                       >
                         <div className="scenario-header">
                           <div className="scenario-icon">{ICONS[i] || '$'}</div>
@@ -286,47 +413,126 @@ export default function Refinanciamento() {
                           <div className="scenario-metric"><small>Margem livre</small><strong>{s.margem}</strong></div>
                           <div className="scenario-metric"><small>Contratos</small><strong>{s.contracts.length} {s.contracts.length === 1 ? 'contrato' : 'contratos'}</strong></div>
                         </div>
-                        <div className="contract-tags"><small>Contratos incluídos</small><div className="tag-list">{s.contracts.map((c) => <span key={c} className="tag">{c}</span>)}</div></div>
+                        <div className="contract-tags-row">
+                          <div className="contract-tags">
+                            <small>Contratos incluídos</small>
+                            <div className="contract-tags-actions">
+                              <div className="tag-list">{s.contracts.map((c) => <span key={c} className="tag">{c}</span>)}</div>
+                              <div className="scenario-card-footer">
+                                <button
+                                  type="button"
+                                  className="scenario-details-btn consigai-cta-animated"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    const currentScrollY = window.scrollY
+                                    setOpenDetailsCardIdx((prev) => (prev === i ? null : i))
+                                    setActiveIdx(i)
+                                    requestAnimationFrame(() => {
+                                      window.scrollTo({ top: currentScrollY, behavior: 'auto' })
+                                    })
+                                  }}
+                                >
+                                  Ver detalhes
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {openDetailsCardIdx === i && (
+                        <div style={{ marginTop: 24 }} onClick={(e) => e.stopPropagation()}>
+                          <div className="compact-contract-list">
+                            {s.contractDetails.map((item) => (
+                              <article key={item.key} className="compact-refin-card">
+                                <header className="compact-header">
+                                  <div>
+                                    <small>Antes e depois</small>
+                                    <h3>{item.bank}</h3>
+                                  </div>
+                                </header>
+
+                                <section className="money-highlight">
+                                  <div className="money-copy">
+                                    <span>Você recebe na conta</span>
+                                    <small>valor estimado</small>
+                                  </div>
+                                  <strong>{item.troco}</strong>
+                                </section>
+
+                                <section className="compare-lines">
+                                  <div className="compare-head">
+                                    <span></span>
+                                    <span>Hoje</span>
+                                    <span>Depois</span>
+                                  </div>
+                                  <div className="compare-line">
+                                    <span className="compare-label">Parcela</span>
+                                    <strong className="compare-value">{item.parcelaAntiga}</strong>
+                                    <strong className="compare-value after">{item.parcelaNova}</strong>
+                                  </div>
+                                  <div className="compare-line">
+                                    <span className="compare-label">Prazo</span>
+                                    <strong className="compare-value">{item.parcelasAbertas}</strong>
+                                    <strong className="compare-value after">{item.parcelasTotais}</strong>
+                                  </div>
+                                  <div className="compare-line">
+                                    <span className="compare-label">Taxa</span>
+                                    <strong className="compare-value">{item.taxaAntiga}</strong>
+                                    <strong className="compare-value after">{item.taxaNova}</strong>
+                                  </div>
+                                </section>
+
+                                <p className="compact-note">
+                                  <strong>Contrato:</strong> {item.code}
+                                </p>
+                              </article>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                       </article>
+                      </div>
                     ))}
                   </div>
 
                   <div className="scenario-actions">
-                    <button className="primary-cta consigai-cta-animated">Escolher cenário {scenario.title}</button>
-                    <button className="secondary-cta consigai-cta-animated" onClick={() => setDetailsOpen((v) => !v)}>Ver detalhes da oferta</button>
-                    {detailsOpen && (
-                      <div style={{ marginTop: 12, background: '#f7f9fe', border: '1px solid var(--line)', borderRadius: 16, padding: 10, display: 'flex', justifyContent: 'center' }}>
+                    <button className="primary-cta consigai-cta-animated" onClick={goContratacao}>Continuar com esta oferta</button>
+                    <button className="back-offers-cta consigai-cta-animated" onClick={() => setShowReceipt((v) => !v)}>Gerar recibo da simulação</button>
+                    {showReceipt && (
+                      <div style={{ marginTop: 10, borderRadius: 16, border: '1px solid #DDE8F6', background: '#f7f9fe', padding: 10, display: 'flex', justifyContent: 'center' }}>
                         <div style={{ width: 300, borderRadius: 10, padding: '14px 12px 12px', border: '1px solid #ececec', color: '#4f4f4f', fontSize: 12, background: 'linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)), #f5f5f3' }}>
-                          <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, color: '#444' }}>SIMULACAO DE REFINANCIAMENTO - CONSIGAI</div>
+                          <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, color: '#444' }}>SIMULAÇÃO DE REFINANCIAMENTO - CONSIGAI</div>
                           <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-                          <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>VOCE VAI RECEBER HOJE</div>
+                          <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>VOCÊ PODE RECEBER HOJE</div>
                           <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323', lineHeight: 1 }}>{scenario.cash}</div>
                           <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-                          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10, color: '#5b5b5b' }}>
-                            <thead>
-                              <tr>
-                                <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767', paddingRight: 10 }}>Cod.</th>
-                                <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>Banco</th>
-                                <th style={{ fontSize: 8, textAlign: 'right', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>Troco</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {scenario.contractDetails.map((item) => (
-                                <tr key={item.key}>
-                                  <td style={{ fontSize: 8, padding: '4px 0', paddingRight: 10, whiteSpace: 'nowrap' }}>{item.code}</td>
-                                  <td style={{ padding: '4px 0' }}>{item.bank}</td>
-                                  <td style={{ padding: '4px 0', textAlign: 'right', fontWeight: 700, color: '#3b3b3b' }}>{item.troco}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                          <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: '#555' }}>Nova parcela total</span>
-                            <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>{scenario.installment}</span>
+                          <div style={{ display: 'grid', gap: 6, fontSize: 10 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Cenário</span><strong>{scenario.title}</strong></div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Nova parcela</span><strong>{scenario.installment}</strong></div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Margem livre</span><strong>{scenario.margem}</strong></div>
                           </div>
                         </div>
                       </div>
+                    )}
+                    {showReceipt && (
+                      <button
+                        className="consigai-cta-animated"
+                        onClick={downloadReceiptPdf}
+                        style={{
+                          width: '100%',
+                          minHeight: 46,
+                          marginTop: 8,
+                          borderRadius: 14,
+                          border: 0,
+                          background: 'linear-gradient(145deg, #055ECE, #03246F)',
+                          color: '#fff',
+                          fontSize: 13.5,
+                          fontWeight: 900,
+                          cursor: 'pointer',
+                          boxShadow: '0 8px 20px rgba(30,60,180,.3)',
+                        }}
+                      >
+                        Baixar recibo da simulação
+                      </button>
                     )}
                     <p className="safe-note">Valores estimados. Sujeitos à análise e aprovação de crédito.</p>
                     <button className="back-offers-cta consigai-cta-animated" onClick={() => navigate('/ofertas')}>Voltar para ofertas</button>
@@ -337,29 +543,13 @@ export default function Refinanciamento() {
               <aside className="sidebar">
                 <div className="side-card proposal-card">
                   <h3>Resumo da proposta</h3>
-                  <p>Veja o cenário escolhido e o que acontece com cada contrato antes de avançar.</p>
-                  <div className="proposal-highlight"><small>Cenário selecionado</small><strong>{scenario.title}</strong><span>{scenario.desc}</span></div>
+                  <p>Confira as principais condições simuladas.</p>
+                  <div className="proposal-highlight"><small>Cenário selecionado</small><strong>{scenario.title}</strong></div>
                   <div className="summary-list">
                     <div className="summary-row"><span>Você recebe</span><strong>{scenario.cash}</strong></div>
                     <div className="summary-row"><span>Nova parcela total</span><strong>{scenario.installment}</strong></div>
                     <div className="summary-row"><span>Margem livre</span><strong>{scenario.margem}</strong></div>
                     <div className="summary-row"><span>Contratos</span><strong>{scenario.contracts.length} refinanciados</strong></div>
-                  </div>
-                  <div className="contract-accordion">
-                    <div className="accordion-title">O que acontece com cada contrato</div>
-                    {scenario.contractDetails.map((item) => (
-                      <details key={item.key} className="contract-detail">
-                        <summary>
-                          <span>{item.bank}</span>
-                          <strong>Refinancia</strong>
-                        </summary>
-                        <div className="contract-detail-body">
-                          <div><span>Código</span><strong>{item.code}</strong></div>
-                          <div><span>Troco</span><strong>{item.troco}</strong></div>
-                          <div><span>Resultado</span><strong>{item.result}</strong></div>
-                        </div>
-                      </details>
-                    ))}
                   </div>
                 </div>
 
@@ -367,20 +557,20 @@ export default function Refinanciamento() {
                   <h3>Impacto no bolso</h3>
                   <p>Veja quanto sobra depois da nova parcela.</p>
                   <div className="salary-grid">
-                    <div className="salary-box"><small>Antes</small><strong>{liquidoAntes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong><span>com parcela atual de {parcelaAntes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span></div>
-                    <div className="salary-box green"><small>Depois</small><strong>{liquidoDepois.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong><span>com nova parcela estimada</span></div>
+                    <div className="salary-box"><small>Antes</small><strong>{liquidoAntes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</strong><span>sem esta nova parcela</span></div>
+                    <div className="salary-box green"><small>Depois</small><strong>{liquidoDepois.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</strong><span>com a parcela estimada</span></div>
                   </div>
                   <div className="installment-impact"><span>Nova parcela total</span><strong>{scenario.installment}</strong></div>
                 </div>
 
-                <div style={{ padding: 22, borderRadius: 26, background: 'radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.10), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)', border: '1px solid #DDE8F6', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
-                  <h3 style={{ color: '#03246F', fontSize: 15, fontWeight: 950, textTransform: 'uppercase' }}>Voce esta no controle</h3>
-                  <p style={{ marginTop: 5, color: '#64748B', fontSize: 12 }}>Antes de avancar, a ConsigAI mostra as condicoes principais para voce decidir com calma e clareza.</p>
+                <div style={{ padding: 22, borderRadius: 26, background: '#FFFFFF', border: '1px solid #DDE8F6', boxShadow: 'none' }}>
+                  <h3 style={{ color: '#03246F', fontSize: 15, fontWeight: 950, textTransform: 'uppercase' }}>Você está no controle</h3>
+                  <p style={{ marginTop: 5, color: '#64748B', fontSize: 12 }}>Antes de avançar, a ConsigAI mostra as condições principais para você decidir com calma e clareza.</p>
                   <div style={{ display: 'grid', gap: 10, marginTop: 14 }}>
                     {[
-                      ['Sem compromisso', 'Esta etapa e apenas uma simulacao.'],
-                      ['Sem contratacao automatica', 'Nada e enviado sem sua confirmacao.'],
-                      ['Transparencia total', 'Voce vera taxa, prazo, parcela e custo total.'],
+                      ['Sem compromisso', 'Esta etapa é apenas uma simulação.'],
+                      ['Sem contratação automática', 'Nada é enviado sem sua confirmação.'],
+                      ['Transparência total', 'Você verá taxa, prazo, parcela e custo total.'],
                     ].map(([title, text]) => (
                       <div key={title} style={{ display: 'flex', gap: 10, padding: '11px 12px', borderRadius: 16, background: '#F4F8FF', border: '1px solid #DDE8F6' }}>
                         <span style={{ width: 22, height: 22, borderRadius: '50%', display: 'grid', placeItems: 'center', background: '#E9F8F1', color: '#007A52', border: '1px solid #BDECD7', fontSize: 12, fontWeight: 950 }}>✓</span>

@@ -2480,7 +2480,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   .consigai-offer-note-text { display: block; }
   .consigai-offer-note-title { display: none; }
   .consigai-offer-note-sub {
-    color: #7a8db8; font-weight: 400; font-size: 12px;
+    color: #7a8db8; font-weight: 400; font-size: clamp(10px, 0.95vw, 12px);
     line-height: 1.35; display: block; min-height: 20px;
   }
   .consigai-offer-actions {
@@ -2498,7 +2498,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
     background-position: 0% 0% !important;
     color: #2350c8 !important;
     padding: 12px 14px !important;
-    font-size: 13px !important;
+    font-size: clamp(12px, 1vw, 13px) !important;
     font-weight: 800 !important;
     cursor: pointer !important;
     font-family: inherit !important;
@@ -2514,6 +2514,11 @@ export const OFFER_CARD_REDESIGN_CSS = `
       filter .18s ease !important;
     animation: consigaiDetailsFloat 3.8s ease-in-out infinite;
   }
+  .consigai-offer-pill { font-size: clamp(10px, 0.9vw, 11px) !important; }
+  .consigai-offer-line-main { font-size: clamp(18px, 1.8vw, 24px) !important; }
+  .consigai-offer-line-helper { font-size: clamp(10px, 0.95vw, 11px) !important; }
+  .consigai-offer-mini-label { font-size: clamp(11px, 1vw, 13px) !important; }
+  .consigai-offer-mini-value { font-size: clamp(18px, 1.9vw, 22px) !important; white-space: nowrap !important; }
   .consigai-offer-details-btn:hover {
     background-position: 100% 0% !important;
     border-color: rgba(35,80,200,.34) !important;

@@ -19,10 +19,10 @@ function Receipt({ offer }) {
   return (
     <div style={{ marginTop: 10, borderRadius: 16, border: '1px solid #DDE8F6', background: '#f7f9fe', padding: 10, display: 'flex', justifyContent: 'center' }}>
       <div style={{ width: 300, borderRadius: 10, padding: '14px 12px 12px', border: '1px solid #ececec', color: '#4f4f4f', fontSize: 12, background: 'linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)), #f5f5f3' }}>
-        <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, color: '#444' }}>SIMULACAO DE NOVO CONTRATO - CONSIGAI</div>
+        <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, color: '#444' }}>SIMULAÇÃO DE NOVO CONTRATO - CONSIGAI</div>
         <div style={{ fontSize: 10, marginTop: 4, textAlign: 'center', color: '#808080' }}>{today}</div>
         <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-        <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800 }}>VOCE PODE RECEBER HOJE</div>
+        <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800 }}>VOCÊ PODE RECEBER HOJE</div>
         <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323' }}>R$ {fmt(offer.valor)}</div>
         <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
         <div style={{ display: 'grid', gap: 6, fontSize: 10 }}>
@@ -64,6 +64,73 @@ export default function NovoContrato() {
   const salarioAntes = 2200
   const salarioDepois = salarioAntes - offer.parcela
 
+  const downloadReceiptPdf = () => {
+    const total = offer.parcela * offer.prazo
+    const today = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+
+    const receiptHtml = `
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Recibo de Simulação - ConsigAI</title>
+        <style>
+          @page { size: auto; margin: 0; }
+          * { box-sizing: border-box; }
+          html, body { width: 100%; height: 100%; }
+          body { margin: 0; font-family: Arial, sans-serif; color: #4f4f4f; background: #fff; }
+          .wrap { width: 100%; min-height: 100%; display: flex; justify-content: center; align-items: flex-start; padding: 24px 24px 48px; }
+          .ticket { width: min(760px, 100%); border-radius: 14px; padding: 34px 30px 30px; border: 1px solid #ececec; font-size: 28px; background: linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)), #f5f5f3; }
+          .title { text-align: center; font-size: 28px; font-weight: 800; color: #444; }
+          .date { font-size: 20px; margin-top: 8px; text-align: center; color: #808080; }
+          .sep { border-top: 2px dashed #cfcfcf; margin: 20px 0; }
+          .label { text-align: center; font-size: 22px; font-weight: 800; }
+          .value { text-align: center; margin-top: 6px; font-size: 56px; font-weight: 900; color: #232323; }
+          .grid { display: grid; gap: 12px; font-size: 22px; }
+          .row { display: flex; justify-content: space-between; }
+          .total { display: flex; justify-content: space-between; }
+          .total span { font-size: 22px; font-weight: 700; }
+          .total strong { font-size: 30px; }
+        </style>
+      </head>
+      <body>
+        <div class="wrap">
+          <div class="ticket">
+            <div class="title">SIMULAÇÃO DE NOVO CONTRATO - CONSIGAI</div>
+            <div class="date">${today}</div>
+            <div class="sep"></div>
+            <div class="label">VOCÊ PODE RECEBER HOJE</div>
+            <div class="value">R$ ${fmt(offer.valor)}</div>
+            <div class="sep"></div>
+            <div class="grid">
+              <div class="row"><span>Prazo</span><strong>${offer.prazo} meses</strong></div>
+              <div class="row"><span>Parcela</span><strong>R$ ${fmtDec(offer.parcela)}</strong></div>
+              <div class="row"><span>Taxa</span><strong>${OFERTA.taxaMensal.toFixed(2).replace('.', ',')}% a.m.</strong></div>
+            </div>
+            <div class="sep"></div>
+            <div class="total">
+              <span>Total a pagar</span>
+              <strong>R$ ${fmtDec(total)}</strong>
+            </div>
+          </div>
+        </div>
+        <script>
+          window.onload = () => {
+            window.print();
+            window.onafterprint = () => window.close();
+          };
+        </script>
+      </body>
+      </html>
+    `
+
+    const printWindow = window.open('', '_blank', 'width=900,height=700')
+    if (!printWindow) return
+    printWindow.document.open()
+    printWindow.document.write(receiptHtml)
+    printWindow.document.close()
+  }
+
   const goContratacao = () => {
     navigate('/dados-bancarios', {
       state: {
@@ -72,13 +139,13 @@ export default function NovoContrato() {
         offerState: {
           sourcePath: '/novo-contrato',
           offerTitle: 'Novo Contrato',
-          offerSubtitle: 'Resumo da oferta selecionada antes da contratacao',
+          offerSubtitle: 'Resumo da oferta selecionada antes da contratação',
           primaryValue: `R$ ${fmt(offer.valor)}`,
           ctaLabel: 'Confirmar Novo Contrato',
           summary: [
-            { label: 'Voce recebe', value: `R$ ${fmt(offer.valor)}` },
+            { label: 'Você recebe', value: `R$ ${fmt(offer.valor)}` },
             { label: 'Prazo', value: `${offer.prazo}x` },
-            { label: 'Parcela', value: `R$ ${fmtDec(offer.parcela)}/mes` },
+            { label: 'Parcela', value: `R$ ${fmtDec(offer.parcela)}/mês` },
             { label: 'Taxa', value: `${OFERTA.taxaMensal.toFixed(2).replace('.', ',')}% a.m.` },
           ],
         },
@@ -116,7 +183,7 @@ export default function NovoContrato() {
       >
         {idx === 0 && (
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 11px', borderRadius: 999, background: 'rgba(0, 231, 255, 0.13)', border: '1px solid rgba(0, 231, 255, 0.34)', color: '#03246F', fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '.07em' }}>
-            Sugestao ConsigAI
+            Sugestão ConsigAI
           </div>
         )}
         <div style={{ marginTop: idx === 0 ? 10 : 0, color: '#055ECE', fontSize: idx === 0 ? 42 : 26, fontWeight: 950, letterSpacing: idx === 0 ? '-.07em' : '-.04em', lineHeight: 1 }}>
@@ -140,7 +207,7 @@ export default function NovoContrato() {
         <div style={{ position: 'absolute', inset: '0 0 auto 0', height: 5, background: 'linear-gradient(90deg, #055ECE, #1DA1EB, #00E7FF, #007A52)' }} />
         <div style={{ color: '#055ECE', fontSize: 12, fontWeight: 950, letterSpacing: '.13em', textTransform: 'uppercase' }}>Novo contrato</div>
         <h1 style={{ marginTop: 10, color: '#03246F', fontSize: isDesktop ? 44 : 34, lineHeight: .98, fontWeight: 950, letterSpacing: '-.07em' }}>Escolha quanto quer <span style={{ color: '#007A52' }}>receber</span></h1>
-        <p style={{ marginTop: 12, color: '#64748B', fontSize: 15, lineHeight: 1.45, fontWeight: 650 }}>Escolha um valor, veja a parcela e confirme apenas se fizer sentido para voce. Nenhuma contratacao e feita sem sua confirmacao.</p>
+        <p style={{ marginTop: 12, color: '#64748B', fontSize: 15, lineHeight: 1.45, fontWeight: 650 }}>Escolha um valor, veja a parcela e confirme apenas se fizer sentido para você. Nenhuma contratação é feita sem sua confirmação.</p>
       </section>
 
       <section style={{ marginBottom: 12, padding: isDesktop ? '20px 18px' : '16px 14px', borderRadius: 26, border: '1px solid #DDE8F6', background: '#FFFFFF', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
@@ -173,7 +240,7 @@ export default function NovoContrato() {
         </button>
         {customOpen && (
           <div style={{ marginBottom: 14, background: '#fff', border: '1.5px solid #BFD4F6', borderRadius: 20, padding: 14 }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: 8 }}>Qual valor voce quer?</div>
+            <div style={{ fontSize: 10, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: 8 }}>Qual valor você quer?</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#F8FBFF', border: '1px solid #DDE8F6', borderRadius: 12, padding: '10px 12px' }}>
               <span style={{ color: '#64748B', fontWeight: 800 }}>R$</span>
               <input
@@ -187,7 +254,7 @@ export default function NovoContrato() {
             <div style={{ marginTop: 8, fontSize: 11, color: customValid || !customRaw ? '#64748B' : '#b42318' }}>
               {!customRaw && `Digite um valor entre R$ ${fmt(OFERTA.valorMinimo)} e R$ ${fmt(OFERTA.creditoMaximo)}`}
               {customRaw && !customValid && `Valor deve ficar entre R$ ${fmt(OFERTA.valorMinimo)} e R$ ${fmt(OFERTA.creditoMaximo)}`}
-              {customRaw && customValid && `${selectedPrazo}x de R$ ${fmtDec(calcPMT(customValue, OFERTA.taxaMensal, selectedPrazo))}/mes`}
+              {customRaw && customValid && `${selectedPrazo}x de R$ ${fmtDec(calcPMT(customValue, OFERTA.taxaMensal, selectedPrazo))}/mês`}
             </div>
             <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
               {OFERTA.prazosDisponiveis.map((prazo) => {
@@ -224,13 +291,13 @@ export default function NovoContrato() {
           onMouseLeave={() => setSecondHover(false)}
           style={{ width: '100%', minHeight: 48, marginTop: 10, borderRadius: 17, border: '1px solid #BFD4F6', background: secondHover ? '#F4F8FF' : '#fff', color: '#055ECE', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: secondHover ? '0 12px 24px rgba(35,80,200,.12)' : '0 8px 20px rgba(30,60,180,.12)' }}
         >
-          Gerar recibo da simulacao
+          Gerar recibo da simulação
         </button>
         {showReceipt && <Receipt offer={offer} />}
         {showReceipt && (
           <button
             className="consigai-cta-animated"
-            onClick={() => window.print()}
+            onClick={downloadReceiptPdf}
             style={{
               width: '100%',
               minHeight: 46,
@@ -245,10 +312,10 @@ export default function NovoContrato() {
               boxShadow: '0 8px 20px rgba(30,60,180,.3)',
             }}
           >
-            Baixar recibo da simulacao
+            Baixar recibo da simulação
           </button>
         )}
-        <p style={{ marginTop: 8, color: '#64748B', textAlign: 'center', fontSize: 11, fontWeight: 650 }}>Valores estimados. Sujeitos a analise e aprovacao de credito.</p>
+        <p style={{ marginTop: 8, color: '#64748B', textAlign: 'center', fontSize: 11, fontWeight: 650 }}>Valores estimados. Sujeitos à análise e aprovação de crédito.</p>
         <button
           className="consigai-cta-animated"
           onClick={() => navigate('/ofertas')}
@@ -276,13 +343,13 @@ export default function NovoContrato() {
     <aside style={{ display: 'grid', gap: 16 }}>
       <div style={{ padding: 22, borderRadius: 26, background: 'rgba(255,255,255,.98)', border: '1px solid #DDE8F6', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
         <h3 style={{ color: '#03246F', fontSize: 15, fontWeight: 950, textTransform: 'uppercase' }}>Resumo da oferta</h3>
-        <p style={{ marginTop: 5, color: '#64748B', fontSize: 12 }}>Confira as principais condicoes simuladas.</p>
+        <p style={{ marginTop: 5, color: '#64748B', fontSize: 12 }}>Confira as principais condições simuladas.</p>
         <div style={{ marginTop: 12 }}>
           {[
             ['Produto', 'Novo contrato'],
-            ['Voce recebe', `R$ ${fmt(offer.valor)}`],
+            ['Você recebe', `R$ ${fmt(offer.valor)}`],
             ['Prazo', `${offer.prazo} meses`],
-            ['Parcela', `R$ ${fmtDec(offer.parcela)}/mes`],
+            ['Parcela', `R$ ${fmtDec(offer.parcela)}/mês`],
             ['Taxa', `${OFERTA.taxaMensal.toFixed(2).replace('.', ',')}% a.m.`],
           ].map(([label, value]) => (
             <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '12px 0', borderBottom: '1px solid #DDE8F6', fontSize: 13, fontWeight: 800, color: '#64748B' }}>
@@ -310,18 +377,18 @@ export default function NovoContrato() {
         </div>
         <div style={{ marginTop: 12, padding: '13px 14px', borderRadius: 18, background: '#F4F8FF', border: '1px solid #DDE8F6' }}>
           <span style={{ display: 'block', color: '#64748B', fontSize: 11, fontWeight: 850 }}>Nova parcela</span>
-          <strong style={{ display: 'block', marginTop: 6, color: '#055ECE', fontSize: 20, fontWeight: 950 }}>R$ {fmtDec(offer.parcela)}/mes</strong>
+          <strong style={{ display: 'block', marginTop: 6, color: '#055ECE', fontSize: 20, fontWeight: 950 }}>R$ {fmtDec(offer.parcela)}/mês</strong>
         </div>
       </div>
 
-      <div style={{ padding: 22, borderRadius: 26, background: 'radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.10), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)', border: '1px solid #DDE8F6', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
-        <h3 style={{ color: '#03246F', fontSize: 15, fontWeight: 950, textTransform: 'uppercase' }}>Voce esta no controle</h3>
-        <p style={{ marginTop: 5, color: '#64748B', fontSize: 12 }}>Antes de avancar, a ConsigAI mostra as condicoes principais para voce decidir com calma e clareza.</p>
+      <div style={{ padding: 22, borderRadius: 26, background: '#FFFFFF', border: '1px solid #DDE8F6', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
+        <h3 style={{ color: '#03246F', fontSize: 15, fontWeight: 950, textTransform: 'uppercase' }}>Você está no controle</h3>
+        <p style={{ marginTop: 5, color: '#64748B', fontSize: 12 }}>Antes de avançar, a ConsigAI mostra as condições principais para você decidir com calma e clareza.</p>
         <div style={{ display: 'grid', gap: 10, marginTop: 14 }}>
           {[
-            ['Sem compromisso', 'Esta etapa e apenas uma simulacao.'],
-            ['Sem contratacao automatica', 'Nada e enviado sem sua confirmacao.'],
-            ['Transparencia total', 'Voce vera taxa, prazo, parcela e custo total.'],
+            ['Sem compromisso', 'Esta etapa é apenas uma simulação.'],
+            ['Sem contratação automática', 'Nada é enviado sem sua confirmação.'],
+            ['Transparência total', 'Você verá taxa, prazo, parcela e custo total.'],
           ].map(([title, text]) => (
             <div key={title} style={{ display: 'flex', gap: 10, padding: '11px 12px', borderRadius: 16, background: '#F4F8FF', border: '1px solid #DDE8F6' }}>
               <span style={{ width: 22, height: 22, borderRadius: '50%', display: 'grid', placeItems: 'center', background: '#E9F8F1', color: '#007A52', border: '1px solid #BDECD7', fontSize: 12, fontWeight: 950 }}>✓</span>
@@ -386,12 +453,12 @@ export default function NovoContrato() {
             <DesktopPageHeader
               clientName={clientName}
               chipLabel="Novo Contrato"
-              title="Libere credito novo com equilibrio para o seu mes"
-              subtitle="Simule valor e prazo com clareza para contratar sem apertar o orcamento."
+              title="Libere crédito novo com equilíbrio para o seu mês"
+              subtitle="Simule valor e prazo com clareza para contratar sem apertar o orçamento."
               onLogoClick={() => navigate('/ofertas')}
               actions={[
                 { label: 'Ofertas', onClick: () => navigate('/ofertas') },
-                { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+                { label: 'Configurações', onClick: () => navigate('/configuracoes') },
               ]}
             />
             <main style={{ maxWidth: 1240, margin: '0 auto', padding: '32px 24px 56px' }}>
@@ -406,12 +473,12 @@ export default function NovoContrato() {
             <MobilePageHeader
               clientName={clientName}
               chipLabel="Novo Contrato"
-              title="Libere credito novo com equilibrio para o seu mes"
-              subtitle="Simule valor e prazo com clareza para contratar sem apertar o orcamento."
+              title="Libere crédito novo com equilíbrio para o seu mês"
+              subtitle="Simule valor e prazo com clareza para contratar sem apertar o orçamento."
               onLogoClick={() => navigate('/ofertas')}
               actions={[
                 { label: 'Ofertas', onClick: () => navigate('/ofertas') },
-                { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+                { label: 'Configurações', onClick: () => navigate('/configuracoes') },
               ]}
             />
             <main style={{ padding: '20px 16px 28px' }}>
