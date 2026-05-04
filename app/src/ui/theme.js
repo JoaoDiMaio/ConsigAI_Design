@@ -184,10 +184,7 @@ export const theme = {
 
 export const appPageStyle = {
   minHeight: '100vh',
-  background: gradient.appBackground,
-  backgroundSize: gradient.appBackgroundSize,
-  backgroundRepeat: gradient.appBackgroundRepeat,
-  backgroundPosition: gradient.appBackgroundPosition,
+  background: 'transparent',
   fontFamily: appFontFamily,
   color: colors.text,
 }

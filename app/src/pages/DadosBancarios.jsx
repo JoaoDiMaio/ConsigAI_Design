@@ -302,6 +302,7 @@ export default function DadosBancarios() {
               actions={[
                 { label: 'Voltar', onClick: () => navigate(sourcePath) },
                 { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+              { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
               ]}
             />
             <div style={{ maxWidth: 740, margin: '0 auto', padding: '28px 20px 40px' }}>
@@ -316,6 +317,7 @@ export default function DadosBancarios() {
               actions={[
                 { label: 'Voltar', onClick: () => navigate(sourcePath) },
                 { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+              { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
               ]}
             />
 

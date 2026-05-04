@@ -302,7 +302,7 @@ export default function Portabilidade() {
             title="Faça portabilidade com equilíbrio para Economizar"
             subtitle="Compare sua parcela atual com uma proposta mais leve e transparente."
             onLogoClick={() => navigate('/ofertas')}
-            actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }]}
+            actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }, { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') }]}
           />
         ) : (
           <MobilePageHeader
@@ -311,7 +311,7 @@ export default function Portabilidade() {
             title="Faça portabilidade com equilíbrio para Economizar"
             subtitle="Compare sua parcela atual com uma proposta mais leve e transparente."
             onLogoClick={() => navigate('/ofertas')}
-            actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }]}
+            actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }, { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') }]}
           />
         )}
 

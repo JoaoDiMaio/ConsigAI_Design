@@ -3,6 +3,7 @@ import logoSvg from '../assets/logo.svg'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { toClientCallName } from '../lib/formatters'
 import { appFontFamily, theme } from '../ui/theme'
+import { FontSizeToggle } from './FontSizeToggle'
 
 const DESKTOP_HEADER_HEIGHT = 72
 const TABLET_HEADER_HEIGHT = 72
@@ -236,7 +237,8 @@ export function DesktopPageHeader({
           </button>
           <div aria-hidden="true" />
 
-          <div style={{ justifySelf: 'end' }}>
+          <div style={{ justifySelf: 'end', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <FontSizeToggle variant="header" />
             <ClientMenu actions={actions} clientName={clientName} />
           </div>
         </div>
@@ -283,7 +285,8 @@ export function MobilePageHeader({
         </button>
         <div aria-hidden="true" />
 
-        <div style={{ marginLeft: 'auto', justifySelf: 'end' }}>
+        <div style={{ marginLeft: 'auto', justifySelf: 'end', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <FontSizeToggle variant="header" />
           <ClientMenu actions={actions} compact clientName={clientName} />
         </div>
       </div>

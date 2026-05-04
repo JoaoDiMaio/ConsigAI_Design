@@ -370,6 +370,7 @@ export default function NovoContrato() {
               actions={[
                 { label: 'Ofertas', onClick: () => navigate('/ofertas') },
                 { label: 'Configurações', onClick: () => navigate('/configuracoes') },
+              { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
               ]}
             />
             <main style={{ maxWidth: 1280, margin: '0 auto', padding: '30px 24px 56px' }}>
@@ -390,6 +391,7 @@ export default function NovoContrato() {
               actions={[
                 { label: 'Ofertas', onClick: () => navigate('/ofertas') },
                 { label: 'Configurações', onClick: () => navigate('/configuracoes') },
+              { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
               ]}
             />
             <main style={{ padding: '20px 16px 28px' }}>

@@ -104,6 +104,18 @@ function applyOfferCardRedesignStyles(doc) {
   doc.body.dataset.consigaiOfferRedesignStyleApplied = '1'
 }
 
+function applyIframeTransparentBackground(doc) {
+  if (doc.body?.dataset?.consigaiTransparentBgApplied) return
+  const styleEl = doc.createElement('style')
+  styleEl.textContent = `
+    html, body, .main {
+      background: transparent !important;
+    }
+  `
+  doc.head?.appendChild(styleEl)
+  doc.body.dataset.consigaiTransparentBgApplied = '1'
+}
+
 function buildContractState(entry, usuario, selectedThirdSubOffer) {
   if (!entry?.config || !entry?.data || !usuario) return null
 
@@ -1047,6 +1059,7 @@ export default function OfertasNova() {
 
       applyResponsiveStyles(frameDoc)
       applyOfferCardRedesignStyles(frameDoc)
+      applyIframeTransparentBackground(frameDoc)
       applyAllBridgeUpdates(frameDoc, activeOffersRef.current, getSelectedEntry())
 
       if (!frameDoc.body?.dataset?.consigaiCurrencyObserverAttached) {
@@ -1272,7 +1285,7 @@ export default function OfertasNova() {
           clientName={clientName}
           onLogoClick={() => navigate('/ofertas')}
           actions={[
-            { label: 'Ofertas', onClick: () => navigate('/ofertas') },
+            { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
             { label: 'Configurações', onClick: () => navigate('/configuracoes') },
           ]}
         />
@@ -1284,7 +1297,7 @@ export default function OfertasNova() {
           clientName={clientName}
           onLogoClick={() => navigate('/ofertas')}
           actions={[
-            { label: 'Ofertas', onClick: () => navigate('/ofertas') },
+            { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
             { label: 'Configurações', onClick: () => navigate('/configuracoes') },
           ]}
         />

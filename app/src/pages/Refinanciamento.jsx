@@ -204,7 +204,7 @@ export default function Refinanciamento() {
       <style>{`
         :root { --blue-dark:#03246F; --blue-main:#055ECE; --logo-blue:#1DA1EB; --cyan:#00E7FF; --green:#007A52; --green-soft:#E9F8F1; --green-line:#BDECD7; --muted:#64748B; --line:#DDE8F6; --blue-soft:#F4F8FF; --shadow:0 18px 48px rgba(3,36,111,.08); }
         .rf-page * { box-sizing:border-box; margin:0; padding:0; }
-        .rf-page { min-height:100vh; position:relative; overflow-x:hidden; padding-bottom:48px; background:radial-gradient(circle at 12% 10%, rgba(0,231,255,.14), transparent 28%), radial-gradient(circle at 88% 18%, rgba(29,161,235,.12), transparent 30%), linear-gradient(180deg, #EAF5FF 0%, #F8FBFF 46%, #FFFFFF 100%); }
+        .rf-page { min-height:100vh; position:relative; overflow-x:hidden; padding-bottom:48px; background:transparent; }
         .rf-shell { width:calc(100% - 96px); max-width:1280px; margin:0 auto; position:relative; z-index:1; padding-top:30px; }
         .main-layout { display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:30px; align-items:start; }
         .sidebar { display:grid; gap:20px; align-content:start; }
@@ -294,9 +294,9 @@ export default function Refinanciamento() {
 
       <div style={appPageStyle}>
         {isDesktop ? (
-          <DesktopPageHeader clientName={clientName} chipLabel="Refinanciamento" title="Refinancie com equilíbrio para melhorar seu mês" subtitle="Compare cenários com clareza para liberar valor sem perder o controle." onLogoClick={() => navigate('/ofertas')} actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }]} />
+          <DesktopPageHeader clientName={clientName} chipLabel="Refinanciamento" title="Refinancie com equilíbrio para melhorar seu mês" subtitle="Compare cenários com clareza para liberar valor sem perder o controle." onLogoClick={() => navigate('/ofertas')} actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }, { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') }]} />
         ) : (
-          <MobilePageHeader clientName={clientName} chipLabel="Refinanciamento" title="Refinancie com equilíbrio para melhorar seu mês" subtitle="Compare cenários com clareza para liberar valor sem perder o controle." onLogoClick={() => navigate('/ofertas')} actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }]} />
+          <MobilePageHeader clientName={clientName} chipLabel="Refinanciamento" title="Refinancie com equilíbrio para melhorar seu mês" subtitle="Compare cenários com clareza para liberar valor sem perder o controle." onLogoClick={() => navigate('/ofertas')} actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }, { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') }]} />
         )}
 
         <div className="rf-page">

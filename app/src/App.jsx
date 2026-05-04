@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Cadastro from './pages/Cadastro'
-import DadosBancarios from './pages/DadosBancarios'
 import Contratacao from './pages/Contratacao'
 import NovoContrato from './pages/NovoContrato'
 import Portabilidade from './pages/Portabilidade'
@@ -9,14 +8,17 @@ import OfertasNova from './pages/OfertasNova'
 import EstrategiaCombinada from './pages/EstrategiaCombinada'
 import Configuracoes from './pages/Configuracoes'
 import AndamentoPropostas from './pages/AndamentoPropostas'
+import Entrada from './pages/Entrada'
+import UploadExtrato from './pages/UploadExtrato'
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/ofertas" replace />} />
+        <Route path="/" element={<Navigate to="/entrada" replace />} />
+        <Route path="/entrada" element={<Entrada />} />
         <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/dados-bancarios" element={<DadosBancarios />} />
+        <Route path="/upload-extrato" element={<UploadExtrato />} />
         <Route path="/contratacao" element={<Contratacao />} />
         <Route path="/novo-contrato" element={<NovoContrato />} />
         <Route path="/portabilidade" element={<Portabilidade />} />

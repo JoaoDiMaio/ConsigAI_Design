@@ -151,7 +151,7 @@ export default function AndamentoPropostas() {
               subtitle="Acompanhe status, ajustes e o comparativo entre a oferta apresentada e a oferta concretizada."
               onLogoClick={() => navigate('/ofertas')}
               actions={[
-                { label: 'Ofertas', onClick: () => navigate('/ofertas') },
+                { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
                 { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
               ]}
             />
@@ -165,7 +165,7 @@ export default function AndamentoPropostas() {
               clientName={clientName}
               onLogoClick={() => navigate('/ofertas')}
               actions={[
-                { label: 'Ofertas', onClick: () => navigate('/ofertas') },
+                { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
                 { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
               ]}
             />

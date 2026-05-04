@@ -248,7 +248,7 @@ export default function Configuracoes() {
               clientName={clientName}
               onLogoClick={() => navigate('/ofertas')}
               actions={[
-                { label: 'Acompanhar', onClick: () => navigate('/acompanhamento') },
+                { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
                 { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
               ]}
             />

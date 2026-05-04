@@ -14,7 +14,10 @@
 
 html {
   scrollbar-gutter: stable;
-  background: #F6FAFF;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(0, 231, 255, 0.18), transparent 30%),
+    radial-gradient(circle at 84% 18%, rgba(29, 161, 235, 0.15), transparent 32%),
+    linear-gradient(180deg, #EAF5FF 0%, #F8FBFF 48%, #FFFFFF 100%);
 }
 
 body {
@@ -22,14 +25,56 @@ body {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #F6FAFF;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(0, 231, 255, 0.18), transparent 30%),
+    radial-gradient(circle at 84% 18%, rgba(29, 161, 235, 0.15), transparent 32%),
+    linear-gradient(180deg, #EAF5FF 0%, #F8FBFF 48%, #FFFFFF 100%);
   color: #071B45;
   overflow-x: hidden;
   overflow-y: auto;
+  position: relative;
 }
 
 #root {
   min-height: 100svh;
+  position: relative;
+  z-index: 1;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  width: 620px;
+  height: 620px;
+  left: -260px;
+  top: 120px;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      from 30deg,
+      rgba(0, 231, 255, 0.20),
+      rgba(29, 161, 235, 0.08),
+      rgba(5, 94, 206, 0.10),
+      rgba(0, 231, 255, 0.20)
+    );
+  filter: blur(7px);
+  opacity: 0.58;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  width: 520px;
+  height: 520px;
+  right: -220px;
+  bottom: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 231, 255, 0.18), transparent 62%);
+  opacity: 0.72;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* OfertasNova — loading bar */

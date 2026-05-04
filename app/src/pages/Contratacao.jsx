@@ -1179,6 +1179,7 @@ export default function Contratacao() {
             actions={[
               { label: 'Ofertas', onClick: () => navigate('/ofertas') },
               { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+            { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
             ]}
           />
         ) : (
@@ -1188,6 +1189,7 @@ export default function Contratacao() {
             actions={[
               { label: 'Ofertas', onClick: () => navigate('/ofertas') },
               { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+            { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
             ]}
           />
         )}

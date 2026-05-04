@@ -834,6 +834,7 @@ function StrategyScreen({ variant }) {
             actions={[
               { label: 'Ofertas', onClick: () => navigate('/ofertas') },
               { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+            { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
             ]}
           />
         ) : (
@@ -844,6 +845,7 @@ function StrategyScreen({ variant }) {
             actions={[
               { label: 'Ofertas', onClick: () => navigate('/ofertas') },
               { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+            { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
             ]}
           />
         )}
