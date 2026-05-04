@@ -7,6 +7,8 @@ import { OFERTA } from '../data/novoContratoData'
 import { fmt, fmtDec } from '../lib/formatters'
 import { loadProfileData } from '../lib/profileStorage'
 import { getSelectableCardStyle } from '../ui/cardSelection'
+import { printSimulationReceipt } from '../lib/receiptPrint'
+import { ResumoCard, ImpactoCard, ControleCard, PageHero } from '../components/SimulationSideCards'
 
 const calcPMT = (pv, rate, n) => {
   const i = rate / 100
@@ -66,69 +68,17 @@ export default function NovoContrato() {
 
   const downloadReceiptPdf = () => {
     const total = offer.parcela * offer.prazo
-    const today = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
-
-    const receiptHtml = `
-      <!DOCTYPE html>
-      <html lang="pt-BR">
-      <head>
-        <meta charset="UTF-8" />
-        <title>Recibo de Simulação - ConsigAI</title>
-        <style>
-          @page { size: auto; margin: 0; }
-          * { box-sizing: border-box; }
-          html, body { width: 100%; height: 100%; }
-          body { margin: 0; font-family: Arial, sans-serif; color: #4f4f4f; background: #fff; }
-          .wrap { width: 100%; min-height: 100%; display: flex; justify-content: center; align-items: flex-start; padding: 24px 24px 48px; }
-          .ticket { width: min(760px, 100%); border-radius: 14px; padding: 34px 30px 30px; border: 1px solid #ececec; font-size: 28px; background: linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)), #f5f5f3; }
-          .title { text-align: center; font-size: 28px; font-weight: 800; color: #444; }
-          .date { font-size: 20px; margin-top: 8px; text-align: center; color: #808080; }
-          .sep { border-top: 2px dashed #cfcfcf; margin: 20px 0; }
-          .label { text-align: center; font-size: 22px; font-weight: 800; }
-          .value { text-align: center; margin-top: 6px; font-size: 56px; font-weight: 900; color: #232323; }
-          .grid { display: grid; gap: 12px; font-size: 22px; }
-          .row { display: flex; justify-content: space-between; }
-          .total { display: flex; justify-content: space-between; }
-          .total span { font-size: 22px; font-weight: 700; }
-          .total strong { font-size: 30px; }
-        </style>
-      </head>
-      <body>
-        <div class="wrap">
-          <div class="ticket">
-            <div class="title">SIMULAÇÃO DE NOVO CONTRATO - CONSIGAI</div>
-            <div class="date">${today}</div>
-            <div class="sep"></div>
-            <div class="label">VOCÊ PODE RECEBER HOJE</div>
-            <div class="value">R$ ${fmt(offer.valor)}</div>
-            <div class="sep"></div>
-            <div class="grid">
-              <div class="row"><span>Prazo</span><strong>${offer.prazo} meses</strong></div>
-              <div class="row"><span>Parcela</span><strong>R$ ${fmtDec(offer.parcela)}</strong></div>
-              <div class="row"><span>Taxa</span><strong>${OFERTA.taxaMensal.toFixed(2).replace('.', ',')}% a.m.</strong></div>
-            </div>
-            <div class="sep"></div>
-            <div class="total">
-              <span>Total a pagar</span>
-              <strong>R$ ${fmtDec(total)}</strong>
-            </div>
-          </div>
-        </div>
-        <script>
-          window.onload = () => {
-            window.print();
-            window.onafterprint = () => window.close();
-          };
-        </script>
-      </body>
-      </html>
-    `
-
-    const printWindow = window.open('', '_blank', 'width=900,height=700')
-    if (!printWindow) return
-    printWindow.document.open()
-    printWindow.document.write(receiptHtml)
-    printWindow.document.close()
+    printSimulationReceipt({
+      title: 'SIMULAÇÃO DE NOVO CONTRATO - CONSIGAI',
+      highlightLabel: 'VOCÊ PODE RECEBER HOJE',
+      highlightValue: `R$ ${fmt(offer.valor)}`,
+      rows: [
+        { label: 'Prazo', value: `${offer.prazo} meses` },
+        { label: 'Parcela', value: `R$ ${fmtDec(offer.parcela)}` },
+        { label: 'Taxa', value: `${OFERTA.taxaMensal.toFixed(2).replace('.', ',')}% a.m.` },
+      ],
+      total: { label: 'Total a pagar', value: `R$ ${fmtDec(total)}` },
+    })
   }
 
   const goContratacao = () => {
@@ -203,12 +153,13 @@ export default function NovoContrato() {
 
   const content = (
     <div>
-      <section style={{ marginBottom: 18, padding: isDesktop ? '24px 28px' : '22px 20px', borderRadius: 30, border: '1px solid #DDE8F6', background: 'radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.15), transparent 34%), radial-gradient(circle at 10% 100%, rgba(0, 122, 82, 0.07), transparent 34%), linear-gradient(180deg, rgba(255,255,255,.98) 0%, #FFFFFF 100%)', boxShadow: '0 18px 48px rgba(3, 36, 111, 0.08)', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: '0 0 auto 0', height: 5, background: 'linear-gradient(90deg, #055ECE, #1DA1EB, #00E7FF, #007A52)' }} />
-        <div style={{ color: '#055ECE', fontSize: 12, fontWeight: 950, letterSpacing: '.13em', textTransform: 'uppercase' }}>Novo contrato</div>
-        <h1 style={{ marginTop: 10, color: '#03246F', fontSize: isDesktop ? 44 : 34, lineHeight: .98, fontWeight: 950, letterSpacing: '-.07em' }}>Escolha quanto quer <span style={{ color: '#007A52' }}>receber</span></h1>
-        <p style={{ marginTop: 12, color: '#64748B', fontSize: 15, lineHeight: 1.45, fontWeight: 650 }}>Escolha um valor, veja a parcela e confirme apenas se fizer sentido para você. Nenhuma contratação é feita sem sua confirmação.</p>
-      </section>
+      <PageHero
+        kicker="Novo contrato"
+        title="Escolha quanto quer"
+        titleAccent="receber"
+        body="Escolha um valor, veja a parcela e confirme apenas se fizer sentido para você. Nenhuma contratação é feita sem sua confirmação."
+        chips={['Simulação sem compromisso', 'Você escolhe antes de decidir', 'Nenhuma contratação automática']}
+      />
 
       <section style={{ marginBottom: 12, padding: isDesktop ? '20px 18px' : '16px 14px', borderRadius: 26, border: '1px solid #DDE8F6', background: '#FFFFFF', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
         <div style={{ marginBottom: 12 }}><AnchorBtn idx={0} /></div>
@@ -341,65 +292,21 @@ export default function NovoContrato() {
 
   const sidebar = (
     <aside style={{ display: 'grid', gap: 16 }}>
-      <div style={{ padding: 22, borderRadius: 26, background: 'rgba(255,255,255,.98)', border: '1px solid #DDE8F6', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
-        <h3 style={{ color: '#03246F', fontSize: 15, fontWeight: 950, textTransform: 'uppercase' }}>Resumo da oferta</h3>
-        <p style={{ marginTop: 5, color: '#64748B', fontSize: 12 }}>Confira as principais condições simuladas.</p>
-        <div style={{ marginTop: 12 }}>
-          {[
-            ['Produto', 'Novo contrato'],
-            ['Você recebe', `R$ ${fmt(offer.valor)}`],
-            ['Prazo', `${offer.prazo} meses`],
-            ['Parcela', `R$ ${fmtDec(offer.parcela)}/mês`],
-            ['Taxa', `${OFERTA.taxaMensal.toFixed(2).replace('.', ',')}% a.m.`],
-          ].map(([label, value]) => (
-            <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '12px 0', borderBottom: '1px solid #DDE8F6', fontSize: 13, fontWeight: 800, color: '#64748B' }}>
-              <span>{label}</span>
-              <strong style={{ color: '#03246F' }}>{value}</strong>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ padding: 22, borderRadius: 26, background: 'rgba(255,255,255,.98)', border: '1px solid #DDE8F6', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
-        <h3 style={{ color: '#03246F', fontSize: 15, fontWeight: 950, textTransform: 'uppercase' }}>Impacto no bolso</h3>
-        <p style={{ marginTop: 5, color: '#64748B', fontSize: 12 }}>Veja quanto sobra depois da nova parcela.</p>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 14 }}>
-          <div style={{ padding: 14, borderRadius: 18, background: '#F8FBFF', border: '1px solid #DDE8F6' }}>
-            <small style={{ color: '#64748B', fontSize: 11, fontWeight: 850 }}>Antes</small>
-            <strong style={{ display: 'block', marginTop: 7, color: '#03246F', fontSize: 22, fontWeight: 950, whiteSpace: 'nowrap' }}>R$ {fmt(Math.round(salarioAntes))}</strong>
-            <span style={{ display: 'block', marginTop: 6, color: '#64748B', fontSize: 10.5 }}>sem esta nova parcela</span>
-          </div>
-          <div style={{ padding: 14, borderRadius: 18, background: '#E9F8F1', border: '1px solid #BDECD7' }}>
-            <small style={{ color: '#64748B', fontSize: 11, fontWeight: 850 }}>Depois</small>
-            <strong style={{ display: 'block', marginTop: 7, color: '#007A52', fontSize: 22, fontWeight: 950, whiteSpace: 'nowrap' }}>R$ {fmt(Math.round(salarioDepois))}</strong>
-            <span style={{ display: 'block', marginTop: 6, color: '#64748B', fontSize: 10.5 }}>com a parcela estimada</span>
-          </div>
-        </div>
-        <div style={{ marginTop: 12, padding: '13px 14px', borderRadius: 18, background: '#F4F8FF', border: '1px solid #DDE8F6' }}>
-          <span style={{ display: 'block', color: '#64748B', fontSize: 11, fontWeight: 850 }}>Nova parcela</span>
-          <strong style={{ display: 'block', marginTop: 6, color: '#055ECE', fontSize: 20, fontWeight: 950 }}>R$ {fmtDec(offer.parcela)}/mês</strong>
-        </div>
-      </div>
-
-      <div style={{ padding: 22, borderRadius: 26, background: '#FFFFFF', border: '1px solid #DDE8F6', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
-        <h3 style={{ color: '#03246F', fontSize: 15, fontWeight: 950, textTransform: 'uppercase' }}>Você está no controle</h3>
-        <p style={{ marginTop: 5, color: '#64748B', fontSize: 12 }}>Antes de avançar, a ConsigAI mostra as condições principais para você decidir com calma e clareza.</p>
-        <div style={{ display: 'grid', gap: 10, marginTop: 14 }}>
-          {[
-            ['Sem compromisso', 'Esta etapa é apenas uma simulação.'],
-            ['Sem contratação automática', 'Nada é enviado sem sua confirmação.'],
-            ['Transparência total', 'Você verá taxa, prazo, parcela e custo total.'],
-          ].map(([title, text]) => (
-            <div key={title} style={{ display: 'flex', gap: 10, padding: '11px 12px', borderRadius: 16, background: '#F4F8FF', border: '1px solid #DDE8F6' }}>
-              <span style={{ width: 22, height: 22, borderRadius: '50%', display: 'grid', placeItems: 'center', background: '#E9F8F1', color: '#007A52', border: '1px solid #BDECD7', fontSize: 12, fontWeight: 950 }}>✓</span>
-              <div>
-                <strong style={{ display: 'block', color: '#03246F', fontSize: 12, fontWeight: 950 }}>{title}</strong>
-                <small style={{ display: 'block', marginTop: 3, color: '#64748B', fontSize: 11 }}>{text}</small>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <ResumoCard
+        rows={[
+          { label: 'Produto', value: 'Novo contrato' },
+          { label: 'Você recebe', value: `R$ ${fmt(offer.valor)}` },
+          { label: 'Prazo', value: `${offer.prazo} meses` },
+          { label: 'Parcela', value: `R$ ${fmtDec(offer.parcela)}/mês` },
+          { label: 'Taxa', value: `${OFERTA.taxaMensal.toFixed(2).replace('.', ',')}% a.m.` },
+        ]}
+      />
+      <ImpactoCard
+        liquidoAntes={salarioAntes}
+        liquidoDepois={salarioDepois}
+        novaParcela={`R$ ${fmtDec(offer.parcela)}/mês`}
+      />
+      <ControleCard />
     </aside>
   )
 

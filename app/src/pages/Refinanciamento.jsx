@@ -7,6 +7,8 @@ import { loadProfileData } from '../lib/profileStorage'
 import { SCENARIOS } from '../data/refinanciamentoData'
 import { parseMoney } from '../lib/formatters'
 import { getSelectableCardStyle } from '../ui/cardSelection'
+import { printSimulationReceipt } from '../lib/receiptPrint'
+import { ResumoCard, ImpactoCard, ControleCard, PageHero } from '../components/SimulationSideCards'
 
 const ICONS = ['$', '↯', '↗']
 
@@ -184,60 +186,17 @@ export default function Refinanciamento() {
   }
 
   const downloadReceiptPdf = () => {
-    const today = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
-    const receiptHtml = `
-      <!DOCTYPE html>
-      <html lang="pt-BR">
-      <head>
-        <meta charset="UTF-8" />
-        <title>Recibo de Simulação - Refinanciamento</title>
-        <style>
-          @page { size: auto; margin: 0; }
-          * { box-sizing: border-box; }
-          html, body { width: 100%; height: 100%; }
-          body { margin: 0; font-family: Arial, sans-serif; color: #4f4f4f; background: #fff; }
-          .wrap { width: 100%; min-height: 100%; display: flex; justify-content: center; align-items: flex-start; padding: 24px 24px 48px; }
-          .ticket { width: min(760px, 100%); border-radius: 14px; padding: 34px 30px 30px; border: 1px solid #ececec; font-size: 28px; background: linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)), #f5f5f3; }
-          .title { text-align: center; font-size: 28px; font-weight: 800; color: #444; }
-          .date { font-size: 20px; margin-top: 8px; text-align: center; color: #808080; }
-          .sep { border-top: 2px dashed #cfcfcf; margin: 20px 0; }
-          .label { text-align: center; font-size: 22px; font-weight: 800; }
-          .value { text-align: center; margin-top: 6px; font-size: 56px; font-weight: 900; color: #232323; }
-          .grid { display: grid; gap: 12px; font-size: 22px; }
-          .row { display: flex; justify-content: space-between; gap: 16px; }
-        </style>
-      </head>
-      <body>
-        <div class="wrap">
-          <div class="ticket">
-            <div class="title">SIMULAÇÃO DE REFINANCIAMENTO - CONSIGAI</div>
-            <div class="date">${today}</div>
-            <div class="sep"></div>
-            <div class="label">VOCÊ PODE RECEBER HOJE</div>
-            <div class="value">${scenario.cash}</div>
-            <div class="sep"></div>
-            <div class="grid">
-              <div class="row"><span>Cenário</span><strong>${scenario.title}</strong></div>
-              <div class="row"><span>Nova parcela</span><strong>${scenario.installment}</strong></div>
-              <div class="row"><span>Margem livre</span><strong>${scenario.margem}</strong></div>
-              <div class="row"><span>Contratos</span><strong>${scenario.contracts.length}</strong></div>
-            </div>
-          </div>
-        </div>
-        <script>
-          window.onload = () => {
-            window.print();
-            window.onafterprint = () => window.close();
-          };
-        </script>
-      </body>
-      </html>
-    `
-    const printWindow = window.open('', '_blank', 'width=900,height=700')
-    if (!printWindow) return
-    printWindow.document.open()
-    printWindow.document.write(receiptHtml)
-    printWindow.document.close()
+    printSimulationReceipt({
+      title: 'SIMULAÇÃO DE REFINANCIAMENTO - CONSIGAI',
+      highlightLabel: 'VOCÊ PODE RECEBER HOJE',
+      highlightValue: scenario.cash,
+      rows: [
+        { label: 'Cenário', value: scenario.title },
+        { label: 'Nova parcela', value: scenario.installment },
+        { label: 'Margem livre', value: scenario.margem },
+        { label: 'Contratos', value: `${scenario.contracts.length}` },
+      ],
+    })
   }
 
   return (
@@ -249,15 +208,7 @@ export default function Refinanciamento() {
         .rf-shell { width:calc(100% - 96px); max-width:1280px; margin:0 auto; position:relative; z-index:1; padding-top:30px; }
         .main-layout { display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:30px; align-items:start; }
         .sidebar { display:grid; gap:16px; align-content:start; }
-        .strategy-hero { margin-bottom:20px; padding:26px 30px; border-radius:30px; background:radial-gradient(circle at 92% 8%, rgba(0,231,255,.15), transparent 34%), radial-gradient(circle at 10% 100%, rgba(0,122,82,.07), transparent 34%), linear-gradient(180deg, rgba(255,255,255,.98) 0%, #FFF 100%); border:1px solid var(--line); box-shadow:var(--shadow); position:relative; overflow:hidden; }
-        .strategy-hero::before { content:''; position:absolute; inset:0 0 auto 0; height:5px; background:linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--cyan), var(--green)); }
-        .hero-kicker { color:var(--blue-main); font-size:12px; font-weight:950; letter-spacing:.13em; text-transform:uppercase; }
-        .hero-heading { margin-top:10px; color:var(--blue-dark); font-size:clamp(32px,3.3vw,44px); line-height:.98; font-weight:950; letter-spacing:-.07em; }
-        .hero-heading span { color:var(--green); }
-        .hero-copy { max-width:720px; margin-top:12px; color:var(--muted); font-size:15px; line-height:1.45; font-weight:650; }
-        .hero-trust-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
-        .hero-chip { padding:8px 11px; border-radius:999px; background:var(--blue-soft); border:1px solid var(--line); color:var(--blue-dark); font-size:12px; font-weight:850; }
-        .offer-flow-card { padding:20px; border-radius:30px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); position:relative; overflow:hidden; }
+.offer-flow-card { padding:20px; border-radius:30px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); position:relative; overflow:hidden; }
         .offer-flow-card::before { content:none; }
         .offer-flow-card > * { position:relative; z-index:1; }
         .offer-flow-header { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
@@ -372,16 +323,13 @@ export default function Refinanciamento() {
           <main className="rf-shell">
             <div className="main-layout">
               <section>
-                <section className="strategy-hero">
-                  <div className="hero-kicker">Refinanciamento por contrato</div>
-                  <h1 className="hero-heading">Escolha o cenário com <span>melhor impacto</span></h1>
-                  <p className="hero-copy">A ConsigAI compara seus contratos e organiza as melhores estratégias para liberar dinheiro, reduzir parcela ou preservar sua margem com transparência.</p>
-                  <div className="hero-trust-row">
-                    <span className="hero-chip">Simulação sem compromisso</span>
-                    <span className="hero-chip">Você compara antes de decidir</span>
-                    <span className="hero-chip">Nenhuma contratação automática</span>
-                  </div>
-                </section>
+                <PageHero
+                  kicker="Refinanciamento por contrato"
+                  title="Escolha o cenário com"
+                  titleAccent="melhor impacto"
+                  body="A ConsigAI compara seus contratos e organiza as melhores estratégias para liberar dinheiro, reduzir parcela ou preservar sua margem com transparência."
+                  chips={['Simulação sem compromisso', 'Você compara antes de decidir', 'Nenhuma contratação automática']}
+                />
 
                 <section className="offer-flow-card">
                   <div className="offer-flow-header">
@@ -541,47 +489,23 @@ export default function Refinanciamento() {
               </section>
 
               <aside className="sidebar">
-                <div className="side-card proposal-card">
-                  <h3>Resumo da proposta</h3>
-                  <p>Confira as principais condições simuladas.</p>
-                  <div className="proposal-highlight"><small>Cenário selecionado</small><strong>{scenario.title}</strong></div>
-                  <div className="summary-list">
-                    <div className="summary-row"><span>Você recebe</span><strong>{scenario.cash}</strong></div>
-                    <div className="summary-row"><span>Nova parcela total</span><strong>{scenario.installment}</strong></div>
-                    <div className="summary-row"><span>Margem livre</span><strong>{scenario.margem}</strong></div>
-                    <div className="summary-row"><span>Contratos</span><strong>{scenario.contracts.length} refinanciados</strong></div>
-                  </div>
-                </div>
-
-                <div className="side-card">
-                  <h3>Impacto no bolso</h3>
-                  <p>Veja quanto sobra depois da nova parcela.</p>
-                  <div className="salary-grid">
-                    <div className="salary-box"><small>Antes</small><strong>{liquidoAntes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</strong><span>sem esta nova parcela</span></div>
-                    <div className="salary-box green"><small>Depois</small><strong>{liquidoDepois.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</strong><span>com a parcela estimada</span></div>
-                  </div>
-                  <div className="installment-impact"><span>Nova parcela total</span><strong>{scenario.installment}</strong></div>
-                </div>
-
-                <div style={{ padding: 22, borderRadius: 26, background: '#FFFFFF', border: '1px solid #DDE8F6', boxShadow: 'none' }}>
-                  <h3 style={{ color: '#03246F', fontSize: 15, fontWeight: 950, textTransform: 'uppercase' }}>Você está no controle</h3>
-                  <p style={{ marginTop: 5, color: '#64748B', fontSize: 12 }}>Antes de avançar, a ConsigAI mostra as condições principais para você decidir com calma e clareza.</p>
-                  <div style={{ display: 'grid', gap: 10, marginTop: 14 }}>
-                    {[
-                      ['Sem compromisso', 'Esta etapa é apenas uma simulação.'],
-                      ['Sem contratação automática', 'Nada é enviado sem sua confirmação.'],
-                      ['Transparência total', 'Você verá taxa, prazo, parcela e custo total.'],
-                    ].map(([title, text]) => (
-                      <div key={title} style={{ display: 'flex', gap: 10, padding: '11px 12px', borderRadius: 16, background: '#F4F8FF', border: '1px solid #DDE8F6' }}>
-                        <span style={{ width: 22, height: 22, borderRadius: '50%', display: 'grid', placeItems: 'center', background: '#E9F8F1', color: '#007A52', border: '1px solid #BDECD7', fontSize: 12, fontWeight: 950 }}>✓</span>
-                        <div>
-                          <strong style={{ display: 'block', color: '#03246F', fontSize: 12, fontWeight: 950 }}>{title}</strong>
-                          <small style={{ display: 'block', marginTop: 3, color: '#64748B', fontSize: 11 }}>{text}</small>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <ResumoCard
+                  title="Resumo da proposta"
+                  highlight={{ label: 'Cenário selecionado', value: scenario.title }}
+                  rows={[
+                    { label: 'Você recebe', value: scenario.cash },
+                    { label: 'Nova parcela total', value: scenario.installment },
+                    { label: 'Margem livre', value: scenario.margem },
+                    { label: 'Contratos', value: `${scenario.contracts.length} refinanciados` },
+                  ]}
+                />
+                <ImpactoCard
+                  liquidoAntes={liquidoAntes}
+                  liquidoDepois={liquidoDepois}
+                  novaParcela={scenario.installment}
+                  novaParcelaLabel="Nova parcela total"
+                />
+                <ControleCard />
               </aside>
             </div>
           </main>

@@ -1,50 +1,14 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
 import { BrandName } from '../components/BrandName'
-import { MiniCard } from '../components/MiniCard'
 import { appPageStyle } from '../ui/theme'
-import { t } from '../lib/pageTheme'
 import { stateData } from '../data/portabilidadeData'
-import { parseMoney, fmtDec } from '../lib/formatters'
+import { parseMoney } from '../lib/formatters'
 import { loadProfileData } from '../lib/profileStorage'
-import { getSelectableCardStyle } from '../ui/cardSelection'
-
-//  Desktop Header 
-
-//  Choice button 
-
-function ChoiceBtn({ active, onClick, bars, title, sub }) {
-  const [hovered, setHovered] = useState(false)
-  const selectionStyle = getSelectableCardStyle({ selected: active, hovered })
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        padding: '14px 12px 12px', borderRadius: 16,
-        background: active ? t.blue : '#eaeff8',
-        border: '1.5px solid',
-        cursor: 'pointer',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-        textAlign: 'center', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-        ...selectionStyle,
-      }}
-    >
-      <div style={{ display: 'flex', gap: 3, alignItems: 'flex-end', height: 14, justifyContent: 'center' }}>
-        {bars.map((h, i) => (
-          <span key={i} style={{ width: 9, borderRadius: 3, background: active ? '#fff' : t.blue, opacity: active ? 1 : .35, height: h, transition: '.22s ease', display: 'block' }} />
-        ))}
-      </div>
-      <div style={{ fontSize: 12.5, fontWeight: 600, color: active ? '#fff' : t.text, lineHeight: 1.2 }}>{title}</div>
-      <div style={{ fontSize: 10, fontWeight: 500, color: active ? 'rgba(255,255,255,.68)' : t.muted, lineHeight: 1.2 }}>{sub}</div>
-    </button>
-  )
-}
-
-//  Receipt
+import { printSimulationReceipt } from '../lib/receiptPrint'
+import { ResumoCard, ImpactoCard, ControleCard, PageHero } from '../components/SimulationSideCards'
 
 const RECEIPT_DATA = {
   eco: {
@@ -61,10 +25,6 @@ const RECEIPT_DATA = {
     ],
     totalLabel: 'Economia Total',
     totalValue: 'R$ 1.863,50',
-    extras: [
-      { label: 'Crédito disponível após a liberação da margem', value: 'até R$ 5.033' },
-      { label: 'Margem livre após portabilidade', value: 'até R$ 320' },
-    ],
   },
   parc: {
     heroValue: 'R$ 117',
@@ -79,120 +39,123 @@ const RECEIPT_DATA = {
     ],
     totalLabel: 'Alívio por mês',
     totalValue: 'R$ 70,79/mês',
-    extras: [
-      { label: 'Margem livre após portabilidade', value: 'até R$ 480' },
-      { label: 'Crédito disponível após a liberação da margem', value: 'até R$ 7.593' },
-    ],
   },
 }
 
-const DIVIDER = <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
+const CONTRACT_DETAILS_BY_CODE = {
+  '0056347710': {
+    installmentBefore: 'R$ 322',
+    installmentAfter: 'R$ 298',
+    termBefore: '84x',
+    termAfter: '84x',
+    rateBefore: '1,99% a.m.',
+    rateAfter: '1,88% a.m.',
+  },
+  '0123472010087': {
+    installmentBefore: 'R$ 418',
+    installmentAfter: 'R$ 381',
+    termBefore: '84x',
+    termAfter: '84x',
+    rateBefore: '2,05% a.m.',
+    rateAfter: '1,88% a.m.',
+  },
+  '0057628452': {
+    installmentBefore: 'R$ 544',
+    installmentAfter: 'R$ 512',
+    termBefore: '84x',
+    termAfter: '84x',
+    rateBefore: '2,09% a.m.',
+    rateAfter: '1,88% a.m.',
+  },
+}
 
-function Receipt({ mode }) {
+function getPortContracts(mode, newInstallment) {
+  const data = RECEIPT_DATA[mode]
+  return data.rows.map(([code, bankRoute, estimatedValue]) => {
+    const bankParts = String(bankRoute).split('→').map((v) => v.trim())
+    const bankName = bankParts[1] || bankParts[0] || 'Contrato'
+    const detail = CONTRACT_DETAILS_BY_CODE[code] || {
+      installmentBefore: 'R$ 550',
+      installmentAfter: newInstallment,
+      termBefore: '84x',
+      termAfter: '84x',
+      rateBefore: '2,10% a.m.',
+      rateAfter: '1,88% a.m.',
+    }
+    return {
+      code,
+      bankName,
+      estimatedValue,
+      installmentBefore: detail.installmentBefore,
+      installmentAfter: detail.installmentAfter,
+      termBefore: detail.termBefore,
+      termAfter: detail.termAfter,
+      rateBefore: detail.rateBefore,
+      rateAfter: detail.rateAfter,
+    }
+  })
+}
+
+function Receipt({ mode, margin, credit, profile }) {
   const d = RECEIPT_DATA[mode]
+  const today = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+  const userName = (profile?.nomeExibicao || profile?.nomeCompleto || 'Cliente').toUpperCase()
   return (
-    <div style={{
-      width: 300, flexShrink: 0, borderRadius: 10, padding: '14px 12px 12px',
-      border: '1px solid #ececec', color: '#4f4f4f', fontSize: 12,
-      fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-      background: 'linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)), #f5f5f3',
-    }}>
-      <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, letterSpacing: '.02em', color: '#444' }}>RECIBO DE ECONOMIA CONSIGAI</div>
-      <div style={{ fontSize: 10, marginTop: 4, textAlign: 'center', color: '#808080' }}>19 de abril de 2025</div>
-
-      <div style={{ fontSize: 10.5, marginTop: 12, fontWeight: 700, color: '#565656' }}>CARLOS EDUARDO MARTINS</div>
-      <div style={{ fontSize: 10, marginTop: 6, lineHeight: 1.35, color: '#5f5f5f' }}>
-        CPF: 177.665.442-8<br />
+    <div className="receipt-card">
+      <div className="receipt-title">RECIBO DE ECONOMIA CONSIGAI</div>
+      <div className="receipt-date">{today}</div>
+      <div className="receipt-user">{userName}</div>
+      <div className="receipt-meta">
         Benefício: Aposentadoria por Tempo de Contribuição<br />
-        Nascimento: 30/07/1957<br />
         Valor do Benefício: R$ 2.200
       </div>
 
-      {DIVIDER}
-      <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>PARABENS! VOCE ECONOMIZOU</div>
-      <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323', lineHeight: 1 }}>
-        {d.heroValue}
-        {d.heroSuffix && <span style={{ fontSize: '55%', fontWeight: 700, verticalAlign: 'middle' }}> {d.heroSuffix}</span>}
-      </div>
-      <div style={{ textAlign: 'center', marginTop: 4, fontSize: 8.5, fontWeight: 700, letterSpacing: '.08em', color: '#888', textTransform: 'uppercase' }}>{d.heroLabel}</div>
-      {DIVIDER}
+      <hr />
+      <div className="receipt-sub">PARABÉNS! VOCÊ ECONOMIZOU</div>
+      <div className="receipt-value">{d.heroValue}{d.heroSuffix ? <span> {d.heroSuffix}</span> : null}</div>
+      <div className="receipt-caption">{d.heroLabel}</div>
+      <hr />
 
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10, color: '#5b5b5b' }}>
+      <table>
         <thead>
-          <tr>
-            <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767', paddingRight: 10 }}>Cód.</th>
-            <th style={{ fontSize: 8, textAlign: 'left', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>De → Para</th>
-            <th style={{ fontSize: 8, textAlign: 'right', fontWeight: 500, padding: '4px 0 8px', color: '#676767' }}>{d.tableHeader}</th>
-          </tr>
+          <tr><th>Cód.</th><th>De → Para</th><th>{d.tableHeader}</th></tr>
         </thead>
         <tbody>
-          {d.rows.map(([cod, de, val]) => (
-            <tr key={cod}>
-              <td style={{ fontSize: 8, padding: '4px 0', paddingRight: 10, whiteSpace: 'nowrap' }}>{cod}</td>
-              <td style={{ padding: '4px 0' }}>{de}</td>
-              <td style={{ padding: '4px 0', textAlign: 'right' }}>{val}</td>
-            </tr>
-          ))}
+          {d.rows.map(([cod, de, val]) => <tr key={cod}><td>{cod}</td><td>{de}</td><td>{val}</td></tr>)}
         </tbody>
       </table>
 
-      {DIVIDER}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: '#555' }}>{d.totalLabel}</span>
-        <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>{d.totalValue}</span>
-      </div>
-      {DIVIDER}
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {d.extras.map((item, i) => (
-          <>
-            {i > 0 && <hr key={`hr-${i}`} style={{ border: 'none', borderTop: '1px dashed #cfcfcf', margin: 0 }} />}
-            <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: '#555', lineHeight: 1.3, flex: 1 }}>{item.label}</span>
-              <span style={{ fontSize: 14, fontWeight: 800, color: '#3b3b3b', whiteSpace: 'nowrap' }}>{item.value}</span>
-            </div>
-          </>
-        ))}
-      </div>
-
-      <div style={{ marginTop: 10, padding: '8px 10px', background: '#f0f0ee', borderRadius: 6, border: '1px solid #ddd', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-        <div style={{ fontSize: 8, color: '#888', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.04em' }}>Protocolo</div>
-        <div style={{ fontSize: 8.5, color: '#444', fontWeight: 700, fontFamily: 'ui-monospace, monospace', letterSpacing: '.05em' }}>CSG-2025-04871</div>
-      </div>
-      <div style={{ textAlign: 'center', marginTop: 4, fontSize: 9.5, color: '#7a7a7a', letterSpacing: '.08em' }}>
-        <BrandName as="span" style={{ color: 'inherit' }} />.com.br
-      </div>
+      <hr />
+      <div className="receipt-row"><strong>{d.totalLabel}</strong><strong>{d.totalValue}</strong></div>
+      <hr />
+      <div className="receipt-row"><span>Margem livre após portabilidade</span><strong>até {margin}</strong></div>
+      <div className="receipt-row"><span>Crédito disponível após liberação da margem</span><strong>até {credit}</strong></div>
+      <div className="receipt-site"><BrandName as="span" style={{ color: 'inherit' }} />.com.br</div>
     </div>
   )
 }
 
-//  Main
-
 export default function Portabilidade() {
-  const navigate    = useNavigate()
-  const location    = useLocation()
-  const isDesktop   = useMediaQuery('(min-width: 768px)')
-  const profile     = loadProfileData()
-  const clientName  = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
+  const navigate = useNavigate()
+  const location = useLocation()
+  const isDesktop = useMediaQuery('(min-width: 768px)')
+  const profile = loadProfileData()
+  const clientName = profile.nomeExibicao || profile.nomeCompleto || 'Sr. João'
+
   const initialMode = location.state?.initialMode === 'parc' ? 'parc' : 'eco'
-  const [mode, setMode]           = useState(initialMode)
-  const [detailsOpen, setDetails] = useState(false)
-
+  const [mode, setMode] = useState(initialMode)
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const [showReceipt, setShowReceipt] = useState(false)
   const d = stateData[mode]
+  const portContracts = getPortContracts(mode, d.newInstallment)
 
-  const isEco = mode === 'eco'
-  const stateColors = isEco
-    ? { bg: t.greenBg, eyebrow: t.green, headline: t.greenSoft, big: t.green, subhead: t.greenSoft }
-    : { bg: '#ebf0ff', eyebrow: t.blue, headline: '#2a4a8a', big: t.blue, subhead: '#2a4a8a' }
-  const salarioBase = 2200
   const parcelaAntes = 550
-
   const parcelaDepois = parseMoney(d.newInstallment)
-  const liquidoAntes = salarioBase - parcelaAntes
-  const liquidoDepois = salarioBase - parcelaDepois
+  const liquidoAntes = 2200 - parcelaAntes
+  const liquidoDepois = 2200 - parcelaDepois
+  const benefit = `${d.headlineValue}${d.headlineSuffix ? ` ${d.headlineSuffix}` : ''}`
 
   const handleGoContratacao = () => {
-    const benefit = `${d.headlineValue}${d.headlineSuffix ? ` ${d.headlineSuffix}` : ''}`
     navigate('/dados-bancarios', {
       state: {
         sourcePath: '/portabilidade',
@@ -200,295 +163,336 @@ export default function Portabilidade() {
         offerState: {
           sourcePath: '/portabilidade',
           offerTitle: 'Portabilidade',
-          offerSubtitle: 'Resumo da oferta selecionada antes da contratacao',
+          offerSubtitle: 'Resumo da oferta selecionada antes da contratação',
           primaryValue: benefit,
-          ctaLabel: 'Confirmar Portabilidade',
+          ctaLabel: 'Continuar com esta oferta',
           summary: [
-            { label: 'Estrategia', value: mode === 'eco' ? 'Economizar agora' : 'Parcela menor' },
+            { label: 'Estratégia', value: mode === 'eco' ? 'Economia inteligente' : 'Parcela menor' },
             { label: 'Parcela nova', value: d.newInstallment },
-            { label: 'Beneficio', value: benefit },
-            { label: 'Margem livre', value: `ate ${d.margin}` },
-            { label: 'Credito futuro', value: `ate ${d.credit}` },
+            { label: 'Benefício', value: benefit },
+            { label: 'Margem livre', value: `até ${d.margin}` },
+            { label: 'Crédito futuro', value: `até ${d.credit}` },
           ],
         },
       },
     })
   }
 
-  const content = (
-    <div style={{ maxWidth: isDesktop ? 760 : undefined }}>
-      {/* Tag */}
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: t.blueLight, borderRadius: 999, padding: '4px 12px 4px 8px', marginBottom: 20 }}>
-        <div style={{ width: 6, height: 6, borderRadius: '50%', background: t.blue }} />
-        <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', color: t.blue, textTransform: 'uppercase' }}>Portabilidade</span>
-      </div>
-
-      {/* Choices */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 18 }}>
-        <ChoiceBtn
-          active={isEco}
-          onClick={() => setMode('eco')}
-          bars={[14, 11, 8, 6, 4]}
-          title={'Quero\nEconomizar'}
-          sub={'Diminuir Minha\nDívida'}
-        />
-        <ChoiceBtn
-          active={!isEco}
-          onClick={() => setMode('parc')}
-          bars={[8, 8, 8, 8, 8]}
-          title={'Parcela\nMenor'}
-          sub={'Mais Alívio\nNo Mês'}
-        />
-      </div>
-
-      {/* Offer card */}
-      <div style={{ background: '#fff', borderRadius: 20, border: '1px solid #e6ecf8', boxShadow: t.shadow, padding: 16, marginBottom: 22 }}>
-
-        {/* Compare */}
-        <div style={{ background: '#f7f9fe', border: `1px solid ${t.line}`, borderRadius: 14, padding: '14px 16px', marginBottom: 14, display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 34px 1fr' }}>
-            <div style={{ fontSize: 9.5, fontWeight: 600, letterSpacing: '.03em', color: t.muted, textTransform: 'uppercase', lineHeight: 1.25 }}>Parcela<br />Atual</div>
-            <div />
-            <div style={{ fontSize: 9.5, fontWeight: 600, letterSpacing: '.03em', color: t.muted, textTransform: 'uppercase', lineHeight: 1.25, textAlign: 'right' }}>Parcela<br />Nova</div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 34px 1fr', alignItems: 'center' }}>
-            <div style={{ fontSize: 22, fontWeight: 700, lineHeight: 1, letterSpacing: '-.02em', color: t.danger, textDecoration: 'line-through', textDecorationColor: 'rgba(217,75,75,.55)' }}>R$&nbsp;550</div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9eaccf', fontSize: 20, fontWeight: 600, lineHeight: 1 }}> </div>
-            <div style={{ fontSize: 22, fontWeight: 700, lineHeight: 1, letterSpacing: '-.02em', color: t.greenAccent, textAlign: 'right' }}>{d.newInstallment}</div>
-          </div>
-        </div>
-
-        {/* State shell */}
-        <div style={{ marginBottom: 14 }}>
-          <div style={{ borderRadius: 16, padding: '12px 16px', background: stateColors.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, textAlign: 'center', minHeight: 132 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', opacity: .7, color: stateColors.eyebrow, lineHeight: 1 }}>{d.eyebrow}</div>
-            <div style={{ fontSize: 13, fontWeight: 500, lineHeight: 1, color: stateColors.headline }}>{d.headlinePrefix}</div>
-            <div style={{ lineHeight: 1 }}>
-              <span style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-.02em', color: stateColors.big }}>{d.headlineValue}</span>
-              {d.headlineSuffix && <span style={{ fontSize: 13, fontWeight: 600, verticalAlign: 'middle', marginLeft: 4, color: stateColors.big }}>{d.headlineSuffix}</span>}
-            </div>
-            <div style={{ fontSize: 8.5, fontWeight: 500, opacity: .75, color: stateColors.subhead, lineHeight: 1 }}>{d.subhead}</div>
-          </div>
-        </div>
-
-        {/* Info row */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
-          <div style={{ borderRadius: 14, padding: '8px 10px 7px', background: '#f0f4ff', border: `1px solid ${t.blueMid}`, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-            <div style={{ fontSize: 8.5, fontWeight: 600, color: '#5572b8', opacity: .72, whiteSpace: 'nowrap', lineHeight: 1 }}>Margem livre de</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: t.blue, lineHeight: 1, whiteSpace: 'nowrap' }}>até {d.margin}</div>
-            <div style={{ fontSize: 6.7, fontWeight: 500, color: '#5572b8', opacity: .68, lineHeight: 1 }}>após portabilidade</div>
-          </div>
-          <div style={{ borderRadius: 14, padding: '8px 10px 7px', background: t.navy, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-            <div style={{ fontSize: 8.5, fontWeight: 600, color: 'rgba(255,255,255,.60)', whiteSpace: 'nowrap', lineHeight: 1 }}>Crédito disponível de</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', lineHeight: 1, whiteSpace: 'nowrap' }}>até {d.credit}</div>
-            <div style={{ fontSize: 6.7, fontWeight: 500, color: 'rgba(255,255,255,.55)', lineHeight: 1 }}>após a Liberação da Margem</div>
-          </div>
-        </div>
-
-        {/* CTA */}
-        <button
-          onClick={handleGoContratacao}
-          className="port-btn-cta"
-          style={{
-            width: '100%', border: 0, borderRadius: 14, padding: '15px 14px', marginBottom: 8,
-            background: t.blue, color: '#fff', fontSize: 15, fontWeight: 600,
-            lineHeight: 1.2, boxShadow: '0 8px 20px rgba(35,80,200,.25)', cursor: 'pointer',
-            fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", transition: 'background .15s ease',
-          }}
-        >{d.cta}</button>
-
-        {/* Toggle details */}
-        <button
-          type="button"
-          onClick={() => setDetails(v => !v)}
-          className="port-btn-outline"
-          style={{
-            width: '100%', border: `1.5px solid ${t.blueMid}`, borderRadius: 14, padding: 13,
-            color: t.blue, fontSize: 13.5, fontWeight: 500, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", transition: 'background .15s ease',
-            background: 'transparent',
-          }}
-          aria-expanded={detailsOpen}
-        >
-          <span>Ver detalhes da oferta</span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, transition: 'transform .25s cubic-bezier(.4,0,.2,1)', transform: detailsOpen ? 'rotate(180deg)' : 'none', display: 'block' }}>
-            <path d="M3 6l5 5 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-
-        {/* Details */}
-        {detailsOpen && (
-          <div style={{ marginTop: 10, animation: 'fadeIn .22s ease forwards' }}>
-            <div style={{ background: '#f7f9fe', border: `1px solid ${t.line}`, borderRadius: 16, padding: 10, display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
-              <Receipt mode={mode} />
-            </div>
-            <button
-              type="button"
-              className="port-btn-download"
-              style={{
-                width: '100%', border: `1.5px solid #d2ddfb`, borderRadius: 14, padding: 13,
-                background: '#edf3ff', color: t.blue, fontSize: 13, fontWeight: 600,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                cursor: 'pointer', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-                transition: 'background .15s ease',
-              }}
-              onClick={() => window.print()}
-            >
-              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none">
-                <path d="M3 11h10M8 3v8M5 8l3 3 3-3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span>Fazer download da oferta</span>
-            </button>
-          </div>
-        )}
-
-        <p style={{ fontSize: 8, color: t.muted, textAlign: 'right', marginTop: 10, opacity: .68, fontStyle: 'italic', lineHeight: 1.4 }}>
-          Valores estimados. Sujeitos à análise e aprovação de crédito.
-        </p>
-      </div>
-
-      {/* Other options */}
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, paddingTop: 4 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: t.text, flex: 1 }}>Outras opções para comparar</div>
-          <div style={{ fontSize: 10, color: t.muted, fontWeight: 500 }}>2 disponíveis</div>
-        </div>
-        <MiniCard variant="refin" name="Refinanciamento" desc="Receba dinheiro agora sem aumentar sua parcela atual" value="9.547" detail="estimado para receber" onNav={() => navigate('/refinanciamento')} />
-        <MiniCard variant="novo"  name="Novo Empréstimo"  desc="Mais dinheiro disponível com pequeno ajuste na parcela" value="2.845" detail="estimado disponível" onNav={() => navigate('/novo-contrato')} />
-      </div>
-    </div>
-  )
-
-  const summarySidebar = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div style={{ background: '#fff', borderRadius: 16, border: `1px solid ${t.line}`, boxShadow: t.shadow, padding: 14 }}>
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: t.muted, marginBottom: 10 }}>
-          Resumo da oferta
-        </div>
-        {[
-          ['Estratégia', mode === 'eco' ? 'Economia inteligente' : 'Parcela menor'],
-          ['Parcela nova', d.newInstallment],
-          ['Benefício', `${d.headlineValue}${d.headlineSuffix ? ` ${d.headlineSuffix}` : ''}`],
-          ['Margem livre', `até ${d.margin}`],
-          ['Crédito futuro', `até ${d.credit}`],
-        ].map(([label, value]) => (
-          <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '7px 0', borderBottom: `1px solid ${t.line}` }}>
-            <span style={{ fontSize: 11, color: t.muted, fontWeight: 600 }}>{label}</span>
-            <strong style={{ fontSize: 11.5, color: t.text, fontWeight: 700, textAlign: 'right' }}>{value}</strong>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ background: '#fff', borderRadius: 16, border: `1px solid ${t.line}`, boxShadow: t.shadow, padding: 14 }}>
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: t.muted, marginBottom: 10 }}>
-          Salário líquido
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          <div style={{ borderRadius: 12, border: `1px solid ${t.line}`, background: '#f7f9ff', padding: 10 }}>
-            <div style={{ fontSize: 9.5, textTransform: 'uppercase', letterSpacing: '.06em', color: t.muted, fontWeight: 700, marginBottom: 5 }}>Antes</div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: t.text, lineHeight: 1.1 }}>{fmtDec(liquidoAntes)}</div>
-            <div style={{ fontSize: 10, color: t.muted, marginTop: 5, lineHeight: 1.35 }}>Com parcela de {fmtDec(parcelaAntes)}</div>
-          </div>
-          <div style={{ borderRadius: 12, border: '1px solid #b8e0ca', background: '#eefaf3', padding: 10 }}>
-            <div style={{ fontSize: 9.5, textTransform: 'uppercase', letterSpacing: '.06em', color: t.green, fontWeight: 700, marginBottom: 5 }}>Depois</div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: t.green, lineHeight: 1.1 }}>{fmtDec(liquidoDepois)}</div>
-            <div style={{ fontSize: 10, color: t.greenSoft, marginTop: 5, lineHeight: 1.35 }}>Com parcela de {fmtDec(parcelaDepois)}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-
-  const bottomBack = (
-    <div style={{ marginTop: isDesktop ? 24 : 18 }}>
-      <button
-        onClick={() => navigate('/ofertas')}
-        className="port-btn-outline"
-        style={{
-          width: '100%',
-          border: `1.5px solid ${t.blueMid}`,
-          borderRadius: 14,
-          padding: isDesktop ? '14px 16px' : '13px 14px',
-          background: '#fff',
-          color: t.blue,
-          fontSize: isDesktop ? 14 : 13.5,
-          fontWeight: 700,
-          cursor: 'pointer',
-          fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-          transition: 'background .15s ease',
-        }}
-      >
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
-          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          Voltar para ofertas
-        </span>
-      </button>
-    </div>
-  )
+  const downloadSimulationReceipt = () => {
+    printSimulationReceipt({
+      title: 'SIMULAÇÃO DE PORTABILIDADE - CONSIGAI',
+      highlightLabel: 'ECONOMIA ESTIMADA',
+      highlightValue: benefit,
+      rows: [
+        { label: 'Estratégia', value: mode === 'eco' ? 'Economia inteligente' : 'Parcela menor' },
+        { label: 'Parcela nova', value: d.newInstallment },
+        { label: 'Margem livre', value: `até ${d.margin}` },
+        { label: 'Crédito futuro', value: `até ${d.credit}` },
+      ],
+    })
+  }
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-        * { box-sizing: border-box; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: translateY(0) } }
-        .port-btn-cta:hover { background: #1a3fc4 !important; }
-        .port-btn-outline:hover { background: #f0f5ff !important; }
-        .port-btn-download:hover { background: #e6efff !important; }
+        .port-root{max-width:1280px;margin:0 auto;padding:26px 24px 48px}
+        .main-layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:30px}
+        .card{border:1px solid #dde8f6;border-radius:26px;background:#fff;box-shadow:0 16px 38px rgba(3,36,111,.075)}
+.flow{padding:20px;border-radius:30px;position:relative;overflow:hidden;background:#fff;box-shadow:0 22px 58px rgba(3,36,111,.11)}
+        .flow:before{content:'';position:absolute;inset:0 0 auto 0;height:5px;background:linear-gradient(90deg,#055ece,#1da1eb,#00e7ff,#007a52)}
+        .flow > *{position:relative;z-index:1}
+        .tabs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+        .tab{min-height:92px;padding:18px;border-radius:22px;border:1px solid #dde8f6;background:radial-gradient(circle at 92% 8%,rgba(29,161,235,.1),transparent 34%),linear-gradient(180deg,#fff,#f8fbff);text-align:center;display:grid;place-items:center;gap:5px;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 16px 38px rgba(3,36,111,.075)}
+        .tab:before{content:'';position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,#055ece,#1da1eb,#00e7ff);opacity:.55}
+        .tab.active{border-color:rgba(0,231,255,.58);box-shadow:0 22px 50px rgba(3,36,111,.12);background:radial-gradient(circle at 92% 8%,rgba(0,231,255,.17),transparent 34%),linear-gradient(180deg,#fff,#f8fbff)}
+        .tab.active:before{opacity:1;background:linear-gradient(90deg,#055ece,#1da1eb,#00e7ff,#007a52)}
+        .tab strong{font-size:16px;font-weight:950}
+        .tab span{font-size:12px;color:#64748b}
+        .strategy-icon{display:inline-flex;align-items:flex-end;justify-content:center;gap:4px;min-height:16px}
+        .strategy-icon i{display:block;width:10px;border-radius:5px;background:#1da1eb;opacity:.45}
+        .strategy-icon i:nth-child(1){height:18px;opacity:1}
+        .strategy-icon i:nth-child(2){height:14px;opacity:.9}
+        .strategy-icon i:nth-child(3){height:11px;opacity:.8}
+        .strategy-icon i:nth-child(4){height:8px;opacity:.72}
+        .strategy-icon i:nth-child(5){height:6px;opacity:.62}
+        .tab.active .strategy-icon i{background:#055ece;opacity:.95}
+        .strategy-icon.flat i{height:8px !important;opacity:.9}
+        .offer{padding:22px;background:#fff}
+        .compare{display:grid;grid-template-columns:1fr 56px 1fr;gap:12px;align-items:center;padding:16px;border-radius:20px;border:1px solid #dde8f6;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:0 12px 28px rgba(3,36,111,.055)}
+        .pbox{padding:14px;border-radius:16px;border:1px solid #dde8f6;background:rgba(244,248,255,.72)}
+        .pbox small{display:block;font-size:10.5px;font-weight:950;text-transform:uppercase;letter-spacing:.08em;color:#64748b}
+        .pbox strong{display:block;margin-top:6px;font-size:27px;font-weight:950;letter-spacing:-.06em}
+        .old strong{color:#b00020;text-decoration:line-through}
+        .new{background:rgba(233,248,241,.6);border-color:#bdecd7}
+        .new strong{color:#007a52}
+        .arrow{width:46px;height:46px;border-radius:999px;display:grid;place-items:center;background:linear-gradient(145deg,#055ece,#1da1eb);color:#fff;font-size:20px;font-weight:900;box-shadow:0 12px 24px rgba(5,94,206,.18)}
+        .highlight{margin-top:14px;padding:22px;border-radius:22px;background:radial-gradient(circle at 92% 8%,rgba(0,122,82,.08),transparent 34%),linear-gradient(180deg,#fff,#f3fff9);border:1px solid #bdecd7;text-align:center;box-shadow:0 14px 32px rgba(3,36,111,.055)}
+        .highlight small{font-size:11px;font-weight:950;letter-spacing:.12em;text-transform:uppercase;color:#007a52}
+        .highlight strong{display:block;margin-top:9px;font-size:45px;line-height:1;font-weight:950;letter-spacing:-.075em;color:#007a52}
+        .highlight span{display:block;margin-top:8px;font-size:12px;color:#64748b}
+        .benefits{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+        .benefit{padding:15px;border-radius:18px;border:1px solid #dde8f6;background:radial-gradient(circle at 92% 8%,rgba(29,161,235,.08),transparent 34%),linear-gradient(180deg,#fff,#f8fbff);box-shadow:0 10px 24px rgba(3,36,111,.045)}
+        .benefit small{display:block;font-size:10.5px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#64748b}
+        .benefit strong{display:block;margin-top:6px;font-size:24px;font-weight:950;color:#055ece}
+        .contracts-row{margin-top:14px;padding-top:14px;border-top:1px solid #dde8f6}
+        .contracts-row small{display:block;font-size:10.5px;font-weight:950;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:8px}
+        .contracts-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px}
+        .contracts-tags{display:flex;flex-wrap:wrap;gap:7px}
+        .contracts-tag{padding:7px 12px;border-radius:999px;background:#f4f8ff;border:1px solid #dde8f6;color:#055ece;font-size:11px;font-weight:850}
+        .details-btn{flex:0 0 auto;min-height:36px;padding:0 14px;border-radius:12px;border:1px solid #bfd4f6;background:#fff;color:#055ece;font-size:12px;font-weight:900;cursor:pointer;white-space:nowrap}
+        .actions{margin-top:16px;padding-top:16px;border-top:1px solid #dde8f6}
+        .actions > button + button{margin-top:12px}
+        .cta{width:100%;min-height:54px;border:0;border-radius:18px;background:linear-gradient(145deg,#055ece,#03246f);color:#fff;font-size:15px;font-weight:950;cursor:pointer;box-shadow:0 18px 38px rgba(5,94,206,.24)}
+        .secondary{width:100%;min-height:50px;border-radius:17px;border:1px solid #bfd4f6;background:#fff;color:#055ece;font-size:14px;font-weight:900;cursor:pointer}
+        .safe{margin-top:12px;text-align:center;font-size:10.5px;color:#64748b;font-weight:900}
+        .consigai-cta-animated{position:relative;overflow:hidden;transform:translateY(0);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background-position .35s ease,filter .18s ease;animation:consigaiDetailsFloat 3.8s ease-in-out infinite;background-size:220% 100%;background-position:0% 0%}
+        .consigai-cta-animated:hover{background-position:100% 0%;animation-play-state:paused;transform:translateY(-2px) scale(1.01)!important;filter:saturate(1.05)}
+        .consigai-cta-animated:active{transform:translateY(0) scale(.985)}
+        .consigai-cta-animated:after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 0%,rgba(255,255,255,.55) 45%,transparent 60%);transform:translateX(-120%) skewX(-18deg);opacity:0;pointer-events:none}
+        .consigai-cta-animated:hover:after{opacity:1;animation:consigaiDetailsShine .9s ease forwards}
+        @keyframes consigaiDetailsFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-1px)}}
+        @keyframes consigaiDetailsShine{to{transform:translateX(120%) skewX(-18deg);opacity:0}}
+        .side-card{padding:22px;border-radius:26px;border:1px solid #dde8f6;background:radial-gradient(circle at 92% 8%,rgba(0,231,255,.08),transparent 34%),linear-gradient(180deg,rgba(255,255,255,.98),#fff);box-shadow:0 16px 38px rgba(3,36,111,.075)}
+        .side-card + .side-card{margin-top:16px}
+        .side-card h3{font-size:15px;font-weight:950;text-transform:uppercase;color:#03246f}
+        .side-card p{margin-top:5px;font-size:12px;color:#64748b}
+        .sum-row{display:flex;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid #dde8f6;font-size:13px;color:#64748b}
+        .sum-row strong{color:#03246f}
+        .salary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+        .box{padding:14px;border-radius:18px;border:1px solid #dde8f6;background:#f8fbff}
+        .box small{font-size:11px;color:#64748b}
+        .box strong{display:block;margin-top:7px;font-size:21px;color:#03246f}
+        .box span{display:block;margin-top:6px;font-size:10.5px;color:#64748b}
+        .box.green{background:#f3fff9;border-color:#bdecd7}
+        .box.green strong{color:#007a52}
+        .receipt-wrap{margin-top:12px}
+        .compact-contract-list{display:grid;gap:10px;margin-top:12px;margin-bottom:10px}
+        .compact-refin-card{padding:14px;border-radius:20px;background:#fff;border:1px solid #dde8f6;box-shadow:none;position:relative;overflow:hidden}
+        .compact-refin-card:before{content:'';position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,#055ece,#1da1eb,#00e7ff,#007a52)}
+        .compact-header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid #dde8f6}
+        .compact-header small{color:#055ece;font-size:9px;font-weight:950;letter-spacing:.12em;text-transform:uppercase}
+        .compact-header h3{margin-top:2px;color:#03246f;font-size:16px;line-height:1;font-weight:950;letter-spacing:-.04em}
+        .money-highlight{margin-top:10px;padding:9px 10px;border-radius:14px;background:rgba(233,248,241,.62);border:1px solid #bdecd7;display:flex;align-items:center;justify-content:space-between;gap:12px}
+        .money-copy span{display:block;color:#007a52;font-size:9.5px;font-weight:950;text-transform:uppercase;letter-spacing:.06em}
+        .money-copy small{display:block;margin-top:2px;color:#64748b;font-size:10px;line-height:1.25;font-weight:700}
+        .money-highlight strong{flex:0 0 auto;color:#007a52;font-size:28px;line-height:1;font-weight:950;letter-spacing:-.055em;white-space:nowrap}
+        .compare-lines{display:grid;margin-top:10px;border:1px solid #dde8f6;border-radius:16px;overflow:hidden;background:#fff}
+        .compare-head,.compare-line{display:grid;grid-template-columns:74px 1fr 1fr;align-items:center;gap:8px}
+        .compare-head{padding:8px 10px;background:#f4f8ff;border-bottom:1px solid #dde8f6;color:#64748b;font-size:9px;font-weight:950;text-transform:uppercase;letter-spacing:.07em}
+        .compare-head span:nth-child(2),.compare-head span:nth-child(3){text-align:center}
+        .compare-line{padding:9px 10px;border-bottom:1px solid #dde8f6}
+        .compare-line:last-child{border-bottom:0}
+        .compare-label{font-size:12px;font-weight:850;color:#03246f}
+        .compare-value{font-size:12px;font-weight:900;color:#03246f;text-align:center}
+        .compare-value.after{color:#055ece}
+        .compact-note{margin-top:8px;padding:8px 10px;border-radius:11px;background:#f4f8ff;border:1px solid #dde8f6;color:#64748b;font-size:11px}
+        .receipt-card{background:#f5f5f3;border:1px solid #ececec;border-radius:10px;padding:12px;font-size:11px;color:#4f4f4f}
+        .receipt-title{text-align:center;font-weight:800}
+        .receipt-date{text-align:center;color:#808080;font-size:10px;margin-top:4px}
+        .receipt-user{margin-top:10px;font-weight:700}
+        .receipt-meta{margin-top:6px;line-height:1.35;font-size:10px}
+        .receipt-card hr{border:none;border-top:1px dashed #cfcfcf;margin:8px 0}
+        .receipt-sub{text-align:center;font-weight:800;font-size:10px}
+        .receipt-value{text-align:center;font-size:22px;font-weight:900;line-height:1}
+        .receipt-value span{font-size:12px;font-weight:700}
+        .receipt-caption{text-align:center;font-size:8px;letter-spacing:.08em;color:#888}
+        .receipt-card table{width:100%;font-size:9px;border-collapse:collapse}
+        .receipt-card th{text-align:left;color:#676767;padding-bottom:6px}
+        .receipt-card th:last-child,.receipt-card td:last-child{text-align:right}
+        .receipt-row{display:flex;justify-content:space-between;gap:8px;font-size:10px}
+        .receipt-site{text-align:center;margin-top:8px;font-size:9px;color:#7a7a7a}
+        .back-btn{margin-top:10px;width:100%;min-height:46px;border-radius:14px;border:1px solid #bfd4f6;background:#fff;color:#055ece;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(30,60,180,.12)}
+        @media (max-width:1100px){.main-layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:16px}.side-card + .side-card{margin-top:0}}
+        @media (max-width:900px){.port-root{padding:16px}.tabs,.compare,.benefits,.salary,.sidebar{grid-template-columns:1fr}.arrow{transform:rotate(90deg);justify-self:center}.compare-head,.compare-line{grid-template-columns:1fr;gap:6px}.compare-head span:first-child{display:none}}
       `}</style>
 
       <div style={appPageStyle}>
         {isDesktop ? (
-          <>
-            <DesktopPageHeader
-              clientName={clientName}
-              chipLabel="Portabilidade"
-              title="Reduza juros e recupere espaco no orcamento"
-              subtitle="Transfira seus contratos para taxa menor e escolha entre economizar mais ou aliviar a parcela."
-              onLogoClick={() => navigate('/ofertas')}
-              actions={[
-                { label: 'Ofertas', onClick: () => navigate('/ofertas') },
-                { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
-              ]}
-            />
-            <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px 56px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 340px', gap: 24, alignItems: 'start' }}>
-                <div>
-                  {content}
-                  {bottomBack}
-                </div>
-                <div style={{ position: 'sticky', top: 24 }}>
-                  {summarySidebar}
-                </div>
-              </div>
-            </div>
-          </>
+          <DesktopPageHeader
+            clientName={clientName}
+            chipLabel="Portabilidade"
+            title="Economia inteligente"
+            subtitle="Compare a parcela atual com uma proposta mais leve e transparente."
+            onLogoClick={() => navigate('/ofertas')}
+            actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }]}
+          />
         ) : (
-          <>
-            <MobilePageHeader
-              clientName={clientName}
-              chipLabel="Portabilidade"
-              title="Reduza juros e recupere espaco no orcamento"
-              subtitle="Transfira seus contratos para taxa menor e escolha entre economizar mais ou aliviar a parcela."
-              onLogoClick={() => navigate('/ofertas')}
-              actions={[
-                { label: 'Ofertas', onClick: () => navigate('/ofertas') },
-                { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
-              ]}
-            />
-            <div style={{ background: t.bg, borderRadius: '26px 26px 0 0', marginTop: 0, padding: '20px 18px calc(24px + env(safe-area-inset-bottom))' }}>
-              {content}
-              {bottomBack}
-            </div>
-          </>
+          <MobilePageHeader
+            clientName={clientName}
+            chipLabel="Portabilidade"
+            title="Economia inteligente"
+            subtitle="Compare a parcela atual com uma proposta mais leve e transparente."
+            onLogoClick={() => navigate('/ofertas')}
+            actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }]}
+          />
         )}
+
+        <main className="port-root">
+          <div className="main-layout">
+            <section>
+              <PageHero
+                kicker="Portabilidade"
+                title="Compare e veja quanto pode"
+                titleAccent="economizar"
+                body="A ConsigAI compara seu contrato atual com uma nova proposta para mostrar economia, parcela, margem e crédito futuro antes de você decidir."
+                chips={['Prazo sem esticar', 'Simulação sem compromisso', 'Nenhuma contratação automática']}
+              />
+
+              <section className="card flow">
+                <div className="tabs">
+                  <button className={`tab ${mode === 'eco' ? 'active' : ''}`} onClick={() => setMode('eco')}>
+                    <div className="strategy-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+                    <strong>Quero Economizar</strong><span>Diminuir minha dívida</span>
+                  </button>
+                  <button className={`tab ${mode === 'parc' ? 'active' : ''}`} onClick={() => setMode('parc')}>
+                    <div className="strategy-icon flat" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+                    <strong>Parcela Menor</strong><span>Mais alívio no mês</span>
+                  </button>
+                </div>
+
+                <article className="card offer">
+                  <section className="compare">
+                    <div className="pbox old"><small>Parcela atual</small><strong>R$ 550</strong></div>
+                    <div className="arrow">→</div>
+                    <div className="pbox new"><small>Parcela nova</small><strong>{d.newInstallment}</strong></div>
+                  </section>
+
+                  <section className="highlight"><small>{d.eyebrow}</small><strong>{benefit}</strong><span>{d.subhead}</span></section>
+
+                  <section className="benefits">
+                    <div className="benefit"><small>Margem livre depois</small><strong>até {d.margin}</strong></div>
+                    <div className="benefit"><small>Crédito futuro disponível</small><strong>até {d.credit}</strong></div>
+                  </section>
+
+                  <div className="contracts-row">
+                    <small>Contratos incluídos</small>
+                    <div className="contracts-bottom">
+                      <div className="contracts-tags">
+                        {RECEIPT_DATA[mode].rows.map(([code, bankRoute]) => {
+                          const origin = bankRoute.split('→')[0].trim()
+                          return <span key={code} className="contracts-tag">{origin}</span>
+                        })}
+                      </div>
+                      <button className="details-btn consigai-cta-animated" onClick={() => setDetailsOpen(v => !v)}>Ver detalhes</button>
+                    </div>
+                  </div>
+
+                  {detailsOpen ? (
+                    <div className="receipt-wrap" style={{ marginTop: 12 }}>
+                      <div className="compact-contract-list" style={{ marginTop: 0 }}>
+                        {portContracts.map((item) => (
+                          <article key={item.code} className="compact-refin-card">
+                            <header className="compact-header">
+                              <div>
+                                <small>Portabilidade</small>
+                                <h3>{item.bankName}</h3>
+                              </div>
+                            </header>
+                            <section className="money-highlight">
+                              <div className="money-copy">
+                                <span>Economia estimada</span>
+                                <small>valor estimado sem sair do prazo</small>
+                              </div>
+                              <strong>{item.estimatedValue}</strong>
+                            </section>
+                            <section className="compare-lines">
+                              <div className="compare-head">
+                                <span></span>
+                                <span>Hoje</span>
+                                <span>Depois</span>
+                              </div>
+                              <div className="compare-line">
+                                <span className="compare-label">Parcela</span>
+                                <strong className="compare-value">{item.installmentBefore}</strong>
+                                <strong className="compare-value after">{item.installmentAfter}</strong>
+                              </div>
+                              <div className="compare-line">
+                                <span className="compare-label">Prazo</span>
+                                <strong className="compare-value">{item.termBefore}</strong>
+                                <strong className="compare-value after">{item.termAfter}</strong>
+                              </div>
+                              <div className="compare-line">
+                                <span className="compare-label">Taxa</span>
+                                <strong className="compare-value">{item.rateBefore}</strong>
+                                <strong className="compare-value after">{item.rateAfter}</strong>
+                              </div>
+                            </section>
+                            <p className="compact-note"><strong>Contrato:</strong> {item.code}</p>
+                          </article>
+                        ))}
+                      </div>
+                      <button className="secondary consigai-cta-animated" style={{ marginTop: 10 }} onClick={() => window.print()}>Fazer download da oferta</button>
+                    </div>
+                  ) : null}
+
+                  <div className="actions">
+                    <button className="cta consigai-cta-animated" onClick={handleGoContratacao}>Continuar com esta oferta</button>
+                    <button className="secondary consigai-cta-animated" onClick={() => setShowReceipt(v => !v)}>Gerar recibo da simulação</button>
+                    {showReceipt ? (
+                      <div style={{ marginTop: 4, borderRadius: 16, border: '1px solid #DDE8F6', background: '#f7f9fe', padding: 10, display: 'flex', justifyContent: 'center' }}>
+                        <div style={{ width: 300, borderRadius: 10, padding: '14px 12px 12px', border: '1px solid #ececec', color: '#4f4f4f', fontSize: 12, background: 'linear-gradient(180deg, rgba(255,255,255,.45), rgba(0,0,0,.02)), #f5f5f3' }}>
+                          <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, color: '#444' }}>SIMULAÇÃO DE PORTABILIDADE - CONSIGAI</div>
+                          <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
+                          <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>ECONOMIA ESTIMADA</div>
+                          <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323', lineHeight: 1 }}>{benefit}</div>
+                          <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
+                          <div style={{ display: 'grid', gap: 6, fontSize: 10 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Estratégia</span><strong>{mode === 'eco' ? 'Economia inteligente' : 'Parcela menor'}</strong></div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Parcela nova</span><strong>{d.newInstallment}</strong></div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Margem livre</span><strong>até {d.margin}</strong></div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Crédito futuro</span><strong>até {d.credit}</strong></div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+                    {showReceipt ? (
+                      <button
+                        className="consigai-cta-animated"
+                        onClick={downloadSimulationReceipt}
+                        style={{
+                          width: '100%',
+                          minHeight: 46,
+                          borderRadius: 14,
+                          border: 0,
+                          background: 'linear-gradient(145deg, #055ECE, #03246F)',
+                          color: '#fff',
+                          fontSize: 13.5,
+                          fontWeight: 900,
+                          cursor: 'pointer',
+                          boxShadow: '0 8px 20px rgba(30,60,180,.3)',
+                        }}
+                      >
+                        Baixar recibo da simulação
+                      </button>
+                    ) : null}
+                    <p className="safe">Valores estimados. Sujeitos à análise e aprovação de crédito.</p>
+                    <button className="back-btn consigai-cta-animated" onClick={() => navigate('/ofertas')}>Voltar para ofertas</button>
+                  </div>
+                </article>
+              </section>
+            </section>
+
+            <aside className="sidebar" style={{ display: 'grid', gap: 16, alignContent: 'start' }}>
+              <ResumoCard
+                rows={[
+                  { label: 'Estratégia', value: mode === 'eco' ? 'Economia inteligente' : 'Parcela menor' },
+                  { label: 'Parcela nova', value: d.newInstallment },
+                  { label: 'Benefício', value: benefit },
+                  { label: 'Margem livre', value: `até ${d.margin}` },
+                  { label: 'Crédito futuro', value: `até ${d.credit}` },
+                ]}
+              />
+              <ImpactoCard
+                liquidoAntes={liquidoAntes}
+                liquidoDepois={liquidoDepois}
+                novaParcela={d.newInstallment}
+                subtitle="Veja quanto sobra depois da portabilidade."
+              />
+              <ControleCard />
+            </aside>
+          </div>
+        </main>
       </div>
     </>
   )
 }
-
-
-
