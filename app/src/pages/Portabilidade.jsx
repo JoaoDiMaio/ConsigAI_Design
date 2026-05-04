@@ -299,8 +299,8 @@ export default function Portabilidade() {
           <DesktopPageHeader
             clientName={clientName}
             chipLabel="Portabilidade"
-            title="Economia inteligente"
-            subtitle="Compare a parcela atual com uma proposta mais leve e transparente."
+            title="Faça portabilidade com equilíbrio para Economizar"
+            subtitle="Compare sua parcela atual com uma proposta mais leve e transparente."
             onLogoClick={() => navigate('/ofertas')}
             actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }]}
           />
@@ -308,8 +308,8 @@ export default function Portabilidade() {
           <MobilePageHeader
             clientName={clientName}
             chipLabel="Portabilidade"
-            title="Economia inteligente"
-            subtitle="Compare a parcela atual com uma proposta mais leve e transparente."
+            title="Faça portabilidade com equilíbrio para Economizar"
+            subtitle="Compare sua parcela atual com uma proposta mais leve e transparente."
             onLogoClick={() => navigate('/ofertas')}
             actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }]}
           />
@@ -321,7 +321,7 @@ export default function Portabilidade() {
               <PageHero
                 kicker="Portabilidade"
                 title="Compare e veja quanto pode"
-                titleAccent="economizar"
+                titleAccent="Economizar"
                 body="A ConsigAI compara seu contrato atual com uma nova proposta para mostrar economia, parcela, margem e crédito futuro antes de você decidir."
                 chips={['Prazo sem esticar', 'Simulação sem compromisso', 'Nenhuma contratação automática']}
               />
@@ -361,7 +361,7 @@ export default function Portabilidade() {
                           return <span key={code} className="contracts-tag">{origin}</span>
                         })}
                       </div>
-                      <button className="details-btn consigai-cta-animated" onClick={() => setDetailsOpen(v => !v)}>Ver detalhes</button>
+                      <button className="details-btn consigai-cta-animated" onClick={() => setDetailsOpen(v => !v)}>Ver detalhes da oferta</button>
                     </div>
                   </div>
 
@@ -460,12 +460,15 @@ export default function Portabilidade() {
               </section>
             </section>
 
-            <aside className="sidebar" style={{ display: 'grid', gap: 16, alignContent: 'start' }}>
+            <aside className="sidebar" style={{ display: 'grid', gap: 20, alignContent: 'start' }}>
               <ResumoCard
+                title="Resumo da proposta"
+                subtitle="Confira as principais condições simuladas antes de continuar."
+                highlight={{ label: 'Oferta selecionada', value: mode === 'eco' ? 'Economia inteligente' : 'Parcela menor' }}
                 rows={[
                   { label: 'Estratégia', value: mode === 'eco' ? 'Economia inteligente' : 'Parcela menor' },
-                  { label: 'Parcela nova', value: d.newInstallment },
-                  { label: 'Benefício', value: benefit },
+                  { label: 'Parcela nova total', value: d.newInstallment },
+                  { label: 'Benefício estimado', value: benefit },
                   { label: 'Margem livre', value: `até ${d.margin}` },
                   { label: 'Crédito futuro', value: `até ${d.credit}` },
                 ]}
@@ -474,7 +477,7 @@ export default function Portabilidade() {
                 liquidoAntes={liquidoAntes}
                 liquidoDepois={liquidoDepois}
                 novaParcela={d.newInstallment}
-                subtitle="Veja quanto sobra depois da portabilidade."
+                novaParcelaLabel="Nova parcela total"
               />
               <ControleCard />
             </aside>

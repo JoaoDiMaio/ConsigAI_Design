@@ -208,7 +208,7 @@ export default function Refinanciamento() {
         .rf-shell { width:calc(100% - 96px); max-width:1280px; margin:0 auto; position:relative; z-index:1; padding-top:30px; }
         .main-layout { display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:30px; align-items:start; }
         .sidebar { display:grid; gap:20px; align-content:start; }
-.offer-flow-card { padding:20px; border-radius:30px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); position:relative; overflow:hidden; }
+.offer-flow-card { padding:22px; border-radius:30px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); position:relative; overflow:hidden; }
         .offer-flow-card::before { content:none; }
         .offer-flow-card > * { position:relative; z-index:1; }
         .offer-flow-header { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
@@ -294,9 +294,9 @@ export default function Refinanciamento() {
 
       <div style={appPageStyle}>
         {isDesktop ? (
-          <DesktopPageHeader clientName={clientName} chipLabel="Refinanciamento" title="Refinancie com inteligência e escolha o melhor impacto no seu mês" subtitle="Compare cenário por cenário com clareza antes de confirmar." onLogoClick={() => navigate('/ofertas')} actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }]} />
+          <DesktopPageHeader clientName={clientName} chipLabel="Refinanciamento" title="Refinancie com equilíbrio para melhorar seu mês" subtitle="Compare cenários com clareza para liberar valor sem perder o controle." onLogoClick={() => navigate('/ofertas')} actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }]} />
         ) : (
-          <MobilePageHeader clientName={clientName} chipLabel="Refinanciamento" title="Refinancie com inteligência e escolha o melhor impacto no seu mês" subtitle="Compare cenário por cenário com clareza antes de confirmar." onLogoClick={() => navigate('/ofertas')} actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }]} />
+          <MobilePageHeader clientName={clientName} chipLabel="Refinanciamento" title="Refinancie com equilíbrio para melhorar seu mês" subtitle="Compare cenários com clareza para liberar valor sem perder o controle." onLogoClick={() => navigate('/ofertas')} actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }]} />
         )}
 
         <div className="rf-page">
@@ -307,7 +307,7 @@ export default function Refinanciamento() {
                   kicker="Refinanciamento por contrato"
                   title="Escolha o cenário com"
                   titleAccent="melhor impacto"
-                  body="A ConsigAI compara seus contratos e organiza as melhores estratégias para liberar dinheiro, reduzir parcela ou preservar sua margem com transparência."
+                  body="A ConsigAI compara seus contratos e organiza estratégias para liberar dinheiro, reduzir parcela ou preservar sua margem com transparência."
                   chips={['Simulação sem compromisso', 'Você compara antes de decidir', 'Nenhuma contratação automática']}
                 />
 
@@ -471,18 +471,19 @@ export default function Refinanciamento() {
               <aside className="sidebar">
                 <ResumoCard
                   title="Resumo da proposta"
-                  highlight={{ label: 'Cenário selecionado', value: scenario.title }}
+                  subtitle="Confira as principais condições simuladas antes de continuar."
+                  highlight={{ label: 'Oferta selecionada', value: scenario.title }}
                   rows={[
-                    { label: 'Você recebe', value: scenario.cash },
+                    { label: 'Valor liberado', value: scenario.cash },
                     { label: 'Nova parcela total', value: scenario.installment },
                     { label: 'Margem livre', value: scenario.margem },
-                    { label: 'Contratos', value: `${scenario.contracts.length} refinanciados` },
+                    { label: 'Contratos incluídos', value: `${scenario.contracts.length} refinanciados` },
                   ]}
                 />
                 <ImpactoCard
                   liquidoAntes={liquidoAntes}
                   liquidoDepois={liquidoDepois}
-                  novaParcela={scenario.installment}
+                  novaParcela={String(scenario.installment).replace(/\/m[eê]s/i, '').trim()}
                   novaParcelaLabel="Nova parcela total"
                 />
                 <ControleCard />

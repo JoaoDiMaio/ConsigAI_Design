@@ -7,7 +7,7 @@ import { appFontFamily, theme } from '../ui/theme'
 const DESKTOP_HEADER_HEIGHT = 72
 const TABLET_HEADER_HEIGHT = 72
 const MOBILE_HEADER_HEIGHT = 72
-const MOBILE_LOGO_ICON_SIZE = 52
+const MOBILE_LOGO_ICON_SIZE = 72
 
 function ClientMenu({ actions = [], compact = false, clientName = 'Cliente' }) {
   const [open, setOpen] = useState(false)
@@ -188,7 +188,7 @@ export function DesktopPageHeader({
 
   const headerMinHeight = minHeightProp ?? (isTabletHeader ? TABLET_HEADER_HEIGHT : DESKTOP_HEADER_HEIGHT)
   const headerHorizontalPadding = isTabletHeader ? 18 : 24
-  const logoHeight = isTabletHeader ? 36 : 40
+  const logoHeight = 72
 
   return (
     <div

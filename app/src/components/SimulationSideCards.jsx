@@ -51,11 +51,11 @@ export function PageHero({ kicker, title, titleAccent, body, chips }) {
 
 const S = {
   card: {
-    padding: '20px 22px',
+    padding: '22px',
     borderRadius: 28,
     background: 'rgba(255,255,255,.98)',
     border: '1px solid #DDE8F6',
-    boxShadow: '0 18px 46px rgba(3,36,111,.08)',
+    boxShadow: '0 16px 38px rgba(3,36,111,.075)',
   },
   cardTitle: {
     color: '#03246F',
@@ -69,7 +69,7 @@ const S = {
     color: '#64748B',
     fontSize: 12,
     lineHeight: 1.35,
-    fontWeight: 600,
+    fontWeight: 650,
   },
   row: {
     display: 'flex',
@@ -83,7 +83,7 @@ const S = {
   },
   rowValue: { color: '#03246F', fontWeight: 800 },
   highlight: {
-    marginTop: 16,
+    marginTop: 14,
     padding: 16,
     borderRadius: 21,
     background: 'radial-gradient(circle at 92% 8%, rgba(0,231,255,.12), transparent 34%), linear-gradient(180deg,#F8FBFF 0%, #FFF 100%)',
@@ -91,14 +91,14 @@ const S = {
   },
   highlightLabel: { display: 'block', color: '#055ECE', fontSize: 10, fontWeight: 900, letterSpacing: '.08em', textTransform: 'uppercase' },
   highlightValue: { display: 'block', marginTop: 6, color: '#03246F', fontSize: 21, fontWeight: 800 },
-  salaryGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 14 },
+  salaryGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 14 },
   salaryBox: { padding: 16, borderRadius: 21, background: '#F8FBFF', border: '1px solid #DDE8F6' },
   salaryBoxGreen: { padding: 16, borderRadius: 21, background: '#E9F8F1', border: '1px solid #BDECD7' },
   salaryLabel: { display: 'block', color: '#64748B', fontSize: 11, fontWeight: 700 },
   salaryValue: { display: 'block', marginTop: 7, color: '#03246F', fontSize: 21, fontWeight: 800, whiteSpace: 'nowrap' },
   salaryValueGreen: { display: 'block', marginTop: 7, color: '#007A52', fontSize: 21, fontWeight: 800, whiteSpace: 'nowrap' },
   salaryNote: { display: 'block', marginTop: 6, color: '#64748B', fontSize: 11 },
-  installmentBox: { marginTop: 12, padding: '13px 16px', borderRadius: 21, background: '#F4F8FF', border: '1px solid #DDE8F6' },
+  installmentBox: { marginTop: 14, padding: '13px 16px', borderRadius: 21, background: '#F4F8FF', border: '1px solid #DDE8F6' },
   installmentLabel: { display: 'block', color: '#64748B', fontSize: 11, fontWeight: 700 },
   installmentValue: { display: 'block', marginTop: 6, color: '#055ECE', fontSize: 20, fontWeight: 800 },
   trustItem: { display: 'flex', gap: 10, padding: '11px 12px', borderRadius: 13, background: '#F4F8FF', border: '1px solid #DDE8F6' },
@@ -150,8 +150,8 @@ export function ResumoCard({ title = 'Resumo da oferta', subtitle = 'Confira as 
  * "Impacto no bolso" sidebar card.
  * @param {number} liquidoAntes - Take-home before new installment
  * @param {number} liquidoDepois - Take-home after new installment
- * @param {string} novaParcela - Formatted installment string (e.g. "R$ 432,10/mês")
- * @param {string} [novaParcelaLabel] - Label for the bottom box (default "Nova parcela")
+ * @param {string} novaParcela - Formatted installment string (e.g. "R$ 432,10")
+ * @param {string} [novaParcelaLabel] - Label for the bottom box (default "Nova parcela total")
  * @param {string} [antesNote] - Note below "Antes" value
  * @param {string} [depoisNote] - Note below "Depois" value
  */
@@ -159,9 +159,9 @@ export function ImpactoCard({
   liquidoAntes,
   liquidoDepois,
   novaParcela,
-  novaParcelaLabel = 'Nova parcela',
-  antesNote = 'sem a nova parcela',
-  depoisNote = 'com a nova parcela',
+  novaParcelaLabel = 'Nova parcela total',
+  antesNote = 'sem esta nova parcela',
+  depoisNote = 'com a parcela estimada',
   subtitle = 'Veja quanto sobra depois da nova parcela.',
 }) {
   return (
@@ -210,3 +210,4 @@ export function ControleCard() {
     </div>
   )
 }
+

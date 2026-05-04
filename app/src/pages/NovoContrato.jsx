@@ -161,7 +161,7 @@ export default function NovoContrato() {
         chips={['Simulação sem compromisso', 'Você escolhe antes de decidir', 'Nenhuma contratação automática']}
       />
 
-      <section style={{ marginBottom: 12, padding: isDesktop ? '20px 18px' : '16px 14px', borderRadius: 28, border: '1px solid #DDE8F6', background: '#FFFFFF', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
+      <section style={{ marginBottom: 12, padding: isDesktop ? '22px' : '18px 16px', borderRadius: 28, border: '1px solid #DDE8F6', background: '#FFFFFF', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
         <div style={{ marginBottom: 12 }}><AnchorBtn idx={0} /></div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
           <AnchorBtn idx={1} />
@@ -266,7 +266,7 @@ export default function NovoContrato() {
             Baixar recibo da simulação
           </button>
         )}
-        <p style={{ marginTop: 8, color: '#64748B', textAlign: 'center', fontSize: 11, fontWeight: 600 }}>Valores estimados. Sujeitos à análise e aprovação de crédito.</p>
+        <p style={{ marginTop: 12, color: '#64748B', textAlign: 'center', fontSize: 11, fontWeight: 700 }}>Valores estimados. Sujeitos à análise e aprovação de crédito.</p>
         <button
           className="consigai-cta-animated"
           onClick={() => navigate('/ofertas')}
@@ -293,18 +293,22 @@ export default function NovoContrato() {
   const sidebar = (
     <aside style={{ display: 'grid', gap: 20 }}>
       <ResumoCard
+        title="Resumo da proposta"
+        subtitle="Confira as principais condições simuladas antes de continuar."
+        highlight={{ label: 'Oferta selecionada', value: `R$ ${fmt(offer.valor)}` }}
         rows={[
           { label: 'Produto', value: 'Novo contrato' },
-          { label: 'Você recebe', value: `R$ ${fmt(offer.valor)}` },
+          { label: 'Valor liberado', value: `R$ ${fmt(offer.valor)}` },
           { label: 'Prazo', value: `${offer.prazo} meses` },
-          { label: 'Parcela', value: `R$ ${fmtDec(offer.parcela)}/mês` },
+          { label: 'Nova parcela total', value: `R$ ${fmtDec(offer.parcela)}/mês` },
           { label: 'Taxa', value: `${OFERTA.taxaMensal.toFixed(2).replace('.', ',')}% a.m.` },
         ]}
       />
       <ImpactoCard
         liquidoAntes={salarioAntes}
         liquidoDepois={salarioDepois}
-        novaParcela={`R$ ${fmtDec(offer.parcela)}/mês`}
+        novaParcela={`R$ ${fmtDec(offer.parcela)}`}
+        novaParcelaLabel="Nova parcela total"
       />
       <ControleCard />
     </aside>
@@ -361,14 +365,14 @@ export default function NovoContrato() {
               clientName={clientName}
               chipLabel="Novo Contrato"
               title="Libere crédito novo com equilíbrio para o seu mês"
-              subtitle="Simule valor e prazo com clareza para contratar sem apertar o orçamento."
+              subtitle="Simule valor e prazo com clareza para liberar crédito sem apertar o orçamento."
               onLogoClick={() => navigate('/ofertas')}
               actions={[
                 { label: 'Ofertas', onClick: () => navigate('/ofertas') },
                 { label: 'Configurações', onClick: () => navigate('/configuracoes') },
               ]}
             />
-            <main style={{ maxWidth: 1240, margin: '0 auto', padding: '32px 24px 56px' }}>
+            <main style={{ maxWidth: 1280, margin: '0 auto', padding: '30px 24px 56px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 380px', gap: 30, alignItems: 'start' }}>
                 {content}
                 <div style={{ position: 'sticky', top: 24 }}>{sidebar}</div>
@@ -381,7 +385,7 @@ export default function NovoContrato() {
               clientName={clientName}
               chipLabel="Novo Contrato"
               title="Libere crédito novo com equilíbrio para o seu mês"
-              subtitle="Simule valor e prazo com clareza para contratar sem apertar o orçamento."
+              subtitle="Simule valor e prazo com clareza para liberar crédito sem apertar o orçamento."
               onLogoClick={() => navigate('/ofertas')}
               actions={[
                 { label: 'Ofertas', onClick: () => navigate('/ofertas') },

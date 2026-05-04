@@ -532,7 +532,7 @@ function cardNote(type, icon, text) {
 
 function cardDetailsBtn(type) {
   return `<div class="consigai-offer-actions ${type}-actions">
-    <button type="button" class="consigai-offer-details-btn ${type}-details-button">Ver detalhes</button>
+    <button type="button" class="consigai-offer-details-btn ${type}-details-button">Ver detalhes da oferta</button>
   </div>`
 }
 
@@ -774,7 +774,7 @@ function buildGenericCard(cfg, offer, idx, usuario, isRecommended) {
         ${isSimple ? `<div class="consigai-offer-mini-grid"><div class="consigai-offer-mini-card"><span class="consigai-offer-mini-label">${metricLabel}</span><span class="consigai-offer-mini-value">${metricValue}</span></div><div class="consigai-offer-mini-card"><span class="consigai-offer-mini-label">${miniLabelSecond}</span><span class="consigai-offer-mini-value">${miniValueSecond}</span></div></div>` : ''}
         <div class="consigai-offer-note"><span class="consigai-offer-note-text"><span class="consigai-offer-note-sub">${cfg.note}</span></span></div>
         <div class="consigai-offer-actions generic-actions">
-          <button type="button" class="consigai-offer-details-btn generic-details-button">Ver detalhes</button>
+          <button type="button" class="consigai-offer-details-btn generic-details-button">Ver detalhes da oferta</button>
         </div>
       </div>
     </div>
