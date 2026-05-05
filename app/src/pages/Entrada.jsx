@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import loginLogo from '../assets/ConsigIA_logo_only_no_background.svg'
+import OnboardingBrandHeader from '../components/onboarding/OnboardingBrandHeader'
 import { FontSizeToggleFloating } from '../components/FontSizeToggle'
 
 export default function Entrada() {
@@ -349,40 +349,22 @@ export default function Entrada() {
         .form-panel {
           padding: 42px;
           position: relative;
-          display: grid;
-          align-content: center;
+          display: flex;
+          flex-direction: column;
           background:
             radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.08), transparent 36%),
             linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 100%);
         }
 
         .login-box {
+          flex: 1;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
           width: 100%;
           max-width: 390px;
           margin: 0 auto;
-        }
-
-        .login-logo {
-          width: 62px;
-          height: 62px;
-          display: grid;
-          place-items: center;
-          margin-bottom: 24px;
-        }
-
-        .mobile-top-row {
-          display: block;
-        }
-
-        .mobile-kicker {
-          display: none;
-        }
-
-        .login-logo img {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-          display: block;
         }
 
         .login-kicker {
@@ -659,46 +641,6 @@ export default function Entrada() {
             max-width: none;
           }
 
-          .mobile-top-row {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 14px;
-          }
-
-          .login-logo {
-            width: 52px;
-            height: 52px;
-            margin-bottom: 0;
-            flex: 0 0 auto;
-          }
-
-          .mobile-kicker {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 10px;
-            border-radius: 999px;
-            background: #F1F7FF;
-            border: 1px solid #D6E7FB;
-            color: var(--blue-main);
-            font-size: 10px;
-            font-weight: 950;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            white-space: nowrap;
-          }
-
-          .mobile-kicker::before {
-            content: "";
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--logo-blue);
-            box-shadow: 0 0 8px rgba(29, 161, 235, 0.45);
-          }
-
           .visual-title {
             margin-top: 16px;
             font-size: clamp(29px, 8.2vw, 36px);
@@ -811,12 +753,6 @@ export default function Entrada() {
             line-height: 1;
           }
 
-          .mobile-kicker {
-            font-size: 9px;
-            padding: 6px 8px;
-            gap: 6px;
-          }
-
           .visual-copy {
             display: none;
           }
@@ -841,7 +777,7 @@ export default function Entrada() {
             <div className="visual-content">
               <div>
                 <div className="visual-kicker">Consignado com IA</div>
-                <h1 className="visual-title">Veja quanto você pode <span>Economizar</span></h1>
+                <h1 className="visual-title">Veja quanto você pode <span style={{ color: '#00E7FF' }}>Economizar</span></h1>
                 <p className="visual-copy">
                   A ConsigAI compara seus contratos e mostra opções para pagar menos,
                   reduzir parcela ou receber dinheiro com transparência.
@@ -929,14 +865,8 @@ export default function Entrada() {
           </aside>
 
           <section className="form-panel">
+            <OnboardingBrandHeader />
             <div className="login-box">
-              <div className="mobile-top-row">
-                <div className="login-logo">
-                  <img src={loginLogo} alt="ConsigAI" />
-                </div>
-                <div className="mobile-kicker">Consignado com IA</div>
-              </div>
-
               <div className="login-kicker">Bem-vindo à ConsigAI</div>
               <h2 className="login-title">Entre para ver sua <span>Economia</span></h2>
               <p className="login-copy">
@@ -957,11 +887,9 @@ export default function Entrada() {
               </div>
 
               <p className="register-note">
-                Ainda não sabe quanto pode economizar?
+                Ainda não tem conta?
                 <br />
-                Simule com seu Extrato
-                <br />
-                <a className="consigai-cta-animated" href="#" onClick={(e) => e.preventDefault()}>Simular agora</a>
+                <a className="consigai-cta-animated" href="#" onClick={(e) => e.preventDefault()}>Simular com meu extrato</a>
               </p>
             </div>
           </section>

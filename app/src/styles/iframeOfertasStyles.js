@@ -1290,11 +1290,11 @@ export const OFFER_CARD_REDESIGN_CSS = `
     transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease !important;
     touch-action: manipulation !important;
     will-change: transform, box-shadow, border-color;
-    user-select: none !important;
-    cursor: pointer !important;
+    user-select: text;
+    cursor: pointer;
     scroll-snap-align: center;
   }
-  .offer-card * { user-select: none !important; }
+  .offer-card.selected, .offer-card.active { cursor: auto; }
   .offer-card:hover:not(.selected):not(.active) {
     transform: translateY(-3px) !important;
     border-color: #b8cef5 !important;
@@ -2743,5 +2743,36 @@ export const OFFER_CARD_REDESIGN_CSS = `
 
   @media (max-width: 540px) {
     .sticky-cta { display: none !important; }
+  }
+
+  /* intro simples — mesmo estilo do turbo-intro */
+  .offer-card .card-plain-intro {
+    margin-top: 6px;
+    color: #64748B;
+    font-size: 12px;
+    line-height: 1.35;
+    font-weight: 650;
+  }
+
+  /* info-strip unificado — altura consistente entre cards */
+  .offer-card .equilibrio-intro,
+  .offer-card .folga-intro,
+  .offer-card .refin-intro {
+    margin-top: 12px !important;
+    min-height: 54px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 12px !important;
+    border-radius: 16px !important;
+    background: #F4F8FF !important;
+    border: 1px solid #DDE8F6 !important;
+    color: #03246F !important;
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+    font-weight: 800 !important;
+  }
+  .offer-card.turbo-offer .turbo-note {
+    min-height: 54px !important;
+    align-items: center !important;
   }
 `

@@ -1,6 +1,6 @@
 ﻿import { useNavigate } from 'react-router-dom'
 import { useState, useRef, useEffect } from 'react'
-import loginLogo from '../assets/ConsigIA_logo_only_no_background.svg'
+import OnboardingBrandHeader from '../components/onboarding/OnboardingBrandHeader'
 import { FontSizeToggleFloating } from '../components/FontSizeToggle'
 
 const BENEFICIOS = [
@@ -91,7 +91,7 @@ export default function Cadastro() {
     }
     if (name === 'birth') {
       if (!value) return 'Data obrigatória'
-      if (!validateDate(value)) return 'Data inválida ou idade < 18 anos'
+      if (!validateDate(value)) return 'Data inválida ou você deve ter ao menos 18 anos'
     }
     if (name === 'phone') {
       const d = value.replace(/\D/g, '')
@@ -424,80 +424,30 @@ export default function Cadastro() {
 
         .form-panel {
           padding: 42px;
-          display: grid;
-          align-content: center;
-          overflow-y: auto;
-          scrollbar-width: none;
+          display: flex;
+          flex-direction: column;
           background:
             radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.08), transparent 36%),
             linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 100%);
         }
 
-        .form-panel::-webkit-scrollbar {
-          display: none;
-        }
-
         .form-box {
+          flex: 1;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
           width: 100%;
           max-width: 390px;
           margin: 0 auto;
+          overflow-y: auto;
+          scrollbar-width: none;
         }
 
-        .mobile-top-row {
-          display: block;
-        }
-
-        .login-logo {
-          width: 62px;
-          height: 62px;
-          display: grid;
-          place-items: center;
-          margin-bottom: 24px;
-        }
-
-        .login-logo img {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-          display: block;
-        }
-
-        .mobile-kicker {
+        .form-box::-webkit-scrollbar {
           display: none;
         }
 
-        .progress-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          gap: 18px;
-          margin-bottom: 20px;
-        }
-
-        .progress-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 8px 12px;
-          border-radius: 999px;
-          background: rgba(0, 231, 255, 0.12);
-          border: 1px solid rgba(0, 231, 255, 0.30);
-          color: var(--blue-main);
-          font-size: 11px;
-          font-weight: 950;
-          text-transform: uppercase;
-          letter-spacing: 0.09em;
-          white-space: nowrap;
-        }
-
-        .progress-pill::before {
-          content: "";
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: var(--cyan);
-          box-shadow: 0 0 10px rgba(0, 231, 255, 0.74);
-        }
 
         .progress-bar-track {
           width: 72px;
@@ -968,55 +918,6 @@ export default function Cadastro() {
             gap: 10px;
           }
 
-          .progress-header {
-            margin-bottom: 16px;
-          }
-
-          .progress-pill {
-            font-size: 10px;
-            padding: 7px 10px;
-          }
-
-          .mobile-top-row {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 14px;
-          }
-
-          .login-logo {
-            width: 52px;
-            height: 52px;
-            margin-bottom: 0;
-            flex: 0 0 auto;
-          }
-
-          .mobile-kicker {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 10px;
-            border-radius: 999px;
-            background: #F1F7FF;
-            border: 1px solid #D6E7FB;
-            color: var(--blue-main);
-            font-size: 10px;
-            font-weight: 950;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            white-space: nowrap;
-          }
-
-          .mobile-kicker::before {
-            content: "";
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--logo-blue);
-            box-shadow: 0 0 8px rgba(29, 161, 235, 0.45);
-          }
-
           .input-field {
             min-height: 50px;
             border-radius: 14px;
@@ -1102,11 +1003,6 @@ export default function Cadastro() {
             display: none;
           }
 
-          .mobile-kicker {
-            font-size: 9px;
-            padding: 6px 8px;
-            gap: 6px;
-          }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -1124,7 +1020,7 @@ export default function Cadastro() {
             <div className="side-content">
               <div>
                 <div className="side-kicker">Cadastro seguro</div>
-                <h1 className="side-title">Primeiro, vamos confirmar sua <span>identidade</span>.</h1>
+                <h1 className="side-title">Primeiro, vamos confirmar sua <span style={{ color: '#00E7FF' }}>Identidade</span></h1>
                 <p className="side-copy">
                   Usamos seus dados apenas para localizar contratos elegíveis e mostrar ofertas com clareza, segurança e transparência.
                 </p>
@@ -1220,22 +1116,8 @@ export default function Cadastro() {
           </aside>
 
           <section className="form-panel">
+            <OnboardingBrandHeader showStepBadge stepLabel="Etapa 1 de 2" stepProgress={50} />
             <div className="form-box">
-              <div className="mobile-top-row">
-                <div className="login-logo">
-                  <img src={loginLogo} alt="ConsigAI" />
-                </div>
-                <div className="mobile-kicker">Consignado com IA</div>
-              </div>
-
-              <div className="progress-header">
-                <div className="progress-pill">Etapa 1 de 2</div>
-
-                <div className="progress-bar-track">
-                  <div className="progress-bar-fill" style={{ width: '50%' }} />
-                </div>
-              </div>
-
               <div className="form-kicker">Etapa 1 — Dados pessoais</div>
 
               <form className="personal-card" onSubmit={(e) => e.preventDefault()}>
@@ -1343,7 +1225,7 @@ export default function Cadastro() {
               </div>
 
               <p className="login-note">
-                Já tem cadastro? <button type="button" onClick={() => navigate('/entrada')}>Entrar na minha conta</button>
+                Já tem conta? <button type="button" onClick={() => navigate('/entrada')}>Entrar</button>
               </p>
             </div>
           </section>

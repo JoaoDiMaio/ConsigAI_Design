@@ -242,7 +242,7 @@ function applyTurboLabels(baSection, baPill, ctaSavingLabel, turboSnapshot) {
   const isParc = turboSnapshot.label === 'Na parcela'
   const gainPrimary = baSection.querySelector('[data-label="gainPrimary"]')
   const gainSecondary = baSection.querySelector('[data-label="gainSecondary"]')
-  if (gainPrimary) gainPrimary.textContent = isParc ? 'Alivio mensal' : 'Economia no contrato'
+  if (gainPrimary) gainPrimary.textContent = isParc ? 'Alívio mensal' : 'Economia no contrato'
   if (gainSecondary) gainSecondary.textContent = isParc ? 'Economia anual' : 'Economia projetada'
   if (baPill) baPill.textContent = turboSnapshot.benefitDisplay
   if (ctaSavingLabel) ctaSavingLabel.textContent = isParc ? 'de economia mensal' : 'de economia no contrato'
@@ -312,7 +312,7 @@ function upsertPocketInsight(doc, selectedEntry, usuario, impacto, selectedThird
   const ctaSavingLabel = baSection.ownerDocument?.querySelector?.('#ctaSaving')?.parentElement?.querySelector?.('.cta-saving-label') || doc.querySelector('.cta-saving-label')
   const baHeader = baSection.querySelector('.ba-header')
   if (baTitle) {
-    baTitle.innerHTML = 'Projecao de <span class="impact-title-eco">Economia</span> Consig<span class="impact-title-ai">AI</span>'
+    baTitle.innerHTML = 'Projeção de <span class="impact-title-eco">Economia</span> Consig<span class="impact-title-ai">AI</span>'
   }
   if (baSub) baSub.textContent = turboSnapshot ? `Turbo Economia · ${turboSnapshot.label}` : 'Comparativo mensal com a oferta escolhida.'
   if (baHeader) {
@@ -387,7 +387,7 @@ function upsertSavingsReplacement(doc) {
         </span>
         <div>
           <h3 class="consigai-trust-title">Melhores ofertas</h3>
-          <p class="consigai-trust-copy">${brandNameHtml()} busca as melhores condições para você</p>
+          <p class="consigai-trust-copy">A ${brandNameHtml()} busca as melhores condições para você</p>
         </div>
       </div>
     `
@@ -651,7 +651,7 @@ function buildTurboCard(cfg, offer, idx, usuario, selectedThirdSubOffer) {
         ${opt('contract', 'No contrato', economiaContrato, 'Maior economia total')}
         ${opt('installment', 'Na parcela', economiaParcela, 'Mais folga mensal')}
       </div>
-      <div class="consigai-offer-note turbo-note"><span class="note-icon" aria-hidden="true">✓</span><p>Boa opção para quem quer economizar sem contratar novo crédito.</p></div>
+      <div class="consigai-offer-note turbo-note"><span class="note-icon" aria-hidden="true">✓</span><p>Boa opção para reduzir o custo do contrato sem contratar novo crédito.</p></div>
       ${cardDetailsBtn('turbo')}
     </div>
   `)
@@ -662,7 +662,7 @@ function buildEquilibrioCard(offer, idx, usuario, isRecommended) {
   const economiaNosContratos = fmt(offer.economiaTotal ?? (getEcoMensal(offer, usuario.parcelaAtual) * 12))
   const badge = isRecommended ? '<div class="equilibrio-status">★ Recomendado</div>' : ''
   return cardShell('equilibrio', idx, `
-    ${cardHeader('equilibrio', svgEquilibrio(idx), 'Melhor Equilíbrio', 'Dinheiro + economia', badge)}
+    ${cardHeader('equilibrio', svgEquilibrio(idx), 'Melhor equilíbrio', 'Dinheiro + economia', badge)}
     <div class="equilibrio-body">
       <h2 class="equilibrio-heading">Receba dinheiro e <span>Economize</span></h2>
       <p class="equilibrio-intro">Boa opção para quem quer dinheiro na conta, parcela menor e prazo mantido.</p>
@@ -688,7 +688,7 @@ function buildFolgaCard(offer, idx, usuario) {
   const valorNaConta = fmt(offer.creditoReceber ?? 0)
   const parcelaNova = getParcelaNova(offer, usuario.parcelaAtual)
   return cardShell('folga', idx, `
-    ${cardHeader('folga', svgFolga(idx), 'Mais Folga por Mês', 'Dinheiro + Redução de Parcela')}
+    ${cardHeader('folga', svgFolga(idx), 'Mais folga por mês', 'Dinheiro + parcela menor')}
     <div class="folga-body">
       <h2 class="folga-heading">Receba dinheiro e <span>Reduza a Parcela</span></h2>
       <p class="folga-intro">Boa opção para quem quer dinheiro na conta e mais espaço no orçamento todos os meses.</p>
@@ -716,13 +716,13 @@ function buildNovoCard(offer, idx) {
     ${cardHeader('new-contract', svgNovo(), 'Novo Contrato', 'Use sua margem livre')}
     <div class="new-contract-body">
       <h2 class="new-contract-heading">Receba dinheiro <span>na sua conta</span></h2>
-      <p class="new-contract-intro">Oferta focada em liberar valor novo, com parcela clara e prazo informado antes de continuar.</p>
+      <p class="card-plain-intro">Oferta focada em liberar valor novo, com parcela clara e prazo informado antes de continuar.</p>
       <div class="new-contract-highlight">
         <small>Valor estimado disponível</small>
         <strong>${valorEstimado}</strong>
         <span>simulação sem compromisso</span>
       </div>
-      ${cardNote('new-contract', 'i', 'Nova contratação usando margem livre. Você verá taxa, custo total e condições antes de confirmar.')}
+      ${cardNote('new-contract', 'i', 'Usa margem livre. Taxa, custo total e condições aparecem antes da confirmação.')}
       ${cardDetailsBtn('new-contract')}
     </div>
   `)
@@ -734,7 +734,7 @@ function buildRefinCard(offer, idx) {
     ${cardHeader('refin', svgRefin(idx), 'Refinanciamento', 'Use seu contrato atual')}
     <div class="refin-body">
       <h2 class="refin-heading"><span>Dinheiro ajustando seu</span><span class="refin-heading-light">contrato</span></h2>
-      <p class="refin-intro">Oferta direta para liberar valor ou reorganizar sua parcela usando um contrato existente.</p>
+      <p class="card-plain-intro">Usa contrato existente para liberar valor com comparação clara antes de confirmar.</p>
       <div class="refin-highlight">
         <small>Valor estimado disponível</small>
         <strong>${valorEstimado}</strong>
@@ -817,11 +817,11 @@ function upsertOfferCardsRedesign(cacheRef, doc, activeOffers, selectedOfferInde
       <div class="offer-card selected" id="oc0" role="button" tabindex="0" aria-selected="true">
         <div class="consigai-offer-card">
           <div class="consigai-offer-title-row">
-            <span class="consigai-offer-pill">Sem oferta disponivel</span>
+            <span class="consigai-offer-pill">Sem oferta disponível</span>
           </div>
           <div class="consigai-offer-lines consigai-offer-lines--no-min-height">
             <div class="consigai-offer-line">
-              <span class="consigai-offer-line-main blue">Nao ha oferta para este cliente no momento</span>
+              <span class="consigai-offer-line-main blue">Não há oferta para este cliente no momento</span>
               <span class="consigai-offer-line-helper">Tente novamente mais tarde.</span>
             </div>
           </div>
@@ -937,6 +937,351 @@ function syncMobileOfferSelection(cacheRef, doc, selectedOfferIndexRef, refreshS
 }
 
 // ---------------------------------------------------------------------------
+// Cards laterais desktop
+// ---------------------------------------------------------------------------
+const OFFER_UX_MAP = {
+  turbo:       { summaryLabel: 'Economia estimada',  timing: 'Pode depender da portabilidade e do retorno dos bancos envolvidos' },
+  equilibrio:  { summaryLabel: 'Economia mensal',    timing: 'Pode levar alguns dias úteis, conforme retorno dos bancos envolvidos' },
+  folga:       { summaryLabel: 'Alívio mensal',      timing: 'Prazo e condições aparecem antes da confirmação' },
+  apenas_novo: { summaryLabel: 'Você recebe',        timing: 'Até 24h úteis após assinatura e aprovação final' },
+  apenas_refin:{ summaryLabel: 'Dinheiro disponível',timing: 'Até 24h úteis após assinatura e aprovação final',
+                 warning: 'Pode alterar prazo e custo total. Você verá as condições antes de confirmar.' },
+}
+
+const WIDE_LAYOUT_CSS = `
+  .offers-desktop-layout {
+    width: min(1680px, calc(100% - 48px));
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr) 250px;
+    gap: 22px;
+    align-items: start;
+  }
+  .offers-center-content { min-width: 0; }
+  .offers-left-rail, .offers-right-rail {
+    position: sticky;
+    top: 96px;
+    display: grid;
+    gap: 16px;
+  }
+  .side-blue-card {
+    padding: 22px; border-radius: 28px; color: white;
+    background:
+      radial-gradient(circle at 88% 10%, rgba(0,231,255,0.20), transparent 34%),
+      linear-gradient(145deg, #06184E 0%, #03246F 54%, #055ECE 100%);
+    border: 1px solid rgba(0,231,255,0.20);
+    box-shadow: 0 24px 68px rgba(3,36,111,0.14);
+    overflow: hidden; position: relative;
+  }
+  .side-blue-card::after {
+    content: ""; position: absolute;
+    width: 240px; height: 240px; right: -130px; bottom: -130px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,231,255,0.20), transparent 64%);
+  }
+  .side-blue-card > * { position: relative; z-index: 1; }
+  .side-kicker {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 10px; border-radius: 999px;
+    background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.16);
+    color: #DDE8F6; font-size: 10px; font-weight: 950;
+    text-transform: uppercase; letter-spacing: .08em;
+  }
+  .side-kicker::before {
+    content: ""; width: 7px; height: 7px; border-radius: 50%;
+    background: #00E7FF; box-shadow: 0 0 10px rgba(0,231,255,.9);
+  }
+  .side-blue-card h2 {
+    margin-top: 18px; color: white;
+    font-size: 27px; line-height: .98; font-weight: 950; letter-spacing: -0.06em;
+  }
+  .side-blue-card h2 span { color: #00E7FF; }
+  .side-blue-card p {
+    margin-top: 12px; color: rgba(255,255,255,.76);
+    font-size: 12.5px; line-height: 1.45; font-weight: 650;
+  }
+  .choose-list { display: grid; gap: 10px; margin-top: 18px; }
+  .choose-row {
+    display: flex; gap: 10px; padding: 11px; border-radius: 16px;
+    background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.14);
+  }
+  .choose-icon {
+    width: 28px; height: 28px; flex: 0 0 auto;
+    display: grid; place-items: center;
+  }
+  .choose-label {
+    display: block; margin-bottom: 2px;
+    color: rgba(255,255,255,.50); font-size: 9px; font-weight: 950;
+    text-transform: uppercase; letter-spacing: .08em;
+  }
+  .choose-row strong { display: block; color: white; font-size: 12px; font-weight: 950; }
+  .choose-row span {
+    display: block; margin-top: 3px; color: rgba(255,255,255,.70);
+    font-size: 10.5px; line-height: 1.25; font-weight: 650;
+  }
+  .guide-footer {
+    margin-top: 16px; padding: 12px 14px; border-radius: 16px;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+  }
+  .guide-footer strong {
+    display: block; color: white; font-size: 11.5px; font-weight: 950;
+  }
+  .guide-footer span {
+    display: block; margin-top: 3px; color: rgba(255,255,255,.65);
+    font-size: 10.5px; line-height: 1.3; font-weight: 650;
+  }
+  .side-white-card, .sticky-summary {
+    padding: 20px; border-radius: 26px;
+    background:
+      radial-gradient(circle at 92% 8%, rgba(0,231,255,0.09), transparent 34%),
+      linear-gradient(180deg, rgba(255,255,255,.98) 0%, #FFFFFF 100%);
+    border: 1px solid #DDE8F6; box-shadow: 0 16px 38px rgba(3,36,111,0.09);
+  }
+  .side-white-card h3, .sticky-summary h3 {
+    color: #03246F; font-size: 15px; font-weight: 950;
+    text-transform: uppercase; letter-spacing: .02em;
+  }
+  .side-white-card > p, .sticky-summary > p {
+    margin-top: 6px; color: #64748B; font-size: 12px; line-height: 1.35; font-weight: 650;
+  }
+  .trust-mini-list { display: grid; gap: 10px; margin-top: 14px; }
+  .trust-mini {
+    display: flex; gap: 9px; align-items: flex-start; padding: 10px;
+    border-radius: 15px; background: #F4F8FF; border: 1px solid #DDE8F6;
+  }
+  .trust-mini b {
+    width: 20px; height: 20px; flex: 0 0 auto; border-radius: 50%;
+    display: grid; place-items: center;
+    background: #E9F8F1; border: 1px solid #BDECD7; color: #007A52; font-size: 11px;
+  }
+  .trust-mini strong { display: block; color: #03246F; font-size: 11.5px; font-weight: 950; }
+  .trust-mini span {
+    display: block; margin-top: 2px; color: #64748B;
+    font-size: 10.5px; line-height: 1.25; font-weight: 650;
+  }
+  .summary-highlight {
+    margin-top: 16px; padding: 18px; border-radius: 22px;
+    background:
+      radial-gradient(circle at 92% 8%, rgba(0,231,255,0.12), transparent 34%),
+      linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%);
+    border: 1px solid rgba(0,231,255,.32);
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+    min-height: 80px;
+  }
+  .summary-highlight small {
+    color: #055ECE; font-size: 10px; font-weight: 950;
+    letter-spacing: .08em; text-transform: uppercase;
+  }
+  .summary-highlight strong {
+    display: block; margin-top: 6px; color: #03246F;
+    font-size: 18px; font-weight: 950; line-height: 1.1;
+  }
+  .summary-list { display: grid; margin-top: 14px; }
+  .summary-row {
+    display: flex; justify-content: space-between; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid #DDE8F6;
+    color: #64748B; font-size: 12px; font-weight: 800;
+  }
+  .summary-row:last-child { border-bottom: 0; }
+  .summary-row strong { color: #03246F; font-weight: 950; text-align: right; }
+  .summary-row.green strong { color: #007A52; }
+  .summary-cta {
+    width: 100%; min-height: 52px; margin-top: 16px; border: 0; border-radius: 17px;
+    background: linear-gradient(145deg, #055ECE, #03246F); color: white;
+    font-weight: 950; font-size: 14px; font-family: inherit; cursor: pointer;
+    box-shadow: 0 18px 38px rgba(5,94,206,.22);
+  }
+  .summary-warning {
+    margin-top: 12px; padding: 11px 12px; border-radius: 14px;
+    background: #F4F8FF; border: 1px solid #DDE8F6;
+    color: #64748B; font-size: 11px; line-height: 1.35; font-weight: 650;
+  }
+  .side-blue-card.compact { padding: 20px; }
+  .side-blue-card.compact h2 { font-size: 24px; }
+  .summary-secondary {
+    width: 100%; min-height: 48px; margin-top: 10px; border-radius: 16px;
+    border: 1px solid #BFD4F6; background: #FFFFFF; color: #055ECE;
+    font-weight: 950; font-size: 14px; font-family: inherit; cursor: pointer;
+  }
+  @media (max-width: 1500px) {
+    .offers-desktop-layout { grid-template-columns: minmax(0, 1fr) 250px; }
+    .offers-left-rail { display: none; }
+  }
+  @media (max-width: 1100px) {
+    .offers-desktop-layout { display: block; width: 100%; }
+    .offers-left-rail, .offers-right-rail { display: none; }
+  }
+`
+
+function DecisionGuideCard() {
+  return (
+    <section className="side-blue-card">
+      <div className="side-kicker">Guia ConsigAI</div>
+      <h2>Como escolher sua <span>oferta</span></h2>
+      <p>Em três passos simples, compare prioridade, impacto no bolso e condições antes de avançar.</p>
+      <div className="choose-list">
+        <div className="choose-row">
+          <span className="choose-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="guideOne" x1="28" y1="18" x2="66" y2="78" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stopColor="#FFFFFF" />
+                  <stop offset="0.45" stopColor="#A9FFD8" />
+                  <stop offset="1" stopColor="#00E7FF" />
+                </linearGradient>
+              </defs>
+              <path d="M51 18 C52.8 18 54.2 19.4 54.2 21.2 V75 C54.2 76.8 52.8 78.2 51 78.2 H43.8 C42 78.2 40.6 76.8 40.6 75 V33.8 L33.6 38.2 C32 39.2 30 38.7 29.1 37.1 L25.9 31.8 C25 30.3 25.5 28.3 27.1 27.4 L42.5 18.6 C43.1 18.2 43.9 18 44.7 18 H51Z" fill="url(#guideOne)" />
+            </svg>
+          </span>
+          <div>
+            <span className="choose-label">Prioridade</span>
+            <strong>Escolha o que pesa mais agora</strong>
+            <span>Receber dinheiro, reduzir o custo total ou aliviar a parcela do mês.</span>
+          </div>
+        </div>
+        <div className="choose-row">
+          <span className="choose-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="guideTwo" x1="26" y1="18" x2="70" y2="78" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stopColor="#FFFFFF" />
+                  <stop offset="0.45" stopColor="#A9FFD8" />
+                  <stop offset="1" stopColor="#00E7FF" />
+                </linearGradient>
+              </defs>
+              <path d="M27 75 C27 72.8 27.8 70.9 29.3 69.4 L50.8 48.2 C55.4 43.6 57.4 40.5 57.4 36.7 C57.4 32.2 54.1 29.3 49 29.3 C44.1 29.3 40.7 32.1 39.5 36.6 C39 38.5 37.2 39.7 35.3 39.2 L29.1 37.8 C27.1 37.3 25.9 35.3 26.5 33.3 C29.2 23.7 37.6 18 49.4 18 C63.2 18 72.4 25.4 72.4 36.2 C72.4 43.7 68.9 49.4 61.5 56.3 L48.6 68.3 H69.6 C71.6 68.3 73.2 69.9 73.2 71.9 V75 C73.2 77 71.6 78.6 69.6 78.6 H30.6 C28.6 78.6 27 77 27 75Z" fill="url(#guideTwo)" />
+            </svg>
+          </span>
+          <div>
+            <span className="choose-label">Impacto no bolso</span>
+            <strong>Compare o antes e depois</strong>
+            <span>Veja parcela, sobra mensal, margem livre e economia estimada.</span>
+          </div>
+        </div>
+        <div className="choose-row">
+          <span className="choose-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="guideThree" x1="25" y1="18" x2="72" y2="78" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stopColor="#FFFFFF" />
+                  <stop offset="0.45" stopColor="#A9FFD8" />
+                  <stop offset="1" stopColor="#00E7FF" />
+                </linearGradient>
+              </defs>
+              <path d="M48.6 79 C36.2 79 27.2 73.2 24.4 63.6 C23.8 61.6 25 59.6 27 59.1 L33.4 57.6 C35.2 57.2 37 58.2 37.7 60 C39.2 64.5 42.8 67.2 48.2 67.2 C54.2 67.2 58.2 64.1 58.2 59.2 C58.2 54 54.4 51.3 47.3 51.3 H42.5 C40.6 51.3 39.1 49.8 39.1 47.9 V42.8 C39.1 40.9 40.6 39.4 42.5 39.4 H47.1 C53.5 39.4 56.9 36.8 56.9 32.3 C56.9 28.1 53.5 25.5 48.4 25.5 C43.5 25.5 40.2 27.9 38.8 32 C38.2 33.8 36.4 34.8 34.6 34.4 L28.4 32.9 C26.4 32.4 25.2 30.4 25.9 28.4 C28.9 19.7 37.2 14.5 48.8 14.5 C62.7 14.5 72 21 72 31.5 C72 38.5 68.3 43.8 62.1 46.2 C69.4 48.7 73.4 54.3 73.4 61.8 C73.4 72.4 63.6 79 48.6 79Z" fill="url(#guideThree)" />
+            </svg>
+          </span>
+          <div>
+            <span className="choose-label">Condições</span>
+            <strong>Entenda antes de confirmar</strong>
+            <span>Confira taxa, prazo, custo total e próximos passos. Nada é contratado sem sua confirmação.</span>
+          </div>
+        </div>
+      </div>
+      <div className="guide-footer">
+        <strong>Você decide no final</strong>
+        <span>A ConsigAI compara por você, mas nenhuma contratação acontece sem sua confirmação.</span>
+      </div>
+    </section>
+  )
+}
+
+function TrustMiniCard() {
+  return (
+    <section className="side-white-card">
+      <h3>A ConsigAI compara</h3>
+      <p>Recomendação baseada em economia, parcela, prazo e custo total.</p>
+      <div className="trust-mini-list">
+        <div className="trust-mini">
+          <b>✓</b>
+          <div>
+            <strong>Sem compromisso</strong>
+            <span>Você decide antes de avançar.</span>
+          </div>
+        </div>
+        <div className="trust-mini">
+          <b>✓</b>
+          <div>
+            <strong>Dados protegidos</strong>
+            <span>Segurança e transparência.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function StickyOfferSummary({ selectedOffer }) {
+  if (!selectedOffer) return null
+
+  const offerName =
+    selectedOffer.name || selectedOffer.title || selectedOffer.nome ||
+    selectedOffer.label || 'Oferta selecionada'
+
+  const primaryValue =
+    selectedOffer.valorPrincipal || selectedOffer.valorReceber ||
+    selectedOffer.creditoReceber || selectedOffer.economiaTotal ||
+    selectedOffer.valor || selectedOffer.primaryValue || 'Ver oferta'
+
+  const newInstallment =
+    selectedOffer.parcelaNova || selectedOffer.novaParcela ||
+    selectedOffer.installment || null
+
+  const monthlySaving =
+    selectedOffer.economiaMensal || selectedOffer.reducaoMensal ||
+    selectedOffer.economiaParcela || null
+
+  return (
+    <section className="sticky-summary">
+      <h3>Oferta escolhida</h3>
+      <p>Resumo fixo para você decidir sem perder o contexto.</p>
+
+      <div className="summary-highlight">
+        <small>Selecionada</small>
+        <strong>{offerName}</strong>
+      </div>
+
+      <div className="summary-list">
+        <div className="summary-row">
+          <span>Valor principal</span>
+          <strong>{primaryValue}</strong>
+        </div>
+
+        {monthlySaving && (
+          <div className="summary-row green">
+            <span>Economia mensal</span>
+            <strong>{monthlySaving}</strong>
+          </div>
+        )}
+
+        {newInstallment && (
+          <div className="summary-row">
+            <span>Parcela nova</span>
+            <strong>{newInstallment}</strong>
+          </div>
+        )}
+
+        <div className="summary-row">
+          <span>Próximo passo</span>
+          <strong>Revisar</strong>
+        </div>
+      </div>
+
+    </section>
+  )
+}
+
+function ControlMiniCard() {
+  return (
+    <section className="side-blue-card compact">
+      <div className="side-kicker">Você no controle</div>
+      <h2>Entenda antes de <span>contratar</span></h2>
+      <p>Nenhuma contratação é feita sem sua confirmação. A ConsigAI mostra taxas, prazos e custos antes do próximo passo.</p>
+    </section>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Componente principal
 // ---------------------------------------------------------------------------
 export default function OfertasNova() {
@@ -949,6 +1294,9 @@ export default function OfertasNova() {
   const [ctaBar, setCtaBar] = useState(null) // { name, saving, savingLabel } | null
   const setCtaBarRef = useRef(setCtaBar)
   setCtaBarRef.current = setCtaBar
+  const [selectedEntry, setSelectedEntry] = useState(null)
+  const setSelectedEntryRef = useRef(setSelectedEntry)
+  setSelectedEntryRef.current = setSelectedEntry
   const iframeRef = useRef(null)
   const selectedOfferIndexRef = useRef(0)
   const selectedThirdSubOfferRef = useRef('contract')
@@ -1042,6 +1390,7 @@ export default function OfertasNova() {
           savingLabel: ctaSavingLabel?.textContent || '',
         })
       }
+      setSelectedEntryRef.current(hasNoOffer ? null : selectedEntry)
     }
 
     const refreshSelectedOfferUi = (doc, idx) => {
@@ -1274,6 +1623,28 @@ export default function OfertasNova() {
     )
   }
 
+  const handleContinue = () => {
+    const selected = activeOffers[selectedOfferIndexRef.current]
+    if (!selected) return
+    const contractState = buildContractState(selected, usuario, selectedThirdSubOfferRef.current)
+    navigate('/contratacao', contractState ? { state: contractState } : undefined)
+  }
+
+  const selectedOffer = selectedEntry
+    ? {
+        name: selectedEntry.config?.ctaName || selectedEntry.config?.pill,
+        creditoReceber: selectedEntry.data?.creditoReceber
+          ? fmt(selectedEntry.data.creditoReceber)
+          : null,
+        parcelaNova: selectedEntry.data && usuario
+          ? getParcelaNova(selectedEntry.data, usuario.parcelaAtual)
+          : null,
+        economiaMensal: selectedEntry.data && usuario
+          ? fmt(Math.max(0, getEcoMensal(selectedEntry.data, usuario.parcelaAtual)))
+          : null,
+      }
+    : null
+
   return (
     <div style={{ ...appPageStyle, minHeight: '100svh' }}>
       {loading && <div className="offers-loading-bar" aria-hidden="true" />}
@@ -1302,19 +1673,31 @@ export default function OfertasNova() {
           ]}
         />
       )}
-      <iframe
-        ref={iframeRef}
-        title="Ofertas"
-        src="/Ofertas_ConsigAI.html"
-        style={{
-          width: '100%',
-          height: '0',
-          border: 'none',
-          display: 'block',
-          background: 'transparent',
-          overflow: 'hidden',
-        }}
-      />
+      <style>{WIDE_LAYOUT_CSS}</style>
+      <div className="offers-desktop-layout">
+        <aside className="offers-left-rail">
+          <DecisionGuideCard />
+        </aside>
+        <main className="offers-center-content">
+          <iframe
+            ref={iframeRef}
+            title="Ofertas"
+            src="/Ofertas_ConsigAI.html"
+            style={{
+              width: '100%',
+              height: '0',
+              border: 'none',
+              display: 'block',
+              background: 'transparent',
+              overflow: 'hidden',
+            }}
+          />
+        </main>
+        <aside className="offers-right-rail">
+          <StickyOfferSummary selectedOffer={selectedOffer} />
+          <ControlMiniCard />
+        </aside>
+      </div>
       {ctaBar && (
         <div style={{
           position: 'fixed',

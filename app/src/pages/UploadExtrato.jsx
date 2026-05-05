@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useRef } from 'react'
-import loginLogo from '../assets/ConsigIA_logo_only_no_background.svg'
+import OnboardingBrandHeader from '../components/onboarding/OnboardingBrandHeader'
 import { FontSizeToggleFloating } from '../components/FontSizeToggle'
 
 const ACCEPT = '.pdf,.jpg,.jpeg,.png,.webp'
@@ -242,58 +242,23 @@ export default function UploadExtrato() {
 
         .form-panel {
           padding: 42px;
-          display: grid;
-          align-content: center;
-          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
           background:
             radial-gradient(circle at 92% 8%, rgba(0,231,255,0.08), transparent 36%),
             white;
         }
 
-        .form-box { width: 100%; max-width: 390px; margin: 0 auto; }
-
-        .mobile-top-row { display: block; }
-        .mobile-kicker { display: none; }
-
-        .login-logo {
-          width: 62px;
-          height: 62px;
-          display: grid;
-          place-items: center;
-          margin-bottom: 24px;
-        }
-
-        .login-logo img { width: 100%; height: 100%; object-fit: contain; }
-
-        .progress-header {
+        .form-box {
+          flex: 1;
+          min-height: 0;
           display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 24px;
-        }
-
-        .progress-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 8px 12px;
-          border-radius: 999px;
-          background: rgba(0,231,255,0.08);
-          border: 1px solid rgba(0,231,255,0.22);
-          color: var(--blue-dark);
-          font-size: 11px;
-          font-weight: 950;
-          text-transform: uppercase;
-          letter-spacing: 0.09em;
-          white-space: nowrap;
-        }
-
-        .progress-pill::before {
-          content: "";
-          width: 7px; height: 7px;
-          border-radius: 50%;
-          background: var(--cyan);
-          box-shadow: 0 0 10px rgba(0,231,255,0.74);
+          flex-direction: column;
+          justify-content: center;
+          width: 100%;
+          max-width: 390px;
+          margin: 0 auto;
+          overflow-y: auto;
         }
 
         .progress-bar-track {
@@ -526,7 +491,7 @@ export default function UploadExtrato() {
           }
 
           .side-panel { order: 2; min-height: 220px; padding: 28px; }
-          .form-panel { order: 1; padding: 28px; }
+          .form-panel { order: 1; padding: 30px 28px; }
           .side-title { font-size: clamp(24px, 6vw, 36px); }
         }
 
@@ -534,28 +499,6 @@ export default function UploadExtrato() {
           .register-page { padding: 12px; }
           .register-shell { border-radius: 22px; }
           .side-panel, .form-panel { padding: 18px; }
-          .mobile-top-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 16px;
-          }
-          .login-logo { width: 44px; height: 44px; margin-bottom: 0; flex: 0 0 auto; }
-          .mobile-kicker {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 10px;
-            border-radius: 999px;
-            background: #F1F7FF;
-            border: 1px solid #D6E7FB;
-            color: var(--blue-main);
-            font-size: 10px;
-            font-weight: 950;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-          }
         }
       `}</style>
 
@@ -565,8 +508,8 @@ export default function UploadExtrato() {
           <aside className="side-panel">
             <div className="side-content">
               <div>
-                <div className="side-kicker">Cadastro seguro</div>
-                <h1 className="side-title">Seu extrato é a chave para <span>economizar</span>.</h1>
+                <div className="side-kicker">Envio seguro</div>
+                <h1 className="side-title">Seu extrato é a chave para <span style={{ color: '#00E7FF' }}>Economizar</span></h1>
                 <p className="side-copy">
                   Com seu contracheque ou histórico de consignado, a ConsigAI identifica contratos elegíveis e compara as melhores condições do mercado.
                 </p>
@@ -599,21 +542,8 @@ export default function UploadExtrato() {
           </aside>
 
           <section className="form-panel">
+            <OnboardingBrandHeader showStepBadge stepLabel="Etapa 2 de 2" stepProgress={100} />
             <div className="form-box">
-              <div className="mobile-top-row">
-                <div className="login-logo">
-                  <img src={loginLogo} alt="ConsigAI" />
-                </div>
-                <div className="mobile-kicker">Etapa 2 de 2</div>
-              </div>
-
-              <div className="progress-header">
-                <div className="progress-pill">Etapa 2 de 2</div>
-                <div className="progress-bar-track">
-                  <div className="progress-bar-fill" style={{ width: '100%' }} />
-                </div>
-              </div>
-
               <div className="form-kicker">Documentos</div>
               <h2 className="form-title">Envie seu <span>extrato</span></h2>
               <p className="form-sub">
