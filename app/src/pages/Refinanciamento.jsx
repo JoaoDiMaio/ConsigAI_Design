@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
@@ -202,31 +202,33 @@ export default function Refinanciamento() {
   return (
     <>
       <style>{`
-        :root { --blue-dark:#03246F; --blue-main:#055ECE; --logo-blue:#1DA1EB; --cyan:#00E7FF; --green:#007A52; --green-soft:#E9F8F1; --green-line:#BDECD7; --muted:#64748B; --line:#DDE8F6; --blue-soft:#F4F8FF; --shadow:0 18px 48px rgba(3,36,111,.08); }
+        :root { 
+          --blue-dark:#002D6E; 
+          --blue-main:#043B8B; 
+          --logo-blue:#1DA1EB; 
+          --cyan:#00E7FF; 
+          --green:#007A52; 
+          --green-soft:#F0FFF8; 
+          --green-line:#BDECD7; 
+          --muted:#64748B; 
+          --line:#DDE8F6; 
+          --blue-soft:#F8FBFF; 
+          --shadow:0 18px 48px rgba(3,36,111,.08); 
+        }
         .rf-page * { box-sizing:border-box; margin:0; padding:0; }
         .rf-page { min-height:100vh; position:relative; overflow-x:hidden; padding-bottom:48px; background:transparent; }
         .rf-shell { width:calc(100% - 96px); max-width:1280px; margin:0 auto; position:relative; z-index:1; padding-top:30px; }
         .main-layout { display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:30px; align-items:start; }
         .sidebar { display:grid; gap:20px; align-content:start; }
-.offer-flow-card { padding:22px; border-radius:30px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); position:relative; overflow:hidden; }
-        .offer-flow-card::before { content:none; }
-        .offer-flow-card > * { position:relative; z-index:1; }
+        .offer-flow-card { padding:22px; border-radius:30px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); position:relative; overflow:hidden; }
         .offer-flow-header { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
         .offer-flow-header h2 { color:var(--blue-dark); font-size:20px; line-height:1.05; font-weight:900; letter-spacing:-.04em; }
         .offer-flow-header p { margin-top:5px; color:var(--muted); font-size:12px; line-height:1.35; font-weight:600; }
-        .offer-flow-badge { padding:8px 11px; border-radius:999px; background:rgba(0,231,255,.12); border:1px solid rgba(0,231,255,.30); color:var(--blue-main); font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; }
         .scenario-list { display:grid; gap:16px; }
         .scenario-card { --card-accent: var(--blue-dark); --card-glow: rgba(3,36,111,.12); padding:22px; border-radius:28px; background:#fff; border:1px solid var(--line); box-shadow:0 16px 38px rgba(3,36,111,.07); position:relative; overflow:hidden; cursor:pointer; }
         .scenario-card::before { content:''; position:absolute; inset:0 0 auto 0; height:5px; background:var(--card-accent); }
         .scenario-card::after { content:''; position:absolute; top:0; right:0; width:220px; height:130px; background:radial-gradient(circle at 100% 0%, var(--card-glow), transparent 70%); pointer-events:none; }
         .scenario-card.selected { border:2px solid var(--card-accent); background:#fff; }
-        .scenario-card.selected, .scenario-card.selected * { user-select:text; }
-        .scenario-card.selected .scenario-header,
-        .scenario-card.selected .scenario-metrics,
-        .scenario-card.selected .contract-tags,
-        .scenario-card.selected .tag-list,
-        .scenario-card.selected .tag { cursor:text; }
-        .scenario-card.selected .scenario-details-btn { cursor:pointer; user-select:none; }
         .scenario-card.green { --card-accent: var(--blue-main); --card-glow: rgba(5,94,206,.14); }
         .scenario-card.gold { --card-accent: var(--green); --card-glow: rgba(0,122,82,.12); }
         .scenario-header { display:grid; grid-template-columns:44px 1fr; gap:14px; align-items:start; }
@@ -248,17 +250,11 @@ export default function Refinanciamento() {
         .scenario-details-btn { min-height:36px; padding:0 12px; border-radius:13px; border:1px solid color-mix(in srgb, var(--card-accent) 28%, #ffffff); background:#fff; color:var(--card-accent); font-size:12px; font-weight:900; cursor:pointer; }
         .compact-contract-list { display:grid; gap:12px; margin-top:8px; }
         .compact-refin-card { padding:16px; border-radius:21px; background:#fff; border:1px solid var(--line); box-shadow:none; position:relative; overflow:hidden; cursor:auto; }
-        .compact-refin-card h3,
-        .compact-refin-card small,
-        .compact-refin-card span,
-        .compact-refin-card strong,
-        .compact-refin-card p,
-        .compact-refin-card b { cursor:text; user-select:text; }
         .compact-refin-card::before { content:''; position:absolute; inset:0 0 auto 0; height:4px; background:linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--cyan), var(--green)); }
         .compact-header { display:flex; justify-content:space-between; align-items:center; gap:10px; padding-bottom:10px; border-bottom:1px solid var(--line); }
         .compact-header small { color:var(--blue-main); font-size:10px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
         .compact-header h3 { margin-top:2px; color:var(--blue-dark); font-size:16px; line-height:1; font-weight:900; letter-spacing:-.04em; }
-        .money-highlight { margin-top:10px; padding:10px 12px; border-radius:13px; background:rgba(233,248,241,.62); border:1px solid var(--green-line); display:flex; align-items:center; justify-content:space-between; gap:12px; }
+        .money-highlight { margin-top:10px; padding:10px 12px; border-radius:13px; background:var(--green-soft); border:1px solid var(--green-line); display:flex; align-items:center; justify-content:space-between; gap:12px; }
         .money-copy { min-width:0; }
         .money-highlight span { display:block; color:var(--green); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
         .money-highlight small { display:block; margin-top:2px; color:var(--muted); font-size:10px; line-height:1.25; font-weight:700; }
@@ -285,7 +281,7 @@ export default function Refinanciamento() {
         @keyframes consigaiDetailsShine { 0% { transform:translateX(-120%) skewX(-18deg); } 100% { transform:translateX(120%) skewX(-18deg); } }
         .primary-cta { width:100%; min-height:54px; border:0; border-radius:21px; background:linear-gradient(145deg, var(--blue-main), var(--blue-dark)); color:#fff; font-size:15px; font-weight:900; cursor:pointer; }
         .secondary-cta,.back-offers-cta { width:100%; min-height:50px; margin-top:12px; border-radius:21px; border:1px solid #BFD4F6; background:#fff; color:var(--blue-main); font-size:14px; font-weight:900; cursor:pointer; }
-        .back-offers-cta { min-height:46px; margin-top:10px; border-radius:13px; border:1px solid #BFD4F6; background:#fff; color:#055ECE; font-size:14px; font-weight:900; box-shadow:0 8px 20px rgba(30,60,180,.12); }
+        .back-offers-cta { min-height:46px; margin-top:10px; border-radius:13px; border:1px solid #BFD4F6; background:#fff; color:var(--blue-main); font-size:14px; font-weight:900; box-shadow:0 8px 20px rgba(4,59,139,.12); }
         .safe-note { margin-top:12px; color:var(--muted); text-align:center; font-size:11px; font-weight:600; }
         @media (max-width:1100px){ .main-layout{ grid-template-columns:1fr; } .sidebar{ display:grid; grid-template-columns:1fr 1fr; gap:16px; } }
         @media (max-width:900px){ .rf-shell{ width:calc(100% - 32px); } .scenario-metrics,.salary-grid,.sidebar{ grid-template-columns:1fr; } }
@@ -449,14 +445,14 @@ export default function Refinanciamento() {
                           width: '100%',
                           minHeight: 46,
                           marginTop: 8,
-                          borderRadius: 14,
+                          borderRadius: 13,
                           border: 0,
-                          background: 'linear-gradient(145deg, #055ECE, #03246F)',
+                          background: 'linear-gradient(145deg, #043B8B, #002D6E)',
                           color: '#fff',
-                          fontSize: 13.5,
+                          fontSize: 13,
                           fontWeight: 900,
                           cursor: 'pointer',
-                          boxShadow: '0 8px 20px rgba(30,60,180,.3)',
+                          boxShadow: '0 8px 20px rgba(4,59,139,.3)',
                         }}
                       >
                         Baixar recibo da simulação

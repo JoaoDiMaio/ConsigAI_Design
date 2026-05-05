@@ -9,18 +9,18 @@ export default function Entrada() {
     <>
       <style>{`
         :root {
-          --blue-dark: #03246F;
-          --blue-main: #055ECE;
-          --logo-blue: #1DA1EB;
-          --cyan: #00E7FF;
-          --green: #007A52;
-          --green-soft: #E9F8F1;
+          --blue-dark: #002D6E;
+          --blue-main: #043B8B;
+          --logo-blue: #2454D6;
+          --cyan: #1DA1EB;
+          --green: #00A86B;
+          --green-soft: #F0FFF8;
           --green-line: #BDECD7;
           --muted: #64748B;
           --line: #DDE8F6;
-          --blue-soft: #F4F8FF;
+          --blue-soft: #F4F9FF;
           --white: #FFFFFF;
-          --shadow: 0 24px 68px rgba(3, 36, 111, 0.13);
+          --shadow: 0 24px 68px rgba(3, 36, 111, 0.12);
           --soft-shadow: 0 16px 38px rgba(3, 36, 111, 0.08);
         }
 
@@ -114,7 +114,7 @@ export default function Entrada() {
           position: absolute;
           inset: 0 0 auto 0;
           height: 5px;
-          background: linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--cyan), var(--green));
+          background: linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--green));
           z-index: 3;
         }
 
@@ -406,7 +406,7 @@ export default function Entrada() {
           min-height: 54px;
           width: 100%;
           padding: 0 16px;
-          border-radius: 17px;
+          border-radius: 21px;
           border: 1px solid var(--line);
           background: #F8FBFF;
           color: var(--blue-dark);
@@ -430,7 +430,7 @@ export default function Entrada() {
           width: 100%;
           min-height: 56px;
           border: 0;
-          border-radius: 18px;
+          border-radius: 21px;
           background: linear-gradient(145deg, var(--blue-main), var(--blue-dark));
           color: white;
           font-size: 15px;
@@ -441,9 +441,9 @@ export default function Entrada() {
         .secondary-cta {
           width: 100%;
           min-height: 54px;
-          border-radius: 18px;
-          border: 1px solid #BFD4F6;
-          background: white;
+          border-radius: 21px;
+          border: 1px solid #DDE8F6;
+          background: transparent;
           color: var(--blue-main);
           font-size: 15px;
           font-weight: 950;

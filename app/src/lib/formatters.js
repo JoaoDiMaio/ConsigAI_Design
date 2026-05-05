@@ -5,9 +5,9 @@ export { fmt, fmtDec } from './offerUtils'
 
 /** Extrai número de uma string BRL: "R$ 1.234,56" → 1234.56 */
 export const parseMoney = (value) => {
-  const match = String(value ?? '').match(/[\d.,]+/)
-  if (!match) return 0
-  return parseFloat(match[0].replace(/\./g, '').replace(',', '.')) || 0
+  const matches = String(value ?? '').match(/[\d.,]+/g)
+  if (!matches || matches.length === 0) return 0
+  return parseFloat(matches[matches.length - 1].replace(/\./g, '').replace(',', '.')) || 0
 }
 
 /** Honorífico contextual: "Carlos Silva" → "Sr. Carlos" */

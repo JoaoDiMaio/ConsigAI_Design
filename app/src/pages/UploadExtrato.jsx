@@ -74,14 +74,14 @@ export default function UploadExtrato() {
     <>
       <style>{`
         :root {
-          --blue-dark: #03246F;
-          --blue-main: #055ECE;
-          --logo-blue: #1DA1EB;
-          --cyan: #00E7FF;
-          --green: #007A52;
+          --blue-dark: #002D6E;
+          --blue-main: #043B8B;
+          --logo-blue: #2454D6;
+          --cyan: #1DA1EB;
+          --green: #00A86B;
           --muted: #64748B;
           --line: #DDE8F6;
-          --shadow: 0 24px 68px rgba(3, 36, 111, 0.13);
+          --shadow: 0 24px 68px rgba(3, 36, 111, 0.12);
         }
 
         .register-page * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -118,7 +118,7 @@ export default function UploadExtrato() {
           position: absolute;
           inset: 0 0 auto 0;
           height: 5px;
-          background: linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--cyan), var(--green));
+          background: linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--green));
           z-index: 3;
         }
 
@@ -463,8 +463,8 @@ export default function UploadExtrato() {
           background: linear-gradient(145deg, var(--blue-main), var(--blue-dark));
           color: white;
           font-size: 15px;
-          font-weight: 950;
-          box-shadow: 0 18px 38px rgba(5,94,206,0.24);
+          font-weight: 900;
+          box-shadow: 0 16px 32px rgba(4, 59, 139, 0.22);
           font-family: inherit;
           transition: transform .18s ease, filter .18s ease;
         }
@@ -476,11 +476,11 @@ export default function UploadExtrato() {
           width: 100%;
           min-height: 54px;
           border-radius: 18px;
-          border: 1px solid #BFD4F6;
-          background: white;
+          border: 1px solid #DDE8F6;
+          background: transparent;
           color: var(--blue-main);
           font-size: 15px;
-          font-weight: 950;
+          font-weight: 900;
           font-family: inherit;
         }
 
@@ -535,6 +535,13 @@ export default function UploadExtrato() {
                   <div>
                     <strong>Uso exclusivo para análise</strong>
                     <span>Seus documentos são usados apenas para localizar suas melhores ofertas.</span>
+                  </div>
+                </div>
+                <div className="info-card" style={{ background: 'rgba(0, 231, 255, 0.1)', borderColor: 'rgba(0, 231, 255, 0.2)' }}>
+                  <div className="info-card-icon">⚡</div>
+                  <div>
+                    <strong style={{ color: '#00E7FF' }}>O que acontece agora?</strong>
+                    <span>Nossa IA vai ler seu extrato em segundos. Buscamos apenas os melhores contratos para você.</span>
                   </div>
                 </div>
               </div>

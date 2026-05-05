@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
@@ -149,10 +149,11 @@ export default function Portabilidade() {
   const d = stateData[mode]
   const portContracts = getPortContracts(mode, d.newInstallment)
 
+  const salarioBase = 2200
   const parcelaAntes = 550
   const parcelaDepois = parseMoney(d.newInstallment)
-  const liquidoAntes = 2200 - parcelaAntes
-  const liquidoDepois = 2200 - parcelaDepois
+  const liquidoAntes = salarioBase - parcelaAntes
+  const liquidoDepois = salarioBase - parcelaDepois
   const benefit = `${d.headlineValue}${d.headlineSuffix ? ` ${d.headlineSuffix}` : ''}`
 
   const handleGoContratacao = () => {
@@ -198,53 +199,53 @@ export default function Portabilidade() {
         .port-root{max-width:1280px;margin:0 auto;padding:26px 24px 48px}
         .main-layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:30px}
         .card{border:1px solid #dde8f6;border-radius:28px;background:#fff;box-shadow:0 16px 38px rgba(3,36,111,.075)}
-.flow{padding:22px;border-radius:34px;position:relative;overflow:hidden;background:#fff;box-shadow:0 22px 58px rgba(3,36,111,.11)}
-        .flow:before{content:'';position:absolute;inset:0 0 auto 0;height:5px;background:linear-gradient(90deg,#055ece,#1da1eb,#00e7ff,#007a52)}
+        .flow{padding:22px;border-radius:34px;position:relative;overflow:hidden;background:#fff;box-shadow:0 22px 58px rgba(3,36,111,.11)}
+        .flow:before{content:'';position:absolute;inset:0 0 auto 0;height:5px;background:linear-gradient(90deg,#043B8B,#2454D6,#00A86B)}
         .flow > *{position:relative;z-index:1}
         .tabs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-        .tab{min-height:88px;padding:18px;border-radius:21px;border:1px solid #dde8f6;background:radial-gradient(circle at 92% 8%,rgba(29,161,235,.1),transparent 34%),linear-gradient(180deg,#fff,#f8fbff);text-align:center;display:grid;place-items:center;gap:5px;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 16px 38px rgba(3,36,111,.075)}
-        .tab:before{content:'';position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,#055ece,#1da1eb,#00e7ff);opacity:.55}
-        .tab.active{border-color:rgba(0,231,255,.58);box-shadow:0 22px 50px rgba(3,36,111,.12);background:radial-gradient(circle at 92% 8%,rgba(0,231,255,.17),transparent 34%),linear-gradient(180deg,#fff,#f8fbff)}
-        .tab.active:before{opacity:1;background:linear-gradient(90deg,#055ece,#1da1eb,#00e7ff,#007a52)}
-        .tab strong{font-size:16px;font-weight:900}
+        .tab{min-height:88px;padding:18px;border-radius:21px;border:1px solid #dde8f6;background:radial-gradient(circle at 92% 8%,rgba(4,59,139,.06),transparent 34%),linear-gradient(180deg,#fff,#f8fbff);text-align:center;display:grid;place-items:center;gap:5px;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 12px 32px rgba(3,36,111,.05)}
+        .tab:before{content:'';position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,#043B8B,#2454D6,#00A86B);opacity:.55}
+        .tab.active{border-color:rgba(36,84,214,.5);box-shadow:0 16px 40px rgba(4,59,139,.12);background:radial-gradient(circle at 92% 8%,rgba(36,84,214,.12),transparent 34%),linear-gradient(180deg,#fff,#f8fbff)}
+        .tab.active:before{opacity:1;background:linear-gradient(90deg,#043B8B,#2454D6,#00A86B)}
+        .tab strong{font-size:16px;font-weight:900;color:#002D6E}
         .tab span{font-size:12px;color:#64748b}
         .strategy-icon{display:inline-flex;align-items:flex-end;justify-content:center;gap:4px;min-height:16px}
-        .strategy-icon i{display:block;width:10px;border-radius:5px;background:#1da1eb;opacity:.45}
+        .strategy-icon i{display:block;width:10px;border-radius:5px;background:#2454D6;opacity:.45}
         .strategy-icon i:nth-child(1){height:18px;opacity:1}
         .strategy-icon i:nth-child(2){height:14px;opacity:.9}
         .strategy-icon i:nth-child(3){height:11px;opacity:.8}
         .strategy-icon i:nth-child(4){height:8px;opacity:.72}
         .strategy-icon i:nth-child(5){height:6px;opacity:.62}
-        .tab.active .strategy-icon i{background:#055ece;opacity:.95}
+        .tab.active .strategy-icon i{background:#043B8B;opacity:.95}
         .strategy-icon.flat i{height:8px !important;opacity:.9}
         .offer{padding:22px;background:#fff}
-        .compare{display:grid;grid-template-columns:1fr 56px 1fr;gap:12px;align-items:center;padding:16px;border-radius:21px;border:1px solid #dde8f6;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:0 12px 28px rgba(3,36,111,.055)}
+        .compare{display:grid;grid-template-columns:1fr 56px 1fr;gap:12px;align-items:center;padding:16px;border-radius:21px;border:1px solid #dde8f6;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:0 10px 24px rgba(3,36,111,.045)}
         .pbox{padding:14px;border-radius:13px;border:1px solid #dde8f6;background:rgba(244,248,255,.72)}
         .pbox small{display:block;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#64748b}
         .pbox strong{display:block;margin-top:6px;font-size:24px;font-weight:800;letter-spacing:-.06em}
         .old strong{color:#b00020;text-decoration:line-through}
-        .new{background:rgba(233,248,241,.6);border-color:#bdecd7}
-        .new strong{color:#007a52}
-        .arrow{width:38px;height:38px;border-radius:999px;display:grid;place-items:center;background:linear-gradient(145deg,#055ece,#1da1eb);color:#fff;font-size:18px;font-weight:900;box-shadow:0 12px 24px rgba(5,94,206,.18)}
-        .highlight{margin-top:16px;padding:22px;border-radius:21px;background:radial-gradient(circle at 92% 8%,rgba(0,122,82,.08),transparent 34%),linear-gradient(180deg,#fff,#f3fff9);border:1px solid #bdecd7;text-align:center;box-shadow:0 14px 32px rgba(3,36,111,.055)}
-        .highlight small{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#007a52}
-        .highlight strong{display:block;margin-top:9px;font-size:38px;line-height:1;font-weight:800;letter-spacing:-.075em;color:#007a52}
+        .new{background:#F0FFF8;border-color:#bdecd7}
+        .new strong{color:#007A52}
+        .arrow{width:38px;height:38px;border-radius:999px;display:grid;place-items:center;background:linear-gradient(145deg,#043B8B,#2454D6);color:#fff;font-size:18px;font-weight:900;box-shadow:0 12px 24px rgba(4,59,139,.18)}
+        .highlight{margin-top:16px;padding:22px;border-radius:21px;background:radial-gradient(circle at 92% 8%,rgba(0,168,107,.08),transparent 34%),linear-gradient(180deg,#fff,#f3fff9);border:1px solid #bdecd7;text-align:center;box-shadow:0 14px 32px rgba(3,36,111,.055)}
+        .highlight small{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#007A52}
+        .highlight strong{display:block;margin-top:9px;font-size:38px;line-height:1;font-weight:800;letter-spacing:-.075em;color:#007A52}
         .highlight span{display:block;margin-top:8px;font-size:12px;color:#64748b}
         .benefits{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
-        .benefit{padding:15px;border-radius:13px;border:1px solid #dde8f6;background:radial-gradient(circle at 92% 8%,rgba(29,161,235,.08),transparent 34%),linear-gradient(180deg,#fff,#f8fbff);box-shadow:0 10px 24px rgba(3,36,111,.045)}
+        .benefit{padding:15px;border-radius:13px;border:1px solid #dde8f6;background:radial-gradient(circle at 92% 8%,rgba(4,59,139,.06),transparent 34%),linear-gradient(180deg,#fff,#f8fbff);box-shadow:0 10px 24px rgba(3,36,111,.045)}
         .benefit small{display:block;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#64748b}
-        .benefit strong{display:block;margin-top:6px;font-size:24px;font-weight:800;color:#055ece}
+        .benefit strong{display:block;margin-top:6px;font-size:24px;font-weight:800;color:#043B8B}
         .contracts-row{margin-top:16px;padding-top:14px;border-top:1px solid #dde8f6}
         .contracts-row small{display:block;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:8px}
         .contracts-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px}
         .contracts-tags{display:flex;flex-wrap:wrap;gap:8px}
-        .contracts-tag{padding:7px 12px;border-radius:999px;background:#f4f8ff;border:1px solid #dde8f6;color:#055ece;font-size:11px;font-weight:800}
-        .details-btn{flex:0 0 auto;min-height:44px;padding:0 16px;border-radius:13px;border:1px solid #bfd4f6;background:#fff;color:#055ece;font-size:12px;font-weight:900;cursor:pointer;white-space:nowrap}
+        .contracts-tag{padding:7px 12px;border-radius:999px;background:#f4f8ff;border:1px solid #dde8f6;color:#043B8B;font-size:11px;font-weight:800}
+        .details-btn{flex:0 0 auto;min-height:44px;padding:0 16px;border-radius:13px;border:1px solid #dde8f6;background:#fff;color:#043B8B;font-size:12px;font-weight:900;cursor:pointer;white-space:nowrap}
         .actions{margin-top:20px;padding-top:16px;border-top:1px solid #dde8f6}
         .actions > button + button{margin-top:12px}
         .actions-divider{margin:16px 0;border:none;border-top:1px dashed #dde8f6}
-        .cta{width:100%;min-height:54px;border:0;border-radius:21px;background:linear-gradient(145deg,#055ece,#03246f);color:#fff;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 18px 38px rgba(5,94,206,.24)}
-        .secondary{width:100%;min-height:50px;border-radius:21px;border:1px solid #bfd4f6;background:#fff;color:#055ece;font-size:14px;font-weight:900;cursor:pointer}
+        .cta{width:100%;min-height:54px;border:0;border-radius:21px;background:linear-gradient(145deg,#043B8B,#002D6E);color:#fff;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 16px 32px rgba(4,59,139,.22)}
+        .secondary{width:100%;min-height:50px;border-radius:21px;border:1px solid #dde8f6;background:#fff;color:#043B8B;font-size:14px;font-weight:900;cursor:pointer}
         .safe{margin-top:12px;text-align:center;font-size:11px;color:#64748b;font-weight:700}
         .consigai-cta-animated{position:relative;overflow:hidden;transform:translateY(0);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background-position .35s ease,filter .18s ease;animation:consigaiDetailsFloat 3.8s ease-in-out infinite;background-size:220% 100%;background-position:0% 0%}
         .consigai-cta-animated:hover{background-position:100% 0%;animation-play-state:paused;transform:translateY(-2px) scale(1.01)!important;filter:saturate(1.05)}
@@ -256,23 +257,23 @@ export default function Portabilidade() {
         .receipt-wrap{margin-top:12px}
         .compact-contract-list{display:grid;gap:12px;margin-top:12px;margin-bottom:10px}
         .compact-refin-card{padding:16px;border-radius:21px;background:#fff;border:1px solid #dde8f6;box-shadow:none;position:relative;overflow:hidden}
-        .compact-refin-card:before{content:'';position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,#055ece,#1da1eb,#00e7ff,#007a52)}
+        .compact-refin-card:before{content:'';position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,#043B8B,#2454D6,#00A86B)}
         .compact-header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid #dde8f6}
-        .compact-header small{color:#055ece;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
-        .compact-header h3{margin-top:2px;color:#03246f;font-size:16px;line-height:1;font-weight:900;letter-spacing:-.04em}
-        .money-highlight{margin-top:10px;padding:10px 12px;border-radius:13px;background:rgba(233,248,241,.62);border:1px solid #bdecd7;display:flex;align-items:center;justify-content:space-between;gap:12px}
-        .money-copy span{display:block;color:#007a52;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+        .compact-header small{color:#043B8B;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+        .compact-header h3{margin-top:2px;color:#002D6E;font-size:16px;line-height:1;font-weight:900;letter-spacing:-.04em}
+        .money-highlight{margin-top:10px;padding:10px 12px;border-radius:13px;background:#F0FFF8;border:1px solid #bdecd7;display:flex;align-items:center;justify-content:space-between;gap:12px}
+        .money-copy span{display:block;color:#007A52;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
         .money-copy small{display:block;margin-top:2px;color:#64748b;font-size:10px;line-height:1.25;font-weight:700}
-        .money-highlight strong{flex:0 0 auto;color:#007a52;font-size:24px;line-height:1;font-weight:800;letter-spacing:-.055em;white-space:nowrap}
+        .money-highlight strong{flex:0 0 auto;color:#007A52;font-size:24px;line-height:1;font-weight:800;letter-spacing:-.055em;white-space:nowrap}
         .compare-lines{display:grid;margin-top:10px;border:1px solid #dde8f6;border-radius:13px;overflow:hidden;background:#fff}
         .compare-head,.compare-line{display:grid;grid-template-columns:74px 1fr 1fr;align-items:center;gap:8px}
         .compare-head{padding:8px 10px;background:#f4f8ff;border-bottom:1px solid #dde8f6;color:#64748b;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.07em}
         .compare-head span:nth-child(2),.compare-head span:nth-child(3){text-align:center}
         .compare-line{padding:9px 10px;border-bottom:1px solid #dde8f6}
         .compare-line:last-child{border-bottom:0}
-        .compare-label{font-size:12px;font-weight:800;color:#03246f}
-        .compare-value{font-size:12px;font-weight:800;color:#03246f;text-align:center}
-        .compare-value.after{color:#055ece}
+        .compare-label{font-size:12px;font-weight:800;color:#002D6E}
+        .compare-value{font-size:12px;font-weight:800;color:#002D6E;text-align:center}
+        .compare-value.after{color:#043B8B}
         .compact-note{margin-top:8px;padding:8px 10px;border-radius:13px;background:#f4f8ff;border:1px solid #dde8f6;color:#64748b;font-size:11px}
         .receipt-card{background:#f5f5f3;border:1px solid #ececec;border-radius:10px;padding:12px;font-size:11px;color:#4f4f4f}
         .receipt-title{text-align:center;font-weight:800}
@@ -289,7 +290,7 @@ export default function Portabilidade() {
         .receipt-card th:last-child,.receipt-card td:last-child{text-align:right}
         .receipt-row{display:flex;justify-content:space-between;gap:8px;font-size:10px}
         .receipt-site{text-align:center;margin-top:8px;font-size:9px;color:#7a7a7a}
-        .back-btn{margin-top:10px;width:100%;min-height:46px;border-radius:13px;border:1px solid #bfd4f6;background:#fff;color:#055ece;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(30,60,180,.12)}
+        .back-btn{margin-top:10px;width:100%;min-height:46px;border-radius:13px;border:1px solid #dde8f6;background:#fff;color:#043B8B;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(30,60,180,.12)}
         @media (max-width:1100px){.main-layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:16px}.side-card + .side-card{margin-top:0}}
         @media (max-width:900px){.port-root{padding:16px}.tabs,.compare,.benefits,.salary,.sidebar{grid-template-columns:1fr}.arrow{transform:rotate(90deg);justify-self:center}.compare-head,.compare-line{grid-template-columns:1fr;gap:6px}.compare-head span:first-child{display:none}}
       `}</style>
@@ -442,12 +443,12 @@ export default function Portabilidade() {
                           minHeight: 46,
                           borderRadius: 14,
                           border: 0,
-                          background: 'linear-gradient(145deg, #055ECE, #03246F)',
+                          background: 'linear-gradient(145deg, #043B8B, #002D6E)',
                           color: '#fff',
                           fontSize: 13.5,
                           fontWeight: 900,
                           cursor: 'pointer',
-                          boxShadow: '0 8px 20px rgba(30,60,180,.3)',
+                          boxShadow: '0 8px 20px rgba(4,59,139,.3)',
                         }}
                       >
                         Baixar recibo da simulação

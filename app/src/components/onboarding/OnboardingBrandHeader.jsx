@@ -34,11 +34,11 @@ const css = `
     gap: 7px;
     padding: 7px 11px;
     border-radius: 999px;
-    background: rgba(0,231,255,0.10);
-    border: 1px solid rgba(0,231,255,0.28);
-    color: #055ECE;
+    background: rgba(4,59,139,0.06);
+    border: 1px solid rgba(4,59,139,0.15);
+    color: #043B8B;
     font-size: 11px;
-    font-weight: 950;
+    font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.09em;
     white-space: nowrap;
@@ -49,8 +49,7 @@ const css = `
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #00E7FF;
-    box-shadow: 0 0 8px rgba(0,231,255,0.7);
+    background: #043B8B;
     flex: 0 0 auto;
   }
   .obh-bar-track {
@@ -63,7 +62,7 @@ const css = `
   .obh-bar-fill {
     height: 100%;
     border-radius: 999px;
-    background: linear-gradient(90deg, #055ECE, #00E7FF);
+    background: linear-gradient(90deg, #043B8B, #2454D6);
   }
   @media (max-width: 560px) {
     .obh-logo { width: 52px; height: 52px; }

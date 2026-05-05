@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
@@ -25,7 +25,7 @@ function Receipt({ offer }) {
         <div style={{ fontSize: 10, marginTop: 4, textAlign: 'center', color: '#808080' }}>{today}</div>
         <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
         <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800 }}>VOCÊ PODE RECEBER HOJE</div>
-        <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323' }}>R$ {fmt(offer.valor)}</div>
+        <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323' }}>{fmt(offer.valor)}</div>
         <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
         <div style={{ display: 'grid', gap: 6, fontSize: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Prazo</span><strong>{offer.prazo} meses</strong></div>
@@ -63,7 +63,7 @@ export default function NovoContrato() {
   const offer = customOpen && customValid
     ? { valor: customValue, prazo: selectedPrazo, parcela: calcPMT(customValue, OFERTA.taxaMensal, selectedPrazo) }
     : selectedAnchor
-  const salarioAntes = 2200
+  const salarioAntes = 1650
   const salarioDepois = salarioAntes - offer.parcela
 
   const downloadReceiptPdf = () => {
@@ -71,7 +71,7 @@ export default function NovoContrato() {
     printSimulationReceipt({
       title: 'SIMULAÇÃO DE NOVO CONTRATO - CONSIGAI',
       highlightLabel: 'VOCÊ PODE RECEBER HOJE',
-      highlightValue: `R$ ${fmt(offer.valor)}`,
+      highlightValue: fmt(offer.valor),
       rows: [
         { label: 'Prazo', value: `${offer.prazo} meses` },
         { label: 'Parcela', value: `R$ ${fmtDec(offer.parcela)}` },
@@ -90,10 +90,10 @@ export default function NovoContrato() {
           sourcePath: '/novo-contrato',
           offerTitle: 'Novo Contrato',
           offerSubtitle: 'Resumo da oferta selecionada antes da contratação',
-          primaryValue: `R$ ${fmt(offer.valor)}`,
+          primaryValue: fmt(offer.valor),
           ctaLabel: 'Confirmar Novo Contrato',
           summary: [
-            { label: 'Você recebe', value: `R$ ${fmt(offer.valor)}` },
+            { label: 'Você recebe', value: fmt(offer.valor) },
             { label: 'Prazo', value: `${offer.prazo}x` },
             { label: 'Parcela', value: `R$ ${fmtDec(offer.parcela)}/mês` },
             { label: 'Taxa', value: `${OFERTA.taxaMensal.toFixed(2).replace('.', ',')}% a.m.` },
@@ -124,26 +124,26 @@ export default function NovoContrato() {
           border: '1px solid',
           background:
             idx === 0
-              ? 'radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.13), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)'
-              : 'radial-gradient(circle at 92% 8%, rgba(29, 161, 235, 0.10), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)',
+              ? 'radial-gradient(circle at 92% 8%, rgba(4, 59, 139, 0.08), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)'
+              : 'radial-gradient(circle at 92% 8%, rgba(4, 59, 139, 0.06), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)',
           padding: idx === 0 ? '20px 18px' : '14px 16px',
           cursor: 'pointer',
           ...selectionStyle,
         }}
       >
         {idx === 0 && (
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 11px', borderRadius: 999, background: 'rgba(0, 231, 255, 0.13)', border: '1px solid rgba(0, 231, 255, 0.34)', color: '#03246F', fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '.07em' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 11px', borderRadius: 999, background: 'rgba(4, 59, 139, 0.06)', border: '1px solid rgba(4, 59, 139, 0.18)', color: '#002D6E', fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '.07em' }}>
             Sugestão ConsigAI
           </div>
         )}
-        <div style={{ marginTop: idx === 0 ? 10 : 0, color: '#055ECE', fontSize: idx === 0 ? 38 : 26, fontWeight: 900, letterSpacing: idx === 0 ? '-.07em' : '-.04em', lineHeight: 1 }}>
-          R$ {fmt(a.valor)}
+        <div style={{ marginTop: idx === 0 ? 10 : 0, color: '#043B8B', fontSize: idx === 0 ? 38 : 26, fontWeight: 900, letterSpacing: idx === 0 ? '-.07em' : '-.04em', lineHeight: 1 }}>
+          {fmt(a.valor)}
         </div>
         <div style={{ marginTop: 7, color: '#64748B', fontSize: idx === 0 ? 13 : 12, fontWeight: 700 }}>
-          {a.prazo}x de <strong style={{ color: '#055ECE' }}>R$ {fmtDec(a.parcela)}</strong>
+          {a.prazo}x de <strong style={{ color: '#043B8B' }}>R$ {fmtDec(a.parcela)}</strong>
         </div>
         {idx === 0 && (
-          <div style={{ width: 'fit-content', margin: '10px auto 0', padding: '8px 12px', borderRadius: 999, background: '#E9F8F1', border: '1px solid #BDECD7', color: '#007A52', fontSize: 12, fontWeight: 900 }}>
+          <div style={{ width: 'fit-content', margin: '10px auto 0', padding: '8px 12px', borderRadius: 999, background: '#F0FFF8', border: '1px solid #BDECD7', color: '#007A52', fontSize: 12, fontWeight: 900 }}>
             Parcela dentro da sua margem
           </div>
         )}
@@ -179,8 +179,8 @@ export default function NovoContrato() {
             marginBottom: customOpen ? 10 : 14,
             borderRadius: 21,
             border: '1px solid',
-            background: 'radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.12), transparent 34%), linear-gradient(180deg, #F4FBFF 0%, #FFFFFF 100%)',
-            color: '#055ECE',
+            background: 'radial-gradient(circle at 92% 8%, rgba(4, 59, 139, 0.08), transparent 34%), linear-gradient(180deg, #F4FBFF 0%, #FFFFFF 100%)',
+            color: '#043B8B',
             fontWeight: 900,
             fontSize: 15,
             cursor: 'pointer',
@@ -190,7 +190,7 @@ export default function NovoContrato() {
           + Personalizar valor e prazo
         </button>
         {customOpen && (
-          <div style={{ marginBottom: 14, background: '#fff', border: '1.5px solid #BFD4F6', borderRadius: 21, padding: 16 }}>
+          <div style={{ marginBottom: 14, background: '#fff', border: '1.5px solid #DDE8F6', borderRadius: 21, padding: 16 }}>
             <div style={{ fontSize: 10, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: 8 }}>Qual valor você quer?</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#F8FBFF', border: '1px solid #DDE8F6', borderRadius: 13, padding: '10px 12px' }}>
               <span style={{ color: '#64748B', fontWeight: 800 }}>R$</span>
@@ -199,12 +199,12 @@ export default function NovoContrato() {
                 value={customRaw}
                 onChange={(e) => setCustomRaw(e.target.value)}
                 placeholder="0"
-                style={{ border: 0, outline: 'none', background: 'transparent', width: '100%', fontSize: 22, fontWeight: 900, color: '#03246F' }}
+                style={{ border: 0, outline: 'none', background: 'transparent', width: '100%', fontSize: 22, fontWeight: 900, color: '#002D6E' }}
               />
             </div>
             <div style={{ marginTop: 8, fontSize: 11, color: customValid || !customRaw ? '#64748B' : '#b42318' }}>
-              {!customRaw && `Digite um valor entre R$ ${fmt(OFERTA.valorMinimo)} e R$ ${fmt(OFERTA.creditoMaximo)}`}
-              {customRaw && !customValid && `Valor deve ficar entre R$ ${fmt(OFERTA.valorMinimo)} e R$ ${fmt(OFERTA.creditoMaximo)}`}
+              {!customRaw && `Digite um valor entre ${fmt(OFERTA.valorMinimo)} e ${fmt(OFERTA.creditoMaximo)}`}
+              {customRaw && !customValid && `Valor deve ficar entre ${fmt(OFERTA.valorMinimo)} e ${fmt(OFERTA.creditoMaximo)}`}
               {customRaw && customValid && `${selectedPrazo}x de R$ ${fmtDec(calcPMT(customValue, OFERTA.taxaMensal, selectedPrazo))}/mês`}
             </div>
             <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
@@ -214,7 +214,7 @@ export default function NovoContrato() {
                   <button
                     key={prazo}
                     onClick={() => setSelectedPrazo(prazo)}
-                    style={{ borderRadius: 13, border: `1px solid ${activePrazo ? '#055ECE' : '#DDE8F6'}`, background: activePrazo ? '#EAF2FF' : '#fff', color: activePrazo ? '#055ECE' : '#64748B', padding: '10px 6px', fontWeight: 800, cursor: 'pointer' }}
+                    style={{ borderRadius: 13, border: `1px solid ${activePrazo ? '#043B8B' : '#DDE8F6'}`, background: activePrazo ? '#F0F5FF' : '#fff', color: activePrazo ? '#043B8B' : '#64748B', padding: '10px 6px', fontWeight: 800, cursor: 'pointer' }}
                   >
                     {prazo}x
                   </button>
@@ -230,7 +230,7 @@ export default function NovoContrato() {
           onClick={goContratacao}
           onMouseEnter={() => setCtaHover(true)}
           onMouseLeave={() => setCtaHover(false)}
-          style={{ width: '100%', minHeight: 52, border: 0, borderRadius: 21, background: ctaHover ? 'linear-gradient(145deg, #0A66E8, #03246F)' : 'linear-gradient(145deg, #055ECE, #03246F)', color: '#fff', fontSize: 16, fontWeight: 900, boxShadow: ctaHover ? '0 12px 24px rgba(35,80,200,.12)' : '0 8px 20px rgba(30,60,180,.3)', cursor: 'pointer' }}
+          style={{ width: '100%', minHeight: 52, border: 0, borderRadius: 21, background: ctaHover ? 'linear-gradient(145deg, #043B8B, #002D6E)' : 'linear-gradient(145deg, #043B8B, #002D6E)', color: '#fff', fontSize: 16, fontWeight: 900, boxShadow: ctaHover ? '0 12px 24px rgba(4,59,139,.22)' : '0 8px 20px rgba(4,59,139,.3)', cursor: 'pointer' }}
         >
           Continuar com esta oferta
         </button>
@@ -240,7 +240,7 @@ export default function NovoContrato() {
           onClick={() => setShowReceipt(v => !v)}
           onMouseEnter={() => setSecondHover(true)}
           onMouseLeave={() => setSecondHover(false)}
-          style={{ width: '100%', minHeight: 48, marginTop: 10, borderRadius: 21, border: '1px solid #BFD4F6', background: secondHover ? '#F4F8FF' : '#fff', color: '#055ECE', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: secondHover ? '0 12px 24px rgba(35,80,200,.12)' : '0 8px 20px rgba(30,60,180,.12)' }}
+          style={{ width: '100%', minHeight: 48, marginTop: 10, borderRadius: 21, border: '1px solid #DDE8F6', background: secondHover ? '#F4F8FF' : '#fff', color: '#043B8B', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: secondHover ? '0 12px 24px rgba(4,59,139,.12)' : '0 8px 20px rgba(4,59,139,.12)' }}
         >
           Gerar recibo da simulação
         </button>
@@ -255,12 +255,12 @@ export default function NovoContrato() {
               marginTop: 8,
               borderRadius: 13,
               border: 0,
-              background: 'linear-gradient(145deg, #055ECE, #03246F)',
+              background: 'linear-gradient(145deg, #043B8B, #002D6E)',
               color: '#fff',
               fontSize: 13,
               fontWeight: 900,
               cursor: 'pointer',
-              boxShadow: '0 8px 20px rgba(30,60,180,.3)',
+              boxShadow: '0 8px 20px rgba(4,59,139,.3)',
             }}
           >
             Baixar recibo da simulação
@@ -275,13 +275,13 @@ export default function NovoContrato() {
             minHeight: 46,
             marginTop: 10,
             borderRadius: 13,
-            border: '1px solid #BFD4F6',
+            border: '1px solid #DDE8F6',
             background: '#fff',
-            color: '#055ECE',
+            color: '#043B8B',
             fontSize: 14,
             fontWeight: 900,
             cursor: 'pointer',
-            boxShadow: '0 8px 20px rgba(30,60,180,.12)',
+            boxShadow: '0 8px 20px rgba(4,59,139,.12)',
           }}
         >
           Voltar para ofertas
@@ -295,10 +295,10 @@ export default function NovoContrato() {
       <ResumoCard
         title="Resumo da proposta"
         subtitle="Confira as principais condições simuladas antes de continuar."
-        highlight={{ label: 'Oferta selecionada', value: `R$ ${fmt(offer.valor)}` }}
+        highlight={{ label: 'Oferta selecionada', value: fmt(offer.valor) }}
         rows={[
           { label: 'Produto', value: 'Novo contrato' },
-          { label: 'Valor liberado', value: `R$ ${fmt(offer.valor)}` },
+          { label: 'Valor liberado', value: fmt(offer.valor) },
           { label: 'Prazo', value: `${offer.prazo} meses` },
           { label: 'Nova parcela total', value: `R$ ${fmtDec(offer.parcela)}/mês` },
           { label: 'Taxa', value: `${OFERTA.taxaMensal.toFixed(2).replace('.', ',')}% a.m.` },

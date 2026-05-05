@@ -232,7 +232,7 @@ function CardRow({ label, value }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, padding: '10px 0', borderBottom: '1px solid #e4eaf8' }}>
       <span style={{ color: '#7a8db8', fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>{label}</span>
-      <strong style={{ color: '#1a3d8f', fontSize: 13, fontWeight: 900, textAlign: 'right' }}>{value}</strong>
+      <strong style={{ color: '#002D6E', fontSize: 13, fontWeight: 900, textAlign: 'right' }}>{value}</strong>
     </div>
   )
 }
@@ -446,7 +446,7 @@ function StrategyScreen({ variant }) {
               <p style={{ fontSize: 15, fontWeight: 800, color: '#03246F' }}>R$ {liquidoAntes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
               <p style={{ fontSize: 11, color: '#64748B', marginTop: 4 }}>Parcela R$ {parcelaAntes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
-            <div style={{ borderRadius: 13, border: '1px solid #BDECD7', background: '#E9F8F1', padding: '10px 12px' }}>
+            <div style={{ borderRadius: 13, border: '1px solid #BDECD7', background: '#F0FFF8', padding: '10px 12px' }}>
               <p style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: '#007A52', marginBottom: 4 }}>Depois</p>
               <p style={{ fontSize: 15, fontWeight: 800, color: '#007A52' }}>R$ {liquidoDepois.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
               <p style={{ fontSize: 11, color: '#007A52', opacity: 0.7, marginTop: 4 }}>Parcela R$ {parcelaDepois.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
@@ -545,7 +545,7 @@ function StrategyScreen({ variant }) {
           letter-spacing: 0;
         }
         .mix-title span {
-          color: #0a7c52;
+          color: #007A52;
         }
         .mix-subtitle {
           margin: 0;
@@ -570,7 +570,7 @@ function StrategyScreen({ variant }) {
           width: 6px;
           height: 6px;
           border-radius: 50%;
-          background: #0a7c52;
+          background: #00A86B;
           flex: 0 0 auto;
         }
         .mix-pill span,
@@ -597,7 +597,7 @@ function StrategyScreen({ variant }) {
           border-color: transparent;
           background:
             linear-gradient(180deg, #ffffff 0%, #f7fbff 100%) padding-box,
-            linear-gradient(135deg, #2454D6, #18B7E8, #00A99D) border-box;
+            linear-gradient(135deg, #2454D6, #1DA1EB, #00A86B) border-box;
           box-shadow: 0 18px 42px rgba(13,35,90,.24);
         }
         .mix-scenario-card__header {
@@ -675,7 +675,7 @@ function StrategyScreen({ variant }) {
           padding: 18px;
           background:
             linear-gradient(180deg, #ffffff 0%, #f7fbff 100%) padding-box,
-            linear-gradient(135deg, #2454D6, #18B7E8, #00A99D) border-box;
+            linear-gradient(135deg, #2454D6, #1DA1EB, #00A86B) border-box;
           box-shadow: 0 18px 42px rgba(13,35,90,.24);
         }
         .mix-main-pill {
@@ -722,7 +722,7 @@ function StrategyScreen({ variant }) {
           white-space: nowrap;
         }
         .mix-combo-value--green {
-          color: #0a7c52;
+          color: #00A86B;
         }
         .mix-plus {
           color: #7a8db8;
@@ -731,14 +731,14 @@ function StrategyScreen({ variant }) {
           text-align: center;
         }
         .mix-benefit-card {
-          background: #eaf8f0;
-          border-color: #a8dec3;
+          background: #F0FFF8;
+          border-color: #BDECD7;
           padding: 14px;
           text-align: center;
         }
         .mix-benefit-card__kicker,
         .mix-benefit-card__copy {
-          color: #0a7c52;
+          color: #007A52;
           font-size: 10px;
           font-weight: 900;
           text-transform: uppercase;
@@ -752,7 +752,7 @@ function StrategyScreen({ variant }) {
           margin-top: 5px;
         }
         .mix-benefit-card__value {
-          color: #0a7c52;
+          color: #00A86B;
           font-size: 28px;
           font-weight: 900;
           line-height: 1.05;
@@ -883,7 +883,3 @@ export default function EstrategiaCombinada({ variant: forcedVariant }) {
 
   return <StrategyScreen variant={variant} />
 }
-
-
-
-

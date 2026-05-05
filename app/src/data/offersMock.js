@@ -81,8 +81,8 @@ export const MOCK_DADOS = {
     { id: 'equilibrio', creditoReceber: 5033.74, parcelaNova: 496.17, economiaTotal: 2399.11 },
     { id: 'folga', creditoReceber: 7593.9, parcelaNova: 433.19, reducaoMensal: 116.81 },
     { id: 'turbo', creditoReceber: 0, parcelaNova: 401.05, economiaContrato: 2960.4, economiaParcela: 148.95 },
-    { id: 'apenas_novo', creditoReceber: 4200, parcelaNova: 522.4, economiaTotal: 1104, qtdParcelas: 48 },
-    { id: 'apenas_refin', creditoReceber: 2500, parcelaNova: 463.75, economiaTotal: 1896, qtdParcelas: 48 },
+    { id: 'apenas_novo', creditoReceber: 4200, parcelaNova: 79.2, economiaTotal: 1104, qtdParcelas: 84 },
+    { id: 'apenas_refin', creditoReceber: 12930, parcelaNova: 1191, economiaTotal: 1896, qtdParcelas: 84 },
   ],
   impacto: { pocketToday: 1650, pocketAfter: 1766.81, creditToday: 2845.53, creditAfter: 7593.9 },
 }

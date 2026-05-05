@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
 import { useOffersData } from '../hooks/useOffersData.js'
@@ -212,9 +212,11 @@ function calcImpactValues(selectedEntry, usuario, impacto, selectedThirdSubOffer
     salaryUnified: fmt(usuario.salarioBruto),
     installmentToday: formatCurrencyClean(fmt(usuario.parcelaAtual)),
     pocketToday: fmt(usuario.salarioBruto - usuario.parcelaAtual),
+    pocketTodayRaw: usuario.salarioBruto - usuario.parcelaAtual,
     creditToday: fmt(creditoAtual),
     installmentAfter: formatCurrencyClean(installmentAfter),
     pocketAfter: fmt(usuario.salarioBruto - (o.parcelaNova ?? (usuario.parcelaAtual - (o.economiaParcela ?? 0)))),
+    pocketAfterRaw: usuario.salarioBruto - (o.parcelaNova ?? (usuario.parcelaAtual - (o.economiaParcela ?? 0))),
     creditAfter: fmt(creditoDepois),
     marginToday: 'R$ 0',
     marginAfter: fmt(ecoMensal),
@@ -249,46 +251,63 @@ function applyTurboLabels(baSection, baPill, ctaSavingLabel, turboSnapshot) {
 }
 
 const POCKET_VISUAL_HTML = `
-  <div class="projection-flow">
-    <article class="projection-state projection-state-today">
-      <h3>Hoje</h3>
-      <div class="projection-state-value">
-        <strong data-k="pocketToday"></strong>
-        <span>por mês</span>
+  <div class="projection-flow-updated" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+    
+    <!-- Coluna Esquerda: Gráfico de Barras -->
+    <div style="background: #fff; border-radius: 20px; border: 1px solid #DDE8F6; padding: 24px; box-shadow: 0 12px 32px rgba(3,36,111,.04); position: relative; overflow: hidden; display: flex; flex-direction: column;">
+      <div style="position: absolute; inset: 0 0 auto 0; height: 4px; background: linear-gradient(90deg, #64748B, #94A3B8);"></div>
+      <h4 style="font-size: 13px; color: #64748B; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 900;">Evolução de Salário Líquido</h4>
+      
+      <div style="margin-bottom: 28px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; font-weight: 800; color: #64748B;">
+          <span>Hoje</span>
+          <span data-k="pocketToday" style="font-size: 16px;"></span>
+        </div>
+        <div style="height: 16px; border-radius: 8px; background: #F1F5F9; width: 100%; position: relative; overflow: hidden;">
+          <div id="barToday" style="height: 100%; border-radius: 8px; background: #94A3B8; width: 60%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+        </div>
       </div>
-      <p>Sobra no mês após pagar a parcela atual.</p>
-    </article>
-
-    <div class="projection-symbol projection-symbol-arrow" aria-hidden="true">›</div>
-
-    <div class="projection-metric projection-gain">
-      <h4 data-label="gainPrimary">Ganho mensal no bolso</h4>
-      <div class="projection-number">
-        <strong data-k="ecoMensal"></strong>
-        <span>por mês</span>
+      
+      <div style="margin-top: auto;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; font-weight: 800; color: #007A52;">
+          <span style="display: flex; align-items: center; gap: 6px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
+            Com ConsigAI
+          </span>
+          <span data-k="pocketAfter" style="font-size: 18px; font-weight: 900;"></span>
+        </div>
+        <div style="height: 16px; border-radius: 8px; background: #F0FFF8; width: 100%; position: relative; overflow: hidden;">
+          <div id="barAfter" style="height: 100%; border-radius: 8px; background: linear-gradient(90deg, #00A86B, #22C987); width: 85%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+        </div>
       </div>
-      <p>Mais margem livre após a redução da parcela.</p>
     </div>
 
-    <div class="projection-metric projection-economy">
-      <h4 data-label="gainSecondary">Projeção de Economia ${brandNameHtml()}</h4>
-      <div class="projection-number">
-        <strong data-k="ecoAnual"></strong>
-        <span>economia total</span>
+    <!-- Coluna Direita: Métricas de Impacto -->
+    <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 16px;">
+      
+      <!-- Métrica 1: Ganho Mensal -->
+      <div style="background: #fff; border-radius: 20px; border: 1px solid #DDE8F6; padding: 22px 24px; box-shadow: 0 12px 32px rgba(3,36,111,.04); display: flex; flex-direction: column; justify-content: center;">
+        <div style="font-size: 12px; color: #64748B; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Ganho na Parcela (Livre por Mês)</div>
+        <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;">
+          <span data-k="ecoMensal" style="font-size: 32px; font-weight: 950; color: #00A86B; letter-spacing: -0.04em; line-height: 1;"></span>
+          <span style="font-size: 13px; color: #94A3B8; font-weight: 700;">a mais no bolso todo mês</span>
+        </div>
       </div>
-      <p>Equivale a <strong id="impactSalaryFactor" data-k="salaryFactor"></strong></p>
+
+      <!-- Métrica 2: Economia Total -->
+      <div style="background: #fff; border-radius: 20px; border: 1px solid #DDE8F6; padding: 22px 24px; box-shadow: 0 12px 32px rgba(3,36,111,.04); display: flex; flex-direction: column; justify-content: center;">
+        <div style="font-size: 12px; color: #64748B; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;" data-label="gainSecondary">Economia Projetada Total</div>
+        <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+          <span data-k="ecoAnual" style="font-size: 26px; font-weight: 950; color: #00A86B; letter-spacing: -0.04em; line-height: 1;"></span>
+          <div style="display: flex; flex-direction: column; align-items: flex-end;">
+            <div style="background: #F0FFF8; color: #007A52; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 900; display: flex; align-items: center; gap: 6px; border: 1px solid #BDECD7;">
+              Equivale a <strong id="impactSalaryFactor" data-k="salaryFactor" style="color: #007A52; font-weight: 900;"></strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-
-  <div class="projection-symbol projection-symbol-equal" aria-hidden="true">=</div>
-
-  <article class="projection-state projection-state-after">
-    <h3>Depois com ${brandNameHtml()}</h3>
-    <div class="projection-state-value">
-      <strong data-k="pocketAfter"></strong>
-        <span>por mês</span>
-      </div>
-      <p>Sobra estimada após a nova parcela.</p>
-  </article>
 
   </div>
 
@@ -339,6 +358,33 @@ function upsertPocketInsight(doc, selectedEntry, usuario, impacto, selectedThird
     const val = values[el.dataset.k]
     if (val !== undefined) el.textContent = val
   })
+
+  // Update dynamic bar widths to visually emphasize the gain
+  const todayRaw = values.pocketTodayRaw || 0;
+  const afterRaw = values.pocketAfterRaw || 0;
+  
+  const barToday = visual.querySelector('#barToday');
+  const barAfter = visual.querySelector('#barAfter');
+  
+  if (barToday && barAfter) {
+    const diff = Math.max(afterRaw - todayRaw, 0);
+    let pctToday = 70;
+    let pctAfter = 100;
+    
+    if (diff === 0) {
+      pctToday = 100;
+      pctAfter = 100;
+    } else {
+      // Create a visual baseline to emphasize the difference (gain)
+      const baseline = Math.max(0, Math.min(todayRaw, afterRaw) - (diff * 2.5));
+      const maxGraph = Math.max(todayRaw, afterRaw) - baseline;
+      pctToday = Math.max(((todayRaw - baseline) / maxGraph) * 100, 15);
+      pctAfter = Math.max(((afterRaw - baseline) / maxGraph) * 100, 15);
+    }
+    
+    barToday.style.width = `${pctToday}%`;
+    barAfter.style.width = `${pctAfter}%`;
+  }
 }
 
 // ---------------------------------------------------------------------------

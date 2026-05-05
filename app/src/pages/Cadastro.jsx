@@ -1,4 +1,4 @@
-﻿import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useState, useRef, useEffect } from 'react'
 import OnboardingBrandHeader from '../components/onboarding/OnboardingBrandHeader'
 import { FontSizeToggleFloating } from '../components/FontSizeToggle'
@@ -130,18 +130,18 @@ export default function Cadastro() {
     <>
       <style>{`
         :root {
-          --blue-dark: #03246F;
-          --blue-main: #055ECE;
-          --logo-blue: #1DA1EB;
-          --cyan: #00E7FF;
-          --green: #007A52;
-          --green-soft: #E9F8F1;
+          --blue-dark: #002D6E;
+          --blue-main: #043B8B;
+          --logo-blue: #2454D6;
+          --cyan: #1DA1EB;
+          --green: #00A86B;
+          --green-soft: #F0FFF8;
           --green-line: #BDECD7;
           --muted: #64748B;
           --line: #DDE8F6;
-          --blue-soft: #F4F8FF;
+          --blue-soft: #F4F9FF;
           --white: #FFFFFF;
-          --shadow: 0 24px 68px rgba(3, 36, 111, 0.13);
+          --shadow: 0 24px 68px rgba(3, 36, 111, 0.12);
           --soft-shadow: 0 16px 38px rgba(3, 36, 111, 0.08);
         }
 
@@ -194,7 +194,7 @@ export default function Cadastro() {
           position: absolute;
           inset: 0 0 auto 0;
           height: 5px;
-          background: linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--cyan), var(--green));
+          background: linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--green));
           z-index: 3;
         }
 
@@ -523,7 +523,7 @@ export default function Cadastro() {
           min-height: 54px;
           width: 100%;
           padding: 0 16px;
-          border-radius: 17px;
+          border-radius: 21px;
           border: 1px solid var(--line);
           background: #F8FBFF;
           color: var(--blue-dark);
@@ -538,9 +538,9 @@ export default function Cadastro() {
         }
 
         .input-field:focus {
-          border-color: var(--logo-blue);
+          border-color: var(--blue-main);
           background: white;
-          box-shadow: 0 0 0 4px rgba(29, 161, 235, 0.12);
+          box-shadow: 0 0 0 4px rgba(4, 59, 139, 0.1);
         }
 
         .input-field.error {
@@ -583,7 +583,7 @@ export default function Cadastro() {
           min-height: 54px;
           width: 100%;
           padding: 0 16px;
-          border-radius: 17px;
+          border-radius: 21px;
           border: 1px solid var(--line);
           background: #F8FBFF;
           color: var(--blue-dark);
@@ -744,16 +744,16 @@ export default function Cadastro() {
           background: linear-gradient(145deg, var(--blue-main), var(--blue-dark));
           color: white;
           font-size: 15px;
-          font-weight: 950;
-          box-shadow: 0 18px 38px rgba(5, 94, 206, 0.24);
+          font-weight: 900;
+          box-shadow: 0 16px 32px rgba(4, 59, 139, 0.22);
         }
 
         .secondary-cta {
           width: 100%;
           min-height: 54px;
-          border-radius: 18px;
-          border: 1px solid #BFD4F6;
-          background: white;
+          border-radius: 21px;
+          border: 1px solid #DDE8F6;
+          background: transparent;
           color: var(--blue-main);
           font-size: 15px;
           font-weight: 950;

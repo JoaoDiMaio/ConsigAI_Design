@@ -194,7 +194,7 @@ export function DesktopPageHeader({
   return (
     <div
       style={{
-        background: theme.navy,
+        background: 'radial-gradient(circle at 78% 14%, rgba(0, 231, 255, 0.15), transparent 32%), radial-gradient(circle at 12% 90%, rgba(0, 122, 82, 0.16), transparent 28%), linear-gradient(145deg, #06184E 0%, #03246F 70%, #043B8B 100%)',
         minHeight: headerMinHeight,
         boxSizing: 'border-box',
         display: 'flex',
@@ -259,7 +259,7 @@ export function MobilePageHeader({
   return (
     <div
       style={{
-        background: theme.navy,
+        background: 'radial-gradient(circle at 78% 14%, rgba(0, 231, 255, 0.15), transparent 32%), radial-gradient(circle at 12% 90%, rgba(0, 122, 82, 0.16), transparent 28%), linear-gradient(145deg, #06184E 0%, #03246F 70%, #043B8B 100%)',
         padding: `max(8px, env(safe-area-inset-top)) ${paddingRight != null ? paddingRight : 14}px 8px 14px`,
         minHeight: minHeightProp ?? MOBILE_HEADER_HEIGHT,
         boxSizing: 'border-box',
