@@ -173,10 +173,10 @@ export const colors = {
   cyanBorder: 'rgba(0,231,255,0.34)',
 
   green: semanticColors.successDark,
-  greenAccent: '#16A364',
-  greenDark: '#0A6640',
-  greenSoft: '#E9F8F1',
-  greenBg: '#E8F5EE',
+  greenAccent: semanticColors.success,
+  greenDark: semanticColors.successDark,
+  greenSoft: semanticColors.successSoft,
+  greenBg: semanticColors.successSoft,
   greenBorder: semanticColors.successBorder,
   greenMid: '#B8E0CA',
 

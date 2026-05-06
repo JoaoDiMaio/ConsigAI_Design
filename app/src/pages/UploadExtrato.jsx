@@ -503,7 +503,7 @@ ${onboardingAliasVarsCss}
             <div className="side-content">
               <div>
                 <div className="side-kicker">Envio seguro</div>
-                <h1 className="side-title">Seu extrato é a chave para <span style={{ color: '#00E7FF' }}>Economizar</span></h1>
+                <h1 className="side-title">Seu extrato é a chave para <span>Economizar</span></h1>
                 <p className="side-copy">
                   Com seu contracheque ou histórico de consignado, a ConsigAI identifica contratos elegíveis e compara as melhores condições do mercado.
                 </p>

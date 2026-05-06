@@ -154,8 +154,8 @@ export const RESPONSIVE_STYLES_CSS = `
     --cyan-brand: #18B7E8;
     --teal-brand: #00A99D;
     --aqua-brand: #6DF5D4;
-    --green-strong: #0a7c52;
-    --green-medium: #0a7c52;
+    --green-strong: #007A52;
+    --green-medium: #007A52;
     --green-soft: #EAF8F0;
     --green-border: #A8DEC3;
     --red-negative: #C00000;
@@ -178,7 +178,7 @@ export const RESPONSIVE_STYLES_CSS = `
     font-weight: 950 !important;
   }
   .impact-header .ba-title .impact-title-eco {
-    color: #0a7c52 !important;
+    color: #007A52 !important;
     font-weight: 950 !important;
   }
   .impact-header .ba-title .impact-title-ai {
@@ -578,7 +578,7 @@ export const RESPONSIVE_STYLES_CSS = `
   .consigai-trust-icon {
     width: 42px; height: 42px; border-radius: 50%;
     background: #f1fcf6; border: 1px solid #c9f0d9;
-    color: #0a7c52; display: inline-flex; align-items: center; justify-content: center;
+    color: #007A52; display: inline-flex; align-items: center; justify-content: center;
   }
   .consigai-trust-icon svg {
     width: 21px; height: 21px; stroke: currentColor; fill: none;
@@ -1061,7 +1061,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   .main { position: relative !important; z-index: 0 !important; }
   .main::before { display: none !important; }
   .hero-title { color: #1a3d8f !important; }
-  .hero-title em { color: #0a7c52 !important; font-style: normal !important; }
+  .hero-title em { color: #00A86B !important; font-style: normal !important; }
   @media (min-width: 1024px) { .hero-title { white-space: nowrap !important; } }
   .hero-compare {
     position: relative !important;
@@ -1231,9 +1231,9 @@ export const OFFER_CARD_REDESIGN_CSS = `
     cursor: text !important;
   }
   .hc-col-val.old { color: #C00000 !important; }
-  .hc-col-val.new, .hc-saving-value, #hcNova, #hcEco { color: #0a7c52 !important; }
+  .hc-col-val.new, .hc-saving-value, #hcNova, #hcEco { color: #007A52 !important; }
   .ba-row-val.deduct { color: #C00000 !important; }
-  .ba-col.after .ba-row-val.deduct, #baNova { color: #0a7c52 !important; }
+  .ba-col.after .ba-row-val.deduct, #baNova { color: #007A52 !important; }
   .ba-section .ba-title, .ba-section .ba-row-label, .ba-section .ba-total-label,
   .ba-section .ba-credit-label, .ba-section .ba-credit-note,
   .ba-section .ba-col.today .ba-row-val:not(.deduct),
@@ -1375,9 +1375,9 @@ export const OFFER_CARD_REDESIGN_CSS = `
   .consigai-offer-line-main { font-size: 24px; font-weight: 850; line-height: 1.08; letter-spacing: -.03em; }
   .consigai-offer-line-main.blue { color: #1a3d8f; }
   .consigai-offer-line-main.green { color: #ec7000; }
-  .consigai-offer-line-main.brand-green { color: #0a7c52; }
-  .consigai-offer-word-orange { color: #0a7c52; }
-  .consigai-offer-value-green { color: #0a7c52; }
+  .consigai-offer-line-main.brand-green { color: #007A52; }
+  .consigai-offer-word-orange { color: #007A52; }
+  .consigai-offer-value-green { color: #007A52; }
   .consigai-offer-word-estimada {
     color: #7a8db8; font-size: .58em; font-weight: 700;
     letter-spacing: 0; vertical-align: baseline; margin-left: 2px;
@@ -1515,7 +1515,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   .offer-card.turbo-offer .turbo-option:hover,
   .offer-card.turbo-offer .consigai-offer-mini-card:hover {
     transform: translateY(-1px) !important;
-    border-color: #0a7c52 !important;
+    border-color: #007A52 !important;
     box-shadow: 0 8px 18px rgba(0, 122, 82, 0.16) !important;
     background:
       radial-gradient(circle at 88% 10%, rgba(0, 122, 82, 0.12), transparent 35%),
@@ -1565,6 +1565,39 @@ export const OFFER_CARD_REDESIGN_CSS = `
     font-weight: 950;
     letter-spacing: -.03em;
     vertical-align: baseline;
+  }
+  .offer-card.turbo-offer .turbo-option[data-suboffer="contract"] {
+    border-color: #BFD4F6;
+    background:
+      radial-gradient(circle at 88% 10%, rgba(36, 84, 214, 0.10), transparent 35%),
+      linear-gradient(180deg, #F4F8FF 0%, #FFFFFF 100%);
+  }
+  .offer-card.turbo-offer .turbo-option[data-suboffer="contract"]:hover {
+    border-color: #2454D6 !important;
+    box-shadow: 0 8px 18px rgba(36, 84, 214, 0.14) !important;
+    background:
+      radial-gradient(circle at 88% 10%, rgba(36, 84, 214, 0.12), transparent 35%),
+      linear-gradient(180deg, #EEF4FF 0%, #FFFFFF 100%) !important;
+  }
+  .offer-card.turbo-offer .turbo-option[data-suboffer="contract"] strong {
+    color: #007A52;
+  }
+  .offer-card.turbo-offer .turbo-option[data-suboffer="installment"] {
+    border-color: #BDECD7;
+    background:
+      radial-gradient(circle at 88% 10%, rgba(0, 168, 107, 0.12), transparent 35%),
+      linear-gradient(180deg, #F3FFF9 0%, #FFFFFF 100%);
+  }
+  .offer-card.turbo-offer .turbo-option[data-suboffer="installment"] strong {
+    color: #00A86B;
+  }
+  .hc-saving-value[data-benefit-kind="monthly"],
+  #ctaSaving[data-benefit-kind="monthly"] {
+    color: #00A86B !important;
+  }
+  .hc-saving-value[data-benefit-kind="total"],
+  #ctaSaving[data-benefit-kind="total"] {
+    color: #007A52 !important;
   }
   .offer-card.turbo-offer .turbo-option small {
     display: block;
@@ -1850,7 +1883,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
     min-height: 26px; display: block;
   }
   .consigai-offer-mini-value {
-    font-size: 24px; line-height: 1; color: #0a7c52;
+    font-size: 24px; line-height: 1; color: #007A52;
     font-weight: 900; letter-spacing: -.03em; white-space: nowrap;
   }
   .offer-card.turbo-offer .consigai-offer-mini-grid { gap: 8px; margin-top: 18px !important; }
@@ -1866,7 +1899,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.turbo-offer .consigai-offer-mini-value {
     font-size: clamp(18px, 2.05vw, 22px); line-height: .98;
-    letter-spacing: -.015em; min-width: 0; color: #0a7c52;
+    letter-spacing: -.015em; min-width: 0; color: #007A52;
   }
   .offer-card.simple-offer .consigai-offer-mini-grid {
     grid-template-columns: minmax(0, 1fr); gap: 6px;
@@ -1883,7 +1916,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.simple-offer .consigai-offer-mini-value {
     font-size: clamp(18px, 2.05vw, 22px); line-height: .98;
-    letter-spacing: -.015em; min-width: 0; color: #0a7c52;
+    letter-spacing: -.015em; min-width: 0; color: #007A52;
     margin-left: auto; white-space: nowrap;
   }
   .offer-card.simple-offer .consigai-offer-note-sub { min-height: 20px; line-height: 1.25; }
@@ -1910,7 +1943,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
     color: #1a3d8f !important;
   }
   .offer-card.turbo-offer.selected .consigai-offer-mini-card.is-selected .consigai-offer-mini-value {
-    color: #0a7c52 !important;
+    color: #007A52 !important;
   }
   .offer-card.new-contract-offer {
     border: 2px solid transparent !important;
@@ -2536,7 +2569,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
     font-size: 16px; color: #1a3d8f; font-weight: 900;
     letter-spacing: -.02em; white-space: nowrap;
   }
-  .consigai-offer-metric-value.green { color: #0a7c52; }
+  .consigai-offer-metric-value.green { color: #007A52; }
 
   @media (min-width: 1081px) {
     .offer-card.equilibrio-offer .equilibrio-body,

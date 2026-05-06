@@ -1,5 +1,7 @@
 # ConsigAI Color Guide
 
+> Documento legado. Guia oficial atualizado: [BRAND_COLOR_GUIDE.md](/C:/Users/joaod/OneDrive/Documents/GitHub/ConsigAI_Design/app/src/ui/BRAND_COLOR_GUIDE.md:1)
+
 Fonte oficial: [`theme.js`](/C:/Users/joaod/OneDrive/Documents/GitHub/ConsigAI_Design/app/src/ui/theme.js)
 
 ## Regras rápidas

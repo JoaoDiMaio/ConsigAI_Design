@@ -735,7 +735,7 @@ ${onboardingAliasVarsCss}
             <div className="visual-content">
               <div>
                 <div className="visual-kicker">Consignado com IA</div>
-                <h1 className="visual-title">Veja quanto você pode <span style={{ color: 'var(--green)' }}>Economizar</span></h1>
+                <h1 className="visual-title">Veja quanto você pode <span>Economizar</span></h1>
                 <p className="visual-copy">
                   A ConsigAI compara seus contratos e mostra opções para pagar menos,
                   reduzir parcela ou receber dinheiro com transparência.

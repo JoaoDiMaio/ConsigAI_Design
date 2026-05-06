@@ -158,9 +158,9 @@ export function ImpactoCard({
           <p style={{ fontSize: 11, color: '#64748B', marginTop: 4, fontWeight: 600 }}>{antesNote}</p>
         </div>
         <div style={{ borderRadius: 18, border: '1px solid #BDECD7', background: '#F0FFF8', padding: '12px 14px' }}>
-          <p style={{ fontSize: 10, fontWeight: 900, textTransform: 'uppercase', color: '#00875A', marginBottom: 6, letterSpacing: '0.05em' }}>Depois</p>
-          <p style={{ fontSize: 18, fontWeight: 900, color: '#00875A', letterSpacing: '-0.02em' }}>{fmtBRL(liquidoDepois)}</p>
-          <p style={{ fontSize: 11, color: '#00875A', opacity: 0.9, marginTop: 4, fontWeight: 600 }}>{novaParcela ? `Parcela ${novaParcela}` : depoisNote}</p>
+          <p style={{ fontSize: 10, fontWeight: 900, textTransform: 'uppercase', color: '#007A52', marginBottom: 6, letterSpacing: '0.05em' }}>Depois</p>
+          <p style={{ fontSize: 18, fontWeight: 900, color: '#007A52', letterSpacing: '-0.02em' }}>{fmtBRL(liquidoDepois)}</p>
+          <p style={{ fontSize: 11, color: '#007A52', opacity: 0.9, marginTop: 4, fontWeight: 600 }}>{novaParcela ? `Parcela ${novaParcela}` : depoisNote}</p>
         </div>
       </div>
     </div>

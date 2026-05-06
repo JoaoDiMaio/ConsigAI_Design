@@ -58,14 +58,16 @@ export default function NovoContrato() {
   const [selectedPrazo, setSelectedPrazo] = useState(OFERTA.prazosDisponiveis[OFERTA.prazosDisponiveis.length - 1])
   const [showReceipt, setShowReceipt] = useState(false)
 
-  const primaryCtaBg = 'linear-gradient(145deg, #055ECE, #03246F)'
-  const primaryCtaShadow = '0 8px 20px rgba(30,60,180,.3)'
-  const primaryCtaHoverShadow = '0 12px 24px rgba(30,60,180,.22)'
-  const secondaryCtaColor = '#055ECE'
+  const primaryCtaBg = 'linear-gradient(145deg, #043B8B, #002D6E)'
+  const primaryCtaShadow = '0 14px 32px rgba(4,59,139,.22)'
+  const primaryCtaHoverShadow = '0 18px 36px rgba(4,59,139,.18)'
+  const secondaryCtaColor = '#043B8B'
   const secondaryCtaBorder = '#BFD4F6'
   const secondaryCtaHoverBg = '#F4F8FF'
-  const secondaryCtaShadow = '0 8px 20px rgba(30,60,180,.12)'
-  const secondaryCtaHoverShadow = '0 12px 24px rgba(30,60,180,.12)'
+  const secondaryCtaShadow = '0 8px 20px rgba(4,59,139,.12)'
+  const secondaryCtaHoverShadow = '0 12px 24px rgba(4,59,139,.12)'
+  const maxAnchorValue = Math.max(...OFERTA.ancoras.map(({ valor }) => valor))
+  const minAnchorValue = Math.min(...OFERTA.ancoras.map(({ valor }) => valor))
 
   const selectedAnchor = OFERTA.ancoras[selected]
   const customValue = parseFloat(customRaw)
@@ -116,12 +118,40 @@ export default function NovoContrato() {
   const renderAnchorButton = (idx) => {
     const a = OFERTA.ancoras[idx]
     const active = selected === idx
+    const isMaxMoney = a.valor === maxAnchorValue
+    const isLowerImpact = a.valor === minAnchorValue
+    const isRecommended = idx === 0
+    const cardBackground = isRecommended
+      ? 'radial-gradient(circle at 92% 8%, rgba(4, 59, 139, 0.08), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)'
+      : isMaxMoney
+        ? 'radial-gradient(circle at 92% 8%, rgba(36, 84, 214, 0.16), transparent 34%), linear-gradient(180deg, #EEF4FF 0%, #FFFFFF 100%)'
+        : 'radial-gradient(circle at 92% 8%, rgba(0, 168, 107, 0.10), transparent 34%), linear-gradient(180deg, #F4FFF9 0%, #FFFFFF 100%)'
+    const badgeStyle = isRecommended
+      ? { background: 'rgba(4, 59, 139, 0.06)', border: '1px solid rgba(4, 59, 139, 0.18)', color: '#002D6E' }
+      : isMaxMoney
+        ? { background: '#F0F5FF', border: '1px solid #BFD4F6', color: '#2454D6' }
+        : { background: '#F0FFF8', border: '1px solid #BDECD7', color: '#007A52' }
+    const badgeLabel = isRecommended
+      ? 'Sugestão ConsigAI'
+      : isMaxMoney
+        ? 'Máximo dinheiro'
+        : 'Parcela mais leve'
+    const valueColor = isLowerImpact ? '#007A52' : '#043B8B'
+    const installmentStrongColor = isLowerImpact ? '#007A52' : isMaxMoney ? '#2454D6' : '#043B8B'
+    const noteStyle = isRecommended
+      ? { background: '#F0FFF8', border: '1px solid #BDECD7', color: '#007A52' }
+      : isMaxMoney
+        ? { background: '#F4F8FF', border: '1px solid #BFD4F6', color: '#2454D6' }
+        : { background: '#F0FFF8', border: '1px solid #BDECD7', color: '#007A52' }
+    const noteLabel = isRecommended
+      ? 'Parcela dentro da sua margem'
+      : isMaxMoney
+        ? 'Maior valor liberado'
+        : 'Menor impacto mensal'
     const selectionStyle = getSelectableCardStyle({
       selected: active,
       hovered: hoveredAnchor === idx,
-      baseBackground: idx === 0
-        ? 'radial-gradient(circle at 92% 8%, rgba(4, 59, 139, 0.08), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)'
-        : 'radial-gradient(circle at 92% 8%, rgba(4, 59, 139, 0.06), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)',
+      baseBackground: cardBackground,
     })
     return (
       <button
@@ -142,18 +172,20 @@ export default function NovoContrato() {
           ...selectionStyle,
         }}
       >
-        {idx === 0 && (
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 11px', borderRadius: 999, background: 'rgba(4, 59, 139, 0.06)', border: '1px solid rgba(4, 59, 139, 0.18)', color: '#002D6E', fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '.07em' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 11px', borderRadius: 999, fontSize: 0, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '.07em', ...badgeStyle }}>
+          <span style={{ fontSize: 10 }}>{badgeLabel}</span>
             Sugestão ConsigAI
           </div>
-        )}
-        <div style={{ marginTop: idx === 0 ? 10 : 0, color: '#043B8B', fontSize: idx === 0 ? 38 : 26, fontWeight: 900, letterSpacing: idx === 0 ? '-.07em' : '-.04em', lineHeight: 1 }}>
+        <div style={{ marginTop: idx === 0 ? 10 : 8, color: valueColor, fontSize: idx === 0 ? 38 : 26, fontWeight: 900, letterSpacing: idx === 0 ? '-.07em' : '-.04em', lineHeight: 1 }}>
           {fmt(a.valor)}
         </div>
         <div style={{ marginTop: 7, color: '#64748B', fontSize: idx === 0 ? 13 : 12, fontWeight: 700 }}>
-          {a.prazo}x de <strong style={{ color: '#043B8B' }}>R$ {fmtDec(a.parcela)}</strong>
+          {a.prazo}x de <strong style={{ color: installmentStrongColor }}>R$ {fmtDec(a.parcela)}</strong>
         </div>
-        {idx === 0 && (
+        <div style={{ width: 'fit-content', margin: '10px auto 0', padding: '8px 12px', borderRadius: 999, fontSize: 12, fontWeight: 900, ...noteStyle }}>
+          {noteLabel}
+        </div>
+        {false && idx === 0 && (
           <div style={{ width: 'fit-content', margin: '10px auto 0', padding: '8px 12px', borderRadius: 999, background: '#F0FFF8', border: '1px solid #BDECD7', color: '#007A52', fontSize: 12, fontWeight: 900 }}>
             Parcela dentro da sua margem
           </div>

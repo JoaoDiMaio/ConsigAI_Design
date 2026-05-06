@@ -568,12 +568,14 @@ function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario, selected
 
   const heroEco = getCachedNode(cacheRef, doc, 'heroEco', '.hc-saving-value, #hcEco')
   if (heroEco) heroEco.textContent = ecoFmt
+  if (heroEco) heroEco.dataset.benefitKind = 'monthly'
   const heroEcoLabel = getCachedNode(cacheRef, doc, 'heroEcoLabel', '.hc-saving-label')
   if (heroEcoLabel) heroEcoLabel.textContent = 'Economia mensal'
 
   const ctaSaving = getCachedNode(cacheRef, doc, 'ctaSaving', '#ctaSaving')
   if (ctaSaving) ctaSaving.textContent = `+${ecoFmt}/mês`
 
+  if (ctaSaving) ctaSaving.dataset.benefitKind = 'monthly'
   const ctaSavingLabel = getCachedNode(cacheRef, doc, 'ctaSavingLabel', '.cta-saving-label')
   const heroSub = getCachedNode(cacheRef, doc, 'heroSub', '#heroSub')
   const baPill = getCachedNode(cacheRef, doc, 'baPill', '#baPill')
@@ -583,10 +585,12 @@ function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario, selected
   if (turboSnapshot) {
     const turboValue = turboSnapshot.benefitDisplay
     if (heroEco) heroEco.textContent = turboValue
+    if (heroEco) heroEco.dataset.benefitKind = turboSnapshot.label === 'Na parcela' ? 'monthly' : 'total'
     if (heroEcoLabel) heroEcoLabel.textContent = turboSnapshot.label === 'Na parcela'
       ? 'Economia mensal'
       : 'Economia total'
     if (ctaSaving) ctaSaving.textContent = `+${turboValue}`
+    if (ctaSaving) ctaSaving.dataset.benefitKind = turboSnapshot.label === 'Na parcela' ? 'monthly' : 'total'
     if (ctaSavingLabel) ctaSavingLabel.textContent = turboSnapshot.label === 'Na parcela'
       ? 'de economia mensal'
       : 'de economia no contrato'
@@ -726,7 +730,7 @@ function svgRefin(idx) {
 // -- Card builders --
 
 function buildTurboCard(cfg, offer, idx, usuario, selectedThirdSubOffer) {
-  const economiaContrato = fmt(offer.economiaContrato ?? offer.economiaTotal ?? 0)
+  const economiaContrato = `<span class="turbo-value turbo-value-total">${fmt(offer.economiaContrato ?? offer.economiaTotal ?? 0)}</span>`
   const economiaParcela = `${fmt(offer.economiaParcela ?? getEcoMensal(offer, usuario.parcelaAtual))}<span class="turbo-suffix">/mês</span>`
   const sel = selectedThirdSubOffer === 'installment' ? 'installment' : 'contract'
   const opt = (key, label, val, sub) => {
@@ -1101,7 +1105,7 @@ const WIDE_LAYOUT_CSS = `
     margin-top: 18px; color: white;
     font-size: 27px; line-height: .98; font-weight: 950; letter-spacing: -0.06em;
   }
-  .side-blue-card h2 span { color: #00E7FF; }
+  .side-blue-card h2 span { color: #00A86B; }
   .side-blue-card p {
     margin-top: 12px; color: rgba(255,255,255,.76);
     font-size: 12.5px; line-height: 1.45; font-weight: 650;

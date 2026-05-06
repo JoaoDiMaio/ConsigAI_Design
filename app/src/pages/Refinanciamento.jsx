@@ -203,9 +203,10 @@ export default function Refinanciamento() {
         :root { 
           --blue-dark:#002D6E; 
           --blue-main:#043B8B; 
+          --blue-interactive:#2454D6;
           --logo-blue:#1DA1EB; 
-          --cyan:#00E7FF; 
           --green:#007A52; 
+          --green-strong:#00A86B;
           --green-soft:#F0FFF8; 
           --green-line:#BDECD7; 
           --muted:#64748B; 
@@ -227,8 +228,8 @@ export default function Refinanciamento() {
         .scenario-card::before { content:''; position:absolute; inset:0 0 auto 0; height:5px; background:var(--card-accent); }
         .scenario-card::after { content:''; position:absolute; top:0; right:0; width:220px; height:130px; background:radial-gradient(circle at 100% 0%, var(--card-glow), transparent 70%); pointer-events:none; }
         .scenario-card.selected { background:#fff; }
-        .scenario-card.green { --card-accent: var(--blue-main); --card-glow: rgba(5,94,206,.14); }
-        .scenario-card.gold { --card-accent: var(--green); --card-glow: rgba(0,122,82,.12); }
+        .scenario-card.money { --card-accent: var(--blue-interactive); --card-glow: rgba(36,84,214,.14); }
+        .scenario-card.relief { --card-accent: var(--green); --card-glow: rgba(0,122,82,.12); }
         .scenario-header { display:grid; grid-template-columns:44px 1fr; gap:14px; align-items:start; }
         .scenario-icon { width:42px; height:42px; border-radius:13px; display:grid; place-items:center; background:var(--card-accent); color:#fff; font-size:19px; font-weight:900; }
         .scenario-eyebrow { color:var(--card-accent); font-size:10px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
@@ -248,7 +249,7 @@ export default function Refinanciamento() {
         .scenario-details-btn { min-height:36px; padding:0 12px; border-radius:13px; border:1px solid color-mix(in srgb, var(--card-accent) 28%, #ffffff); background:#fff; color:var(--card-accent); font-size:12px; font-weight:900; cursor:pointer; }
         .compact-contract-list { display:grid; gap:12px; margin-top:8px; }
         .compact-refin-card { padding:16px; border-radius:21px; background:#fff; border:1px solid var(--line); box-shadow:none; position:relative; overflow:hidden; cursor:auto; }
-        .compact-refin-card::before { content:''; position:absolute; inset:0 0 auto 0; height:4px; background:linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--cyan), var(--green)); }
+        .compact-refin-card::before { content:''; position:absolute; inset:0 0 auto 0; height:4px; background:linear-gradient(90deg, var(--blue-main), var(--logo-blue), var(--green-strong)); }
         .compact-header { display:flex; justify-content:space-between; align-items:center; gap:10px; padding-bottom:10px; border-bottom:1px solid var(--line); }
         .compact-header small { color:var(--blue-main); font-size:10px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
         .compact-header h3 { margin-top:2px; color:var(--blue-dark); font-size:16px; line-height:1; font-weight:900; letter-spacing:-.04em; }
@@ -256,7 +257,7 @@ export default function Refinanciamento() {
         .money-copy { min-width:0; }
         .money-highlight span { display:block; color:var(--green); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
         .money-highlight small { display:block; margin-top:2px; color:var(--muted); font-size:10px; line-height:1.25; font-weight:700; }
-        .money-highlight strong { flex:0 0 auto; color:var(--green); font-size:21px; line-height:1; font-weight:800; letter-spacing:-.055em; white-space:nowrap; }
+        .money-highlight strong { flex:0 0 auto; color:var(--green-strong); font-size:21px; line-height:1; font-weight:800; letter-spacing:-.055em; white-space:nowrap; }
         .compare-lines { display:grid; margin-top:10px; border:1px solid var(--line); border-radius:13px; overflow:hidden; background:#fff; }
         .compare-head, .compare-line { display:grid; grid-template-columns:74px 1fr 1fr; align-items:center; gap:8px; }
         .compare-head { padding:8px 10px; background:var(--blue-soft); border-bottom:1px solid var(--line); color:var(--muted); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.07em; }
@@ -314,7 +315,7 @@ export default function Refinanciamento() {
                     {scenarios.map((s, i) => (
                       <div key={s.key}>
                       <article
-                        className={`scenario-card ${i === 1 ? 'green' : ''} ${i === 2 ? 'gold' : ''} ${activeIdx === i ? 'selected' : ''}`}
+                        className={`scenario-card ${i === 1 ? 'money' : ''} ${i === 2 ? 'relief' : ''} ${activeIdx === i ? 'selected' : ''}`}
                         onClick={() => { setActiveIdx(i) }}
                         onMouseEnter={() => setHoveredIdx(i)}
                         onMouseLeave={() => setHoveredIdx((current) => (current === i ? null : current))}
