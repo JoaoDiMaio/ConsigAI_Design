@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
 import { useOffersData } from '../hooks/useOffersData.js'
@@ -1420,11 +1420,8 @@ export default function Ofertas() {
   const clientName = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
 
   const [ctaBar, setCtaBar] = useState(null) // { name, saving, savingLabel } | null
-  const setCtaBarRef = useRef(setCtaBar)
-  setCtaBarRef.current = setCtaBar
   const [selectedEntry, setSelectedEntry] = useState(null)
-  const setSelectedEntryRef = useRef(setSelectedEntry)
-  setSelectedEntryRef.current = setSelectedEntry
+  const [selectedThirdSubOffer, setSelectedThirdSubOffer] = useState('contract')
   const iframeRef = useRef(null)
   const selectedOfferIndexRef = useRef(0)
   const selectedThirdSubOfferRef = useRef('contract')
@@ -1473,6 +1470,10 @@ export default function Ofertas() {
   }, [activeOffers, usuario, impacto])
 
   useEffect(() => {
+    selectedThirdSubOfferRef.current = selectedThirdSubOffer
+  }, [selectedThirdSubOffer])
+
+  useEffect(() => {
     let normalizationTimer = null
     let skipObserverUntil = 0
     let intervalId = null
@@ -1511,14 +1512,14 @@ export default function Ofertas() {
       const ctaSaving = doc.querySelector('#ctaSaving')
       const ctaSavingLabel = doc.querySelector('.cta-saving-label')
       if (ctaName) {
-        setCtaBarRef.current(hasNoOffer ? null : {
+        setCtaBar(hasNoOffer ? null : {
           name: ctaName.textContent,
           sub: ctaSub?.textContent || '',
           saving: ctaSaving?.textContent || '',
           savingLabel: ctaSavingLabel?.textContent || '',
         })
       }
-      setSelectedEntryRef.current(hasNoOffer ? null : selectedEntry)
+      setSelectedEntry(hasNoOffer ? null : selectedEntry)
     }
 
     const refreshSelectedOfferUi = (doc, idx) => {
@@ -1658,6 +1659,7 @@ export default function Ofertas() {
                 : NaN
               if (Number.isNaN(turboIdx)) return
               selectedThirdSubOfferRef.current = subKey
+              setSelectedThirdSubOffer(subKey)
               selectedOfferIndexRef.current = turboIdx
               event.preventDefault()
               event.stopPropagation()
@@ -1751,15 +1753,8 @@ export default function Ofertas() {
     )
   }
 
-  const handleContinue = () => {
-    const selected = activeOffers[selectedOfferIndexRef.current]
-    if (!selected) return
-    const contractState = buildContractState(selected, usuario, selectedThirdSubOfferRef.current)
-    navigate('/contratacao', contractState ? { state: contractState } : undefined)
-  }
-
   const selectedOffer = selectedEntry
-    ? buildSelectedOfferSummary(selectedEntry, usuario, selectedThirdSubOfferRef.current)
+    ? buildSelectedOfferSummary(selectedEntry, usuario, selectedThirdSubOffer)
     : null
 
   return (

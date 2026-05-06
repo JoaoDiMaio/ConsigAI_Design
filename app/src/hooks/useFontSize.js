@@ -15,18 +15,21 @@ function applyScale(scale) {
 
 export function useFontSize() {
   const [scaleIdx, setScaleIdx] = useState(() => {
-    try { return Number(localStorage.getItem(KEY)) || 0 } catch { return 0 }
+    try {
+      return Number(localStorage.getItem(KEY)) || 0
+    } catch {
+      return 0
+    }
   })
 
   useEffect(() => {
     applyScale(SCALES[scaleIdx])
-    try { localStorage.setItem(KEY, scaleIdx) } catch {}
+    try {
+      localStorage.setItem(KEY, scaleIdx)
+    } catch {
+      // Ignore storage failures in restricted browsing contexts.
+    }
   }, [scaleIdx])
-
-  // apply on mount (persisted preference)
-  useEffect(() => {
-    applyScale(SCALES[scaleIdx])
-  }, [])
 
   function toggle() {
     setScaleIdx(i => (i + 1) % SCALES.length)

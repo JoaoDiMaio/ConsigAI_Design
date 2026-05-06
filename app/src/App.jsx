@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Cadastro from './pages/Cadastro'
 import Contratacao from './pages/Contratacao'
+import DadosBancarios from './pages/DadosBancarios'
 import NovoContrato from './pages/NovoContrato'
 import Portabilidade from './pages/Portabilidade'
 import Refinanciamento from './pages/Refinanciamento'
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/upload-extrato" element={<UploadExtrato />} />
         <Route path="/carregamento-ofertas" element={<CarregamentoOfertas />} />
         <Route path="/contratacao" element={<Contratacao />} />
+        <Route path="/dados-bancarios" element={<DadosBancarios />} />
         <Route path="/novo-contrato" element={<NovoContrato />} />
         <Route path="/portabilidade" element={<Portabilidade />} />
         <Route path="/refinanciamento" element={<Refinanciamento />} />

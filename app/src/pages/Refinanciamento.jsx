@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
@@ -24,19 +24,19 @@ export default function Refinanciamento() {
   const [openDetailsCardIdx, setOpenDetailsCardIdx] = useState(null)
   const [showReceipt, setShowReceipt] = useState(false)
 
-  const fmtCurrency = (value) => {
+  const fmtCurrency = useCallback((value) => {
     const n = Number(value)
     if (Number.isFinite(n)) return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
     if (typeof value === 'string' && value.trim()) return value
     return 'R$ 0'
-  }
+  }, [])
 
-  const fmtInstallment = (value) => {
+  const fmtInstallment = useCallback((value) => {
     const s = fmtCurrency(value)
     return s.includes('/mês') || s.includes('/mes') ? s : `${s}/mês`
-  }
+  }, [fmtCurrency])
 
-  const normalizeScenario = (raw, index) => {
+  const normalizeScenario = useCallback((raw, index) => {
     const contractsRaw = raw?.contracts ?? raw?.contratos ?? []
     const receiptRowsRaw = raw?.receiptRows ?? raw?.recibo ?? raw?.contratosDetalhes ?? []
 
@@ -121,7 +121,7 @@ export default function Refinanciamento() {
       contracts,
       contractDetails,
     }
-  }
+  }, [fmtCurrency, fmtInstallment])
 
   const scenarios = useMemo(() => {
     const state = location.state || {}
@@ -150,13 +150,10 @@ export default function Refinanciamento() {
         idx,
       ),
     )
-  }, [location.state])
+  }, [location.state, normalizeScenario])
 
-  useEffect(() => {
-    if (activeIdx > scenarios.length - 1) setActiveIdx(0)
-  }, [activeIdx, scenarios.length])
-
-  const scenario = scenarios[activeIdx] || scenarios[0]
+  const safeActiveIdx = activeIdx > scenarios.length - 1 ? 0 : activeIdx
+  const scenario = scenarios[safeActiveIdx] || scenarios[0]
 
   const salarioBase = 2200
   const parcelaAntes = 550

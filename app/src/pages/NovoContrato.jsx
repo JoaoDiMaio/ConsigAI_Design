@@ -52,6 +52,7 @@ export default function NovoContrato() {
   const [ctaHover, setCtaHover] = useState(false)
   const [secondHover, setSecondHover] = useState(false)
   const [customBtnHover, setCustomBtnHover] = useState(false)
+  const [hoveredAnchor, setHoveredAnchor] = useState(null)
   const [customOpen, setCustomOpen] = useState(false)
   const [customRaw, setCustomRaw] = useState('')
   const [selectedPrazo, setSelectedPrazo] = useState(OFERTA.prazosDisponiveis[OFERTA.prazosDisponiveis.length - 1])
@@ -112,13 +113,12 @@ export default function NovoContrato() {
     })
   }
 
-  const AnchorBtn = ({ idx }) => {
+  const renderAnchorButton = (idx) => {
     const a = OFERTA.ancoras[idx]
     const active = selected === idx
-    const [hovered, setHovered] = useState(false)
     const selectionStyle = getSelectableCardStyle({
       selected: active,
-      hovered,
+      hovered: hoveredAnchor === idx,
       baseBackground: idx === 0
         ? 'radial-gradient(circle at 92% 8%, rgba(4, 59, 139, 0.08), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)'
         : 'radial-gradient(circle at 92% 8%, rgba(4, 59, 139, 0.06), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)',
@@ -130,8 +130,8 @@ export default function NovoContrato() {
           setCustomRaw('')
           setSelected(idx)
         }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        onMouseEnter={() => setHoveredAnchor(idx)}
+        onMouseLeave={() => setHoveredAnchor(null)}
         style={{
           width: '100%',
           minHeight: idx === 0 ? 130 : 80,
@@ -173,10 +173,10 @@ export default function NovoContrato() {
       />
 
       <section style={{ marginBottom: 12, padding: isDesktop ? '22px' : '18px 16px', borderRadius: 28, border: '1px solid #DDE8F6', background: '#FFFFFF', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
-        <div style={{ marginBottom: 12 }}><AnchorBtn idx={0} /></div>
+        <div style={{ marginBottom: 12 }}>{renderAnchorButton(0)}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-          <AnchorBtn idx={1} />
-          <AnchorBtn idx={2} />
+          {renderAnchorButton(1)}
+          {renderAnchorButton(2)}
         </div>
 
         <button
