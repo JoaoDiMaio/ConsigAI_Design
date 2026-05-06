@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import OnboardingBrandHeader from '../components/onboarding/OnboardingBrandHeader'
 import { FontSizeToggleFloating } from '../components/FontSizeToggle'
+import { appFontFamily, onboardingAliasVarsCss } from '../ui/theme'
 
 export default function Entrada() {
   const navigate = useNavigate()
@@ -9,19 +10,7 @@ export default function Entrada() {
     <>
       <style>{`
         :root {
-          --blue-dark: #002D6E;
-          --blue-main: #043B8B;
-          --logo-blue: #2454D6;
-          --cyan: #1DA1EB;
-          --green: #00A86B;
-          --green-soft: #F0FFF8;
-          --green-line: #BDECD7;
-          --muted: #64748B;
-          --line: #DDE8F6;
-          --blue-soft: #F4F9FF;
-          --white: #FFFFFF;
-          --shadow: 0 24px 68px rgba(3, 36, 111, 0.12);
-          --soft-shadow: 0 16px 38px rgba(3, 36, 111, 0.08);
+${onboardingAliasVarsCss}
         }
 
         .entry-page * {
@@ -38,7 +27,7 @@ export default function Entrada() {
           place-items: center;
           padding: 24px 20px;
           overflow: hidden;
-          font-family: Inter, Arial, sans-serif;
+          font-family: ${appFontFamily};
           color: var(--blue-dark);
           background: transparent;
         }
@@ -70,8 +59,8 @@ export default function Entrada() {
           border-radius: 16px;
           display: grid;
           place-items: center;
-          background: linear-gradient(145deg, var(--blue-main), var(--cyan));
-          box-shadow: 0 14px 30px rgba(0, 231, 255, 0.24);
+          background: linear-gradient(145deg, var(--blue-main), var(--logo-blue));
+          box-shadow: 0 14px 30px rgba(36, 84, 214, 0.24);
           color: white;
           font-size: 22px;
           font-weight: 950;
@@ -177,7 +166,7 @@ export default function Entrada() {
           border-radius: 999px;
           background: rgba(255, 255, 255, 0.10);
           border: 1px solid rgba(255, 255, 255, 0.18);
-          color: #DDE8F6;
+          color: var(--line);
           font-size: 11px;
           font-weight: 950;
           text-transform: uppercase;
@@ -417,7 +406,7 @@ export default function Entrada() {
         }
 
         .input-field::placeholder {
-          color: #8A9AB8;
+          color: var(--muted-soft);
         }
 
         .input-field:focus {
@@ -435,14 +424,14 @@ export default function Entrada() {
           color: white;
           font-size: 15px;
           font-weight: 950;
-          box-shadow: 0 18px 38px rgba(5, 94, 206, 0.24);
+          box-shadow: none;
         }
 
         .secondary-cta {
           width: 100%;
           min-height: 54px;
           border-radius: 21px;
-          border: 1px solid #DDE8F6;
+          border: 1px solid var(--line);
           background: transparent;
           color: var(--blue-main);
           font-size: 15px;
@@ -460,48 +449,17 @@ export default function Entrada() {
         .consigai-cta-animated {
           position: relative;
           overflow: hidden;
-          transform: translateY(0);
-          transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background-position .35s ease, filter .18s ease;
-          animation: consigaiDetailsFloat 3.8s ease-in-out infinite;
-          background-size: 220% 100%;
-          background-position: 0% 0%;
+          transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, filter .16s ease;
           cursor: pointer;
         }
 
         .consigai-cta-animated:hover {
-          background-position: 100% 0%;
-          animation-play-state: paused;
-          transform: translateY(-2px) scale(1.01) !important;
-          filter: saturate(1.05);
+          transform: translateY(-1px) !important;
+          filter: none;
         }
 
         .consigai-cta-animated:active {
-          transform: translateY(0) scale(.985);
-        }
-
-        .consigai-cta-animated::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,.55) 45%, transparent 60%);
-          transform: translateX(-120%) skewX(-18deg);
-          opacity: 0;
-          pointer-events: none;
-        }
-
-        .consigai-cta-animated:hover::after {
-          opacity: 1;
-          animation: consigaiDetailsShine .9s ease forwards;
-        }
-
-        @keyframes consigaiDetailsFloat {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-1px); }
-        }
-
-        @keyframes consigaiDetailsShine {
-          0% { transform: translateX(-120%) skewX(-18deg); }
-          100% { transform: translateX(120%) skewX(-18deg); }
+          transform: translateY(0);
         }
 
         @keyframes mobileCtaSelect {
@@ -546,7 +504,7 @@ export default function Entrada() {
           border-radius: 14px;
           background: transparent;
           color: var(--blue-main);
-          border: 1px solid #BFD4F6;
+          border: 1px solid var(--line-strong);
           font-weight: 900;
           text-decoration: none;
           box-shadow: none;
@@ -777,7 +735,7 @@ export default function Entrada() {
             <div className="visual-content">
               <div>
                 <div className="visual-kicker">Consignado com IA</div>
-                <h1 className="visual-title">Veja quanto você pode <span style={{ color: '#00E7FF' }}>Economizar</span></h1>
+                <h1 className="visual-title">Veja quanto você pode <span style={{ color: 'var(--green)' }}>Economizar</span></h1>
                 <p className="visual-copy">
                   A ConsigAI compara seus contratos e mostra opções para pagar menos,
                   reduzir parcela ou receber dinheiro com transparência.
@@ -877,7 +835,7 @@ export default function Entrada() {
                 <input className="input-field" type="text" placeholder="CPF ou e-mail" aria-label="CPF ou e-mail" />
                 <input className="input-field" type="password" placeholder="Senha" aria-label="Senha" />
 
-                <button className="primary-cta consigai-cta-animated" type="button" onClick={() => navigate('/ofertas')}>Ver minha economia</button>
+                <button className="primary-cta consigai-cta-animated" type="button" onClick={() => navigate('/carregamento-ofertas')}>Ver minha economia</button>
                 <button className="secondary-cta consigai-cta-animated" type="button" onClick={() => navigate('/cadastro')}>Criar minha conta</button>
               </form>
 

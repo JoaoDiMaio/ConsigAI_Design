@@ -20,6 +20,7 @@ export default function Refinanciamento() {
   const clientName = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
 
   const [activeIdx, setActiveIdx] = useState(0)
+  const [hoveredIdx, setHoveredIdx] = useState(null)
   const [openDetailsCardIdx, setOpenDetailsCardIdx] = useState(null)
   const [showReceipt, setShowReceipt] = useState(false)
 
@@ -225,10 +226,10 @@ export default function Refinanciamento() {
         .offer-flow-header h2 { color:var(--blue-dark); font-size:20px; line-height:1.05; font-weight:900; letter-spacing:-.04em; }
         .offer-flow-header p { margin-top:5px; color:var(--muted); font-size:12px; line-height:1.35; font-weight:600; }
         .scenario-list { display:grid; gap:16px; }
-        .scenario-card { --card-accent: var(--blue-dark); --card-glow: rgba(3,36,111,.12); padding:22px; border-radius:28px; background:#fff; border:1px solid var(--line); box-shadow:0 16px 38px rgba(3,36,111,.07); position:relative; overflow:hidden; cursor:pointer; }
+        .scenario-card { --card-accent: var(--blue-dark); --card-glow: rgba(3,36,111,.10); padding:22px; border-radius:28px; background:#fff; border:1px solid var(--line); box-shadow:0 12px 30px rgba(3,36,111,.06); position:relative; overflow:hidden; cursor:pointer; }
         .scenario-card::before { content:''; position:absolute; inset:0 0 auto 0; height:5px; background:var(--card-accent); }
         .scenario-card::after { content:''; position:absolute; top:0; right:0; width:220px; height:130px; background:radial-gradient(circle at 100% 0%, var(--card-glow), transparent 70%); pointer-events:none; }
-        .scenario-card.selected { border:2px solid var(--card-accent); background:#fff; }
+        .scenario-card.selected { background:#fff; }
         .scenario-card.green { --card-accent: var(--blue-main); --card-glow: rgba(5,94,206,.14); }
         .scenario-card.gold { --card-accent: var(--green); --card-glow: rgba(0,122,82,.12); }
         .scenario-header { display:grid; grid-template-columns:44px 1fr; gap:14px; align-items:start; }
@@ -272,20 +273,17 @@ export default function Refinanciamento() {
         .compact-note { margin-top:10px; padding:9px 10px; border-radius:13px; background:#F8FBFF; border:1px solid var(--line); color:var(--muted); font-size:11px; line-height:1.3; font-weight:600; }
         .compact-note strong { color:var(--blue-dark); font-weight:900; }
         .scenario-actions { margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
-        .consigai-cta-animated { position:relative; overflow:hidden; transform:translateY(0); transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease, background-position .35s ease, filter .18s ease; animation:consigaiDetailsFloat 3.8s ease-in-out infinite; background-size:220% 100%; background-position:0% 0%; cursor:pointer; }
-        .consigai-cta-animated:hover { background-position:100% 0%; animation-play-state:paused; transform:translateY(-2px) scale(1.01) !important; filter:saturate(1.05); }
-        .consigai-cta-animated:active { transform:translateY(0) scale(.985); }
-        .consigai-cta-animated::after { content:''; position:absolute; inset:0; background:linear-gradient(115deg, transparent 0%, rgba(255,255,255,.55) 45%, transparent 60%); transform:translateX(-120%) skewX(-18deg); opacity:0; pointer-events:none; }
-        .consigai-cta-animated:hover::after { opacity:1; animation:consigaiDetailsShine .9s ease forwards; }
-        @keyframes consigaiDetailsFloat { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-1px); } }
-        @keyframes consigaiDetailsShine { 0% { transform:translateX(-120%) skewX(-18deg); } 100% { transform:translateX(120%) skewX(-18deg); } }
+        .consigai-cta-animated { position:relative; overflow:hidden; transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease, filter .16s ease; cursor:pointer; }
+        .consigai-cta-animated:hover { transform:translateY(-1px) !important; filter:none; }
+        .consigai-cta-animated:active { transform:translateY(0); }
+        .details-panel { margin-top: 18px; max-height: min(560px, 68vh); overflow: auto; padding-right: 4px; scrollbar-gutter: stable; }
         .primary-cta { width:100%; min-height:54px; border:0; border-radius:21px; background:linear-gradient(145deg, var(--blue-main), var(--blue-dark)); color:#fff; font-size:15px; font-weight:900; cursor:pointer; }
         .secondary-cta,.back-offers-cta { width:100%; min-height:50px; margin-top:12px; border-radius:21px; border:1px solid #BFD4F6; background:#fff; color:var(--blue-main); font-size:14px; font-weight:900; cursor:pointer; }
         .back-offers-cta { min-height:46px; margin-top:10px; border-radius:13px; border:1px solid #BFD4F6; background:#fff; color:var(--blue-main); font-size:14px; font-weight:900; box-shadow:0 8px 20px rgba(4,59,139,.12); }
         .safe-note { margin-top:12px; color:var(--muted); text-align:center; font-size:11px; font-weight:600; }
         @media (max-width:1100px){ .main-layout{ grid-template-columns:1fr; } .sidebar{ display:grid; grid-template-columns:1fr 1fr; gap:16px; } }
-        @media (max-width:900px){ .rf-shell{ width:calc(100% - 32px); } .scenario-metrics,.salary-grid,.sidebar{ grid-template-columns:1fr; } }
-        @media (max-width:560px){ .hero-heading{ font-size:34px; } .strategy-hero,.scenario-card{ padding:22px; } .scenario-header{ grid-template-columns:42px 1fr; } .money-highlight{ align-items:flex-start; flex-direction:column; } .compare-head,.compare-line{ grid-template-columns:1fr; gap:6px; } .compare-head span:first-child{ display:none; } }
+        @media (max-width:900px){ .rf-shell{ width:calc(100% - 32px); } .scenario-metrics,.salary-grid,.sidebar{ grid-template-columns:1fr; } .contract-tags-actions{ flex-direction:column; align-items:stretch; } .scenario-card-footer{ width:100%; } .scenario-details-btn{ width:100%; } }
+        @media (max-width:560px){ .hero-heading{ font-size:34px; } .strategy-hero,.scenario-card{ padding:22px; } .scenario-header{ grid-template-columns:42px 1fr; } .money-highlight{ align-items:flex-start; flex-direction:column; } .compare-head,.compare-line{ grid-template-columns:1fr; gap:6px; } .compare-head span:first-child{ display:none; } .details-panel{ max-height:min(420px,62vh); } }
       `}</style>
 
       <div style={appPageStyle}>
@@ -321,7 +319,9 @@ export default function Refinanciamento() {
                       <article
                         className={`scenario-card ${i === 1 ? 'green' : ''} ${i === 2 ? 'gold' : ''} ${activeIdx === i ? 'selected' : ''}`}
                         onClick={() => { setActiveIdx(i) }}
-                        style={getSelectableCardStyle({ selected: activeIdx === i, hovered: false })}
+                        onMouseEnter={() => setHoveredIdx(i)}
+                        onMouseLeave={() => setHoveredIdx((current) => (current === i ? null : current))}
+                        style={getSelectableCardStyle({ selected: activeIdx === i, hovered: hoveredIdx === i })}
                       >
                         <div className="scenario-header">
                           <div className="scenario-icon">{ICONS[i] || '$'}</div>
@@ -363,7 +363,7 @@ export default function Refinanciamento() {
                           </div>
                         </div>
                         {openDetailsCardIdx === i && (
-                        <div style={{ marginTop: 24 }} onClick={(e) => e.stopPropagation()}>
+                        <div className="details-panel" onClick={(e) => e.stopPropagation()}>
                           <div className="compact-contract-list">
                             {s.contractDetails.map((item) => (
                               <article key={item.key} className="compact-refin-card">

@@ -1249,9 +1249,8 @@ export const OFFER_CARD_REDESIGN_CSS = `
   /* Desabilitar animações globais; manter apenas nos cards de oferta e minicards turbo */
   .main * { animation: none !important; transition: none !important; transform: none; }
   .offers-grid .offer-card { transition: all .18s ease !important; }
-  .offer-card.turbo-offer .turbo-option { animation: turboMiniFloat 3.6s ease-in-out infinite !important; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease !important; }
-  .offer-card.turbo-offer .turbo-options .turbo-option:nth-child(2) { animation-delay: .9s !important; }
-  .consigai-offer-details-btn { animation: consigaiDetailsFloat 3.8s ease-in-out infinite !important; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background-position .35s ease !important; }
+  .offer-card.turbo-offer .turbo-option { transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease !important; }
+  .consigai-offer-details-btn { transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, background-position .16s ease !important; }
   .ba-section .vc, .ba-section .popped, #baNova, #baSobra, #baCredito, #baPill {
     animation: none !important; transition: none !important; transform: none !important;
   }
@@ -1296,14 +1295,14 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.selected, .offer-card.active { cursor: auto; }
   .offer-card:hover:not(.selected):not(.active) {
-    transform: translateY(-3px) !important;
+    transform: translateY(-1px) !important;
     border-color: #b8cef5 !important;
-    box-shadow: 0 16px 40px rgba(3,36,111,.11) !important;
+    box-shadow: 0 12px 30px rgba(3,36,111,.09) !important;
   }
   .offer-card.selected, .offer-card.active {
-    border: 2px solid rgba(0,231,255,.65) !important;
+    border: 2px solid #2454D6 !important;
     background: linear-gradient(160deg, #f0faff 0%, #ffffff 60%) !important;
-    box-shadow: 0 20px 56px rgba(5,94,206,.13), 0 0 0 4px rgba(0,231,255,.08) !important;
+    box-shadow: 0 12px 32px rgba(36,84,214,.14), 0 0 0 2px rgba(36,84,214,.12) !important;
     transform: none !important;
   }
   .offer-card.selected::before, .offer-card.active::before {
@@ -1411,7 +1410,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.turbo-offer.selected,
   .offer-card.turbo-offer.active {
-    border: 2px solid rgba(0,231,255,.62) !important;
+    border: 2px solid rgba(36,84,214,.42) !important;
     box-shadow: 0 24px 60px rgba(3,36,111,.12) !important;
   }
   .offer-card.turbo-offer.selected::before,
@@ -1513,19 +1512,13 @@ export const OFFER_CARD_REDESIGN_CSS = `
     -webkit-appearance: none;
     box-shadow: none;
   }
-  .offer-card.turbo-offer .turbo-option {
-    animation: turboMiniFloat 3.6s ease-in-out infinite;
-  }
-  .offer-card.turbo-offer .turbo-options .turbo-option:nth-child(2) {
-    animation-delay: .9s;
-  }
   .offer-card.turbo-offer .turbo-option:hover,
   .offer-card.turbo-offer .consigai-offer-mini-card:hover {
-    transform: translateY(-3px) !important;
+    transform: translateY(-1px) !important;
     border-color: #0a7c52 !important;
-    box-shadow: 0 10px 24px rgba(0, 122, 82, 0.22) !important;
+    box-shadow: 0 8px 18px rgba(0, 122, 82, 0.16) !important;
     background:
-      radial-gradient(circle at 88% 10%, rgba(0, 122, 82, 0.20), transparent 35%),
+      radial-gradient(circle at 88% 10%, rgba(0, 122, 82, 0.12), transparent 35%),
       linear-gradient(180deg, #E8FFF3 0%, #FFFFFF 100%) !important;
   }
   .offer-card.turbo-offer .turbo-option.active,
@@ -1647,7 +1640,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.folga-offer.selected,
   .offer-card.folga-offer.active {
-    border: 2px solid rgba(0,231,255,.62) !important;
+    border: 2px solid rgba(36,84,214,.42) !important;
     box-shadow: 0 24px 60px rgba(3,36,111,.12) !important;
   }
   .offer-card.folga-offer.selected::before,
@@ -1930,7 +1923,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.new-contract-offer.selected,
   .offer-card.new-contract-offer.active {
-    border: 2px solid rgba(0,231,255,.62) !important;
+    border: 2px solid rgba(36,84,214,.42) !important;
     box-shadow: 0 24px 60px rgba(3,36,111,.12) !important;
   }
   .offer-card.new-contract-offer.selected::before,
@@ -2103,7 +2096,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.equilibrio-offer.selected,
   .offer-card.equilibrio-offer.active {
-    border: 2px solid rgba(0,231,255,.68) !important;
+    border: 2px solid rgba(36,84,214,.42) !important;
     box-shadow: 0 24px 60px rgba(3,36,111,.12) !important;
   }
   .offer-card.equilibrio-offer.selected::before,
@@ -2313,7 +2306,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.refin-offer.selected,
   .offer-card.refin-offer.active {
-    border: 2px solid rgba(0,231,255,.62) !important;
+    border: 2px solid rgba(36,84,214,.42) !important;
     box-shadow: 0 24px 60px rgba(3,36,111,.12) !important;
   }
   .offer-card.refin-offer.selected::before,
@@ -2507,12 +2500,11 @@ export const OFFER_CARD_REDESIGN_CSS = `
     overflow: hidden !important;
     transform: translateY(0) !important;
     transition:
-      transform .18s ease,
-      box-shadow .18s ease,
-      border-color .18s ease,
-      background-position .35s ease,
-      filter .18s ease !important;
-    animation: consigaiDetailsFloat 3.8s ease-in-out infinite;
+      transform .16s ease,
+      box-shadow .16s ease,
+      border-color .16s ease,
+      background-position .16s ease,
+      filter .16s ease !important;
   }
   .consigai-offer-pill { font-size: clamp(10px, 0.9vw, 11px) !important; }
   .consigai-offer-line-main { font-size: clamp(18px, 1.8vw, 24px) !important; }
@@ -2522,26 +2514,13 @@ export const OFFER_CARD_REDESIGN_CSS = `
   .consigai-offer-details-btn:hover {
     background-position: 100% 0% !important;
     border-color: rgba(35,80,200,.34) !important;
-    box-shadow: 0 2px 0 rgba(255,255,255,.76) inset, 0 12px 24px rgba(35,80,200,.12) !important;
-    transform: translateY(-2px) scale(1.01) !important;
-    filter: saturate(1.05);
+    box-shadow: 0 2px 0 rgba(255,255,255,.76) inset, 0 8px 18px rgba(35,80,200,.10) !important;
+    transform: translateY(-1px) !important;
+    filter: none;
   }
   .consigai-offer-details-btn:active {
-    transform: translateY(0) scale(.985) !important;
+    transform: translateY(0) !important;
     box-shadow: 0 1px 0 rgba(255,255,255,.66) inset, 0 6px 14px rgba(35,80,200,.10) !important;
-  }
-  .consigai-offer-details-btn::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,.55) 45%, transparent 60%);
-    transform: translateX(-120%) skewX(-18deg);
-    opacity: 0;
-    pointer-events: none;
-  }
-  .consigai-offer-details-btn:hover::after {
-    opacity: 1;
-    animation: consigaiDetailsShine .9s ease forwards;
   }
   .consigai-offer-metric {
     margin-top: 10px; display: flex; justify-content: space-between;
@@ -2591,18 +2570,6 @@ export const OFFER_CARD_REDESIGN_CSS = `
     }
   }
 
-  @keyframes consigaiDetailsFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-1px); }
-  }
-  @keyframes turboMiniFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-2px); }
-  }
-  @keyframes consigaiDetailsShine {
-    0% { transform: translateX(-120%) skewX(-18deg); }
-    100% { transform: translateX(120%) skewX(-18deg); }
-  }
   @media (max-width: 1080px) {
     .offers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   }

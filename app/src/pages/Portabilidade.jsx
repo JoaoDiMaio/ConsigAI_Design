@@ -8,6 +8,7 @@ import { stateData } from '../data/portabilidadeData'
 import { parseMoney } from '../lib/formatters'
 import { loadProfileData } from '../lib/profileStorage'
 import { printSimulationReceipt } from '../lib/receiptPrint'
+import { getSelectableCardStyle } from '../ui/cardSelection'
 import { ResumoCard, ImpactoCard, ControleCard, PageHero } from '../components/SimulationSideCards'
 
 const RECEIPT_DATA = {
@@ -144,6 +145,7 @@ export default function Portabilidade() {
 
   const initialMode = location.state?.initialMode === 'parc' ? 'parc' : 'eco'
   const [mode, setMode] = useState(initialMode)
+  const [hoveredMode, setHoveredMode] = useState(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [showReceipt, setShowReceipt] = useState(false)
   const d = stateData[mode]
@@ -199,13 +201,13 @@ export default function Portabilidade() {
         .port-root{max-width:1280px;margin:0 auto;padding:26px 24px 48px}
         .main-layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:30px}
         .card{border:1px solid #dde8f6;border-radius:28px;background:#fff;box-shadow:0 16px 38px rgba(3,36,111,.075)}
-        .flow{padding:22px;border-radius:34px;position:relative;overflow:hidden;background:#fff;box-shadow:0 22px 58px rgba(3,36,111,.11)}
+        .flow{padding:22px;border-radius:34px;position:relative;overflow:hidden;background:#fff;box-shadow:0 18px 42px rgba(3,36,111,.09)}
         .flow:before{content:'';position:absolute;inset:0 0 auto 0;height:5px;background:linear-gradient(90deg,#043B8B,#2454D6,#00A86B)}
         .flow > *{position:relative;z-index:1}
         .tabs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
         .tab{min-height:88px;padding:18px;border-radius:21px;border:1px solid #dde8f6;background:radial-gradient(circle at 92% 8%,rgba(4,59,139,.06),transparent 34%),linear-gradient(180deg,#fff,#f8fbff);text-align:center;display:grid;place-items:center;gap:5px;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 12px 32px rgba(3,36,111,.05)}
         .tab:before{content:'';position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,#043B8B,#2454D6,#00A86B);opacity:.55}
-        .tab.active{border-color:rgba(36,84,214,.5);box-shadow:0 16px 40px rgba(4,59,139,.12);background:radial-gradient(circle at 92% 8%,rgba(36,84,214,.12),transparent 34%),linear-gradient(180deg,#fff,#f8fbff)}
+        .tab.active{}
         .tab.active:before{opacity:1;background:linear-gradient(90deg,#043B8B,#2454D6,#00A86B)}
         .tab strong{font-size:16px;font-weight:900;color:#002D6E}
         .tab span{font-size:12px;color:#64748b}
@@ -247,13 +249,10 @@ export default function Portabilidade() {
         .cta{width:100%;min-height:54px;border:0;border-radius:21px;background:linear-gradient(145deg,#043B8B,#002D6E);color:#fff;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 16px 32px rgba(4,59,139,.22)}
         .secondary{width:100%;min-height:50px;border-radius:21px;border:1px solid #dde8f6;background:#fff;color:#043B8B;font-size:14px;font-weight:900;cursor:pointer}
         .safe{margin-top:12px;text-align:center;font-size:11px;color:#64748b;font-weight:700}
-        .consigai-cta-animated{position:relative;overflow:hidden;transform:translateY(0);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background-position .35s ease,filter .18s ease;animation:consigaiDetailsFloat 3.8s ease-in-out infinite;background-size:220% 100%;background-position:0% 0%}
-        .consigai-cta-animated:hover{background-position:100% 0%;animation-play-state:paused;transform:translateY(-2px) scale(1.01)!important;filter:saturate(1.05)}
-        .consigai-cta-animated:active{transform:translateY(0) scale(.985)}
-        .consigai-cta-animated:after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 0%,rgba(255,255,255,.55) 45%,transparent 60%);transform:translateX(-120%) skewX(-18deg);opacity:0;pointer-events:none}
-        .consigai-cta-animated:hover:after{opacity:1;animation:consigaiDetailsShine .9s ease forwards}
-        @keyframes consigaiDetailsFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-1px)}}
-        @keyframes consigaiDetailsShine{to{transform:translateX(120%) skewX(-18deg);opacity:0}}
+        .consigai-cta-animated{position:relative;overflow:hidden;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,filter .16s ease}
+        .consigai-cta-animated:hover{transform:translateY(-1px)!important;filter:none}
+        .consigai-cta-animated:active{transform:translateY(0)}
+        .details-panel{margin-top:12px;max-height:min(560px,68vh);overflow:auto;padding-right:4px;scrollbar-gutter:stable}
         .receipt-wrap{margin-top:12px}
         .compact-contract-list{display:grid;gap:12px;margin-top:12px;margin-bottom:10px}
         .compact-refin-card{padding:16px;border-radius:21px;background:#fff;border:1px solid #dde8f6;box-shadow:none;position:relative;overflow:hidden}
@@ -292,7 +291,7 @@ export default function Portabilidade() {
         .receipt-site{text-align:center;margin-top:8px;font-size:9px;color:#7a7a7a}
         .back-btn{margin-top:10px;width:100%;min-height:46px;border-radius:13px;border:1px solid #dde8f6;background:#fff;color:#043B8B;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(30,60,180,.12)}
         @media (max-width:1100px){.main-layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:16px}.side-card + .side-card{margin-top:0}}
-        @media (max-width:900px){.port-root{padding:16px}.tabs,.compare,.benefits,.salary,.sidebar{grid-template-columns:1fr}.arrow{transform:rotate(90deg);justify-self:center}.compare-head,.compare-line{grid-template-columns:1fr;gap:6px}.compare-head span:first-child{display:none}}
+        @media (max-width:900px){.port-root{padding:16px}.tabs,.compare,.benefits,.salary,.sidebar{grid-template-columns:1fr}.arrow{transform:rotate(90deg);justify-self:center}.compare-head,.compare-line{grid-template-columns:1fr;gap:6px}.compare-head span:first-child{display:none}.contracts-bottom{flex-direction:column;align-items:stretch}.details-btn{width:100%}.details-panel{max-height:min(420px,62vh)}}
       `}</style>
 
       <div style={appPageStyle}>
@@ -329,11 +328,31 @@ export default function Portabilidade() {
 
               <section className="card flow">
                 <div className="tabs">
-                  <button className={`tab ${mode === 'eco' ? 'active' : ''}`} onClick={() => setMode('eco')}>
+                  <button
+                    className={`tab ${mode === 'eco' ? 'active' : ''}`}
+                    onClick={() => setMode('eco')}
+                    onMouseEnter={() => setHoveredMode('eco')}
+                    onMouseLeave={() => setHoveredMode((current) => (current === 'eco' ? null : current))}
+                    style={getSelectableCardStyle({
+                      selected: mode === 'eco',
+                      hovered: hoveredMode === 'eco',
+                      baseBackground: 'radial-gradient(circle at 92% 8%,rgba(4,59,139,.06),transparent 34%),linear-gradient(180deg,#fff,#f8fbff)',
+                    })}
+                  >
                     <div className="strategy-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
                     <strong>Quero Economizar</strong><span>Diminuir minha dívida</span>
                   </button>
-                  <button className={`tab ${mode === 'parc' ? 'active' : ''}`} onClick={() => setMode('parc')}>
+                  <button
+                    className={`tab ${mode === 'parc' ? 'active' : ''}`}
+                    onClick={() => setMode('parc')}
+                    onMouseEnter={() => setHoveredMode('parc')}
+                    onMouseLeave={() => setHoveredMode((current) => (current === 'parc' ? null : current))}
+                    style={getSelectableCardStyle({
+                      selected: mode === 'parc',
+                      hovered: hoveredMode === 'parc',
+                      baseBackground: 'radial-gradient(circle at 92% 8%,rgba(4,59,139,.06),transparent 34%),linear-gradient(180deg,#fff,#f8fbff)',
+                    })}
+                  >
                     <div className="strategy-icon flat" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
                     <strong>Parcela Menor</strong><span>Mais alívio no mês</span>
                   </button>
@@ -367,7 +386,7 @@ export default function Portabilidade() {
                   </div>
 
                   {detailsOpen ? (
-                    <div className="receipt-wrap" style={{ marginTop: 12 }}>
+                    <div className="receipt-wrap details-panel">
                       <div className="compact-contract-list" style={{ marginTop: 0 }}>
                         {portContracts.map((item) => (
                           <article key={item.code} className="compact-refin-card">

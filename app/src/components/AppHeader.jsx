@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import logoSvg from '../assets/logo.svg'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { toClientCallName } from '../lib/formatters'
-import { appFontFamily, theme } from '../ui/theme'
+import { appFontFamily, colors, shadow, theme } from '../ui/theme'
 import { FontSizeToggle } from './FontSizeToggle'
 
 const DESKTOP_HEADER_HEIGHT = 72
@@ -136,7 +136,7 @@ function ClientMenu({ actions = [], compact = false, clientName = 'Cliente' }) {
             minWidth: compact ? 160 : 180,
             maxWidth: 'calc(100vw - 24px)',
             borderRadius: 12,
-            background: '#fff',
+            background: colors.brandSurface,
             border: `1px solid ${theme.cardBorder}`,
             boxShadow: '0 12px 28px rgba(0,24,81,.18)',
             padding: 6,
@@ -158,7 +158,7 @@ function ClientMenu({ actions = [], compact = false, clientName = 'Cliente' }) {
                 textAlign: 'left',
                 border: 0,
                 borderRadius: 8,
-                background: '#fff',
+                background: colors.brandSurface,
                 color: theme.text,
                 padding: '9px 10px',
                 fontSize: 13,
@@ -194,7 +194,7 @@ export function DesktopPageHeader({
   return (
     <div
       style={{
-        background: 'radial-gradient(circle at 78% 14%, rgba(0, 231, 255, 0.15), transparent 32%), radial-gradient(circle at 12% 90%, rgba(0, 122, 82, 0.16), transparent 28%), linear-gradient(145deg, #06184E 0%, #03246F 70%, #043B8B 100%)',
+        background: 'radial-gradient(circle at 78% 14%, rgba(29, 161, 235, 0.15), transparent 32%), radial-gradient(circle at 12% 90%, rgba(0, 122, 82, 0.16), transparent 28%), linear-gradient(145deg, #06184E 0%, #03246F 70%, #043B8B 100%)',
         minHeight: headerMinHeight,
         boxSizing: 'border-box',
         display: 'flex',
@@ -206,7 +206,7 @@ export function DesktopPageHeader({
         right: fixed ? 0 : undefined,
         width: fixed ? '100%' : undefined,
         zIndex: 40,
-        boxShadow: '0 2px 16px rgba(0,0,0,.18)',
+        boxShadow: shadow.header,
       }}
     >
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
@@ -259,13 +259,13 @@ export function MobilePageHeader({
   return (
     <div
       style={{
-        background: 'radial-gradient(circle at 78% 14%, rgba(0, 231, 255, 0.15), transparent 32%), radial-gradient(circle at 12% 90%, rgba(0, 122, 82, 0.16), transparent 28%), linear-gradient(145deg, #06184E 0%, #03246F 70%, #043B8B 100%)',
+        background: 'radial-gradient(circle at 78% 14%, rgba(29, 161, 235, 0.15), transparent 32%), radial-gradient(circle at 12% 90%, rgba(0, 122, 82, 0.16), transparent 28%), linear-gradient(145deg, #06184E 0%, #03246F 70%, #043B8B 100%)',
         padding: `max(8px, env(safe-area-inset-top)) ${paddingRight != null ? paddingRight : 14}px 8px 14px`,
         minHeight: minHeightProp ?? MOBILE_HEADER_HEIGHT,
         boxSizing: 'border-box',
         display: 'flex',
         alignItems: 'center',
-        boxShadow: '0 2px 16px rgba(0,0,0,.18)',
+        boxShadow: shadow.header,
         position: fixed ? 'fixed' : sticky ? 'sticky' : 'relative',
         top: (fixed || sticky) ? 0 : undefined,
         left: fixed ? 0 : undefined,

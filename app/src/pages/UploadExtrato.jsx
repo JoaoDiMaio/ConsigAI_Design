@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useState, useRef } from 'react'
 import OnboardingBrandHeader from '../components/onboarding/OnboardingBrandHeader'
 import { FontSizeToggleFloating } from '../components/FontSizeToggle'
+import { appFontFamily, onboardingAliasVarsCss } from '../ui/theme'
 
 const ACCEPT = '.pdf,.jpg,.jpeg,.png,.webp'
 const MAX_MB = 10
@@ -67,21 +68,14 @@ export default function UploadExtrato() {
   function handleSubmit() {
     setSubmitted(true)
     if (files.length === 0) return
-    navigate('/ofertas')
+    navigate('/carregamento-ofertas')
   }
 
   return (
     <>
       <style>{`
         :root {
-          --blue-dark: #002D6E;
-          --blue-main: #043B8B;
-          --logo-blue: #2454D6;
-          --cyan: #1DA1EB;
-          --green: #00A86B;
-          --muted: #64748B;
-          --line: #DDE8F6;
-          --shadow: 0 24px 68px rgba(3, 36, 111, 0.12);
+${onboardingAliasVarsCss}
         }
 
         .register-page * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -91,7 +85,7 @@ export default function UploadExtrato() {
           display: grid;
           place-items: center;
           padding: 24px 20px;
-          font-family: Inter, Arial, sans-serif;
+          font-family: ${appFontFamily};
           color: var(--blue-dark);
           background: transparent;
         }
@@ -185,7 +179,7 @@ export default function UploadExtrato() {
           max-width: 470px;
         }
 
-        .side-title span { color: #A9FFD8; }
+        .side-title span { color: var(--green); }
 
         .side-copy {
           max-width: 440px;
@@ -464,7 +458,7 @@ export default function UploadExtrato() {
           color: white;
           font-size: 15px;
           font-weight: 900;
-          box-shadow: 0 16px 32px rgba(4, 59, 139, 0.22);
+          box-shadow: none;
           font-family: inherit;
           transition: transform .18s ease, filter .18s ease;
         }
@@ -537,10 +531,10 @@ export default function UploadExtrato() {
                     <span>Seus documentos são usados apenas para localizar suas melhores ofertas.</span>
                   </div>
                 </div>
-                <div className="info-card" style={{ background: 'rgba(0, 231, 255, 0.1)', borderColor: 'rgba(0, 231, 255, 0.2)' }}>
+                  <div className="info-card" style={{ background: 'rgba(36, 84, 214, 0.08)', borderColor: 'rgba(36, 84, 214, 0.16)' }}>
                   <div className="info-card-icon">⚡</div>
                   <div>
-                    <strong style={{ color: '#00E7FF' }}>O que acontece agora?</strong>
+                    <strong style={{ color: 'var(--logo-blue)' }}>O que acontece agora?</strong>
                     <span>Nossa IA vai ler seu extrato em segundos. Buscamos apenas os melhores contratos para você.</span>
                   </div>
                 </div>

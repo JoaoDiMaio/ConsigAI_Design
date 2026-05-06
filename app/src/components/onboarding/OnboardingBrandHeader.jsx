@@ -1,4 +1,5 @@
 import logo from '../../assets/ConsigIA_logo_only_no_background.svg'
+import { colors } from '../../ui/theme'
 
 const css = `
   .obh {
@@ -34,9 +35,9 @@ const css = `
     gap: 7px;
     padding: 7px 11px;
     border-radius: 999px;
-    background: rgba(4,59,139,0.06);
-    border: 1px solid rgba(4,59,139,0.15);
-    color: #043B8B;
+    background: ${colors.brandSoft};
+    border: 1px solid ${colors.border};
+    color: ${colors.brandPrimary};
     font-size: 11px;
     font-weight: 900;
     text-transform: uppercase;
@@ -49,20 +50,20 @@ const css = `
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #043B8B;
+    background: ${colors.brandPrimary};
     flex: 0 0 auto;
   }
   .obh-bar-track {
     width: 72px;
     height: 5px;
     border-radius: 999px;
-    background: #DDE8F6;
+    background: ${colors.border};
     overflow: hidden;
   }
   .obh-bar-fill {
     height: 100%;
     border-radius: 999px;
-    background: linear-gradient(90deg, #043B8B, #2454D6);
+    background: linear-gradient(90deg, ${colors.brandPrimary}, ${colors.brandInteractive});
   }
   @media (max-width: 560px) {
     .obh-logo { width: 52px; height: 52px; }

@@ -4,12 +4,13 @@ import Contratacao from './pages/Contratacao'
 import NovoContrato from './pages/NovoContrato'
 import Portabilidade from './pages/Portabilidade'
 import Refinanciamento from './pages/Refinanciamento'
-import OfertasNova from './pages/OfertasNova'
+import Ofertas from './pages/Ofertas'
 import EstrategiaCombinada from './pages/EstrategiaCombinada'
 import Configuracoes from './pages/Configuracoes'
 import AndamentoPropostas from './pages/AndamentoPropostas'
 import Entrada from './pages/Entrada'
 import UploadExtrato from './pages/UploadExtrato'
+import CarregamentoOfertas from './pages/CarregamentoOfertas'
 
 export default function App() {
   return (
@@ -19,11 +20,12 @@ export default function App() {
         <Route path="/entrada" element={<Entrada />} />
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/upload-extrato" element={<UploadExtrato />} />
+        <Route path="/carregamento-ofertas" element={<CarregamentoOfertas />} />
         <Route path="/contratacao" element={<Contratacao />} />
         <Route path="/novo-contrato" element={<NovoContrato />} />
         <Route path="/portabilidade" element={<Portabilidade />} />
         <Route path="/refinanciamento" element={<Refinanciamento />} />
-        <Route path="/ofertas" element={<OfertasNova />} />
+        <Route path="/ofertas" element={<Ofertas />} />
         <Route path="/configuracoes" element={<Configuracoes />} />
         <Route path="/acompanhamento" element={<AndamentoPropostas />} />
         <Route path="/estrategia-combinada" element={<EstrategiaCombinada />} />

@@ -9,15 +9,31 @@
   --fs-xl:   30px;
   --fs-2xl:  38px;
 
-  /* Fintech Premium Tokens */
-  --brand-blue-dark: #002D6E;
-  --brand-blue-main: #043B8B;
-  --brand-blue-light: #2454D6;
-  --brand-green-main: #00A86B;
-  --brand-green-dark: #00875A;
-  --bg-secondary: #F4F9FF;
-  --text-main: #071B45;
-  --text-muted: #667399;
+  /* ConsigAI official color tokens */
+  --color-brand-primary: #043B8B;
+  --color-brand-dark: #002D6E;
+  --color-brand-interactive: #2454D6;
+  --color-brand-soft: #F4F9FF;
+  --color-brand-accent: #1DA1EB;
+  --color-success: #00A86B;
+  --color-success-dark: #007A52;
+  --color-success-soft: #F0FFF8;
+  --color-text-primary: #071B45;
+  --color-text-secondary: #64748B;
+  --color-border: #DDE8F6;
+  --color-surface: #FFFFFF;
+  --color-warning: #9A6500;
+  --color-error: #B32727;
+
+  /* Backward-compatible aliases */
+  --brand-blue-dark: var(--color-brand-dark);
+  --brand-blue-main: var(--color-brand-primary);
+  --brand-blue-light: var(--color-brand-interactive);
+  --brand-green-main: var(--color-success);
+  --brand-green-dark: var(--color-success-dark);
+  --bg-secondary: var(--color-brand-soft);
+  --text-main: var(--color-text-primary);
+  --text-muted: var(--color-text-secondary);
   --radius-card: 20px;
   --radius-btn: 12px;
   --shadow-premium: 0 10px 30px -10px rgba(4, 59, 139, 0.15);
@@ -101,7 +117,7 @@ body::after {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #2454D6, #18B7E8, #00A99D);
+  background: linear-gradient(90deg, var(--color-brand-interactive), var(--color-brand-accent), var(--color-success));
   z-index: 9999;
   animation: loading-bar-slide 1.4s ease-in-out infinite;
 }
@@ -114,26 +130,21 @@ body::after {
   height: 100vh;
   flex-direction: column;
   gap: 12px;
-  color: #1a3d8f;
+  color: var(--color-brand-primary);
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 .offers-error-screen__icon  { font-size: 32px; }
 .offers-error-screen__title { font-weight: 700; font-size: 16px; margin: 0; }
-.offers-error-screen__msg   { color: #667399; font-size: 13px; margin: 0; }
+.offers-error-screen__msg   { color: var(--color-text-secondary); font-size: 13px; margin: 0; }
 
 /* Animações compartilhadas entre páginas */
-@keyframes ctaFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-2px); }
-}
 .cta-btn-float {
-  animation: ctaFloat 3.4s ease-in-out infinite;
-  transition: transform .18s ease, box-shadow .18s ease !important;
+  transition: transform .16s ease, box-shadow .16s ease, filter .16s ease !important;
 }
 .cta-btn-float:hover {
-  animation-play-state: paused;
-  transform: translateY(-3px) !important;
-  box-shadow: 0 14px 32px rgba(30,60,180,.40) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 10px 24px rgba(30,60,180,.20) !important;
+  filter: none !important;
 }
 @keyframes fadeIn  { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: translateY(0) } }
 @keyframes slideUp { from { transform: translateY(100%) } to { transform: translateY(0) } }

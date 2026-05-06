@@ -57,6 +57,15 @@ export default function NovoContrato() {
   const [selectedPrazo, setSelectedPrazo] = useState(OFERTA.prazosDisponiveis[OFERTA.prazosDisponiveis.length - 1])
   const [showReceipt, setShowReceipt] = useState(false)
 
+  const primaryCtaBg = 'linear-gradient(145deg, #055ECE, #03246F)'
+  const primaryCtaShadow = '0 8px 20px rgba(30,60,180,.3)'
+  const primaryCtaHoverShadow = '0 12px 24px rgba(30,60,180,.22)'
+  const secondaryCtaColor = '#055ECE'
+  const secondaryCtaBorder = '#BFD4F6'
+  const secondaryCtaHoverBg = '#F4F8FF'
+  const secondaryCtaShadow = '0 8px 20px rgba(30,60,180,.12)'
+  const secondaryCtaHoverShadow = '0 12px 24px rgba(30,60,180,.12)'
+
   const selectedAnchor = OFERTA.ancoras[selected]
   const customValue = parseFloat(customRaw)
   const customValid = customValue >= OFERTA.valorMinimo && customValue <= OFERTA.creditoMaximo
@@ -107,7 +116,13 @@ export default function NovoContrato() {
     const a = OFERTA.ancoras[idx]
     const active = selected === idx
     const [hovered, setHovered] = useState(false)
-    const selectionStyle = getSelectableCardStyle({ selected: active, hovered })
+    const selectionStyle = getSelectableCardStyle({
+      selected: active,
+      hovered,
+      baseBackground: idx === 0
+        ? 'radial-gradient(circle at 92% 8%, rgba(4, 59, 139, 0.08), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)'
+        : 'radial-gradient(circle at 92% 8%, rgba(4, 59, 139, 0.06), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)',
+    })
     return (
       <button
         onClick={() => {
@@ -122,10 +137,6 @@ export default function NovoContrato() {
           minHeight: idx === 0 ? 130 : 80,
           borderRadius: idx === 0 ? 34 : 21,
           border: '1px solid',
-          background:
-            idx === 0
-              ? 'radial-gradient(circle at 92% 8%, rgba(4, 59, 139, 0.08), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)'
-              : 'radial-gradient(circle at 92% 8%, rgba(4, 59, 139, 0.06), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)',
           padding: idx === 0 ? '20px 18px' : '14px 16px',
           cursor: 'pointer',
           ...selectionStyle,
@@ -179,12 +190,15 @@ export default function NovoContrato() {
             marginBottom: customOpen ? 10 : 14,
             borderRadius: 21,
             border: '1px solid',
-            background: 'radial-gradient(circle at 92% 8%, rgba(4, 59, 139, 0.08), transparent 34%), linear-gradient(180deg, #F4FBFF 0%, #FFFFFF 100%)',
             color: '#043B8B',
             fontWeight: 900,
             fontSize: 15,
             cursor: 'pointer',
-            ...getSelectableCardStyle({ selected: customOpen, hovered: customBtnHover }),
+            ...getSelectableCardStyle({
+              selected: customOpen,
+              hovered: customBtnHover,
+              baseBackground: 'radial-gradient(circle at 92% 8%, rgba(4, 59, 139, 0.08), transparent 34%), linear-gradient(180deg, #F4FBFF 0%, #FFFFFF 100%)',
+            }),
           }}
         >
           + Personalizar valor e prazo
@@ -230,7 +244,7 @@ export default function NovoContrato() {
           onClick={goContratacao}
           onMouseEnter={() => setCtaHover(true)}
           onMouseLeave={() => setCtaHover(false)}
-          style={{ width: '100%', minHeight: 52, border: 0, borderRadius: 21, background: ctaHover ? 'linear-gradient(145deg, #043B8B, #002D6E)' : 'linear-gradient(145deg, #043B8B, #002D6E)', color: '#fff', fontSize: 16, fontWeight: 900, boxShadow: ctaHover ? '0 12px 24px rgba(4,59,139,.22)' : '0 8px 20px rgba(4,59,139,.3)', cursor: 'pointer' }}
+          style={{ width: '100%', minHeight: 52, border: 0, borderRadius: 21, background: primaryCtaBg, color: '#fff', fontSize: 16, fontWeight: 900, boxShadow: ctaHover ? primaryCtaHoverShadow : primaryCtaShadow, cursor: 'pointer' }}
         >
           Continuar com esta oferta
         </button>
@@ -240,7 +254,7 @@ export default function NovoContrato() {
           onClick={() => setShowReceipt(v => !v)}
           onMouseEnter={() => setSecondHover(true)}
           onMouseLeave={() => setSecondHover(false)}
-          style={{ width: '100%', minHeight: 48, marginTop: 10, borderRadius: 21, border: '1px solid #DDE8F6', background: secondHover ? '#F4F8FF' : '#fff', color: '#043B8B', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: secondHover ? '0 12px 24px rgba(4,59,139,.12)' : '0 8px 20px rgba(4,59,139,.12)' }}
+          style={{ width: '100%', minHeight: 48, marginTop: 10, borderRadius: 21, border: `1px solid ${secondaryCtaBorder}`, background: secondHover ? secondaryCtaHoverBg : '#fff', color: secondaryCtaColor, fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: secondHover ? secondaryCtaHoverShadow : secondaryCtaShadow }}
         >
           Gerar recibo da simulação
         </button>
@@ -255,12 +269,12 @@ export default function NovoContrato() {
               marginTop: 8,
               borderRadius: 13,
               border: 0,
-              background: 'linear-gradient(145deg, #043B8B, #002D6E)',
+              background: primaryCtaBg,
               color: '#fff',
               fontSize: 13,
               fontWeight: 900,
               cursor: 'pointer',
-              boxShadow: '0 8px 20px rgba(4,59,139,.3)',
+              boxShadow: primaryCtaShadow,
             }}
           >
             Baixar recibo da simulação
@@ -275,13 +289,13 @@ export default function NovoContrato() {
             minHeight: 46,
             marginTop: 10,
             borderRadius: 13,
-            border: '1px solid #DDE8F6',
+            border: `1px solid ${secondaryCtaBorder}`,
             background: '#fff',
-            color: '#043B8B',
+            color: secondaryCtaColor,
             fontSize: 14,
             fontWeight: 900,
             cursor: 'pointer',
-            boxShadow: '0 8px 20px rgba(4,59,139,.12)',
+            boxShadow: secondaryCtaShadow,
           }}
         >
           Voltar para ofertas
@@ -321,41 +335,14 @@ export default function NovoContrato() {
         .consigai-cta-animated{
           position: relative;
           overflow: hidden;
-          transform: translateY(0);
-          transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background-position .35s ease, filter .18s ease;
-          animation: consigaiDetailsFloat 3.8s ease-in-out infinite;
-          background-size: 220% 100%;
-          background-position: 0% 0%;
+          transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, filter .16s ease;
         }
         .consigai-cta-animated:hover{
-          background-position: 100% 0%;
-          animation-play-state: paused;
-          transform: translateY(-2px) scale(1.01) !important;
-          filter: saturate(1.05);
+          transform: translateY(-1px) !important;
+          filter: none;
         }
         .consigai-cta-animated:active{
-          transform: translateY(0) scale(.985);
-        }
-        .consigai-cta-animated::after{
-          content:'';
-          position:absolute;
-          inset:0;
-          background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,.55) 45%, transparent 60%);
-          transform: translateX(-120%) skewX(-18deg);
-          opacity:0;
-          pointer-events:none;
-        }
-        .consigai-cta-animated:hover::after{
-          opacity:1;
-          animation: consigaiDetailsShine .9s ease forwards;
-        }
-        @keyframes consigaiDetailsFloat {
-          0%,100%{ transform: translateY(0); }
-          50%{ transform: translateY(-1px); }
-        }
-        @keyframes consigaiDetailsShine {
-          0% { transform: translateX(-120%) skewX(-18deg); }
-          100% { transform: translateX(120%) skewX(-18deg); }
+          transform: translateY(0);
         }
       `}</style>
       <div style={appPageStyle}>

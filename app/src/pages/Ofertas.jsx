@@ -191,6 +191,56 @@ function getOfferNavigationTarget(entry) {
   }
 }
 
+function buildSelectedOfferSummary(entry, usuario, selectedThirdSubOffer) {
+  if (!entry) return null
+
+  const config = entry.config || {}
+  const data = entry.data || {}
+  const turboSnapshot = config.id === 'turbo'
+    ? getTurboSubOfferSnapshot(entry, selectedThirdSubOffer, usuario)
+    : null
+
+  const installmentValue = data.parcelaNova != null && usuario
+    ? `${getParcelaNova(data, usuario.parcelaAtual)}/mês`
+    : null
+
+  let primaryLabel = 'Valor principal'
+  let primaryValue =
+    data.creditoReceber != null && data.creditoReceber > 0
+      ? fmt(data.creditoReceber)
+      : null
+
+  if (config.id === 'turbo' && turboSnapshot) {
+    primaryLabel = turboSnapshot.label === 'Na parcela' ? 'Alívio mensal' : 'Economia no contrato'
+    primaryValue = turboSnapshot.label === 'Na parcela'
+      ? turboSnapshot.benefitDisplayMonthly
+      : turboSnapshot.benefitDisplay
+  } else if (config.id === 'equilibrio' || config.id === 'folga' || config.id === 'apenas_novo' || config.id === 'apenas_refin') {
+    primaryLabel = 'Você recebe'
+  }
+
+  let operationType = null
+  if (config.id === 'apenas_novo') operationType = 'Nova contratação com margem livre'
+  if (config.id === 'apenas_refin') operationType = 'Refinanciamento do contrato atual'
+  if (config.id === 'equilibrio') operationType = 'Combinação entre dinheiro na conta e economia'
+  if (config.id === 'folga') operationType = 'Operação com foco em reduzir a parcela mensal'
+  if (config.id === 'turbo') {
+    operationType = turboSnapshot?.label === 'Na parcela'
+      ? 'Estratégia focada em aliviar a parcela mensal'
+      : 'Estratégia focada em economizar no contrato'
+  }
+
+  return {
+    name: config.ctaName || config.pill,
+    primaryLabel,
+    primaryValue: primaryValue || 'Ver oferta',
+    installmentValue: installmentValue || 'Conforme simulação',
+    termValue: data.qtdParcelas ? `${data.qtdParcelas} meses` : 'Prazo informado na revisão',
+    operationType: operationType || 'Oferta simulada com comparação antes de contratar',
+    whyThisOffer: config.note || 'Opção organizada para facilitar sua decisão com clareza.',
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Seção de impacto no bolso
 // ---------------------------------------------------------------------------
@@ -255,7 +305,6 @@ const POCKET_VISUAL_HTML = `
     
     <!-- Coluna Esquerda: Gráfico de Barras -->
     <div style="background: #fff; border-radius: 20px; border: 1px solid #DDE8F6; padding: 24px; box-shadow: 0 12px 32px rgba(3,36,111,.04); position: relative; overflow: hidden; display: flex; flex-direction: column;">
-      <div style="position: absolute; inset: 0 0 auto 0; height: 4px; background: linear-gradient(90deg, #64748B, #94A3B8);"></div>
       <h4 style="font-size: 13px; color: #64748B; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 900;">Evolução de Salário Líquido</h4>
       
       <div style="margin-bottom: 28px;">
@@ -519,6 +568,8 @@ function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario, selected
 
   const heroEco = getCachedNode(cacheRef, doc, 'heroEco', '.hc-saving-value, #hcEco')
   if (heroEco) heroEco.textContent = ecoFmt
+  const heroEcoLabel = getCachedNode(cacheRef, doc, 'heroEcoLabel', '.hc-saving-label')
+  if (heroEcoLabel) heroEcoLabel.textContent = 'Economia mensal'
 
   const ctaSaving = getCachedNode(cacheRef, doc, 'ctaSaving', '#ctaSaving')
   if (ctaSaving) ctaSaving.textContent = `+${ecoFmt}/mês`
@@ -532,6 +583,9 @@ function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario, selected
   if (turboSnapshot) {
     const turboValue = turboSnapshot.benefitDisplay
     if (heroEco) heroEco.textContent = turboValue
+    if (heroEcoLabel) heroEcoLabel.textContent = turboSnapshot.label === 'Na parcela'
+      ? 'Economia mensal'
+      : 'Economia total'
     if (ctaSaving) ctaSaving.textContent = `+${turboValue}`
     if (ctaSavingLabel) ctaSavingLabel.textContent = turboSnapshot.label === 'Na parcela'
       ? 'de economia mensal'
@@ -708,10 +762,10 @@ function buildEquilibrioCard(offer, idx, usuario, isRecommended) {
   const economiaNosContratos = fmt(offer.economiaTotal ?? (getEcoMensal(offer, usuario.parcelaAtual) * 12))
   const badge = isRecommended ? '<div class="equilibrio-status">★ Recomendado</div>' : ''
   return cardShell('equilibrio', idx, `
-    ${cardHeader('equilibrio', svgEquilibrio(idx), 'Melhor equilíbrio', 'Dinheiro + economia', badge)}
+    ${cardHeader('equilibrio', svgEquilibrio(idx), 'Melhor equilíbrio', 'Mais equilíbrio para decidir', badge)}
     <div class="equilibrio-body">
       <h2 class="equilibrio-heading">Receba dinheiro e <span>Economize</span></h2>
-      <p class="equilibrio-intro">Boa opção para quem quer dinheiro na conta, parcela menor e prazo mantido.</p>
+      <p class="equilibrio-intro">Boa opção para combinar dinheiro na conta com economia no contrato.</p>
       <div class="equilibrio-benefit-grid">
         <div class="equilibrio-benefit money">
           <span class="equilibrio-benefit-label">Na conta</span>
@@ -734,10 +788,10 @@ function buildFolgaCard(offer, idx, usuario) {
   const valorNaConta = fmt(offer.creditoReceber ?? 0)
   const parcelaNova = getParcelaNova(offer, usuario.parcelaAtual)
   return cardShell('folga', idx, `
-    ${cardHeader('folga', svgFolga(idx), 'Mais folga por mês', 'Dinheiro + parcela menor')}
+    ${cardHeader('folga', svgFolga(idx), 'Mais folga por mês', 'Mais espaço no orçamento')}
     <div class="folga-body">
       <h2 class="folga-heading">Receba dinheiro e <span>Reduza a Parcela</span></h2>
-      <p class="folga-intro">Boa opção para quem quer dinheiro na conta e mais espaço no orçamento todos os meses.</p>
+      <p class="folga-intro">Boa opção para ganhar fôlego mensal com parcela menor e dinheiro na conta.</p>
       <div class="folga-highlight-grid">
         <div class="folga-highlight money">
           <small>Na conta</small>
@@ -759,7 +813,7 @@ function buildFolgaCard(offer, idx, usuario) {
 function buildNovoCard(offer, idx) {
   const valorEstimado = fmt(offer.creditoReceber ?? 0)
   return cardShell('new-contract', idx, `
-    ${cardHeader('new-contract', svgNovo(), 'Novo Contrato', 'Use sua margem livre')}
+    ${cardHeader('new-contract', svgNovo(), 'Novo Contrato', 'Crédito novo com clareza')}
     <div class="new-contract-body">
       <h2 class="new-contract-heading">Receba dinheiro <span>na sua conta</span></h2>
       <p class="card-plain-intro">Oferta focada em liberar valor novo, com parcela clara e prazo informado antes de continuar.</p>
@@ -777,7 +831,7 @@ function buildNovoCard(offer, idx) {
 function buildRefinCard(offer, idx) {
   const valorEstimado = fmt(offer.creditoReceber ?? 0)
   return cardShell('refin', idx, `
-    ${cardHeader('refin', svgRefin(idx), 'Refinanciamento', 'Use seu contrato atual')}
+    ${cardHeader('refin', svgRefin(idx), 'Refinanciamento', 'Ajuste o contrato atual')}
     <div class="refin-body">
       <h2 class="refin-heading"><span>Dinheiro ajustando seu</span><span class="refin-heading-light">contrato</span></h2>
       <p class="card-plain-intro">Usa contrato existente para liberar valor com comparação clara antes de confirmar.</p>
@@ -1019,6 +1073,12 @@ const WIDE_LAYOUT_CSS = `
     box-shadow: 0 24px 68px rgba(3,36,111,0.14);
     overflow: hidden; position: relative;
   }
+  .decision-guide-card {
+    min-height: 756px;
+    height: 756px;
+    display: flex;
+    flex-direction: column;
+  }
   .side-blue-card::after {
     content: ""; position: absolute;
     width: 240px; height: 240px; right: -130px; bottom: -130px;
@@ -1047,6 +1107,10 @@ const WIDE_LAYOUT_CSS = `
     font-size: 12.5px; line-height: 1.45; font-weight: 650;
   }
   .choose-list { display: grid; gap: 10px; margin-top: 18px; }
+  .decision-guide-card .choose-list {
+    flex: 1;
+    align-content: start;
+  }
   .choose-row {
     display: flex; gap: 10px; padding: 11px; border-radius: 16px;
     background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.14);
@@ -1069,6 +1133,9 @@ const WIDE_LAYOUT_CSS = `
     margin-top: 16px; padding: 12px 14px; border-radius: 16px;
     background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
   }
+  .decision-guide-card .guide-footer {
+    margin-top: auto;
+  }
   .guide-footer strong {
     display: block; color: white; font-size: 11.5px; font-weight: 950;
   }
@@ -1082,6 +1149,12 @@ const WIDE_LAYOUT_CSS = `
       radial-gradient(circle at 92% 8%, rgba(0,231,255,0.09), transparent 34%),
       linear-gradient(180deg, rgba(255,255,255,.98) 0%, #FFFFFF 100%);
     border: 1px solid #DDE8F6; box-shadow: 0 16px 38px rgba(3,36,111,0.09);
+  }
+  .sticky-summary {
+    min-height: 520px;
+    height: 520px;
+    display: flex;
+    flex-direction: column;
   }
   .side-white-card h3, .sticky-summary h3 {
     color: #03246F; font-size: 15px; font-weight: 950;
@@ -1106,13 +1179,13 @@ const WIDE_LAYOUT_CSS = `
     font-size: 10.5px; line-height: 1.25; font-weight: 650;
   }
   .summary-highlight {
-    margin-top: 16px; padding: 18px; border-radius: 22px;
+    margin-top: 14px; padding: 16px; border-radius: 20px;
     background:
       radial-gradient(circle at 92% 8%, rgba(0,231,255,0.12), transparent 34%),
       linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%);
     border: 1px solid rgba(0,231,255,.32);
     display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
-    min-height: 80px;
+    min-height: 72px;
   }
   .summary-highlight small {
     color: #055ECE; font-size: 10px; font-weight: 950;
@@ -1120,16 +1193,31 @@ const WIDE_LAYOUT_CSS = `
   }
   .summary-highlight strong {
     display: block; margin-top: 6px; color: #03246F;
-    font-size: 18px; font-weight: 950; line-height: 1.1;
+    font-size: 17px; font-weight: 950; line-height: 1.1;
   }
-  .summary-list { display: grid; margin-top: 14px; }
+  .summary-list {
+    display: grid;
+    grid-template-rows: 46px 46px 46px 78px 112px;
+    margin-top: 12px;
+    flex: 1;
+    align-content: start;
+  }
   .summary-row {
     display: flex; justify-content: space-between; gap: 12px;
-    padding: 10px 0; border-bottom: 1px solid #DDE8F6;
+    padding: 8px 0; border-bottom: 1px solid #DDE8F6;
     color: #64748B; font-size: 12px; font-weight: 800;
+    min-height: 0;
+    align-items: center;
+  }
+  .summary-row-stack {
+    display: grid;
+    gap: 4px;
+    align-content: start;
+    padding-top: 10px;
   }
   .summary-row:last-child { border-bottom: 0; }
   .summary-row strong { color: #03246F; font-weight: 950; text-align: right; }
+  .summary-row-stack strong { text-align: left; line-height: 1.35; }
   .summary-row.green strong { color: #007A52; }
   .summary-cta {
     width: 100%; min-height: 52px; margin-top: 16px; border: 0; border-radius: 17px;
@@ -1161,7 +1249,7 @@ const WIDE_LAYOUT_CSS = `
 
 function DecisionGuideCard() {
   return (
-    <section className="side-blue-card">
+    <section className="side-blue-card decision-guide-card">
       <div className="side-kicker">Guia ConsigAI</div>
       <h2>Como escolher sua <span>oferta</span></h2>
       <p>Em três passos simples, compare prioridade, impacto no bolso e condições antes de avançar.</p>
@@ -1264,23 +1352,15 @@ function StickyOfferSummary({ selectedOffer }) {
     selectedOffer.name || selectedOffer.title || selectedOffer.nome ||
     selectedOffer.label || 'Oferta selecionada'
 
+  const primaryLabel = selectedOffer.primaryLabel || 'Valor principal'
   const primaryValue =
-    selectedOffer.valorPrincipal || selectedOffer.valorReceber ||
+    selectedOffer.primaryValue || selectedOffer.valorPrincipal || selectedOffer.valorReceber ||
     selectedOffer.creditoReceber || selectedOffer.economiaTotal ||
-    selectedOffer.valor || selectedOffer.primaryValue || 'Ver oferta'
-
-  const newInstallment =
-    selectedOffer.parcelaNova || selectedOffer.novaParcela ||
-    selectedOffer.installment || null
-
-  const monthlySaving =
-    selectedOffer.economiaMensal || selectedOffer.reducaoMensal ||
-    selectedOffer.economiaParcela || null
+    selectedOffer.valor || 'Ver oferta'
 
   return (
     <section className="sticky-summary">
       <h3>Oferta escolhida</h3>
-      <p>Resumo fixo para você decidir sem perder o contexto.</p>
 
       <div className="summary-highlight">
         <small>Selecionada</small>
@@ -1289,28 +1369,30 @@ function StickyOfferSummary({ selectedOffer }) {
 
       <div className="summary-list">
         <div className="summary-row">
-          <span>Valor principal</span>
+          <span>{primaryLabel}</span>
           <strong>{primaryValue}</strong>
         </div>
 
-        {monthlySaving && (
-          <div className="summary-row green">
-            <span>Economia mensal</span>
-            <strong>{monthlySaving}</strong>
-          </div>
-        )}
-
-        {newInstallment && (
-          <div className="summary-row">
-            <span>Parcela nova</span>
-            <strong>{newInstallment}</strong>
-          </div>
-        )}
+        <div className="summary-row">
+          <span>Parcela estimada</span>
+          <strong>{selectedOffer.installmentValue}</strong>
+        </div>
 
         <div className="summary-row">
-          <span>Próximo passo</span>
-          <strong>Revisar</strong>
+          <span>Prazo</span>
+          <strong>{selectedOffer.termValue}</strong>
         </div>
+
+        <div className="summary-row summary-row-stack">
+          <span>Tipo de operação</span>
+          <strong>{selectedOffer.operationType}</strong>
+        </div>
+
+        <div className="summary-row summary-row-stack">
+          <span>Por que essa oferta?</span>
+          <strong>{selectedOffer.whyThisOffer}</strong>
+        </div>
+
       </div>
 
     </section>
@@ -1330,7 +1412,7 @@ function ControlMiniCard() {
 // ---------------------------------------------------------------------------
 // Componente principal
 // ---------------------------------------------------------------------------
-export default function OfertasNova() {
+export default function Ofertas() {
   const navigate = useNavigate()
   const { activeOffers, usuario, impacto, loading, error } = useOffersData()
   const isDesktop = useMediaQuery('(min-width: 768px)')
@@ -1677,18 +1759,7 @@ export default function OfertasNova() {
   }
 
   const selectedOffer = selectedEntry
-    ? {
-        name: selectedEntry.config?.ctaName || selectedEntry.config?.pill,
-        creditoReceber: selectedEntry.data?.creditoReceber
-          ? fmt(selectedEntry.data.creditoReceber)
-          : null,
-        parcelaNova: selectedEntry.data && usuario
-          ? getParcelaNova(selectedEntry.data, usuario.parcelaAtual)
-          : null,
-        economiaMensal: selectedEntry.data && usuario
-          ? fmt(Math.max(0, getEcoMensal(selectedEntry.data, usuario.parcelaAtual)))
-          : null,
-      }
+    ? buildSelectedOfferSummary(selectedEntry, usuario, selectedThirdSubOfferRef.current)
     : null
 
   return (
@@ -1753,11 +1824,11 @@ export default function OfertasNova() {
           width: isDesktop ? '100vw' : 'auto',
           transform: isDesktop ? 'translateX(-50%)' : 'none',
           zIndex: 50,
-          background: 'rgba(255,255,255,.95)',
-          backdropFilter: 'blur(12px)',
+          background: 'rgba(255,255,255,.97)',
+          backdropFilter: 'blur(10px)',
           borderTop: '1px solid #dde6f5',
-          boxShadow: '0 -4px 24px rgba(0,24,81,.1)',
-          padding: '16px 28px',
+          boxShadow: '0 -2px 16px rgba(0,24,81,.08)',
+          padding: isDesktop ? '14px 24px' : '10px 16px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

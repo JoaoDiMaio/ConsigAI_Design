@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useState, useRef, useEffect } from 'react'
 import OnboardingBrandHeader from '../components/onboarding/OnboardingBrandHeader'
 import { FontSizeToggleFloating } from '../components/FontSizeToggle'
+import { appFontFamily, onboardingAliasVarsCss } from '../ui/theme'
 
 const BENEFICIOS = [
   {
@@ -130,19 +131,7 @@ export default function Cadastro() {
     <>
       <style>{`
         :root {
-          --blue-dark: #002D6E;
-          --blue-main: #043B8B;
-          --logo-blue: #2454D6;
-          --cyan: #1DA1EB;
-          --green: #00A86B;
-          --green-soft: #F0FFF8;
-          --green-line: #BDECD7;
-          --muted: #64748B;
-          --line: #DDE8F6;
-          --blue-soft: #F4F9FF;
-          --white: #FFFFFF;
-          --shadow: 0 24px 68px rgba(3, 36, 111, 0.12);
-          --soft-shadow: 0 16px 38px rgba(3, 36, 111, 0.08);
+${onboardingAliasVarsCss}
         }
 
         .register-page * {
@@ -159,7 +148,7 @@ export default function Cadastro() {
           padding: 24px 20px;
           overflow-x: hidden;
           overflow-y: auto;
-          font-family: Inter, Arial, sans-serif;
+          font-family: ${appFontFamily};
           color: var(--blue-dark);
           background: transparent;
         }
@@ -176,7 +165,8 @@ export default function Cadastro() {
 
         .register-shell {
           width: min(1040px, 100%);
-          height: 800px;
+          min-height: 800px;
+          max-height: calc(100dvh - 48px);
           display: grid;
           grid-template-columns: 1.05fr 0.95fr;
           border-radius: 34px;
@@ -206,7 +196,14 @@ export default function Cadastro() {
             radial-gradient(circle at 78% 14%, rgba(0, 231, 255, 0.18), transparent 32%),
             radial-gradient(circle at 12% 90%, rgba(0, 122, 82, 0.16), transparent 28%),
             linear-gradient(145deg, #06184E 0%, #03246F 58%, #055ECE 100%);
-          overflow: hidden;
+          overflow-x: hidden;
+          overflow-y: auto;
+          min-height: 0;
+          scrollbar-width: none;
+        }
+
+        .side-panel::-webkit-scrollbar {
+          display: none;
         }
 
         .side-panel::before {
@@ -242,9 +239,9 @@ export default function Cadastro() {
         .side-content {
           position: relative;
           z-index: 1;
-          height: 100%;
-          display: grid;
-          align-content: space-between;
+          min-height: 100%;
+          display: flex;
+          flex-direction: column;
           gap: 32px;
         }
 
@@ -299,6 +296,7 @@ export default function Cadastro() {
         .bottom-section {
           display: grid;
           gap: 28px;
+          margin-top: auto;
         }
 
         .coverage-row {
@@ -426,6 +424,7 @@ export default function Cadastro() {
           padding: 42px;
           display: flex;
           flex-direction: column;
+          min-height: 0;
           background:
             radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.08), transparent 36%),
             linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 100%);
@@ -436,12 +435,13 @@ export default function Cadastro() {
           min-height: 0;
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          justify-content: flex-start;
           width: 100%;
           max-width: 390px;
           margin: 0 auto;
           overflow-y: auto;
           scrollbar-width: none;
+          padding-right: 6px;
         }
 
         .form-box::-webkit-scrollbar {
@@ -745,7 +745,7 @@ export default function Cadastro() {
           color: white;
           font-size: 15px;
           font-weight: 900;
-          box-shadow: 0 16px 32px rgba(4, 59, 139, 0.22);
+          box-shadow: none;
         }
 
         .secondary-cta {
@@ -845,7 +845,8 @@ export default function Cadastro() {
 
           .register-shell {
             grid-template-columns: 1fr;
-            height: auto;
+            min-height: 0;
+            max-height: none;
           }
 
           .form-panel {

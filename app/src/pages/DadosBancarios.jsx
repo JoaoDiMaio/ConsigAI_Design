@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { loadProfileData, saveProfileData } from '../lib/profileStorage'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
-import { appPageStyle, theme } from '../ui/theme'
+import { appPageStyle, colors, theme } from '../ui/theme'
 
 const t = {
   ...theme,
@@ -69,7 +69,7 @@ function InputField({ value, onChange, placeholder, error, maxLength }) {
           fontSize: 14,
           fontWeight: 500,
           color: t.text,
-          background: '#fafbfe',
+          background: colors.surfaceSubtle,
           outline: 'none',
           fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
         }}
@@ -93,7 +93,7 @@ function SelectField({ value, onChange, options, placeholder, error }) {
           fontSize: 14,
           fontWeight: 500,
           color: t.text,
-          background: '#fafbfe',
+          background: colors.surfaceSubtle,
           outline: 'none',
           fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
           WebkitAppearance: 'none',
@@ -223,7 +223,7 @@ export default function DadosBancarios() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: t.greenBg, border: '1px solid #b8e0ca', borderRadius: 12, padding: '10px 12px', marginBottom: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: t.greenBg, border: `1px solid ${t.greenBorder}`, borderRadius: 12, padding: '10px 12px', marginBottom: 14 }}>
         <div style={{ width: 28, height: 28, borderRadius: 8, background: '#c8eeda', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
             <path d="M10 2l7 3v6c0 4-3.5 6.5-7 7.5C6.5 17.5 3 15 3 11V5l7-3z" stroke={t.greenAccent} strokeWidth="1.5" strokeLinejoin="round" />
@@ -236,7 +236,7 @@ export default function DadosBancarios() {
       </div>
 
       {attemptedSave && hasErrors && (
-        <div style={{ marginBottom: 10, borderRadius: 12, border: '1px solid #f1c2c2', background: '#fff1f1', padding: '9px 11px', fontSize: 11, color: t.danger, fontWeight: 600 }}>
+        <div style={{ marginBottom: 10, borderRadius: 12, border: `1px solid ${colors.errorBorder}`, background: colors.errorSoft, padding: '9px 11px', fontSize: 11, color: t.danger, fontWeight: 600 }}>
           Revise os campos obrigatorios para continuar.
         </div>
       )}
@@ -250,7 +250,7 @@ export default function DadosBancarios() {
           borderRadius: 14,
           cursor: 'pointer',
           background: t.blue,
-          color: '#fff',
+          color: colors.brandSurface,
           padding: '15px 14px',
           fontSize: s(15),
           fontWeight: 600,
