@@ -684,7 +684,7 @@ ${onboardingAliasVarsCss}
                     Estamos buscando a melhor forma de <span>Economizar</span>
                   </h1>
                   <p className="blue-copy">
-                    A inteligência da ConsigAI analisa seus contratos, compara cenários e organiza as melhores opções para você decidir com segurança.
+                    A inteligência da ConsigAI lê seu extrato, compara cenários e organiza as melhores opções para você decidir com segurança.
                   </p>
                 </div>
 
@@ -750,7 +750,7 @@ ${onboardingAliasVarsCss}
 
         <div className={`completion-toast${showToast ? ' is-visible' : ''}`}>
           <span>✓</span>
-          Análise concluída. Preparando suas ofertas...
+          Análise concluída. Preparando suas ofertas estimadas...
         </div>
       </div>
     </>

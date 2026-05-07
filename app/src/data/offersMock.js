@@ -1,5 +1,13 @@
-// Mock data — replace DADOS with real API response when backend is ready.
+// Mock data - replace with real API response when backend is ready.
 // Shape must match what normalizeApiOffers() in useOffersData expects.
+
+const parseEnvFlag = (value, fallback = false) => {
+  if (value == null || value === '') return fallback
+  const normalized = String(value).trim().toLowerCase()
+  return ['1', 'true', 'yes', 'on'].includes(normalized)
+}
+
+export const USE_MOCK_OFFERS = parseEnvFlag(import.meta.env?.VITE_USE_MOCK_OFFERS, true)
 
 export const OFFER_CARD_CONFIG = [
   {
@@ -65,15 +73,15 @@ export const OFFER_CARD_CONFIG = [
 
 export const MAX_API_CARDS = 3
 
-// IDs a mostrar sem chamada à API. Limpar quando o endpoint /api/ofertas estiver pronto.
-export const FORCED_VISIBLE_OFFER_IDS = ['apenas_novo', 'apenas_refin', 'turbo']
+// IDs exibidos quando o mock de ofertas estiver ativo.
+export const DEFAULT_MOCK_OFFER_IDS = ['apenas_novo', 'apenas_refin', 'turbo']
 
 export const THIRD_CARD_SUB_OFFERS = {
   contract: { label: 'No contrato', route: '/portabilidade' },
   installment: { label: 'Na parcela', route: '/refinanciamento' },
 }
 
-// Mock da resposta da API. Todos os campos vêm do backend — nenhum calculado no front.
+// Mock da resposta da API. Todos os campos vêm do backend - nenhum calculado no front.
 // Shape esperado de GET /api/ofertas (ou /api/simulacao):
 export const MOCK_DADOS = {
   usuario: { salarioBruto: 2200, parcelaAtual: 550 },

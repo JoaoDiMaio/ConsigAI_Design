@@ -1119,7 +1119,7 @@ ${onboardingAliasVarsCss}
           <section className="form-panel">
             <OnboardingBrandHeader showStepBadge stepLabel="Etapa 1 de 2" stepProgress={50} />
             <div className="form-box">
-              <div className="form-kicker">Etapa 1 — Dados pessoais</div>
+              <div className="form-kicker">Quase lá — seus dados garantem a simulação mais precisa</div>
 
               <form className="personal-card" onSubmit={(e) => e.preventDefault()}>
                 <div className="form-grid">
@@ -1179,6 +1179,9 @@ ${onboardingAliasVarsCss}
                       onChange={e => handleChange('cpf', e.target.value, maskCPF(e.target.value))}
                       onBlur={() => handleBlur('cpf')}
                     />
+                    <small style={{ display: 'block', marginTop: 6, color: '#64748B', fontSize: 11, lineHeight: 1.35, fontWeight: 650 }}>
+                      Apenas para localizar seus contratos. Não compartilhamos.
+                    </small>
                     {errors.cpf && touched.cpf && <span className="field-error">{errors.cpf}</span>}
                   </div>
 
@@ -1221,7 +1224,7 @@ ${onboardingAliasVarsCss}
               </form>
 
               <div className="actions">
-                <button className="primary-cta consigai-cta-animated" type="button" onClick={handleSubmit}>Continuar</button>
+                <button className="primary-cta consigai-cta-animated" type="button" onClick={handleSubmit}>Ver minhas opções de economia</button>
                 <button className="secondary-cta consigai-cta-animated" type="button" onClick={() => navigate('/entrada')}>Voltar para entrada</button>
               </div>
 

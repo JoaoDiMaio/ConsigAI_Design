@@ -2,7 +2,7 @@ import { test, expect } from 'playwright/test'
 
 test('Entrada navega para Cadastro pelo CTA secundário', async ({ page }) => {
   await page.goto('/entrada', { waitUntil: 'networkidle' })
-  await page.getByRole('button', { name: 'Criar minha conta' }).click()
+  await page.getByRole('button', { name: 'Descobrir minha economia' }).click()
   await expect(page).toHaveURL(/\/cadastro$/)
 })
 

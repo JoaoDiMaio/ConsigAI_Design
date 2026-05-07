@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 import { useOffersData } from '../hooks/useOffersData.js'
 
-describe('useOffersData — modo mock (FORCED_VISIBLE_OFFER_IDS ativo)', () => {
+describe('useOffersData — modo mock (VITE_USE_MOCK_OFFERS ativo)', () => {
   it('começa loading (true ou false dependendo da velocidade do mock síncrono)', () => {
     const { result } = renderHook(() => useOffersData())
     expect(typeof result.current.loading).toBe('boolean')
@@ -57,7 +57,7 @@ describe('useOffersData — modo mock (FORCED_VISIBLE_OFFER_IDS ativo)', () => {
 })
 
 describe('useOffersData — contrato do hook no modo mock', () => {
-  it('não chama fetch enquanto o mock forçado estiver ativo', async () => {
+  it('não chama fetch enquanto o mock estiver ativo', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch')
     const { result } = renderHook(() => useOffersData())
     await waitFor(() => expect(result.current.loading).toBe(false))

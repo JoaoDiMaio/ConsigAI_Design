@@ -503,7 +503,7 @@ ${onboardingAliasVarsCss}
             <div className="side-content">
               <div>
                 <div className="side-kicker">Envio seguro</div>
-                <h1 className="side-title">Seu extrato é a chave para <span>Economizar</span></h1>
+                <h1 className="side-title">Seu extrato é o mapa da sua <span>economia</span></h1>
                 <p className="side-copy">
                   Com seu contracheque ou histórico de consignado, a ConsigAI identifica contratos elegíveis e compara as melhores condições do mercado.
                 </p>
@@ -531,11 +531,18 @@ ${onboardingAliasVarsCss}
                     <span>Seus documentos são usados apenas para localizar suas melhores ofertas.</span>
                   </div>
                 </div>
-                  <div className="info-card" style={{ background: 'rgba(36, 84, 214, 0.08)', borderColor: 'rgba(36, 84, 214, 0.16)' }}>
+                <div className="info-card" style={{ background: 'rgba(36, 84, 214, 0.08)', borderColor: 'rgba(36, 84, 214, 0.16)' }}>
                   <div className="info-card-icon">⚡</div>
                   <div>
                     <strong style={{ color: 'var(--logo-blue)' }}>O que acontece agora?</strong>
                     <span>Nossa IA vai ler seu extrato em segundos. Buscamos apenas os melhores contratos para você.</span>
+                  </div>
+                </div>
+                <div className="info-card" style={{ background: 'rgba(0, 122, 82, 0.08)', borderColor: 'rgba(0, 122, 82, 0.16)' }}>
+                  <div className="info-card-icon">✓</div>
+                  <div>
+                    <strong style={{ color: 'var(--logo-green)' }}>Por que enviar seu extrato?</strong>
+                    <span>1. Mostra quais contratos podem melhorar. 2. Permite comparar com precisão. 3. Nada é contratado sem sua confirmação.</span>
                   </div>
                 </div>
               </div>
@@ -599,7 +606,7 @@ ${onboardingAliasVarsCss}
 
               <div className="actions">
                 <button className="primary-cta" type="button" onClick={handleSubmit}>
-                  Continuar
+                  Enviar com segurança e ver ofertas
                 </button>
                 <button className="secondary-cta" type="button" onClick={() => navigate('/cadastro')}>
                   Voltar

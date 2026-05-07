@@ -623,13 +623,17 @@ function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario, selected
 
 // -- Shell helpers --
 
-function cardShell(type, idx, inner) {
-  return `<div class="offer-card ${type}-offer" id="oc${idx}" role="button" tabindex="0" aria-selected="false">
+function cardShell(type, idx, inner, extraClass = '') {
+  return `<div class="offer-card ${type}-offer${extraClass ? ` ${extraClass}` : ''}" id="oc${idx}" role="button" tabindex="0" aria-selected="false">
     <div class="consigai-offer-card ${type}-shell">
       <span class="consigai-hidden-state-badge badge pick" id="badge${idx}">Escolher</span>
       ${inner}
     </div>
   </div>`
+}
+
+function recommendationBadge(label = 'Recomendado') {
+  return `<span class="consigai-offer-badge-rec consigai-offer-badge-rec--recommended">${label}</span>`
 }
 
 function cardHeader(type, iconHtml, title, subtitle, badge = '') {
@@ -646,10 +650,15 @@ function cardNote(type, icon, text) {
   return `<div class="${type}-note"><span class="${type}-note-icon">${icon}</span><p>${text}</p></div>`
 }
 
-function cardDetailsBtn(type) {
+function cardDetailsBtn(type, label = 'Quero essa economia') {
   return `<div class="consigai-offer-actions ${type}-actions">
-    <button type="button" class="consigai-offer-details-btn ${type}-details-button">Ver detalhes da oferta</button>
+    <button type="button" class="consigai-offer-details-btn ${type}-details-button">${label}</button>
+    <p class="consigai-offer-action-note">Simulação sem compromisso</p>
   </div>`
+}
+
+function cardSimNote() {
+  return '<span class="consigai-offer-sim-note">Simulação sem compromisso</span>'
 }
 
 // -- SVG icons --
@@ -752,11 +761,11 @@ function buildTurboCard(cfg, offer, idx, usuario, selectedThirdSubOffer) {
       <h2 class="turbo-heading"><span class="turbo-heading-blue">Escolha onde quer</span><span class="turbo-heading-green">Economizar</span></h2>
       <p class="turbo-intro">A ${brandNameHtml()} mostra dois caminhos para reduzir o custo do seu consignado com clareza.</p>
       <div class="turbo-options">
-        ${opt('contract', 'No contrato', economiaContrato, 'Maior economia total')}
-        ${opt('installment', 'Na parcela', economiaParcela, 'Mais folga mensal')}
+        ${opt('contract', 'No contrato', economiaContrato, 'Economia total estimada')}
+        ${opt('installment', 'Na parcela', economiaParcela, 'Redução mensal estimada')}
       </div>
       <div class="consigai-offer-note turbo-note"><span class="note-icon" aria-hidden="true">✓</span><p>Boa opção para reduzir o custo do contrato sem contratar novo crédito.</p></div>
-      ${cardDetailsBtn('turbo')}
+      ${cardDetailsBtn('turbo', 'Quero essa economia')}
     </div>
   `)
 }
@@ -774,11 +783,13 @@ function buildEquilibrioCard(offer, idx, usuario, isRecommended) {
         <div class="equilibrio-benefit money">
           <span class="equilibrio-benefit-label">Na conta</span>
           <strong>${valorNaConta}</strong>
+          ${cardSimNote()}
           <small>valor estimado liberado</small>
         </div>
         <div class="equilibrio-benefit economy">
           <span class="equilibrio-benefit-label">Nos contratos</span>
           <strong>${economiaNosContratos}</strong>
+          ${cardSimNote()}
           <small>economia estimada</small>
         </div>
       </div>
@@ -800,11 +811,13 @@ function buildFolgaCard(offer, idx, usuario) {
         <div class="folga-highlight money">
           <small>Na conta</small>
           <strong>${valorNaConta}</strong>
+          ${cardSimNote()}
           <span>valor estimado liberado</span>
         </div>
         <div class="folga-highlight installment">
           <small>Nova parcela estimada</small>
           <strong>${parcelaNova}</strong>
+          ${cardSimNote()}
           <span>menor impacto mensal</span>
         </div>
       </div>
@@ -814,22 +827,22 @@ function buildFolgaCard(offer, idx, usuario) {
   `)
 }
 
-function buildNovoCard(offer, idx) {
+function buildNovoCard(offer, idx, isRecommended) {
   const valorEstimado = fmt(offer.creditoReceber ?? 0)
   return cardShell('new-contract', idx, `
-    ${cardHeader('new-contract', svgNovo(), 'Novo Contrato', 'Crédito novo com clareza')}
+    ${cardHeader('new-contract', svgNovo(), 'Novo Contrato', 'Crédito novo com clareza', isRecommended ? recommendationBadge() : '')}
     <div class="new-contract-body">
       <h2 class="new-contract-heading">Receba dinheiro <span>na sua conta</span></h2>
-      <p class="card-plain-intro">Oferta focada em liberar valor novo, com parcela clara e prazo informado antes de continuar.</p>
+      <p class="card-plain-intro">Oferta focada em liberar valor novo, com parcela clara e condições visíveis antes de continuar.</p>
       <div class="new-contract-highlight">
         <small>Valor estimado disponível</small>
         <strong>${valorEstimado}</strong>
-        <span>simulação sem compromisso</span>
+        <span>Simulação sem compromisso</span>
       </div>
-      ${cardNote('new-contract', 'i', 'Usa margem livre. Taxa, custo total e condições aparecem antes da confirmação.')}
-      ${cardDetailsBtn('new-contract')}
+      ${cardNote('new-contract', 'i', 'Usa margem livre. Taxa, custo total, prazo e parcela aparecem antes da confirmação.')}
+      ${cardDetailsBtn('new-contract', 'Quero comparar essa opção')}
     </div>
-  `)
+  `, isRecommended ? 'recommended' : '')
 }
 
 function buildRefinCard(offer, idx) {
@@ -838,14 +851,14 @@ function buildRefinCard(offer, idx) {
     ${cardHeader('refin', svgRefin(idx), 'Refinanciamento', 'Ajuste o contrato atual')}
     <div class="refin-body">
       <h2 class="refin-heading"><span>Dinheiro ajustando seu</span><span class="refin-heading-light">contrato</span></h2>
-      <p class="card-plain-intro">Usa contrato existente para liberar valor com comparação clara antes de confirmar.</p>
+      <p class="card-plain-intro">Use um contrato existente para liberar valor com comparação clara de prazo, parcela e custo total.</p>
       <div class="refin-highlight">
         <small>Valor estimado disponível</small>
         <strong>${valorEstimado}</strong>
-        <span>simulação sem compromisso</span>
+        <span>Simulação sem compromisso</span>
       </div>
-      ${cardNote('refin', 'i', 'Pode alterar prazo e custo total. Você verá taxa, parcelas e condições antes de confirmar.')}
-      ${cardDetailsBtn('refin')}
+      ${cardNote('refin', 'i', 'Pode alterar prazo, parcela e custo total. Você verá taxa, parcelas e condições antes de confirmar.')}
+      ${cardDetailsBtn('refin', 'Ver condições')}
     </div>
   `)
 }
@@ -887,10 +900,12 @@ function buildGenericCard(cfg, offer, idx, usuario, isRecommended) {
           </div>
           ${!isSimple ? `<div class="consigai-offer-line"><span class="consigai-offer-line-main consigai-offer-total-stack"><span class="consigai-offer-total-label"><span class="consigai-offer-word-orange">${totalLabel}</span></span><span class="consigai-offer-value-green">${totalValue}</span></span></div>` : ''}
         </div>
-        ${isSimple ? `<div class="consigai-offer-mini-grid"><div class="consigai-offer-mini-card"><span class="consigai-offer-mini-label">${metricLabel}</span><span class="consigai-offer-mini-value">${metricValue}</span></div><div class="consigai-offer-mini-card"><span class="consigai-offer-mini-label">${miniLabelSecond}</span><span class="consigai-offer-mini-value">${miniValueSecond}</span></div></div>` : ''}
+        ${isSimple ? `<div class="consigai-offer-mini-grid"><div class="consigai-offer-mini-card"><span class="consigai-offer-mini-label">${metricLabel}</span><span class="consigai-offer-mini-value">${metricValue}${cardSimNote()}</span></div><div class="consigai-offer-mini-card"><span class="consigai-offer-mini-label">${miniLabelSecond}</span><span class="consigai-offer-mini-value">${miniValueSecond}${cardSimNote()}</span></div></div>` : ''}
+        ${!isSimple ? cardSimNote() : ''}
         <div class="consigai-offer-note"><span class="consigai-offer-note-text"><span class="consigai-offer-note-sub">${cfg.note}</span></span></div>
         <div class="consigai-offer-actions generic-actions">
-          <button type="button" class="consigai-offer-details-btn generic-details-button">Ver detalhes da oferta</button>
+          <button type="button" class="consigai-offer-details-btn generic-details-button">Quero essa economia</button>
+          <p style="margin: 4px 0 0; font-size: 11px; color: #64748B; text-align: center; font-weight: 600;">Simulação sem compromisso</p>
         </div>
       </div>
     </div>
@@ -902,7 +917,7 @@ function buildOfferCardHtml(entry, idx, usuario, selectedThirdSubOffer) {
   if (cfg.id === 'turbo')      return buildTurboCard(cfg, offer, idx, usuario, selectedThirdSubOffer)
   if (cfg.id === 'equilibrio') return buildEquilibrioCard(offer, idx, usuario, isRecommended)
   if (cfg.id === 'folga')      return buildFolgaCard(offer, idx, usuario)
-  if (cfg.id === 'apenas_novo') return buildNovoCard(offer, idx)
+  if (cfg.id === 'apenas_novo') return buildNovoCard(offer, idx, isRecommended)
   if (cfg.id === 'apenas_refin') return buildRefinCard(offer, idx)
   return buildGenericCard(cfg, offer, idx, usuario, isRecommended)
 }
@@ -941,7 +956,10 @@ function upsertOfferCardsRedesign(cacheRef, doc, activeOffers, selectedOfferInde
   }
 
   const cardsHtml = activeOffers
-    .map((entry, idx) => buildOfferCardHtml(entry, idx, usuario, selectedThirdSubOffer))
+    .map((entry, idx) => buildOfferCardHtml({
+      ...entry,
+      isRecommended: entry.isRecommended || (!activeOffers.some((item) => item.isRecommended) && idx === 0),
+    }, idx, usuario, selectedThirdSubOffer))
     .join('')
 
   if (offersGrid.innerHTML !== cardsHtml) {
@@ -1083,6 +1101,21 @@ const WIDE_LAYOUT_CSS = `
     display: flex;
     flex-direction: column;
   }
+  .decision-guide-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(0, 168, 107, .12);
+    border: 1px solid rgba(0, 168, 107, .18);
+    color: #A8FFF0;
+    font-size: 10px;
+    font-weight: 950;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
   .side-blue-card::after {
     content: ""; position: absolute;
     width: 240px; height: 240px; right: -130px; bottom: -130px;
@@ -1182,6 +1215,16 @@ const WIDE_LAYOUT_CSS = `
     display: block; margin-top: 2px; color: #64748B;
     font-size: 10.5px; line-height: 1.25; font-weight: 650;
   }
+  .consigai-offer-sim-note {
+    display: block;
+    margin-top: 4px;
+    color: #64748B;
+    font-size: 10px;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
   .summary-highlight {
     margin-top: 14px; padding: 16px; border-radius: 20px;
     background:
@@ -1255,6 +1298,7 @@ function DecisionGuideCard() {
   return (
     <section className="side-blue-card decision-guide-card">
       <div className="side-kicker">Guia ConsigAI</div>
+      <span className="decision-guide-badge">Consulta gratuita</span>
       <h2>Como escolher sua <span>oferta</span></h2>
       <p>Em três passos simples, compare prioridade, impacto no bolso e condições antes de avançar.</p>
       <div className="choose-list">
@@ -1925,7 +1969,7 @@ export default function Ofertas() {
                 minHeight: 44,
               }}
             >
-              Continuar com esta oferta
+              Continuar — você ainda pode revisar tudo
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
           </div>

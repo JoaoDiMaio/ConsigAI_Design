@@ -1172,13 +1172,13 @@ export default function Contratacao() {
         {isDesktop ? (
           <DesktopPageHeader
             clientName={clientName}
-            chipLabel="Confirmacao final"
-            title="Revise e confirme sua contratacao"
+            chipLabel="Confirmação final"
+            title="Revise e confirme sua contratação"
             subtitle={`Confira os detalhes da proposta de ${offerData.type} antes de finalizar.`}
             onLogoClick={() => navigate('/ofertas')}
             actions={[
               { label: 'Ofertas', onClick: () => navigate('/ofertas') },
-              { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+              { label: 'Configurações', onClick: () => navigate('/configuracoes') },
             { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
             ]}
           />
@@ -1188,7 +1188,7 @@ export default function Contratacao() {
             onLogoClick={() => navigate('/ofertas')}
             actions={[
               { label: 'Ofertas', onClick: () => navigate('/ofertas') },
-              { label: 'Configuracoes', onClick: () => navigate('/configuracoes') },
+              { label: 'Configurações', onClick: () => navigate('/configuracoes') },
             { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
             ]}
           />
@@ -1215,12 +1215,12 @@ export default function Contratacao() {
                       <div className="tag-dot" />
                       <span>Passo 3 de 3</span>
                     </div>
-                    <h2 className="section-title">Revise sua contratacao</h2>
-                    <p className="section-sub">Ultima etapa. Voce confirma agora e finalizamos pelo WhatsApp.</p>
+                    <h2 className="section-title">Revise sua contratação</h2>
+                    <p className="section-sub">Última etapa. Você confirma agora e finalizamos pelo WhatsApp.</p>
 
                     <div className="progress-strip" aria-label="Progresso do fluxo">
                       <div className="progress-top">
-                        <strong>Cadastro concluido</strong>
+                        <strong>Cadastro concluído</strong>
                         <span>100%</span>
                       </div>
                       <div className="progress-track">
@@ -1237,7 +1237,7 @@ export default function Contratacao() {
                           <div className="offer-hero-sub">{offerData.heroSub}</div>
                         </div>
                         <div className="offer-badge">
-                          <div className="offer-badge-label">Voce economiza</div>
+                          <div className="offer-badge-label">Você economiza</div>
                           <div className="offer-badge-value">{offerData.savingValue}</div>
                         </div>
                       </div>
@@ -1262,11 +1262,11 @@ export default function Contratacao() {
                     <div className="insight-rail">
                       <div className="insight-item">
                         <div className="insight-icon"><IconShield size={15} /></div>
-                        <span>Seus dados ja foram validados para a contratacao.</span>
+                        <span>Seus dados já foram validados para a contratação.</span>
                       </div>
                       <div className="insight-item">
                         <div className="insight-icon"><IconClock size={15} /></div>
-                        <span>Tempo medio para contato: ate 2 horas uteis.</span>
+                        <span>Tempo médio para contato: até 2 horas úteis.</span>
                       </div>
                     </div>
 
@@ -1291,8 +1291,8 @@ export default function Contratacao() {
                       <div className="check-item">
                         <div className="check-icon pending"><IconClock size={14} /></div>
                         <div className="check-text">
-                          <div className="check-title">Dados bancarios</div>
-                          <div className="check-sub">Confirmacao feita no contato final</div>
+                          <div className="check-title">Dados bancários</div>
+                          <div className="check-sub">Confirmação feita no contato final</div>
                         </div>
                         <div className="check-status pending">Pendente</div>
                       </div>
@@ -1303,13 +1303,16 @@ export default function Contratacao() {
                         <div className="wa-icon"><IconWhatsapp size={20} /></div>
                         <div>
                           <div className="wa-title">Finalizamos pelo WhatsApp</div>
-                          <div className="wa-sub">Um consultor entrara em contato para concluir sua contratacao.</div>
+                          <div className="wa-sub">Um consultor entrará em contato para concluir sua contratação.</div>
                         </div>
                       </div>
+                      <p style={{ marginTop: 12, color: '#64748B', fontSize: 11.5, lineHeight: 1.45, fontWeight: 650 }}>
+                        Você está no controle. Nenhuma surpresa.
+                      </p>
                       <div className="wa-steps">
                         <div className="wa-step">
                           <div className="wa-step-num">1</div>
-                          <div className="wa-step-text">Voce confirma aqui e <strong>enviamos sua solicitacao</strong>.</div>
+                          <div className="wa-step-text">Você confirma aqui e <strong>enviamos sua solicitação</strong>.</div>
                         </div>
                         <div className="wa-step">
                           <div className="wa-step-num">2</div>
@@ -1337,7 +1340,7 @@ export default function Contratacao() {
                             onChange={(e) => setCheck1(e.target.checked)}
                           />
                           <label htmlFor="term-1">
-                            Li e aceito os <a href="#" onClick={(e) => e.preventDefault()}>Termos de contratacao</a> e a{' '}
+                            Li e aceito os <a href="#" onClick={(e) => e.preventDefault()}>Termos de contratação</a> e a{' '}
                             <a href="#" onClick={(e) => e.preventDefault()}>Politica de privacidade</a>.
                           </label>
                         </div>
@@ -1349,7 +1352,7 @@ export default function Contratacao() {
                             onChange={(e) => setCheck2(e.target.checked)}
                           />
                           <label htmlFor="term-2">
-                            Autorizo a <a href="#" onClick={(e) => e.preventDefault()}>consulta ao meu historico de credito</a> para analise da proposta.
+                            Autorizo a <a href="#" onClick={(e) => e.preventDefault()}>consulta ao meu histórico de crédito</a> para análise da proposta.
                           </label>
                         </div>
                       </div>
@@ -1357,7 +1360,7 @@ export default function Contratacao() {
 
                     <div className="actions-sticky">
                       <button className="btn btn-primary" type="button" disabled={!canSubmit} onClick={() => setSubmitted(true)}>
-                        Confirmar contratacao
+                        Confirmar solicitação — sem custos agora
                       </button>
                       <button className="btn btn-secondary" type="button" onClick={() => navigate(sourcePath)}>
                         Voltar para oferta
@@ -1369,19 +1372,19 @@ export default function Contratacao() {
                     <div className="confetti-wrap">
                       <div className="success-circle"><IconCheck size={40} /></div>
                     </div>
-                    <div className="success-title">Solicitacao enviada!</div>
+                      <div className="success-title">Solicitação enviada!</div>
                     <div className="success-sub">Tudo certo. Em breve um consultor entrara em contato pelo seu WhatsApp.</div>
 
                     <div className="success-wa">
                       <div className="success-wa-icon"><IconWhatsapp size={20} /></div>
                       <div>
                         <div className="success-wa-title">Aguarde o contato no WhatsApp</div>
-                        <div className="success-wa-sub">(11) 99999-0000 - em ate 2 horas uteis</div>
+                        <div className="success-wa-sub">(11) 99999-0000 - em até 2 horas úteis</div>
                       </div>
                     </div>
 
                     <div className="success-info-card">
-                      <div className="success-info-label">Resumo da solicitacao</div>
+                      <div className="success-info-label">Resumo da solicitação</div>
                       <div className="info-row"><span className="info-row-label">Tipo</span><span className="info-row-value">{offerData.type}</span></div>
                       <div className="info-row"><span className="info-row-label">Valor principal</span><span className="info-row-value">{offerData.heroValue}</span></div>
                       <div className="info-row"><span className="info-row-label">Economia</span><span className="info-row-value">{offerData.savingValue}</span></div>
@@ -1428,21 +1431,21 @@ export default function Contratacao() {
                     <div className="sidebar-step-dot">{acceptedTermsCount === 2 ? <IconCheck size={12} /> : 1}</div>
                     <div>
                       <strong>Aceite dos termos</strong>
-                      <span>{acceptedTermsCount}/2 concluido</span>
+                      <span>{acceptedTermsCount}/2 concluído</span>
                     </div>
                   </div>
                   <div className={`sidebar-step ${submitted ? 'done' : ''}`}>
                     <div className="sidebar-step-dot">{submitted ? <IconCheck size={12} /> : 2}</div>
                     <div>
-                      <strong>Envio da solicitacao</strong>
-                      <span>Confirmacao da proposta</span>
+                      <strong>Envio da solicitação</strong>
+                      <span>Confirmação da proposta</span>
                     </div>
                   </div>
                   <div className={`sidebar-step ${submitted ? 'done' : ''}`}>
                     <div className="sidebar-step-dot">{submitted ? <IconCheck size={12} /> : 3}</div>
                     <div>
                       <strong>Contato do consultor</strong>
-                      <span>Finalizacao via WhatsApp</span>
+                      <span>Finalização via WhatsApp</span>
                     </div>
                   </div>
                 </div>
@@ -1451,13 +1454,13 @@ export default function Contratacao() {
                   <div className="sidebar-title">Tempo estimado</div>
                   <div className="sidebar-pill">
                     <IconClock size={13} />
-                    Ate 2h uteis para contato
+                    Até 2h úteis para contato
                   </div>
                   <div className="sidebar-meta-line">
-                    <strong>Inicio do atendimento:</strong> em ate 2 horas uteis.
+                    <strong>Início do atendimento:</strong> em até 2 horas úteis.
                   </div>
                   <div className="sidebar-meta-line">
-                    <strong>Conclusao media:</strong> no mesmo dia, apos validacao final.
+                    <strong>Conclusão média:</strong> no mesmo dia, após validação final.
                   </div>
                 </div>
 

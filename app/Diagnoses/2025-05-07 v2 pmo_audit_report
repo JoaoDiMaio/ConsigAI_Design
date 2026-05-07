@@ -1,0 +1,226 @@
+# 🔍 Auditoria PMO — ConsigAI Webapp
+*Data: 2025-05-07 | Auditor: PMO Sênior / QA*
+*Status: Somente leitura — nenhum código alterado*
+
+---
+
+## 1. Sumário Executivo
+
+**Build:** ✅ `npm run build` passou sem erros (261ms, 65 módulos)
+**Branch ativa:** `feature/s1-copy-cta` criada com sucesso
+**Arquivos modificados (uncommitted):** 11 páginas JSX + 1 data file
+
+**Veredicto geral:** Execução **PARCIAL**. Sprint S1 e partes do S2 foram implementados, mas sem commit formal. S3 e S4 incompletos. Encoding ainda tem problemas residuais. Nenhum código quebrou o build ou as rotas.
+
+---
+
+## 2. Auditoria Contra o Plano PMO
+
+| Sprint | Entregas esperadas | Evidência encontrada | Status | Lacunas |
+|---|---|---|---|---|
+| **S0 — Baseline** | Branch tagueada, build ok, screenshots | Branch criada (`feature/s1-copy-cta`); build ok; screenshots em `/app/screenshots/` existem | ✅ Parcial | Tag `baseline/pre-pmo-v1.0` não confirmada no histórico git |
+| **S1 — Copy e CTA** | Acentos, CTAs, microcopy simulação | B02 ❌ não feito; B03 ✅ feito; B05 ✅ feito; B06 ❌ não feito; B04 ✅ (simulação estimada em Ofertas.jsx L656) | ⚠️ Parcial | B02 (CTA Ofertas), B06 (CTA Cadastro) não implementados |
+| **S2 — Confiança** | CPF microcopy, gratuito, anti-phishing, extrato | ✅ CPF microcopy (Entrada L852-854); ✅ gratuito badge (Entrada L842, Ofertas L1297); ✅ anti-phishing (Entrada L862); ✅ "Por que extrato?" (UploadExtrato L544-546); ✅ "Nada é contratado" (3 telas) | ✅ Completo | — |
+| **S3 — Clareza Ofertas** | Badge recomendado, frases por oferta, comparativo | ❌ Badge recomendado ausente; ❌ frases explicativas por oferta ausentes; comparativo existia antes | ❌ Não implementado | B13, B14, B15 ausentes |
+| **S4 — Conversão** | Bloco "Como funciona", kickers, headline Portabilidade, jargões AndamentoPropostas | ✅ Bloco "Como funciona" (Entrada L874-890); ✅ "retencao" corrigido para "O banco tentou manter" (L172); ❌ kicker Cadastro não alterado; ❌ headline dinâmico Portabilidade ausente | ⚠️ Parcial | B16, B17 ausentes |
+| **S5 — Métricas** | Analytics, A/B hipóteses | Nenhuma evidência de analytics ou A/B | ❌ Não implementado | Esperado para fase posterior |
+
+---
+
+## 3. Auditoria por Tela
+
+| Tela | Status | O que melhorou | Problemas encontrados | Risco | Prioridade | Recomendação |
+|---|---|---|---|---|---|---|
+| **Entrada** | ✅ Melhorou | Badge "Consulta gratuita"; microcopy CPF; anti-phishing; "Como funciona" 3 passos; "Descobrir minha economia" | CTA secundário conflita com primário em hierarquia visual; "Descobrir minha economia" ≠ "Ver minha economia" (duplicidade conceitual) | Baixo | P1 | Diferenciar visualmente os dois CTAs |
+| **Cadastro** | ⚠️ Sem mudança | — | CTA ainda diz "Continuar" (B06 não implementado); kicker "Etapa 1 de 1" sem copy motivacional | Médio | P1 | Implementar B06 e B16 |
+| **UploadExtrato** | ✅ Melhorou | CTA "Enviar com segurança e ver ofertas"; bloco "Por que enviar?" com 3 bullets; "Uso exclusivo para análise" | Título da tela ainda diz "Envie seu extrato" (frio); nenhum acento errado identificado | Baixo | P2 | Mudar título para "Seu extrato é o mapa da sua economia" |
+| **CarregamentoOfertas** | ⚠️ Sem mudança visível | — | Estimativa personalizada INSS/SIAPE (B20) não confirmada no código | Baixo | P2 | Verificar e implementar B20 |
+| **Ofertas** | ⚠️ Parcial | "Simulação estimada" adicionado; "Consulta gratuita" no sidebar | CTA dos cards ainda é "Ver detalhes da oferta" (B02 não implementado); badge "Recomendado para você" ausente | Alto | P0 | Implementar B02 urgente — CTA fraco é o maior gap de conversão |
+| **NovoContrato** | ⚠️ Sem mudança | — | "Margem livre" não explicada (B21 ausente) | Médio | P2 | Adicionar explicação inline |
+| **Refinanciamento** | ⚠️ Sem evidência | — | Não verificado em profundidade | Médio | P1 | Auditar próximo sprint |
+| **Portabilidade** | ⚠️ Sem mudança | — | Headline genérico sem valor dinâmico (B17 ausente) | Médio | P1 | Implementar B17 |
+| **EstrategiaCombinada** | ❓ Não verificado | — | Não acessado nesta auditoria | Desconhecido | P1 | Incluir na próxima auditoria |
+| **Contratacao** | ✅ Parcial | "Revise sua contratação" com acento correto (L1218); "Seus dados já foram validados" | "Cadastro concluido" L1223 sem acento; "Tempo medio para contato: ate 2 horas uteis" sem acentos (L1269); "Dados bancarios" L1294 sem acento; "Confirmacao feita" L1295 sem acento; CTA de confirmação final não verificado | Alto | P0 | Corrigir acentos residuais urgente |
+| **DadosBancarios** | ❓ Não verificado | — | Frase propósito conta (B22) não confirmada | Baixo | P2 | Verificar e implementar B22 |
+| **AndamentoPropostas** | ✅ Parcial | "O banco de origem tentou manter o contrato" (L172) — jargão corrigido; acentos corrigidos em partes | "Ver proximas acoes" L107 sem acento; "Gerar relatorio" L108 sem acento; "Proximo passo seguro" L118 sem acento; "diferenca" L119 sem acento — residuais | Médio | P0 | Corrigir acentos residuais |
+| **Configuracoes** | ❓ Não verificado | — | Não acessado nesta auditoria | Desconhecido | P2 | Incluir na próxima auditoria |
+
+---
+
+## 4. Auditoria de Copy e Marketing
+
+| Tela | Texto atual | Problema | Risco | Texto sugerido | Prioridade |
+|---|---|---|---|---|---|
+| Ofertas (3 cards) | "Ver detalhes da oferta" | CTA fraco, não orientado a benefício | Alto conversão | "Quero essa economia" | P0 |
+| Cadastro | "Continuar" | CTA sem benefício | Médio | "Ver minhas opções de economia" | P0 |
+| Contratacao | "Cadastro concluido" | Falta acento em "concluído" | Baixo compliance | "Cadastro concluído" | P0 |
+| Contratacao | "Tempo medio para contato: ate 2 horas uteis" | Falta acentos em 3 palavras | Baixo profissionalismo | "Tempo médio para contato: até 2 horas úteis." | P0 |
+| Contratacao | "Dados bancarios" / "Confirmacao feita" | Falta acentos | Baixo profissionalismo | "Dados bancários" / "Confirmação feita" | P0 |
+| AndamentoPropostas | "Ver proximas acoes" / "Gerar relatorio" | Falta acentos em CTAs | Médio profissionalismo | "Ver próximas ações" / "Gerar relatório" | P0 |
+| AndamentoPropostas | "Proximo passo seguro" / "diferenca" | Falta acentos | Médio | "Próximo passo seguro" / "diferença" | P0 |
+| UploadExtrato | "Envie seu extrato" (título) | Comando frio, sem benefício | Médio abandono | "Seu extrato é o mapa da sua economia" | P1 |
+| Entrada | "Descobrir minha economia" (CTA secundário) | Conflita com "Ver minha economia" (primário) — ambos falam de economia | Baixo | "Criar minha conta" ou "Começar do zero" | P1 |
+| Cadastro (kicker) | "Etapa 1 de 1 — Perfil" (a confirmar) | Não motivacional | Médio | "Quase lá — seus dados garantem a simulação mais precisa" | P1 |
+
+---
+
+## 5. Auditoria de Confiança e Compliance
+
+| Objeção | Onde deveria aparecer | Aparece hoje? | Qualidade | Lacuna | Recomendação |
+|---|---|---|---|---|---|
+| "Isso é golpe?" | Entrada | ✅ Parcialmente | Parcial | Anti-phishing presente mas sem CNPJ ou parceiro | Adicionar CNPJ ou regulação na Entrada |
+| "Meu CPF está seguro?" | Entrada | ✅ Sim | Forte | — | Manter |
+| "Por que preciso do extrato?" | UploadExtrato | ✅ Sim | Forte | — | Manter |
+| "Vão contratar algo sem eu saber?" | Upload, Ofertas, Contratacao | ✅ Sim | Forte | — | Manter |
+| "Essa economia é garantida?" | Ofertas | ✅ Parcial | Parcial | "Simulação estimada" presente mas pequeno | Aumentar visibilidade |
+| "Vou pagar alguma coisa?" | Entrada, Ofertas | ✅ Sim | Forte | "Consulta gratuita" em ambas | Manter |
+| "Minha parcela pode aumentar?" | Ofertas, Portabilidade | ❌ Ausente | Ausente | Objeção não respondida | Adicionar frase em Ofertas e Portabilidade |
+| "Isso afeta meu benefício INSS?" | Cadastro, Upload | ❌ Ausente | Ausente | Objeção crítica para público 60+ | Adicionar microcopy nas telas iniciais |
+| "Posso comparar antes de decidir?" | Ofertas | ✅ Sim | Forte | Sidebar "Você no controle" presente | Manter |
+| "Quem está por trás da oferta?" | Ofertas | ❌ Ausente | Ausente | Decisão de produto pendente (banco parceiro) | Depende de aprovação legal |
+
+---
+
+## 6. Auditoria Visual e UX
+
+| Categoria | Problema | Onde aparece | Impacto | Sugestão | Prioridade |
+|---|---|---|---|---|---|
+| Hierarquia de CTAs | Dois CTAs de benefício na Entrada competem ("Ver minha economia" vs "Descobrir minha economia") | Entrada | Alto | Diferenciar: primário = Login, secundário = Cadastro com nome diferente | P1 |
+| Badge "Recomendado" ausente | Tres cards sem destaque — sobrecarga cognitiva permanece | Ofertas | Alto conversão | Implementar B13 com decisão de produto | P0 |
+| Acentos em CTAs | "Ver proximas acoes" e "Gerar relatorio" sem acento nos botões | AndamentoPropostas | Médio | Corrigir encoding | P0 |
+| Consistência preservada | Visual premium azul+verde, FontSizeToggle, comparativo antes/depois | Todas as telas | Positivo | Manter | — |
+| Mobile | Não testado nesta auditoria | Todas | Desconhecido | Rodar teste em 375px antes do próximo sprint | P1 |
+
+---
+
+## 7. Auditoria de Dados e Consistência
+
+| Tela | Dado | Valor exibido | Inconsistência | Fonte | Recomendação | Prioridade |
+|---|---|---|---|---|---|---|
+| Contratacao | Parcela atual | R$ 550 | Hardcoded fallback | `pickSummaryValue` com fallback 'R$ 550' | Garantir que dados reais do state sejam sempre passados | P1 |
+| Contratacao | Economia | R$ 2.399 | Hardcoded fallback | `pickSummaryValue` com fallback 'R$ 2.399' | Idem | P1 |
+| AndamentoPropostas | Dados financeiros | R$ 28/mês mensal, R$ 2.399 total | Valores de mock hardcoded em `andamentoPropostasDataClean.js` | `financialSummary` mockado | Documentar claramente que são dados de demonstração | P2 |
+| Ofertas | "Simulação estimada" | Aparece no HTML injetado (L656) | Visibilidade dependente de CSS — verificar se é renderizado | `offerSimNote()` | Confirmar que CSS do iframe permite a nota | P1 |
+
+---
+
+## 8. Auditoria Técnica
+
+| Item | Evidência | Risco | Recomendação |
+|---|---|---|---|
+| Build | ✅ Passou sem erros | Nenhum | Manter rotina de build por sprint |
+| Lint | ESLint configurado (`eslint.config.js`), não executado nesta auditoria | Médio | Executar `npm run lint` antes do próximo merge |
+| Commits | Alterações em 11 arquivos **não commitadas** — tudo em working tree | Alto | Fazer commit separado por tipo (copy, feat, fix) ANTES de continuar |
+| Arquivos tmp/screenshots | `/app/tmp/` e `/app/screenshots/` com muitos arquivos de auditoria anterior | Baixo | Mover para `.gitignore` ou limpar |
+| Playwright config | `playwright.config.js` e testes smoke em `/app/tests/` — não executados | Médio | Rodar smoke tests antes do próximo sprint |
+| Testes unitários | `__tests__/useOffersData.test.js` presente — não executado | Médio | Executar antes do merge |
+| Alterações fora do escopo | `andamentoPropostasDataClean.js` modificado — verificar se apenas copy | Médio | Revisar diff para confirmar |
+| Chunk size warning | `dist/assets/index-CbzXmSt1.js` 708KB (>500KB) | Baixo | Não é urgente, mas monitorar crescimento |
+
+---
+
+## 9. Testes Executados
+
+| Teste | Resultado | Evidência | Problema | Recomendação |
+|---|---|---|---|---|
+| `npm run build` | ✅ Passou | "✓ built in 261ms" | Warning de chunk >500KB | Não crítico |
+| Git log / status | ✅ Executado | 11 arquivos modificados não commitados | Sem histórico de commits PMO | Fazer commits antes de continuar |
+| Grep por CTAs-chave | ✅ Executado | B02 ausente; B03, B05 presentes | B02 e B06 não implementados | Implementar no próximo sprint |
+| Grep por trust signals | ✅ Executado | CPF, gratuito, anti-phishing, "nada é contratado" confirmados | — | — |
+| Verificação visual de código | ✅ Executado | Acentos residuais em Contratacao e AndamentoPropostas | — | Corrigir urgente |
+| `npm run lint` | ❌ Não executado | — | — | Executar antes do próximo merge |
+| Testes Playwright (smoke) | ❌ Não executado | — | — | Executar antes do próximo merge |
+| Teste mobile 375px | ❌ Não executado | — | — | Executar no próximo sprint |
+| Screenshots pós-sprint | ❌ Não tirados formalmente | `/app/screenshots/` contém capturas antigas | — | Tirar screenshots atualizados |
+
+---
+
+## 10. Classificação Final das Entregas
+
+| Entrega | Classificação | Motivo | Ação necessária |
+|---|---|---|---|
+| B01 — Corrigir acentos Contratacao/Andamento | ⚠️ Aprovado com ajuste | Parcialmente corrigido — residuais em L1223, L1269, L1294, L1295, L107, L108, L118, L119 | Corrigir 8 ocorrências residuais |
+| B02 — CTA Ofertas "Quero essa economia" | ❌ Reprovado | Não implementado — ainda diz "Ver detalhes da oferta" | Implementar B02 |
+| B03 — CTA UploadExtrato "Enviar com segurança" | ✅ Aprovado | Confirmado em L608-610 | — |
+| B04 — "(Simulação estimada)" nos cards | ✅ Aprovado com ajuste | Implementado no HTML injetado (L656) — verificar visibilidade CSS | Confirmar que é visível na renderização |
+| B05 — CTA Entrada "Descobrir minha economia" | ✅ Aprovado com ajuste | Implementado (L858) — porém conflita hierarquicamente com CTA primário | Diferenciar os dois CTAs |
+| B06 — CTA Cadastro "Ver minhas opções de economia" | ❌ Reprovado | Não implementado — ainda diz "Continuar" | Implementar B06 |
+| B08 — Microcopy CPF | ✅ Aprovado | Confirmado em Entrada L852-854 | — |
+| B09 — "Nada é contratado sem sua confirmação" | ✅ Aprovado | Presente em 3 telas (Entrada, UploadExtrato, Ofertas) | — |
+| B10 — Badge "Consulta gratuita" | ✅ Aprovado | Confirmado em Entrada L842 e Ofertas L1297 | — |
+| B11 — Frase anti-phishing | ✅ Aprovado | Confirmado em Entrada L862 | — |
+| B12 — "Por que enviar seu extrato?" 3 bullets | ✅ Aprovado | Confirmado em UploadExtrato L544-546 | — |
+| B13 — Badge "Recomendado para você" | ❌ Reprovado | Ausente em Ofertas | Implementar (requer decisão de produto) |
+| B16 — Kicker motivacional no Cadastro | ❌ Reprovado | Não implementado | Implementar B16 |
+| B18 — Simplificar jargão "retencao" | ✅ Aprovado | L172 corrigido para "O banco de origem tentou manter" | — |
+| B19 — Bloco "Como funciona" na Entrada | ✅ Aprovado | Implementado em Entrada L874-890 | — |
+
+---
+
+## 11. Plano de Correção Pós-Auditoria
+
+### Fase 1 — Correções Críticas (P0, < 1 dia)
+**Itens que afetam confiança e profissionalismo diretamente**
+
+| Item | Arquivo | Ação |
+|---|---|---|
+| Acentos residuais Contratacao | Contratacao.jsx L1223, L1269, L1294, L1295 | "concluido"→"concluído", "medio"→"médio", "ate"→"até", "uteis"→"úteis", "bancarios"→"bancários", "Confirmacao"→"Confirmação" |
+| Acentos residuais AndamentoPropostas | AndamentoPropostas.jsx L107, L108, L118, L119 | "proximas acoes"→"próximas ações", "relatorio"→"relatório", "Proximo"→"Próximo", "diferenca"→"diferença" |
+| B02 — CTA Ofertas | Ofertas.jsx | Trocar "Ver detalhes da oferta" → "Quero essa economia" em cardDetailsBtn |
+| B06 — CTA Cadastro | Cadastro.jsx L1224 | Trocar "Continuar" → "Ver minhas opções de economia" |
+| Commit das mudanças não commitadas | Git | `git add` + commits separados por tipo |
+
+### Fase 2 — Ajustes de Copy (P1, 2-3 dias)
+| Item | Ação |
+|---|---|
+| B16 — Kicker motivacional Cadastro | Trocar "Etapa 1 de 1 — Perfil" |
+| CTA secundário Entrada | Diferenciar de "Ver minha economia" |
+| Título UploadExtrato | "Seu extrato é o mapa da sua economia" |
+| B20 — Estimativa personalizada CarregamentoOfertas | Adicionar referência a INSS/SIAPE |
+| B22 — Frase propósito DadosBancarios | "Usamos apenas para creditar valores aprovados" |
+| Objeção parcela aumentar | Adicionar em Ofertas e Portabilidade |
+| Objeção benefício INSS | Adicionar em Cadastro ou UploadExtrato |
+
+### Fase 3 — Clareza das Ofertas (P1, requer decisão de produto)
+| Item | Ação |
+|---|---|
+| B13 — Badge "Recomendado para você" | Aguardar decisão de produto sobre qual card |
+| B14 — Frases por tipo de oferta | Adicionar 1 linha por card |
+
+### Fase 4 — Limpeza Técnica (P2)
+| Item | Ação |
+|---|---|
+| Arquivos em `/app/tmp/` | Adicionar ao `.gitignore` ou deletar |
+| Executar `npm run lint` | Verificar antes do próximo merge |
+| Executar Playwright smoke tests | `npx playwright test` nos fluxos críticos |
+
+### Fase 5 — Testes e Baseline (após F1-F2)
+| Item | Ação |
+|---|---|
+| Screenshots atualizados | Tirar após cada fase de correção |
+| Teste mobile 375px | Rodar DevTools em cada tela modificada |
+| Commit formal de baseline | Tag `sprint1-completo` após F1 |
+
+---
+
+## 12. Veredito PMO
+
+1. **O plano PMO foi bem executado?** — **Parcialmente.** ~60% das tarefas P0 concluídas. Faltam B02, B06 e acentos residuais.
+2. **Maior impacto positivo:** S2 (confiança) — CPF microcopy, badge gratuito, anti-phishing, "Por que extrato?" e "Nada é contratado". Impacto direto em redução de medo.
+3. **Entregas incompletas:** B02 (CTA Ofertas — maior impacto de conversão), B06 (CTA Cadastro), B13 (Recomendado), B16 (kicker Cadastro).
+4. **Mudanças que pioraram?** Nenhuma regressão identificada. A Entrada tem hierarquia de CTAs confusa com dois botões de "descobrir/ver economia".
+5. **Riscos antes de continuar:** Acentos residuais em Contratacao e AndamentoPropostas (profissionalismo), B02 ausente (conversão Ofertas).
+6. **Pronto para próxima fase?** **Não** — concluir F1 (correções críticas) antes de avançar para S3.
+7. **Próximos 5 passos:** ver seção 13.
+
+---
+
+## 13. Próximos 5 Passos
+
+| # | Ação | Arquivo(s) | Urgência |
+|---|---|---|---|
+| 1 | **Corrigir acentos residuais** em Contratacao (L1223, L1269, L1294, L1295) e AndamentoPropostas (L107, L108, L118, L119) | Contratacao.jsx, AndamentoPropostas.jsx | 🔴 Imediato |
+| 2 | **Implementar B02** — trocar "Ver detalhes da oferta" por "Quero essa economia" em `cardDetailsBtn()` | Ofertas.jsx | 🔴 Imediato |
+| 3 | **Implementar B06** — trocar "Continuar" por "Ver minhas opções de economia" no submit do Cadastro | Cadastro.jsx L1224 | 🔴 Imediato |
+| 4 | **Fazer commits formais** separando: `fix(encoding)`, `copy(ofertas)`, `copy(cadastro)` — nada está commitado | Git | 🔴 Antes de continuar |
+| 5 | **Executar lint + smoke tests** (`npm run lint` e Playwright) para validar que nenhuma rota quebrou | Terminal | 🟡 Após os 4 passos acima |
