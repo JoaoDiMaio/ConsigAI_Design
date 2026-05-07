@@ -650,10 +650,9 @@ function cardNote(type, icon, text) {
   return `<div class="${type}-note"><span class="${type}-note-icon">${icon}</span><p>${text}</p></div>`
 }
 
-function cardDetailsBtn(type, label = 'Quero essa economia') {
+function cardDetailsBtn(type, label = 'Ver condições') {
   return `<div class="consigai-offer-actions ${type}-actions">
     <button type="button" class="consigai-offer-details-btn ${type}-details-button">${label}</button>
-    <p class="consigai-offer-action-note">Simulação sem compromisso</p>
   </div>`
 }
 
@@ -765,7 +764,7 @@ function buildTurboCard(cfg, offer, idx, usuario, selectedThirdSubOffer) {
         ${opt('installment', 'Na parcela', economiaParcela, 'Redução mensal estimada')}
       </div>
       <div class="consigai-offer-note turbo-note"><span class="note-icon" aria-hidden="true">✓</span><p>Boa opção para reduzir o custo do contrato sem contratar novo crédito.</p></div>
-      ${cardDetailsBtn('turbo', 'Quero essa economia')}
+      ${cardDetailsBtn('turbo')}
     </div>
   `)
 }
@@ -840,7 +839,7 @@ function buildNovoCard(offer, idx, isRecommended) {
         <span>Simulação sem compromisso</span>
       </div>
       ${cardNote('new-contract', 'i', 'Usa margem livre. Taxa, custo total, prazo e parcela aparecem antes da confirmação.')}
-      ${cardDetailsBtn('new-contract', 'Quero comparar essa opção')}
+      ${cardDetailsBtn('new-contract')}
     </div>
   `, isRecommended ? 'recommended' : '')
 }
@@ -857,8 +856,8 @@ function buildRefinCard(offer, idx) {
         <strong>${valorEstimado}</strong>
         <span>Simulação sem compromisso</span>
       </div>
-      ${cardNote('refin', 'i', 'Pode alterar prazo, parcela e custo total. Você verá taxa, parcelas e condições antes de confirmar.')}
-      ${cardDetailsBtn('refin', 'Ver condições')}
+      ${cardNote('refin', 'i', 'Altera seus contratos ativos. Você verá taxa, parcelas e condições antes de confirmar.')}
+      ${cardDetailsBtn('refin')}
     </div>
   `)
 }
@@ -904,7 +903,7 @@ function buildGenericCard(cfg, offer, idx, usuario, isRecommended) {
         ${!isSimple ? cardSimNote() : ''}
         <div class="consigai-offer-note"><span class="consigai-offer-note-text"><span class="consigai-offer-note-sub">${cfg.note}</span></span></div>
         <div class="consigai-offer-actions generic-actions">
-          <button type="button" class="consigai-offer-details-btn generic-details-button">Quero essa economia</button>
+          <button type="button" class="consigai-offer-details-btn generic-details-button">Ver condições</button>
           <p style="margin: 4px 0 0; font-size: 11px; color: #64748B; text-align: center; font-weight: 600;">Simulação sem compromisso</p>
         </div>
       </div>
@@ -1010,16 +1009,18 @@ function syncMobileOfferSelection(cacheRef, doc, selectedOfferIndexRef, refreshS
     if (!currentCards.length) return
 
     const gridRect = grid.getBoundingClientRect()
-    const targetCenter = gridRect.left + (gridRect.width / 2)
+    const targetCenterX = gridRect.left + (gridRect.width / 2)
+    const targetCenterY = gridRect.top + (gridRect.height / 2)
 
     let bestIdx = 0
     let bestDistance = Number.POSITIVE_INFINITY
 
     currentCards.forEach((card, idx) => {
       const rect = card.getBoundingClientRect()
-      if (!rect.width) return
-      const cardCenter = rect.left + (rect.width / 2)
-      const distance = Math.abs(cardCenter - targetCenter)
+      if (!rect.width || !rect.height) return
+      const cardCenterX = rect.left + (rect.width / 2)
+      const cardCenterY = rect.top + (rect.height / 2)
+      const distance = Math.hypot(cardCenterX - targetCenterX, cardCenterY - targetCenterY)
       if (distance < bestDistance) {
         bestDistance = distance
         bestIdx = idx
@@ -1806,7 +1807,11 @@ export default function Ofertas() {
     : null
 
   return (
-    <div style={{ ...appPageStyle, minHeight: '100svh' }}>
+    <div style={{
+      ...appPageStyle,
+      minHeight: '100svh',
+      paddingBottom: ctaBar ? (isDesktop ? '118px' : '172px') : 0,
+    }}>
       {loading && <div className="offers-loading-bar" aria-hidden="true" />}
       {isDesktop ? (
         <DesktopPageHeader

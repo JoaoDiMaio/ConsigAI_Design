@@ -818,17 +818,13 @@ export const RESPONSIVE_STYLES_CSS = `
     .btn-cta { padding: 12px 22px !important; }
   }
 
-  @media (max-width: 1080px) {
+  @media (max-width: 900px) {
     .main { padding: 24px 16px 64px !important; }
     .hero { padding: 18px 18px !important; gap: 16px !important; }
     .hero-compare { justify-self: end !important; width: min(332px, 100%) !important; }
     .hc-row { gap: 12px !important; }
     .hc-col-val { font-size: 20px !important; }
-    .offers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-    .offers-grid > .offer-card:nth-child(3) {
-      grid-column: 1 / -1 !important; justify-self: center !important;
-      width: min(520px, 100%) !important;
-    }
+    .offers-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
     .ba-section { padding: 20px 16px !important; }
     .consigai-pocket-visual.impact-grid { grid-template-columns: minmax(0, 1fr) !important; }
     .projection-flow {
@@ -1313,28 +1309,12 @@ export const OFFER_CARD_REDESIGN_CSS = `
     box-shadow: 0 14px 34px rgba(5, 94, 206, 0.12), 0 0 0 1px rgba(0, 231, 255, 0.08) !important;
   }
   .offer-card.recommended::before {
-    content: '' !important;
-    display: block !important;
-    position: absolute !important;
-    left: 2px !important;
-    right: 2px !important;
-    top: 2px !important;
-    height: 3px !important;
-    background: linear-gradient(90deg, #055ECE, #00E7FF) !important;
-    border-radius: 999px !important;
-    pointer-events: none !important;
+    display: none !important;
+    content: none !important;
   }
   .offer-card.selected::before, .offer-card.active::before {
-    content: '' !important;
-    display: block !important;
-    position: absolute !important;
-    left: 2px !important;
-    right: 2px !important;
-    top: 2px !important;
-    height: 2px !important;
-    background: linear-gradient(90deg, #055ECE, #00E7FF) !important;
-    border-radius: 999px !important;
-    pointer-events: none !important;
+    display: none !important;
+    content: none !important;
   }
   .offer-card:not(.turbo-offer):not(.equilibrio-offer):not(.folga-offer):not(.new-contract-offer):not(.refin-offer) .consigai-offer-card {
     height: 100%;
@@ -1503,7 +1483,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
     display: flex;
     flex-direction: column;
     gap: 0;
-    padding-top: 12px;
+    padding-top: 10px;
     min-height: 0;
     flex: 1 1 auto;
   }
@@ -1526,18 +1506,51 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.turbo-offer .turbo-intro {
     margin-top: 6px;
+    color: #66788F;
+    font-size: 11.5px;
+    line-height: 1.42;
+    font-weight: 650;
+    display: block;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    min-height: 32px;
+  }
+  .offer-card.refin-offer .refin-intro {
+    min-height: 54px !important;
+    display: flex !important;
+    align-items: center !important;
+    margin-top: 10px !important;
+    padding: 12px !important;
+    border-radius: 16px !important;
+    background: #F4F8FF !important;
+    border: 1px solid #DDE8F6 !important;
+    color: #03246F !important;
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+    font-weight: 800 !important;
+  }
+  .offer-card.new-contract-offer .new-contract-intro {
+    margin-top: 6px;
     color: #64748B;
-    font-size: 12px;
+    font-size: 11.5px;
     line-height: 1.35;
     font-weight: 650;
+    min-height: 32px;
+    display: block;
+    padding: 0;
   }
   .offer-card.turbo-offer .turbo-options {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
     margin-top: 12px;
+    min-height: 84px;
   }
   .offer-card.turbo-offer .turbo-option {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
     text-align: left;
     min-height: 84px;
     padding: 12px 12px 11px;
@@ -1592,7 +1605,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.turbo-offer .turbo-option strong {
     display: block;
-    margin-top: 6px;
+    margin-top: 4px;
     color: #007A52;
     font-size: 19px;
     line-height: 1.1;
@@ -1642,7 +1655,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.turbo-offer .turbo-option small {
     display: block;
-    margin-top: 5px;
+    margin-top: 4px;
     color: #64748B;
     font-size: 10px;
     line-height: 1.2;
@@ -1653,15 +1666,17 @@ export const OFFER_CARD_REDESIGN_CSS = `
     display: flex !important;
     gap: 10px;
     align-items: flex-start;
-    margin-top: 10px;
-    padding: 10px 11px;
-    border-radius: 12px;
-    background: #E9F8F1;
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid #DDE8F6;
+    background: #F4F8FF;
     color: #007A52;
-    font-size: 11px;
-    line-height: 1.25;
+    font-size: 9.5px;
+    line-height: 1.35;
     font-weight: 750;
-    min-height: 0;
+    min-height: 48px;
+    padding-block: 10px;
   }
   .offer-card.turbo-offer .turbo-note p {
     margin: 0;
@@ -1678,25 +1693,37 @@ export const OFFER_CARD_REDESIGN_CSS = `
     font-size: 12px;
     font-weight: 950;
   }
-  .offer-card.turbo-offer .turbo-actions {
+  .offer-card.refin-offer .refin-actions,
+  .offer-card.new-contract-offer .new-contract-actions,
+  .offer-card.turbo-offer .turbo-actions,
+  .offer-card.folga-offer .folga-actions {
     margin-top: 10px;
   }
-  .offer-card.turbo-offer .turbo-details-button {
+  .offer-card.turbo-offer .turbo-actions {
+    margin-top: 12px;
+  }
+  .offer-card.refin-offer .refin-details-button,
+  .offer-card.new-contract-offer .new-contract-details-button,
+  .offer-card.turbo-offer .turbo-details-button,
+  .offer-card.folga-offer .folga-details-button {
     width: 100% !important;
-    min-height: auto;
+    min-height: 40px;
     border-radius: 14px !important;
-    border: 1px solid rgba(0, 231, 255, 0.22) !important;
-    background: linear-gradient(145deg, #055ECE, #03246F) !important;
-    color: #fff !important;
+    border: 1px solid #BFD4F6 !important;
+    background: #FFFFFF !important;
+    color: #055ECE !important;
     font-size: 13px !important;
     font-weight: 900 !important;
     cursor: pointer !important;
     transition: 160ms ease !important;
-    box-shadow: 0 18px 38px rgba(5, 94, 206, 0.22) !important;
+    box-shadow: 0 12px 24px rgba(3,36,111,.06) !important;
   }
-  .offer-card.turbo-offer .turbo-details-button:hover {
-    background: linear-gradient(145deg, #1878DE, #055ECE) !important;
-    border-color: rgba(0, 231, 255, 0.28) !important;
+  .offer-card.refin-offer .refin-details-button:hover,
+  .offer-card.new-contract-offer .new-contract-details-button:hover,
+  .offer-card.turbo-offer .turbo-details-button:hover,
+  .offer-card.folga-offer .folga-details-button:hover {
+    background: #EAF4FF !important;
+    border-color: #055ECE !important;
   }
   .offer-card.turbo-offer .consigai-offer-details-btn::after {
     display: none !important;
@@ -1894,16 +1921,16 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.folga-offer .folga-details-button {
     width: 100% !important;
-    min-height: auto;
+    min-height: 40px;
     border-radius: 14px !important;
     border: 1px solid #BFD4F6 !important;
-    background: #F4F8FF !important;
+    background: #FFFFFF !important;
     color: #055ECE !important;
     font-size: 13px !important;
     font-weight: 900 !important;
     cursor: pointer !important;
     transition: 160ms ease !important;
-    box-shadow: none !important;
+    box-shadow: 0 12px 24px rgba(3,36,111,.06) !important;
   }
   .offer-card.folga-offer .folga-details-button:hover {
     background: #EAF4FF !important;
@@ -1996,9 +2023,16 @@ export const OFFER_CARD_REDESIGN_CSS = `
     min-height: 0 !important;
     overflow: visible !important;
   }
+  .offer-card.new-contract-offer.recommended {
+    box-shadow: none !important;
+  }
+  .offer-card.new-contract-offer.recommended {
+    background: #FFFFFF !important;
+  }
   .offer-card.new-contract-offer.selected,
   .offer-card.new-contract-offer.active {
     border: 2px solid rgba(36,84,214,.42) !important;
+    background: linear-gradient(160deg, #f0faff 0%, #ffffff 60%) !important;
     box-shadow: 0 24px 60px rgba(3,36,111,.12) !important;
   }
   .offer-card.new-contract-offer.selected::before,
@@ -2052,9 +2086,10 @@ export const OFFER_CARD_REDESIGN_CSS = `
     display: block;
     margin-top: 3px;
     color: #7A8DB8;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.05;
+    white-space: nowrap;
   }
   .offer-card.new-contract-offer .consigai-offer-badge-rec {
     justify-self: end;
@@ -2156,21 +2191,21 @@ export const OFFER_CARD_REDESIGN_CSS = `
     font-weight: 950;
   }
   .offer-card.new-contract-offer .new-contract-actions {
-    margin-top: 12px;
+    margin-top: 10px;
   }
   .offer-card.new-contract-offer .new-contract-details-button {
-    min-height: 46px;
-    border-radius: 16px !important;
-    border: 1px solid rgba(0, 231, 255, 0.22) !important;
-    background: linear-gradient(145deg, #055ECE, #03246F) !important;
-    color: #fff !important;
+    min-height: 40px;
+    border-radius: 14px !important;
+    border: 1px solid #BFD4F6 !important;
+    background: #FFFFFF !important;
+    color: #055ECE !important;
     font-size: 13px !important;
     font-weight: 900 !important;
-    box-shadow: 0 18px 38px rgba(5, 94, 206, 0.22) !important;
+    box-shadow: 0 12px 24px rgba(3,36,111,.06) !important;
   }
   .offer-card.new-contract-offer .new-contract-details-button:hover {
-    background: linear-gradient(145deg, #1878DE, #055ECE) !important;
-    border-color: rgba(0, 231, 255, 0.28) !important;
+    background: #EAF4FF !important;
+    border-color: #055ECE !important;
   }
   .offer-card.equilibrio-offer {
     border: 2px solid transparent !important;
@@ -2473,33 +2508,34 @@ export const OFFER_CARD_REDESIGN_CSS = `
   .offer-card.refin-offer .refin-intro {
     margin-top: 6px;
     color: #64748B;
-    font-size: 12px;
+    font-size: 11.5px;
     line-height: 1.35;
     font-weight: 650;
+    min-height: 32px;
   }
   .offer-card.refin-offer .refin-highlight {
-    margin-top: 10px;
-    padding: 10px 11px;
+    margin-top: 12px;
+    padding: 12px 12px 11px;
     border-radius: 18px;
     background:
-      radial-gradient(circle at 88% 10%, rgba(0, 231, 255, 0.10), transparent 34%),
+      radial-gradient(circle at 88% 10%, rgba(0, 231, 255, 0.18), transparent 34%),
       linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%);
-    border: 1px solid rgba(3, 36, 111, 0.14);
+    border: 1px solid rgba(0, 231, 255, 0.30);
   }
   .offer-card.refin-offer .refin-highlight small {
     display: block;
-    color: #64748B;
-    font-size: 12px;
+    color: #6C7D95;
+    font-size: 11px;
     font-weight: 800;
   }
   .offer-card.refin-offer .refin-highlight strong {
     display: block;
-    margin-top: 4px;
+    margin-top: 5px;
     color: #03246F;
-    font-size: 26px;
+    font-size: 28px;
     line-height: 1;
     font-weight: 950;
-    letter-spacing: -.055em;
+    letter-spacing: -.06em;
   }
   .offer-card.refin-offer .refin-highlight span {
     display: block;
@@ -2514,7 +2550,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
     gap: 10px;
     align-items: flex-start;
     margin-top: 10px;
-    padding: 10px 11px;
+    padding: 10px 12px;
     border-radius: 14px;
     background: #F4F8FF;
     border: 1px solid #DDE8F6;
@@ -2656,7 +2692,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
       padding-top: 12px !important;
     }
     .offer-card.turbo-offer .turbo-body {
-      padding-top: 13px !important;
+      padding-top: 10px !important;
     }
     .offer-card.equilibrio-offer .equilibrio-heading,
     .offer-card.folga-offer .folga-heading,
@@ -2667,7 +2703,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
     .offer-card.folga-offer .folga-intro,
     .offer-card.turbo-offer .turbo-intro {
       margin-top: 6px !important;
-      min-height: 32px !important;
+      min-height: 0 !important;
     }
     .offer-card.equilibrio-offer .equilibrio-benefit-grid,
     .offer-card.folga-offer .folga-highlight-grid,
@@ -2678,35 +2714,31 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
 
   @media (max-width: 1080px) {
-    .offers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    .offers-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
   }
   @media (max-width: 760px) {
     .offers-grid {
-      display: flex !important;
-      gap: 10px !important;
-      overflow-x: auto !important;
-      overflow-y: hidden !important;
-      scroll-snap-type: x mandatory !important;
-      -webkit-overflow-scrolling: touch !important;
-      overscroll-behavior-x: contain !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      gap: 12px !important;
+      overflow: visible !important;
       padding: 2px 0 10px !important;
-      margin: 0 -12px 10px !important;
-      padding-left: 12px !important;
-      padding-right: 12px !important;
-      scrollbar-width: none !important;
+      margin: 0 0 12px !important;
+      scrollbar-width: auto !important;
     }
-    .offers-grid::-webkit-scrollbar { display: none !important; }
+    .offers-grid::-webkit-scrollbar { display: block !important; }
     .offer-card {
-      flex: 0 0 min(84vw, 340px) !important;
-      width: min(84vw, 340px) !important;
+      flex: none !important;
+      width: 100% !important;
+      max-width: 100% !important;
       min-height: auto !important;
       padding: 14px !important;
-      scroll-snap-align: start !important;
+      scroll-snap-align: none !important;
     }
     .offer-card.turbo-offer {
       height: auto !important;
       min-height: 0 !important;
-      padding: 18px 18px 14px !important;
+      padding: 16px !important;
     }
     .offer-card.turbo-offer .turbo-module-header {
       align-items: flex-start;
@@ -2715,12 +2747,12 @@ export const OFFER_CARD_REDESIGN_CSS = `
     .offer-card.turbo-offer .turbo-options { grid-template-columns: 1fr !important; gap: 8px !important; }
     .offer-card.turbo-offer .turbo-option {
       min-height: 0 !important;
-      padding: 13px !important;
+      padding: 12px !important;
     }
     .offer-card.turbo-offer .turbo-option strong { font-size: 22px !important; }
   .offer-card.turbo-offer .turbo-heading { font-size: 22px !important; }
-    .offer-card.turbo-offer .turbo-intro { font-size: 12px !important; }
-    .offer-card.turbo-offer .turbo-note { min-height: 0 !important; padding: 12px !important; }
+    .offer-card.turbo-offer .turbo-intro { font-size: 11.5px !important; min-height: 0 !important; }
+    .offer-card.turbo-offer .turbo-note { min-height: 48px !important; margin-top: 12px !important; padding: 10px 12px !important; }
     .offer-card.turbo-offer .turbo-details-button { padding: 10px 12px !important; font-size: 12px !important; }
     .offer-card.folga-offer {
       height: auto !important;
@@ -2748,7 +2780,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
     .offer-card.new-contract-offer {
       height: auto !important;
       min-height: 0 !important;
-      padding: 14px !important;
+      padding: 16px !important;
     }
     .offer-card.new-contract-offer .new-contract-header {
       grid-template-columns: 1fr;
@@ -2764,7 +2796,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
     .offer-card.equilibrio-offer {
       height: auto !important;
       min-height: 0 !important;
-      padding: 18px 18px 14px !important;
+      padding: 16px !important;
     }
     .offer-card.equilibrio-offer .equilibrio-header {
       align-items: flex-start;
@@ -2790,7 +2822,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
     .offer-card.refin-offer {
       height: auto !important;
       min-height: 0 !important;
-      padding: 14px !important;
+      padding: 16px !important;
     }
     .offer-card.refin-offer .refin-header {
       align-items: flex-start;
@@ -2809,6 +2841,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
     .offer-card.turbo-offer .consigai-offer-mini-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
     .offer-card.turbo-offer .consigai-offer-mini-label { font-size: 13px !important; }
     .consigai-offer-actions { margin-top: 10px !important; }
+    .consigai-offer-action-note { display: none !important; }
     .consigai-offer-details-btn {
       padding: 11px 12px !important;
       font-size: 12px !important;
@@ -2847,7 +2880,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
     font-weight: 800 !important;
   }
   .offer-card.turbo-offer .turbo-note {
-    min-height: 54px !important;
+    min-height: 48px !important;
     align-items: center !important;
   }
 `
