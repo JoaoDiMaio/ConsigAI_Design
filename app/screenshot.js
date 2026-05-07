@@ -1,6 +1,8 @@
+import { mkdirSync } from 'fs';
 import { chromium } from 'playwright';
 
 (async () => {
+  mkdirSync('screenshots', { recursive: true });
   const browser = await chromium.launch();
   const routes = [
     { name: 'entrada', path: '/entrada' },
@@ -10,7 +12,11 @@ import { chromium } from 'playwright';
     { name: 'novo_contrato', path: '/novo-contrato' },
     { name: 'refinanciamento', path: '/refinanciamento' },
     { name: 'portabilidade', path: '/portabilidade' },
-    { name: 'turbo_economia', path: '/novo-economia' }
+    { name: 'turbo_economia', path: '/novo-economia' },
+    { name: 'contratacao', path: '/contratacao' },
+    { name: 'dados_bancarios', path: '/dados-bancarios' },
+    { name: 'andamento_propostas', path: '/acompanhamento' },
+    { name: 'configuracoes', path: '/configuracoes' }
   ];
 
   for (const route of routes) {

@@ -824,20 +824,43 @@ ${onboardingAliasVarsCss}
 
           <section className="form-panel">
             <OnboardingBrandHeader />
-            <div className="login-box">
-              <div className="login-kicker">Bem-vindo à ConsigAI</div>
-              <h2 className="login-title">Entre para ver sua <span>Economia</span></h2>
-              <p className="login-copy">
-                Acesse sua simulação e compare opções para pagar menos ou melhorar sua parcela com segurança.
-              </p>
+              <div className="login-box">
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '8px 12px',
+                  borderRadius: 999,
+                  background: 'rgba(0, 168, 107, 0.10)',
+                  border: '1px solid rgba(0, 168, 107, 0.18)',
+                  color: '#007A52',
+                  fontSize: 11,
+                  fontWeight: 950,
+                  letterSpacing: '.08em',
+                  textTransform: 'uppercase',
+                }}>
+                  Consulta gratuita
+                </div>
+                <div className="login-kicker">Bem-vindo à ConsigAI</div>
+                <h2 className="login-title">Entre para ver sua <span>Economia</span></h2>
+                <p className="login-copy">
+                  Acesse sua simulação e compare opções para pagar menos ou melhorar sua parcela com segurança.
+                </p>
 
               <form className="quick-access" onSubmit={(e) => e.preventDefault()}>
                 <input className="input-field" type="text" placeholder="CPF ou e-mail" aria-label="CPF ou e-mail" />
+                <small style={{ marginTop: -4, color: '#64748B', fontSize: 11, lineHeight: 1.35, fontWeight: 650 }}>
+                  Usado apenas para localizar contratos. Não compartilhamos.
+                </small>
                 <input className="input-field" type="password" placeholder="Senha" aria-label="Senha" />
 
                 <button className="primary-cta consigai-cta-animated" type="button" onClick={() => navigate('/carregamento-ofertas')}>Ver minha economia</button>
-                <button className="secondary-cta consigai-cta-animated" type="button" onClick={() => navigate('/cadastro')}>Criar minha conta</button>
+                <button className="secondary-cta consigai-cta-animated" type="button" onClick={() => navigate('/cadastro')}>Descobrir minha economia</button>
               </form>
+
+              <p style={{ marginTop: 14, color: '#64748B', fontSize: 11.5, lineHeight: 1.45, fontWeight: 650 }}>
+                A ConsigAI nunca liga pedindo senha ou código.
+              </p>
 
               <div className="forgot-row">
                 <span>Esqueceu sua senha?</span>

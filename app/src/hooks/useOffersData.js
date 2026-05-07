@@ -3,8 +3,10 @@ import {
   OFFER_CARD_CONFIG,
   MOCK_DADOS,
   MAX_API_CARDS,
-  FORCED_VISIBLE_OFFER_IDS,
+  DEFAULT_MOCK_OFFER_IDS,
+  USE_MOCK_OFFERS,
 } from '../data/offersMock.js'
+import { ENDPOINTS } from '../api/endpoints.js'
 import { normalizeApiOffers } from '../lib/offerUtils.js'
 
 /**
@@ -23,8 +25,8 @@ function normalizeApiResponse(payload) {
 /**
  * Retorna dados de ofertas + dados financeiros do usuário.
  *
- * Mock ativo: FORCED_VISIBLE_OFFER_IDS não-vazio → usa MOCK_DADOS, não chama API.
- * Produção: zerar FORCED_VISIBLE_OFFER_IDS → chama GET /api/ofertas.
+ * Mock ativo: VITE_USE_MOCK_OFFERS=true → usa MOCK_DADOS, não chama API.
+ * Produção: VITE_USE_MOCK_OFFERS=false → chama GET /api/ofertas.
  *
  * Shape retornado:
  *   {
@@ -61,9 +63,9 @@ export function useOffersData() {
     setState((prev) => ({ ...prev, loading: true, error: null }))
 
     // TODO: remover este bloco quando /api/ofertas estiver pronto
-    if (FORCED_VISIBLE_OFFER_IDS.length > 0) {
+    if (USE_MOCK_OFFERS) {
       const { usuario, impacto, ofertasMap } = normalizeApiResponse(null)
-      const normalized = normalizeApiOffers(FORCED_VISIBLE_OFFER_IDS, MAX_API_CARDS)
+      const normalized = normalizeApiOffers(DEFAULT_MOCK_OFFER_IDS, MAX_API_CARDS)
       setState((prev) => ({
         ...prev,
         activeOffers: buildActiveOffers(normalized, ofertasMap),
@@ -75,7 +77,7 @@ export function useOffersData() {
     }
 
     try {
-      const res = await fetch('/api/ofertas')
+      const res = await fetch(ENDPOINTS.ofertas)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const payload = await res.json()
       const { usuario, impacto, ofertasMap } = normalizeApiResponse(payload)

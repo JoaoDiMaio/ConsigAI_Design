@@ -174,8 +174,7 @@ export default function NovoContrato() {
       >
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 11px', borderRadius: 999, fontSize: 0, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '.07em', ...badgeStyle }}>
           <span style={{ fontSize: 10 }}>{badgeLabel}</span>
-            Sugestão ConsigAI
-          </div>
+        </div>
         <div style={{ marginTop: idx === 0 ? 10 : 8, color: valueColor, fontSize: idx === 0 ? 38 : 26, fontWeight: 900, letterSpacing: idx === 0 ? '-.07em' : '-.04em', lineHeight: 1 }}>
           {fmt(a.valor)}
         </div>
@@ -185,11 +184,6 @@ export default function NovoContrato() {
         <div style={{ width: 'fit-content', margin: '10px auto 0', padding: '8px 12px', borderRadius: 999, fontSize: 12, fontWeight: 900, ...noteStyle }}>
           {noteLabel}
         </div>
-        {false && idx === 0 && (
-          <div style={{ width: 'fit-content', margin: '10px auto 0', padding: '8px 12px', borderRadius: 999, background: '#F0FFF8', border: '1px solid #BDECD7', color: '#007A52', fontSize: 12, fontWeight: 900 }}>
-            Parcela dentro da sua margem
-          </div>
-        )}
       </button>
     )
   }

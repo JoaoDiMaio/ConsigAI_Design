@@ -1305,6 +1305,25 @@ export const OFFER_CARD_REDESIGN_CSS = `
     box-shadow: 0 12px 32px rgba(36,84,214,.14), 0 0 0 2px rgba(36,84,214,.12) !important;
     transform: none !important;
   }
+  .offer-card.recommended {
+    border: 2px solid rgba(0, 231, 255, 0.42) !important;
+    background:
+      radial-gradient(circle at 92% 8%, rgba(0, 231, 255, 0.10), transparent 34%),
+      linear-gradient(180deg, #F7FBFF 0%, #FFFFFF 100%) !important;
+    box-shadow: 0 14px 34px rgba(5, 94, 206, 0.12), 0 0 0 1px rgba(0, 231, 255, 0.08) !important;
+  }
+  .offer-card.recommended::before {
+    content: '' !important;
+    display: block !important;
+    position: absolute !important;
+    left: 2px !important;
+    right: 2px !important;
+    top: 2px !important;
+    height: 3px !important;
+    background: linear-gradient(90deg, #055ECE, #00E7FF) !important;
+    border-radius: 999px !important;
+    pointer-events: none !important;
+  }
   .offer-card.selected::before, .offer-card.active::before {
     content: '' !important;
     display: block !important;
@@ -1348,6 +1367,9 @@ export const OFFER_CARD_REDESIGN_CSS = `
     border: 1px solid #f0d38a; color: #9a6a00;
     font-size: 10px; font-weight: 950; letter-spacing: .06em;
     text-transform: uppercase; line-height: 1; white-space: nowrap;
+  }
+  .consigai-offer-badge-rec--recommended {
+    box-shadow: 0 10px 20px rgba(154, 106, 0, 0.12);
   }
   .consigai-offer-badge-rec::before { content: '★'; font-size: 14px !important; font-weight: 900; line-height: 1; }
   .consigai-offer-pill {
@@ -1421,6 +1443,24 @@ export const OFFER_CARD_REDESIGN_CSS = `
   .offer-card.turbo-offer .consigai-offer-card {
     gap: 0 !important;
     min-height: 0 !important;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .offer-card.new-contract-offer .consigai-offer-card,
+  .offer-card.refin-offer .consigai-offer-card {
+    gap: 0 !important;
+    min-height: 0 !important;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .offer-card.new-contract-offer .new-contract-shell,
+  .offer-card.refin-offer .refin-shell,
+  .offer-card.turbo-offer .turbo-shell {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
   .offer-card.turbo-offer .turbo-module-header {
     display: flex;
@@ -1500,8 +1540,8 @@ export const OFFER_CARD_REDESIGN_CSS = `
   .offer-card.turbo-offer .turbo-option {
     text-align: left;
     min-height: 84px;
-    padding: 10px 10px 9px;
-    border-radius: 14px;
+    padding: 12px 12px 11px;
+    border-radius: 16px;
     border: 1px solid #BDECD7;
     background:
       radial-gradient(circle at 88% 10%, rgba(0, 122, 82, 0.12), transparent 35%),
@@ -1552,13 +1592,14 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.turbo-offer .turbo-option strong {
     display: block;
-    margin-top: 7px;
+    margin-top: 6px;
     color: #007A52;
-    font-size: 18px;
+    font-size: 19px;
     line-height: 1.1;
     font-weight: 950;
     letter-spacing: -.055em;
-    word-break: break-word;
+    word-break: keep-all;
+    white-space: nowrap;
   }
   .offer-card.turbo-offer .turbo-option strong .turbo-suffix {
     font-size: 0.8em;
@@ -1601,11 +1642,12 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.turbo-offer .turbo-option small {
     display: block;
-    margin-top: 6px;
+    margin-top: 5px;
     color: #64748B;
     font-size: 10px;
     line-height: 1.2;
     font-weight: 700;
+    text-wrap: balance;
   }
   .offer-card.turbo-offer .turbo-note {
     display: flex !important;
@@ -1643,18 +1685,18 @@ export const OFFER_CARD_REDESIGN_CSS = `
     width: 100% !important;
     min-height: auto;
     border-radius: 14px !important;
-    border: 1px solid #BFD4F6 !important;
-    background: #F4F8FF !important;
-    color: #055ECE !important;
+    border: 1px solid rgba(0, 231, 255, 0.22) !important;
+    background: linear-gradient(145deg, #055ECE, #03246F) !important;
+    color: #fff !important;
     font-size: 13px !important;
     font-weight: 900 !important;
     cursor: pointer !important;
     transition: 160ms ease !important;
-    box-shadow: none !important;
+    box-shadow: 0 18px 38px rgba(5, 94, 206, 0.22) !important;
   }
   .offer-card.turbo-offer .turbo-details-button:hover {
-    background: #EAF4FF !important;
-    border-color: #055ECE !important;
+    background: linear-gradient(145deg, #1878DE, #055ECE) !important;
+    border-color: rgba(0, 231, 255, 0.28) !important;
   }
   .offer-card.turbo-offer .consigai-offer-details-btn::after {
     display: none !important;
@@ -1969,17 +2011,17 @@ export const OFFER_CARD_REDESIGN_CSS = `
     min-height: 0 !important;
   }
   .offer-card.new-contract-offer .new-contract-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-    padding-bottom: 10px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 12px;
+    padding-bottom: 12px;
     border-bottom: 1px solid #DDE8F6;
   }
   .offer-card.new-contract-offer .new-contract-title {
     display: flex;
-    align-items: center;
-    gap: 11px;
+    align-items: flex-start;
+    gap: 10px;
     min-width: 0;
   }
   .offer-card.new-contract-offer .new-contract-icon {
@@ -2001,68 +2043,79 @@ export const OFFER_CARD_REDESIGN_CSS = `
   .offer-card.new-contract-offer .new-contract-title strong {
     display: block;
     color: #03246F;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 950;
-    letter-spacing: -.02em;
+    letter-spacing: -.03em;
     line-height: 1.15;
   }
   .offer-card.new-contract-offer .new-contract-title span {
     display: block;
-    margin-top: 2px;
-    color: #64748B;
+    margin-top: 3px;
+    color: #7A8DB8;
     font-size: 11px;
-    font-weight: 750;
+    font-weight: 700;
     line-height: 1.2;
+  }
+  .offer-card.new-contract-offer .consigai-offer-badge-rec {
+    justify-self: end;
+    align-self: flex-start;
+    padding: 5px 10px;
+    background: linear-gradient(180deg, #FFF5D8 0%, #FFE7A4 100%);
+    border-color: #E8C66C;
+    color: #8C6100;
+    font-size: 9px;
+    letter-spacing: .05em;
+    box-shadow: 0 8px 16px rgba(154,106,0,.08);
   }
   .offer-card.new-contract-offer .new-contract-body {
     display: flex;
     flex-direction: column;
     gap: 0;
-    padding-top: 10px;
+    padding-top: 12px;
     min-height: 0;
     flex: 1 1 auto;
   }
   .offer-card.new-contract-offer .new-contract-heading {
     margin: 0;
     color: #03246F;
-    font-size: 20px;
-    line-height: 1.05;
-    letter-spacing: -.045em;
+    font-size: 18px;
+    line-height: 1.08;
+    letter-spacing: -.05em;
     font-weight: 950;
   }
   .offer-card.new-contract-offer .new-contract-heading span {
     color: #055ECE;
   }
   .offer-card.new-contract-offer .new-contract-intro {
-    margin-top: 6px;
-    color: #64748B;
-    font-size: 12px;
-    line-height: 1.35;
+    margin-top: 7px;
+    color: #66788F;
+    font-size: 11.5px;
+    line-height: 1.42;
     font-weight: 650;
   }
   .offer-card.new-contract-offer .new-contract-highlight {
-    margin-top: 10px;
-    padding: 10px 11px;
+    margin-top: 12px;
+    padding: 12px 12px 11px;
     border-radius: 18px;
     background:
-      radial-gradient(circle at 88% 10%, rgba(0, 231, 255, 0.15), transparent 34%),
+      radial-gradient(circle at 88% 10%, rgba(0, 231, 255, 0.18), transparent 34%),
       linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%);
-    border: 1px solid #DDE8F6;
+    border: 1px solid rgba(0, 231, 255, 0.30);
   }
   .offer-card.new-contract-offer .new-contract-highlight small {
     display: block;
-    color: #64748B;
-    font-size: 12px;
+    color: #6C7D95;
+    font-size: 11px;
     font-weight: 800;
   }
   .offer-card.new-contract-offer .new-contract-highlight strong {
     display: block;
-    margin-top: 4px;
+    margin-top: 5px;
     color: #03246F;
-    font-size: 26px;
+    font-size: 28px;
     line-height: 1;
     font-weight: 950;
-    letter-spacing: -.055em;
+    letter-spacing: -.06em;
   }
   .offer-card.new-contract-offer .new-contract-highlight span {
     display: block;
@@ -2070,19 +2123,20 @@ export const OFFER_CARD_REDESIGN_CSS = `
     color: #055ECE;
     font-size: 11px;
     font-weight: 850;
+    white-space: nowrap;
   }
   .offer-card.new-contract-offer .new-contract-note {
     display: flex !important;
     gap: 10px;
     align-items: flex-start;
-    margin-top: 10px;
-    padding: 10px 11px;
+    margin-top: 12px;
+    padding: 10px 12px;
     border-radius: 14px;
     background: #F4F8FF;
     border: 1px solid #DDE8F6;
     color: #03246F;
-    font-size: 10px;
-    line-height: 1.35;
+    font-size: 9.5px;
+    line-height: 1.4;
     font-weight: 750;
     min-height: 0;
   }
@@ -2102,21 +2156,21 @@ export const OFFER_CARD_REDESIGN_CSS = `
     font-weight: 950;
   }
   .offer-card.new-contract-offer .new-contract-actions {
-    margin-top: 10px;
+    margin-top: 12px;
   }
   .offer-card.new-contract-offer .new-contract-details-button {
-    min-height: 40px;
-    border-radius: 14px !important;
-    border: 1px solid #BFD4F6 !important;
-    background: #F4F8FF !important;
-    color: #055ECE !important;
+    min-height: 46px;
+    border-radius: 16px !important;
+    border: 1px solid rgba(0, 231, 255, 0.22) !important;
+    background: linear-gradient(145deg, #055ECE, #03246F) !important;
+    color: #fff !important;
     font-size: 13px !important;
     font-weight: 900 !important;
-    box-shadow: none !important;
+    box-shadow: 0 18px 38px rgba(5, 94, 206, 0.22) !important;
   }
   .offer-card.new-contract-offer .new-contract-details-button:hover {
-    background: #EAF4FF !important;
-    border-color: #055ECE !important;
+    background: linear-gradient(145deg, #1878DE, #055ECE) !important;
+    border-color: rgba(0, 231, 255, 0.28) !important;
   }
   .offer-card.equilibrio-offer {
     border: 2px solid transparent !important;
@@ -2428,9 +2482,9 @@ export const OFFER_CARD_REDESIGN_CSS = `
     padding: 10px 11px;
     border-radius: 18px;
     background:
-      radial-gradient(circle at 88% 10%, rgba(0, 231, 255, 0.15), transparent 34%),
+      radial-gradient(circle at 88% 10%, rgba(0, 231, 255, 0.10), transparent 34%),
       linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%);
-    border: 1px solid #DDE8F6;
+    border: 1px solid rgba(3, 36, 111, 0.14);
   }
   .offer-card.refin-offer .refin-highlight small {
     display: block;
@@ -2453,6 +2507,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
     color: #055ECE;
     font-size: 11px;
     font-weight: 850;
+    white-space: nowrap;
   }
   .offer-card.refin-offer .refin-note {
     display: flex !important;
@@ -2491,11 +2546,11 @@ export const OFFER_CARD_REDESIGN_CSS = `
     min-height: 40px;
     border-radius: 14px !important;
     border: 1px solid #BFD4F6 !important;
-    background: #F4F8FF !important;
+    background: #FFFFFF !important;
     color: #055ECE !important;
     font-size: 13px !important;
     font-weight: 900 !important;
-    box-shadow: none !important;
+    box-shadow: 0 12px 24px rgba(3,36,111,.06) !important;
   }
   .offer-card.refin-offer .refin-details-button:hover {
     background: #EAF4FF !important;
@@ -2508,6 +2563,25 @@ export const OFFER_CARD_REDESIGN_CSS = `
   .consigai-offer-note-sub {
     color: #7a8db8; font-weight: 400; font-size: clamp(10px, 0.95vw, 12px);
     line-height: 1.35; display: block; min-height: 20px;
+  }
+  .consigai-offer-action-note {
+    margin: 4px 0 0;
+    color: #64748B;
+    font-size: 11px;
+    line-height: 1.2;
+    font-weight: 700;
+    text-align: center;
+  }
+  .consigai-offer-sim-note {
+    display: block;
+    margin-top: 4px;
+    color: #64748B;
+    font-size: 10px;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: none;
+    white-space: nowrap;
   }
   .consigai-offer-actions {
     margin-top: 16px;
@@ -2677,9 +2751,10 @@ export const OFFER_CARD_REDESIGN_CSS = `
       padding: 14px !important;
     }
     .offer-card.new-contract-offer .new-contract-header {
-      align-items: flex-start;
-      flex-direction: column;
+      grid-template-columns: 1fr;
+      gap: 10px;
     }
+    .offer-card.new-contract-offer .consigai-offer-badge-rec { justify-self: start; }
     .offer-card.new-contract-offer .new-contract-highlight { padding: 10px 11px !important; }
     .offer-card.new-contract-offer .new-contract-highlight strong { font-size: 25px !important; }
     .offer-card.new-contract-offer .new-contract-heading { font-size: 21px !important; }
