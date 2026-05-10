@@ -558,7 +558,12 @@ export const RESPONSIVE_STYLES_CSS = `
   .consigai-trust-replacement {
     margin-top: 12px; border: 1px solid #d7e1fb; border-radius: 14px;
     display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
-    padding: 16px 18px; gap: 14px; background: #ffffff;
+    padding: 16px 18px; gap: 14px;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    opacity: 1 !important;
+    box-shadow: 0 4px 18px rgba(3,36,111,.07);
+    position: relative; z-index: 1;
   }
   .consigai-trust-item {
     display: grid; grid-template-columns: 46px minmax(0, 1fr);
@@ -591,8 +596,8 @@ export const RESPONSIVE_STYLES_CSS = `
     content: '' !important;
     position: absolute !important;
     inset: 0 0 auto 0 !important;
-    height: 5px !important;
-    background: linear-gradient(90deg, var(--blue-action), var(--cyan-brand), var(--aqua-brand), var(--green-strong)) !important;
+    height: 4px !important;
+    background: linear-gradient(90deg, #043B8B 0%, #1DA1EB 55%, #00A86B 100%) !important;
   }
   .consigai-pocket-visual.impact-grid {
     display: block !important;
@@ -1054,21 +1059,25 @@ export const OFFER_CARD_REDESIGN_CSS = `
     position: relative !important;
     overflow: hidden !important;
     background: #ffffff !important;
+    background-image: none !important;
     border: 1px solid var(--line) !important;
     border-radius: 20px !important;
-    box-shadow: 0 24px 60px rgba(3, 36, 111, 0.11) !important;
+    box-shadow: none !important;
     padding: 10px !important;
     user-select: text !important;
     -webkit-user-select: text !important;
   }
-  .hero-compare::before {
+  .hero-compare::before { display: none !important; }
+  .hero { position: relative !important; overflow: hidden !important; }
+  .hero::before {
     content: '' !important;
     position: absolute !important;
     inset: 0 0 auto 0 !important;
     height: 4px !important;
-    background: linear-gradient(90deg, var(--blue) 0%, var(--cyan) 55%, var(--green-accent) 100%) !important;
+    background: linear-gradient(90deg, #043B8B 0%, #1DA1EB 55%, #00A86B 100%) !important;
   }
   .hero-compare::after {
+    display: none !important;
     content: '' !important;
     position: absolute !important;
     width: 220px !important;
@@ -1127,7 +1136,7 @@ export const OFFER_CARD_REDESIGN_CSS = `
     padding: 6px 7px !important;
     border-radius: 13px !important;
     border: 1px solid var(--line) !important;
-    background: radial-gradient(circle at 88% 10%, rgba(5, 94, 206, 0.10), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%) !important;
+    background: #ffffff !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
@@ -1176,9 +1185,9 @@ export const OFFER_CARD_REDESIGN_CSS = `
     place-items: center !important;
     align-self: center !important;
     justify-self: center !important;
-    background: linear-gradient(145deg, var(--blue) 0%, #244FD1 100%) !important;
+    background: #043B8B !important;
     color: #fff !important;
-    box-shadow: 0 14px 30px rgba(5, 94, 206, 0.25) !important;
+    box-shadow: none !important;
   }
   .hc-arrow svg {
     width: 16px !important;
@@ -2174,24 +2183,29 @@ export const OFFER_CARD_REDESIGN_CSS = `
     color: #007A52 !important;
   }
   .offer-card.new-contract-offer {
-    border: 2px solid transparent !important;
-    box-shadow: 0 8px 24px rgba(3,36,111,.07) !important;
+    border: 1px solid var(--line) !important;
+    box-shadow: 0 12px 32px rgba(3,36,111,.055) !important;
     border-radius: 28px !important;
     padding: 20px 20px 16px !important;
     height: auto !important;
     min-height: 0 !important;
-    overflow: visible !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+    position: relative;
+  }
+  .offer-card.new-contract-offer::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue-main), var(--blue-interactive), var(--green-strong));
+    z-index: 1;
   }
   .offer-card.new-contract-offer.selected,
   .offer-card.new-contract-offer.active {
-    border: 2px solid rgba(0,231,255,.65) !important;
-    background: linear-gradient(160deg, #f4fbff 0%, #ffffff 60%) !important;
-    box-shadow: 0 0 0 3px rgba(0,231,255,.10) !important;
-  }
-  .offer-card.new-contract-offer.selected::before,
-  .offer-card.new-contract-offer.active::before {
-    display: none !important;
-    content: none !important;
+    border: 1px solid rgba(0,231,255,.70) !important;
+    background: #f4fbff !important;
+    box-shadow: 0 0 0 3px rgba(0,231,255,.10), 0 14px 34px rgba(3,36,111,.08) !important;
   }
   .offer-card.new-contract-offer .new-contract-shell {
     gap: 0 !important;
@@ -2630,23 +2644,29 @@ export const OFFER_CARD_REDESIGN_CSS = `
     border-color: #055ECE !important;
   }
   .offer-card.refin-offer {
-    border: 2px solid transparent !important;
-    box-shadow: 0 8px 24px rgba(3,36,111,.07) !important;
+    border: 1px solid var(--line) !important;
+    box-shadow: 0 12px 32px rgba(3,36,111,.055) !important;
     border-radius: 28px !important;
     padding: 20px 20px 16px !important;
     height: auto !important;
     min-height: 0 !important;
-    overflow: visible !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+    position: relative;
+  }
+  .offer-card.refin-offer::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue-main), var(--blue-interactive), var(--green-strong));
+    z-index: 1;
   }
   .offer-card.refin-offer.selected,
   .offer-card.refin-offer.active {
-    border: 2px solid rgba(0,231,255,.65) !important;
-    box-shadow: 0 0 0 3px rgba(0,231,255,.10) !important;
-  }
-  .offer-card.refin-offer.selected::before,
-  .offer-card.refin-offer.active::before {
-    display: none !important;
-    content: none !important;
+    border: 1px solid rgba(0,231,255,.70) !important;
+    background: #f4fbff !important;
+    box-shadow: 0 0 0 3px rgba(0,231,255,.10), 0 14px 34px rgba(3,36,111,.08) !important;
   }
   .offer-card.refin-offer .refin-shell {
     gap: 0 !important;

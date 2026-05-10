@@ -9,7 +9,22 @@ import { parseMoney } from '../lib/formatters'
 import { loadProfileData } from '../lib/profileStorage'
 import { printSimulationReceipt } from '../lib/receiptPrint'
 import { getSelectableCardStyle } from '../ui/cardSelection'
-import { ResumoCard, ImpactoCard, ControleCard, PageHero } from '../components/SimulationSideCards'
+import { ResumoCard, ImpactoCard, ControleCard } from '../components/SimulationSideCards'
+import { OperationGuideCard } from '../components/OperationGuideCard'
+
+const PORTABILIDADE_GUIDE = {
+  badge: 'Guia ConsigAI',
+  title: 'Como comparar sua portabilidade',
+  subtitle: 'Compare a proposta atual com uma nova condição para entender economia, parcela e prazo antes de decidir.',
+  steps: [
+    { label: 'Passo 1', title: 'Antes', body: 'Veja sua parcela, taxa e contrato atual.' },
+    { label: 'Passo 2', title: 'Depois', body: 'Compare a nova parcela, economia e margem.' },
+    { label: 'Passo 3', title: 'Decisão', body: 'Confira condições antes de avançar.' },
+  ],
+  finalTitle: 'Você decide com calma',
+  finalText: 'Nada é contratado sem sua confirmação.',
+  badges: ['Prazo sem esticar', 'Simulação sem compromisso', 'Nenhuma contratação automática'],
+}
 
 const RECEIPT_DATA = {
   eco: {
@@ -141,11 +156,12 @@ export default function Portabilidade() {
   const location = useLocation()
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const profile = loadProfileData()
-  const clientName = profile.nomeExibicao || profile.nomeCompleto || 'Sr. João'
+  const clientName = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
 
   const initialMode = location.state?.initialMode === 'parc' ? 'parc' : 'eco'
   const [mode, setMode] = useState(initialMode)
   const [hoveredMode, setHoveredMode] = useState(null)
+
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [showReceipt, setShowReceipt] = useState(false)
   const d = stateData[mode]
@@ -211,8 +227,9 @@ export default function Portabilidade() {
           --muted:#64748B;
           --line:#DDE8F6;
         }
-        .port-root{max-width:1280px;margin:0 auto;padding:26px 24px 48px}
-        .main-layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:30px}
+        .port-root{max-width:1400px;margin:0 auto;padding:26px 24px 48px}
+        .main-layout{display:grid;grid-template-columns:260px minmax(0,1fr) 380px;gap:28px}
+        .port-guide-col{}
         .card{border:1px solid var(--line);border-radius:28px;background:#fff;box-shadow:0 16px 38px rgba(3,36,111,.075)}
         .flow{padding:22px;border-radius:34px;position:relative;overflow:hidden;background:#fff;box-shadow:0 18px 42px rgba(3,36,111,.09)}
         .flow:before{content:'';position:absolute;inset:0 0 auto 0;height:5px;background:linear-gradient(90deg,var(--blue-main),var(--blue-interactive),var(--green-strong))}
@@ -265,8 +282,8 @@ export default function Portabilidade() {
         .actions{margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
         .actions > button + button{margin-top:12px}
         .actions-divider{margin:16px 0;border:none;border-top:1px dashed var(--line)}
-        .cta{width:100%;min-height:54px;border:0;border-radius:21px;background:linear-gradient(145deg,var(--blue-main),var(--blue-dark));color:#fff;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 16px 32px rgba(4,59,139,.22)}
-        .secondary{width:100%;min-height:50px;border-radius:21px;border:1px solid var(--blue-line);background:#fff;color:var(--blue-main);font-size:14px;font-weight:900;cursor:pointer}
+        .cta{width:100%;min-height:52px;border:0;border-radius:13px;background:linear-gradient(145deg,var(--blue-main),var(--blue-dark));color:#fff;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 14px 32px rgba(4,59,139,.22);display:flex;align-items:center;justify-content:center}
+        .secondary{width:100%;min-height:48px;border-radius:13px;border:1px solid var(--blue-line);background:#fff;color:var(--blue-main);font-size:15px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center}
         .safe{margin-top:12px;text-align:center;font-size:11px;color:var(--muted);font-weight:700}
         .consigai-cta-animated{position:relative;overflow:hidden;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,filter .16s ease}
         .consigai-cta-animated:hover{transform:translateY(-1px)!important;filter:none}
@@ -312,8 +329,17 @@ export default function Portabilidade() {
         .receipt-card th:last-child,.receipt-card td:last-child{text-align:right}
         .receipt-row{display:flex;justify-content:space-between;gap:8px;font-size:10px}
         .receipt-site{text-align:center;margin-top:8px;font-size:9px;color:#7a7a7a}
-        .back-btn{margin-top:10px;width:100%;min-height:46px;border-radius:13px;border:1px solid var(--blue-line);background:#fff;color:var(--blue-main);font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(4,59,139,.12)}
-        @media (max-width:1100px){.main-layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:16px}.side-card + .side-card{margin-top:0}}
+        .back-btn{margin-top:10px;width:100%;min-height:46px;border-radius:13px;border:1px solid var(--blue-line);background:#fff;color:var(--blue-main);font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(4,59,139,.12);display:flex;align-items:center;justify-content:center}
+        .process-accordion{margin-bottom:16px;border-radius:16px;border:1px solid var(--line);overflow:hidden}
+        .process-accordion-btn{width:100%;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--blue-soft);border:0;color:var(--blue-dark);font-size:13px;font-weight:900;cursor:pointer;text-align:left;gap:8px}
+        .process-accordion-btn:hover{background:#eaf1fd}
+        .process-steps{padding:14px 16px;display:grid;gap:8px;background:#fff}
+        .process-step{display:flex;align-items:flex-start;gap:10px;font-size:12px}
+        .process-step-num{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--blue-main);color:#fff;display:grid;place-items:center;font-size:10px;font-weight:900}
+        .process-step-body{color:var(--muted);font-weight:600;line-height:1.35}
+        .process-step-body strong{display:block;color:var(--blue-dark);font-weight:800;margin-bottom:1px}
+        @media (max-width:1200px){.main-layout{grid-template-columns:minmax(0,1fr) 360px}.port-guide-col{display:none}}
+        @media (max-width:1100px){.main-layout{grid-template-columns:1fr}.port-guide-col{display:none}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:16px}.side-card + .side-card{margin-top:0}}
         @media (max-width:900px){.port-root{padding:16px}.tabs,.compare,.benefits,.salary,.sidebar{grid-template-columns:1fr}.arrow{transform:rotate(90deg);justify-self:center}.compare-head,.compare-line{grid-template-columns:1fr;gap:6px}.compare-head span:first-child{display:none}.contracts-bottom{flex-direction:column;align-items:stretch}.details-btn{width:100%}.details-panel{max-height:min(420px,62vh)}}
       `}</style>
 
@@ -321,9 +347,8 @@ export default function Portabilidade() {
         {isDesktop ? (
           <DesktopPageHeader
             clientName={clientName}
-            chipLabel="Portabilidade"
-            title="Faça portabilidade com equilíbrio para Economizar"
-            subtitle="Compare sua parcela atual com uma proposta mais leve e transparente."
+            pageTitle="Portabilidade"
+            pageDescription="Compare sua condição atual com uma nova proposta."
             onLogoClick={() => navigate('/ofertas')}
             actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }, { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') }]}
           />
@@ -340,15 +365,10 @@ export default function Portabilidade() {
 
         <main className="port-root">
           <div className="main-layout">
+            <div className="port-guide-col">
+              <OperationGuideCard {...PORTABILIDADE_GUIDE} />
+            </div>
             <section>
-              <PageHero
-                kicker="Portabilidade"
-                title="Compare e veja quanto pode"
-                titleAccent="Economizar"
-                body="A ConsigAI compara seu contrato atual com uma nova proposta para mostrar economia, parcela, margem e crédito futuro antes de você decidir."
-                chips={['Prazo sem esticar', 'Simulação sem compromisso', 'Nenhuma contratação automática']}
-              />
-
               <section className="card flow">
                 <div className="tabs">
                   <button
@@ -483,14 +503,17 @@ export default function Portabilidade() {
                         style={{
                           width: '100%',
                           minHeight: 46,
-                          borderRadius: 14,
+                          borderRadius: 13,
                           border: 0,
                           background: 'linear-gradient(145deg, #043B8B, #002D6E)',
                           color: '#fff',
-                          fontSize: 13.5,
+                          fontSize: 13,
                           fontWeight: 900,
                           cursor: 'pointer',
                           boxShadow: '0 8px 20px rgba(4,59,139,.3)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
                         Baixar recibo da simulação

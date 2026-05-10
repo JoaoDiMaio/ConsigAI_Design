@@ -17,8 +17,8 @@ const HERO_BG = 'radial-gradient(circle at 92% 8%, rgba(4,59,139,.08), transpare
 export function PageHero({ kicker, title, titleAccent, body, chips }) {
   return (
     <section style={{
-      marginBottom: 28,
-      padding: '32px 36px',
+      marginBottom: 12,
+      padding: '14px 20px',
       borderRadius: 32,
       border: '1px solid #DDE8F6',
       background: HERO_BG,
@@ -30,10 +30,12 @@ export function PageHero({ kicker, title, titleAccent, body, chips }) {
       <div style={{ color: '#043B8B', fontSize: 12, fontWeight: 900, letterSpacing: '.12em', textTransform: 'uppercase' }}>
         {kicker}
       </div>
-      <h1 style={{ margin: '12px 0 0', color: '#002D6E', fontSize: 'clamp(32px, 3.5vw, 48px)', lineHeight: 1, fontWeight: 950, letterSpacing: '-.06em' }}>
-        {title}{titleAccent && <> <span style={{ color: '#00A86B' }}>{titleAccent}</span></>}
-      </h1>
-      <p style={{ marginTop: 14, color: '#64748B', fontSize: 16, lineHeight: 1.5, fontWeight: 600 }}>
+      {title && (
+        <h1 style={{ margin: '12px 0 0', color: '#002D6E', fontSize: 'clamp(32px, 3.5vw, 48px)', lineHeight: 1, fontWeight: 950, letterSpacing: '-.06em' }}>
+          {title}{titleAccent && <> <span style={{ color: '#00A86B' }}>{titleAccent}</span></>}
+        </h1>
+      )}
+      <p style={{ marginTop: title ? 14 : 8, color: '#64748B', fontSize: 14, lineHeight: 1.5, fontWeight: 600 }}>
         {body}
       </p>
       {chips?.length > 0 && (
@@ -113,9 +115,9 @@ const TRUST_ITEMS = [
 /**
  * "Resumo da oferta" sidebar card.
  */
-export function ResumoCard({ title = 'Resumo da oferta', subtitle = 'Confira as principais condições simuladas.', highlight = null, rows = [] }) {
+export function ResumoCard({ title = 'Resumo da oferta', subtitle = 'Confira as principais condições simuladas.', highlight = null, rows = [], style }) {
   return (
-    <div style={S.card}>
+    <div style={{ ...S.card, ...style }}>
       <h3 style={S.cardTitle}>{title}</h3>
       <p style={S.cardSubtitle}>{subtitle}</p>
       {highlight && (
@@ -146,9 +148,10 @@ export function ImpactoCard({
   antesNote = 'sem esta nova parcela',
   depoisNote = 'com a parcela estimada',
   subtitle = 'Veja quanto sobra depois da nova parcela.',
+  style,
 }) {
   return (
-    <div style={S.card}>
+    <div style={{ ...S.card, ...style }}>
       <h3 style={S.cardTitle}>Salário líquido</h3>
       <p style={S.cardSubtitle}>{subtitle}</p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 16 }}>
@@ -170,7 +173,32 @@ export function ImpactoCard({
 /**
  * "Você está no controle" sidebar card.
  */
-export function ControleCard() {
+export function ControleCard({ horizontal = false }) {
+  if (horizontal) {
+    return (
+      <div style={{ ...S.card, padding: '20px 28px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(180px, 260px) 1fr', gap: 32, alignItems: 'center' }}>
+          <div>
+            <h3 style={S.cardTitle}>Você está no controle</h3>
+            <p style={{ ...S.cardSubtitle, marginTop: 6 }}>
+              Antes de avançar, confira as condições principais com calma e clareza.
+            </p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+            {TRUST_ITEMS.map(([title, text]) => (
+              <div key={title} style={{ ...S.trustItem, flexDirection: 'column', gap: 6, padding: '12px 14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={S.trustIcon}>✓</span>
+                  <strong style={S.trustTitle}>{title}</strong>
+                </div>
+                <small style={{ ...S.trustText, marginLeft: 0 }}>{text}</small>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
   return (
     <div style={S.card}>
       <h3 style={S.cardTitle}>Você está no controle</h3>

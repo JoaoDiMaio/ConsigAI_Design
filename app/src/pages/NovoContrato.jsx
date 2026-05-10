@@ -7,8 +7,24 @@ import { OFERTA } from '../data/novoContratoData'
 import { fmt, fmtDec } from '../lib/formatters'
 import { loadProfileData } from '../lib/profileStorage'
 import { getSelectableCardStyle } from '../ui/cardSelection'
+import { btnPrimary, btnPrimaryHoverShadow, btnSecondary, btnSecondaryHoverBg, btnSecondaryHoverShadow, btnCompact, btnCompactPrimary, btnToggleShape } from '../ui/buttonStyles'
 import { printSimulationReceipt } from '../lib/receiptPrint'
-import { ResumoCard, ImpactoCard, ControleCard, PageHero } from '../components/SimulationSideCards'
+import { ResumoCard, ImpactoCard, ControleCard } from '../components/SimulationSideCards'
+import { OperationGuideCard } from '../components/OperationGuideCard'
+
+const NOVO_CONTRATO_GUIDE = {
+  badge: 'Guia ConsigAI',
+  title: 'Como escolher seu valor',
+  subtitle: 'Em três passos simples, escolha quanto quer receber, veja a parcela e confirme apenas se fizer sentido para você.',
+  steps: [
+    { label: 'Passo 1', title: 'Valor', body: 'Escolha quanto deseja receber agora.' },
+    { label: 'Passo 2', title: 'Parcela', body: 'Compare o impacto mensal antes de decidir.' },
+    { label: 'Passo 3', title: 'Condições', body: 'Veja prazo, taxa e custo total antes de continuar.' },
+  ],
+  finalTitle: 'Você decide no final',
+  finalText: 'Nenhuma contratação acontece sem sua confirmação.',
+  badges: ['Simulação sem compromisso', 'Confirmação antes de contratar'],
+}
 
 const calcPMT = (pv, rate, n) => {
   const i = rate / 100
@@ -58,14 +74,6 @@ export default function NovoContrato() {
   const [selectedPrazo, setSelectedPrazo] = useState(OFERTA.prazosDisponiveis[OFERTA.prazosDisponiveis.length - 1])
   const [showReceipt, setShowReceipt] = useState(false)
 
-  const primaryCtaBg = 'linear-gradient(145deg, #043B8B, #002D6E)'
-  const primaryCtaShadow = '0 14px 32px rgba(4,59,139,.22)'
-  const primaryCtaHoverShadow = '0 18px 36px rgba(4,59,139,.18)'
-  const secondaryCtaColor = '#043B8B'
-  const secondaryCtaBorder = '#BFD4F6'
-  const secondaryCtaHoverBg = '#F4F8FF'
-  const secondaryCtaShadow = '0 8px 20px rgba(4,59,139,.12)'
-  const secondaryCtaHoverShadow = '0 12px 24px rgba(4,59,139,.12)'
   const maxAnchorValue = Math.max(...OFERTA.ancoras.map(({ valor }) => valor))
   const minAnchorValue = Math.min(...OFERTA.ancoras.map(({ valor }) => valor))
 
@@ -189,16 +197,8 @@ export default function NovoContrato() {
   }
 
   const content = (
-    <div>
-      <PageHero
-        kicker="Novo contrato"
-        title="Escolha quanto quer"
-        titleAccent="receber"
-        body="Escolha um valor, veja a parcela e confirme apenas se fizer sentido para você. Nenhuma contratação é feita sem sua confirmação."
-        chips={['Simulação sem compromisso', 'Você escolhe antes de decidir', 'Nenhuma contratação automática']}
-      />
-
-      <section style={{ marginBottom: 12, padding: isDesktop ? '22px' : '18px 16px', borderRadius: 28, border: '1px solid #DDE8F6', background: '#FFFFFF', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
+    <div style={isDesktop ? { display: 'flex', flexDirection: 'column', height: '100%' } : {}}>
+      <section style={{ flex: isDesktop ? 1 : 'none', marginBottom: isDesktop ? 0 : 12, padding: isDesktop ? '22px' : '18px 16px', borderRadius: 28, border: '1px solid #DDE8F6', background: '#FFFFFF', boxShadow: '0 18px 46px rgba(3, 36, 111, 0.08)' }}>
         <div style={{ marginBottom: 12 }}>{renderAnchorButton(0)}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
           {renderAnchorButton(1)}
@@ -210,16 +210,9 @@ export default function NovoContrato() {
           onMouseEnter={() => setCustomBtnHover(true)}
           onMouseLeave={() => setCustomBtnHover(false)}
           style={{
-            width: '100%',
-            minHeight: 58,
+            ...btnToggleShape,
             marginTop: 6,
             marginBottom: customOpen ? 10 : 14,
-            borderRadius: 21,
-            border: '1px solid',
-            color: '#043B8B',
-            fontWeight: 900,
-            fontSize: 15,
-            cursor: 'pointer',
             ...getSelectableCardStyle({
               selected: customOpen,
               hovered: customBtnHover,
@@ -270,7 +263,7 @@ export default function NovoContrato() {
           onClick={goContratacao}
           onMouseEnter={() => setCtaHover(true)}
           onMouseLeave={() => setCtaHover(false)}
-          style={{ width: '100%', minHeight: 52, border: 0, borderRadius: 21, background: primaryCtaBg, color: '#fff', fontSize: 16, fontWeight: 900, boxShadow: ctaHover ? primaryCtaHoverShadow : primaryCtaShadow, cursor: 'pointer' }}
+          style={{ ...btnPrimary, boxShadow: ctaHover ? btnPrimaryHoverShadow : btnPrimary.boxShadow }}
         >
           Continuar com esta oferta
         </button>
@@ -280,7 +273,7 @@ export default function NovoContrato() {
           onClick={() => setShowReceipt(v => !v)}
           onMouseEnter={() => setSecondHover(true)}
           onMouseLeave={() => setSecondHover(false)}
-          style={{ width: '100%', minHeight: 48, marginTop: 10, borderRadius: 21, border: `1px solid ${secondaryCtaBorder}`, background: secondHover ? secondaryCtaHoverBg : '#fff', color: secondaryCtaColor, fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: secondHover ? secondaryCtaHoverShadow : secondaryCtaShadow }}
+          style={{ ...btnSecondary, marginTop: 10, background: secondHover ? btnSecondaryHoverBg : '#fff', boxShadow: secondHover ? btnSecondaryHoverShadow : btnSecondary.boxShadow }}
         >
           Gerar recibo da simulação
         </button>
@@ -289,19 +282,7 @@ export default function NovoContrato() {
           <button
             className="consigai-cta-animated"
             onClick={downloadReceiptPdf}
-            style={{
-              width: '100%',
-              minHeight: 46,
-              marginTop: 8,
-              borderRadius: 13,
-              border: 0,
-              background: primaryCtaBg,
-              color: '#fff',
-              fontSize: 13,
-              fontWeight: 900,
-              cursor: 'pointer',
-              boxShadow: primaryCtaShadow,
-            }}
+            style={{ ...btnCompactPrimary, marginTop: 8 }}
           >
             Baixar recibo da simulação
           </button>
@@ -310,19 +291,7 @@ export default function NovoContrato() {
         <button
           className="consigai-cta-animated"
           onClick={() => navigate('/ofertas')}
-          style={{
-            width: '100%',
-            minHeight: 46,
-            marginTop: 10,
-            borderRadius: 13,
-            border: `1px solid ${secondaryCtaBorder}`,
-            background: '#fff',
-            color: secondaryCtaColor,
-            fontSize: 14,
-            fontWeight: 900,
-            cursor: 'pointer',
-            boxShadow: secondaryCtaShadow,
-          }}
+          style={{ ...btnCompact, marginTop: 10 }}
         >
           Voltar para ofertas
         </button>
@@ -330,8 +299,8 @@ export default function NovoContrato() {
     </div>
   )
 
-  const sidebar = (
-    <aside style={{ display: 'grid', gap: 20 }}>
+  const sidebarCards = (
+    <>
       <ResumoCard
         title="Resumo da proposta"
         subtitle="Confira as principais condições simuladas antes de continuar."
@@ -343,14 +312,21 @@ export default function NovoContrato() {
           { label: 'Nova parcela total', value: `R$ ${fmtDec(offer.parcela)}/mês` },
           { label: 'Taxa', value: `${OFERTA.taxaMensal.toFixed(2).replace('.', ',')}% a.m.` },
         ]}
+        style={isDesktop ? { flex: 1 } : {}}
       />
       <ImpactoCard
         liquidoAntes={salarioAntes}
         liquidoDepois={salarioDepois}
         novaParcela={`R$ ${fmtDec(offer.parcela)}`}
         novaParcelaLabel="Nova parcela total"
+        style={isDesktop ? { flex: 1 } : {}}
       />
-      <ControleCard />
+    </>
+  )
+
+  const sidebar = (
+    <aside style={{ display: 'flex', flexDirection: 'column', gap: 20, height: isDesktop ? '100%' : 'auto' }}>
+      {sidebarCards}
     </aside>
   )
 
@@ -376,20 +352,25 @@ export default function NovoContrato() {
           <>
             <DesktopPageHeader
               clientName={clientName}
-              chipLabel="Novo Contrato"
-              title="Libere crédito novo com equilíbrio para o seu mês"
-              subtitle="Simule valor e prazo com clareza para liberar crédito sem apertar o orçamento."
+              pageTitle="Novo Contrato"
+              pageDescription="Escolha o valor e prazo que cabem no seu mês."
               onLogoClick={() => navigate('/ofertas')}
               actions={[
                 { label: 'Ofertas', onClick: () => navigate('/ofertas') },
                 { label: 'Configurações', onClick: () => navigate('/configuracoes') },
-              { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
+                { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') },
               ]}
             />
-            <main style={{ maxWidth: 1280, margin: '0 auto', padding: '30px 24px 56px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 380px', gap: 30, alignItems: 'start' }}>
+            <main style={{ maxWidth: 1400, margin: '0 auto', padding: '26px 24px 48px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '260px minmax(0, 1fr) 320px', gap: 28, alignItems: 'start' }}>
+                <div>
+                  <OperationGuideCard {...NOVO_CONTRATO_GUIDE} />
+                </div>
                 {content}
-                <div style={{ position: 'sticky', top: 24 }}>{sidebar}</div>
+                {sidebar}
+              </div>
+              <div style={{ marginTop: 20 }}>
+                <ControleCard horizontal />
               </div>
             </main>
           </>
@@ -409,7 +390,10 @@ export default function NovoContrato() {
             />
             <main style={{ padding: '20px 16px 28px' }}>
               {content}
-              <div style={{ marginTop: 16 }}>{sidebar}</div>
+              <div style={{ marginTop: 16 }}>
+                {sidebar}
+                <div style={{ marginTop: 16 }}><ControleCard /></div>
+              </div>
             </main>
           </>
         )}

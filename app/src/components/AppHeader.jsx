@@ -184,6 +184,9 @@ export function DesktopPageHeader({
   sticky = true,
   minHeight: minHeightProp,
   paddingRight,
+  pageTitle,
+  pageDescription,
+  pageBadges,
 }) {
   const isTabletHeader = useMediaQuery('(max-width: 1079px)')
 
@@ -235,7 +238,35 @@ export function DesktopPageHeader({
           >
             <img src={logoSvg} alt="" aria-hidden="true" style={{ height: logoHeight, width: 'auto', display: 'block', margin: 0 }} />
           </button>
-          <div aria-hidden="true" />
+          {pageTitle ? (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              gap: 3,
+              minWidth: 0,
+              paddingLeft: 12,
+              borderLeft: '1px solid rgba(255,255,255,.14)',
+            }}>
+              <span style={{ color: '#fff', fontSize: 13, fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1, whiteSpace: 'nowrap' }}>
+                {pageTitle}
+              </span>
+              {pageDescription && (
+                <span style={{ color: 'rgba(255,255,255,.60)', fontSize: 10.5, fontWeight: 600, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {pageDescription}
+                </span>
+              )}
+              {!isTabletHeader && pageBadges?.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'nowrap', gap: 5, marginTop: 1, overflow: 'hidden' }}>
+                  {pageBadges.map(b => (
+                    <span key={b} style={{ padding: '3px 8px', borderRadius: 999, background: 'rgba(255,255,255,.10)', border: '1px solid rgba(255,255,255,.16)', color: 'rgba(255,255,255,.80)', fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}>
+                      {b}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : <div aria-hidden="true" />}
 
           <div style={{ justifySelf: 'end', display: 'flex', alignItems: 'center', gap: 8 }}>
             <FontSizeToggle variant="header" />

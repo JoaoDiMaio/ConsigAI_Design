@@ -1409,8 +1409,8 @@ export default function Ofertas() {
               onClick={handleContractNavigation}
               style={{
                 background: 'linear-gradient(145deg, #055ECE, #03246F)',
-                color: '#fff', border: 0, borderRadius: 21,
-                padding: '14px 28px', fontSize: 15, fontWeight: 900, lineHeight: 1.2,
+                color: '#fff', border: 0, borderRadius: 13,
+                padding: '0 28px', fontSize: 15, fontWeight: 900, lineHeight: 1.2,
                 cursor: 'pointer', whiteSpace: 'nowrap',
                 boxShadow: '0 8px 20px rgba(30,60,180,.3)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -1418,7 +1418,7 @@ export default function Ofertas() {
                 width: isDesktop ? 320 : '100%',
                 minWidth: isDesktop ? 320 : undefined,
                 maxWidth: isDesktop ? 320 : undefined,
-                minHeight: 44,
+                minHeight: 52,
               }}
             >
               Continuar — você ainda pode revisar tudo

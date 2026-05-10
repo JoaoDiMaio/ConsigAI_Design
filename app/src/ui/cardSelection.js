@@ -6,8 +6,8 @@ export const CARD_SELECTION = {
   baseShadow: 'none',
   hoverShadow: '0 12px 30px rgba(3,36,111,.09)',
   selectedShadow: '0 0 0 3px rgba(0,231,255,.10)',
-  hoverBackground: 'radial-gradient(circle at 92% 8%, rgba(0,231,255,.06), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)',
-  selectedBackground: 'radial-gradient(circle at 92% 8%, rgba(0,231,255,.10), transparent 34%), linear-gradient(180deg, #F4FBFF 0%, #FFFFFF 100%)',
+  hoverBackground: '#F8FBFF',
+  selectedBackground: '#F4FBFF',
 }
 
 export function getSelectableCardStyle({ selected, hovered, baseBackground, hoverBackground, selectedBackground }) {
