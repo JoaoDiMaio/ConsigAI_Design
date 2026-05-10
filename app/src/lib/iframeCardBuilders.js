@@ -4,6 +4,18 @@ import { fmt, getEcoMensal, getParcelaNova } from './offerUtils.js'
 import { brandNameHtml } from './brandNameHtml.js'
 import { TURBO_LABEL_INSTALLMENT, TURBO_LABEL_CONTRACT } from '../data/offersMock.js'
 
+// Sanitiza strings de texto antes de interpolar em HTML.
+// Necessário quando campos de configuração (pill, note, ctaName) vierem da API real.
+function escapeHtml(str) {
+  if (typeof str !== 'string') return String(str ?? '')
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 // ---------------------------------------------------------------------------
 // Shell helpers
 // ---------------------------------------------------------------------------
@@ -20,13 +32,13 @@ export function cardHeader(type, iconHtml, title, subtitle) {
   return `<div class="consigai-card-header ${type}-header">
     <div class="consigai-card-title ${type}-title">
       <div class="${type}-icon" aria-hidden="true">${iconHtml}</div>
-      <div class="consigai-card-title-copy"><strong>${title}</strong><span>${subtitle}</span></div>
+      <div class="consigai-card-title-copy"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(subtitle)}</span></div>
     </div>
   </div>`
 }
 
 export function cardNote(type, icon, text) {
-  return `<div class="consigai-card-note ${type}-note"><span class="${type}-note-icon">${icon}</span><p>${text}</p></div>`
+  return `<div class="consigai-card-note ${type}-note"><span class="${type}-note-icon">${escapeHtml(icon)}</span><p>${escapeHtml(text)}</p></div>`
 }
 
 export function cardDetailsBtn(type, label = 'Ver condições') {
@@ -120,7 +132,7 @@ export function svgRefin(idx) {
 // ---------------------------------------------------------------------------
 export function buildTurboCard(cfg, offer, idx, usuario, selectedThirdSubOffer) {
   const economiaContrato = `<strong class="turbo-value turbo-value-total">${fmt(offer.economiaContrato ?? offer.economiaTotal ?? 0)}</strong>`
-  const economiaParcela = `${fmt(offer.economiaParcela ?? getEcoMensal(offer, usuario.parcelaAtual))}<span class="turbo-suffix">/mês</span>`
+  const novaParcelaTurbo = fmt(offer.parcelaNova ?? (usuario.parcelaAtual - (offer.economiaParcela ?? 0)))
   const sel = selectedThirdSubOffer === 'installment' ? 'installment' : 'contract'
   const opt = (key, label, val, sub) => {
     const active = sel === key
@@ -141,8 +153,8 @@ export function buildTurboCard(cfg, offer, idx, usuario, selectedThirdSubOffer) 
       <h2 class="consigai-card-heading turbo-heading"><span class="turbo-heading-blue">Escolha onde quer</span><span class="turbo-heading-green">Economizar</span></h2>
       <p class="consigai-card-intro card-plain-intro turbo-intro">A ${brandNameHtml()} mostra dois caminhos para reduzir o custo do seu consignado com clareza.</p>
       <div class="consigai-card-highlight-grid turbo-options">
-        ${opt('contract', TURBO_LABEL_CONTRACT, economiaContrato, 'estimada')}
-        ${opt('installment', TURBO_LABEL_INSTALLMENT, economiaParcela, 'estimada')}
+        ${opt('contract', 'Nos contratos', economiaContrato, 'estimada')}
+        ${opt('installment', 'Nova parcela', novaParcelaTurbo, 'estimada')}
       </div>
       <div class="consigai-offer-note turbo-note"><span class="note-icon" aria-hidden="true">✓</span><p>Boa opção para reduzir o custo do contrato sem contratar novo crédito.</p></div>
       ${cardDetailsBtn('turbo')}
@@ -261,7 +273,7 @@ export function buildGenericCard(cfg, offer, idx, usuario) {
     <div class="offer-card${isSimple ? ' simple-offer' : ''}" id="oc${idx}" role="button" tabindex="0" aria-selected="false">
       <div class="consigai-offer-card">
         <span class="consigai-hidden-state-badge badge pick" id="badge${idx}">Escolher</span>
-        <div class="consigai-offer-head"></div><span class="consigai-offer-pill">${cfg.pill}</span>
+        <div class="consigai-offer-head"></div><span class="consigai-offer-pill">${escapeHtml(cfg.pill)}</span>
         <div class="consigai-offer-lines">
           <div class="consigai-offer-line">
             <span class="consigai-offer-line-main blue">Receba ${moneyValue}</span>
@@ -271,7 +283,7 @@ export function buildGenericCard(cfg, offer, idx, usuario) {
         </div>
         ${isSimple ? `<div class="consigai-offer-mini-grid"><div class="consigai-offer-mini-card"><span class="consigai-offer-mini-label">${metricLabel}</span><span class="consigai-offer-mini-value">${metricValue}${cardSimNote()}</span></div><div class="consigai-offer-mini-card"><span class="consigai-offer-mini-label">${miniLabelSecond}</span><span class="consigai-offer-mini-value">${miniValueSecond}${cardSimNote()}</span></div></div>` : ''}
         ${!isSimple ? cardSimNote() : ''}
-        <div class="consigai-offer-note"><span class="consigai-offer-note-text"><span class="consigai-offer-note-sub">${cfg.note}</span></span></div>
+        <div class="consigai-offer-note"><span class="consigai-offer-note-text"><span class="consigai-offer-note-sub">${escapeHtml(cfg.note)}</span></span></div>
         <div class="consigai-offer-actions generic-actions">
           <button type="button" class="consigai-offer-details-btn generic-details-button">Ver condições</button>
           <p style="margin: 4px 0 0; font-size: 11px; color: #64748B; text-align: center; font-weight: 600;">Simulação sem compromisso</p>

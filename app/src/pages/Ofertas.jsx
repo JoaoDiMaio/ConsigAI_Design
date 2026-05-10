@@ -230,7 +230,8 @@ function buildSelectedOfferSummary(entry, usuario, selectedThirdSubOffer) {
 // ---------------------------------------------------------------------------
 // Seção de impacto no bolso
 // ---------------------------------------------------------------------------
-function calcImpactValues(selectedEntry, usuario, impacto, selectedThirdSubOffer) {
+// precomputedSnapshot evita recalcular getTurboSubOfferSnapshot quando já calculado no ciclo
+function calcImpactValues(selectedEntry, usuario, impacto, selectedThirdSubOffer, precomputedSnapshot = undefined) {
   const o = selectedEntry?.data ?? {
     creditoReceber: impacto.creditToday,
     parcelaNova: usuario.parcelaAtual,
@@ -239,9 +240,11 @@ function calcImpactValues(selectedEntry, usuario, impacto, selectedThirdSubOffer
   const creditoAtual = impacto.creditToday
   const creditoDepois = o.creditoReceber ?? creditoAtual
   const ecoMensal = getEcoMensal(o, usuario.parcelaAtual)
-  const turboSnapshot = selectedEntry?.config?.id === 'turbo'
-    ? getTurboSubOfferSnapshot(selectedEntry, selectedThirdSubOffer, usuario)
-    : null
+  const turboSnapshot = precomputedSnapshot !== undefined
+    ? precomputedSnapshot
+    : (selectedEntry?.config?.id === 'turbo'
+      ? getTurboSubOfferSnapshot(selectedEntry, selectedThirdSubOffer, usuario)
+      : null)
   const installmentAfter = getParcelaNova(o, usuario.parcelaAtual)
 
   const values = {
@@ -352,13 +355,13 @@ const POCKET_VISUAL_HTML = `
   </p>
 `
 
-function upsertPocketInsight(doc, selectedEntry, usuario, impacto, selectedThirdSubOffer) {
+function upsertPocketInsight(doc, selectedEntry, usuario, impacto, selectedThirdSubOffer, precomputedSnapshot = undefined) {
   if (!doc) return
   const baSection = doc.querySelector('.ba-section')
   const baCols = baSection?.querySelector('.ba-cols')
   if (!baSection || !baCols) return
 
-  const { values, turboSnapshot } = calcImpactValues(selectedEntry, usuario, impacto, selectedThirdSubOffer)
+  const { values, turboSnapshot } = calcImpactValues(selectedEntry, usuario, impacto, selectedThirdSubOffer, precomputedSnapshot)
   // Header setup (one-time)
   const baTitle = baSection.querySelector('.ba-title')
   const baSub = baSection.querySelector('.ba-sub')
@@ -388,10 +391,10 @@ function upsertPocketInsight(doc, selectedEntry, usuario, impacto, selectedThird
   // Turbo label overrides
   if (turboSnapshot) applyTurboLabels(baSection, baPill, ctaSavingLabel, turboSnapshot, values)
 
-  // Batch DOM value update — single query, O(n)
+  // Batch DOM value update — single query, O(n). Guard evita mutação desnecessária → não dispara MutationObserver sem mudança.
   baSection.querySelectorAll('[data-k]').forEach((el) => {
     const val = values[el.dataset.k]
-    if (val !== undefined) el.textContent = val
+    if (val !== undefined && el.textContent !== val) el.textContent = val
   })
 
   // Update dynamic bar widths to visually emphasize the gain
@@ -533,7 +536,8 @@ function applyThirdCardSubOfferSelection(cacheRef, doc, selectedThirdSubOffer) {
   })
 }
 
-function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario, selectedThirdSubOffer) {
+// precomputedSnapshot evita recalcular getTurboSubOfferSnapshot quando já calculado no ciclo
+function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario, selectedThirdSubOffer, precomputedSnapshot = undefined) {
   if (!doc) return
   const parcelaHoje = fmt(usuario.parcelaAtual)
 
@@ -565,9 +569,11 @@ function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario, selected
   const ctaSavingLabel = getCachedNode(cacheRef, doc, 'ctaSavingLabel', '.cta-saving-label')
   const heroSub = getCachedNode(cacheRef, doc, 'heroSub', '#heroSub')
   const baPill = getCachedNode(cacheRef, doc, 'baPill', '#baPill')
-  const turboSnapshot = selectedEntry?.config?.id === 'turbo'
-    ? getTurboSubOfferSnapshot(selectedEntry, selectedThirdSubOffer, usuario)
-    : null
+  const turboSnapshot = precomputedSnapshot !== undefined
+    ? precomputedSnapshot
+    : (selectedEntry?.config?.id === 'turbo'
+      ? getTurboSubOfferSnapshot(selectedEntry, selectedThirdSubOffer, usuario)
+      : null)
   if (turboSnapshot) {
     const turboValue = turboSnapshot.benefitDisplay
     if (heroEco) heroEco.textContent = turboValue
@@ -625,13 +631,21 @@ function upsertOfferCardsRedesign(cacheRef, doc, activeOffers, selectedOfferInde
     return
   }
 
-  const cardsHtml = activeOffers
-    .map((entry, idx) => buildOfferCardHtml(entry, idx, usuario, selectedThirdSubOffer))
-    .join('')
+  // Render key barato: evita build de HTML e comparação de strings grandes quando nada mudou
+  const dataHash = activeOffers.reduce(
+    (sum, e) => sum + (e.data?.creditoReceber ?? 0) + (e.data?.parcelaNova ?? 0), 0,
+  )
+  const renderKey = `${activeOffers.map(e => e.config.id).join(',')}|${selectedThirdSubOffer}|${selectedIdx}|${dataHash}`
 
-  if (offersGrid.innerHTML !== cardsHtml) {
-    offersGrid.innerHTML = cardsHtml
-    clearDocCache(cacheRef, doc)
+  if (offersGrid.dataset.consigaiRenderKey !== renderKey) {
+    const cardsHtml = activeOffers
+      .map((entry, idx) => buildOfferCardHtml(entry, idx, usuario, selectedThirdSubOffer))
+      .join('')
+    if (offersGrid.innerHTML !== cardsHtml) {
+      offersGrid.innerHTML = cardsHtml
+      clearDocCache(cacheRef, doc)
+    }
+    offersGrid.dataset.consigaiRenderKey = renderKey
   }
   syncOfferSelectionUi(cacheRef, doc, selectedOfferIndexRef, false)
   applyThirdCardSubOfferSelection(cacheRef, doc, selectedThirdSubOffer)
@@ -730,15 +744,6 @@ function syncMobileOfferSelection(cacheRef, doc, selectedOfferIndexRef, refreshS
 // ---------------------------------------------------------------------------
 // Cards laterais desktop
 // ---------------------------------------------------------------------------
-const OFFER_UX_MAP = {
-  turbo:       { summaryLabel: 'Economia estimada',  timing: 'Pode depender da portabilidade e do retorno dos bancos envolvidos' },
-  equilibrio:  { summaryLabel: 'Economia mensal',    timing: 'Pode levar alguns dias úteis, conforme retorno dos bancos envolvidos' },
-  folga:       { summaryLabel: 'Alívio mensal',      timing: 'Prazo e condições aparecem antes da confirmação' },
-  apenas_novo: { summaryLabel: 'Você recebe',        timing: 'Até 24h úteis após assinatura e aprovação final' },
-  apenas_refin:{ summaryLabel: 'Dinheiro disponível',timing: 'Até 24h úteis após assinatura e aprovação final',
-                 warning: 'Pode alterar prazo e custo total. Você verá as condições antes de confirmar.' },
-}
-
 function DecisionGuideCard() {
   return (
     <section className="side-blue-card decision-guide-card">
@@ -998,9 +1003,13 @@ export default function Ofertas() {
       const imp = impactoRef.current
       const hasNoOffer = offers.length === 0
       const subOffer = selectedThirdSubOfferRef.current
-      applyUnifiedParcelaHoje(docQueryCacheRef, doc, selectedEntry, u, subOffer)
+      // Computado uma vez por ciclo; passado para quem precisa evitar recálculo
+      const turboSnapshot = selectedEntry?.config?.id === 'turbo'
+        ? getTurboSubOfferSnapshot(selectedEntry, subOffer, u)
+        : null
+      applyUnifiedParcelaHoje(docQueryCacheRef, doc, selectedEntry, u, subOffer, turboSnapshot)
       upsertOfferCardsRedesign(docQueryCacheRef, doc, offers, selectedOfferIndexRef, u, subOffer)
-      upsertPocketInsight(doc, selectedEntry, u, imp, subOffer)
+      upsertPocketInsight(doc, selectedEntry, u, imp, subOffer, turboSnapshot)
       upsertSavingsReplacement(doc)
       normalizeCtaSaving(docQueryCacheRef, doc)
       normalizeComConsigaiNovaParcela(docQueryCacheRef, doc)

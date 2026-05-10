@@ -77,7 +77,7 @@ export const OFFER_CARD_CONFIG = [
 export const MAX_API_CARDS = 3
 
 // IDs exibidos quando o mock de ofertas estiver ativo.
-export const DEFAULT_MOCK_OFFER_IDS = ['apenas_novo', 'equilibrio', 'folga']
+export const DEFAULT_MOCK_OFFER_IDS = ['equilibrio', 'folga', 'turbo']
 
 export const THIRD_CARD_SUB_OFFERS = {
   contract: { label: 'No contrato', route: '/portabilidade' },
@@ -91,7 +91,7 @@ export const MOCK_DADOS = {
   ofertas: [
     { id: 'equilibrio', creditoReceber: 5033.74, parcelaNova: 496.17, economiaTotal: 2399.11 },
     { id: 'folga', creditoReceber: 7593.9, parcelaNova: 433.19, reducaoMensal: 116.81 },
-    { id: 'turbo', creditoReceber: 0, parcelaNova: 401.05, economiaContrato: 2960.4, economiaParcela: 148.95 },
+    { id: 'turbo', creditoReceber: 0, parcelaNova: 433, economiaContrato: 2960.4, economiaParcela: 148.95 },
     { id: 'apenas_novo', creditoReceber: 4200, parcelaNova: 79.2, economiaTotal: 1104, qtdParcelas: 84 },
     { id: 'apenas_refin', creditoReceber: 12930, parcelaNova: 1191, economiaTotal: 1896, qtdParcelas: 84 },
   ],
