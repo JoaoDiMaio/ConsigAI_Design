@@ -11,19 +11,21 @@ import { printSimulationReceipt } from '../lib/receiptPrint'
 import { getSelectableCardStyle } from '../ui/cardSelection'
 import { ResumoCard, ImpactoCard, ControleCard } from '../components/SimulationSideCards'
 import { OperationGuideCard } from '../components/OperationGuideCard'
+import { btnToggleShape } from '../ui/buttonStyles'
 
 const PORTABILIDADE_GUIDE = {
   badge: 'Guia ConsigAI',
-  title: 'Como comparar sua portabilidade',
-  subtitle: 'Compare a proposta atual com uma nova condição para entender economia, parcela e prazo antes de decidir.',
+  title: 'Como funciona a portabilidade',
+  subtitle: 'Você move seu contrato para um banco com taxa menor. Sem pegar novo crédito. Sem custo. É um direito seu.',
   steps: [
-    { label: 'Passo 1', title: 'Antes', body: 'Veja sua parcela, taxa e contrato atual.' },
-    { label: 'Passo 2', title: 'Depois', body: 'Compare a nova parcela, economia e margem.' },
-    { label: 'Passo 3', title: 'Decisão', body: 'Confira condições antes de avançar.' },
+    { label: 'Passo 1', title: 'Compare', body: 'Veja sua parcela atual e a nova condição proposta.' },
+    { label: 'Passo 2', title: 'Entenda a economia', body: 'Veja quanto pode economizar no contrato e no mês.' },
+    { label: 'Passo 3', title: 'Decida com calma', body: 'Confirme apenas se fizer sentido para você. Nada avança sozinho.' },
+    { label: 'Passo 4', title: 'Acompanhe', body: 'A ConsigAI mostra cada etapa da portabilidade.' },
   ],
-  finalTitle: 'Você decide com calma',
-  finalText: 'Nada é contratado sem sua confirmação.',
-  badges: ['Prazo sem esticar', 'Simulação sem compromisso', 'Nenhuma contratação automática'],
+  finalTitle: 'Você está no controle',
+  finalText: 'A portabilidade é um direito seu. Nenhuma contratação acontece sem sua confirmação.',
+  badges: ['Sem custo para o cliente', 'Simulação sem compromisso', 'Direito garantido por lei'],
 }
 
 const RECEIPT_DATA = {
@@ -158,11 +160,11 @@ export default function Portabilidade() {
   const profile = loadProfileData()
   const clientName = profile.nomeExibicao || profile.nomeCompleto || 'Cliente'
 
-  const initialMode = location.state?.initialMode === 'parc' ? 'parc' : 'eco'
-  const [mode, setMode] = useState(initialMode)
+  const [mode, setMode] = useState('eco')
   const [hoveredMode, setHoveredMode] = useState(null)
 
   const [detailsOpen, setDetailsOpen] = useState(false)
+  const [detailsHover, setDetailsHover] = useState(false)
   const [showReceipt, setShowReceipt] = useState(false)
   const d = stateData[mode]
   const portContracts = getPortContracts(mode, d.newInstallment)
@@ -173,6 +175,7 @@ export default function Portabilidade() {
   const liquidoAntes = salarioBase - parcelaAntes
   const liquidoDepois = salarioBase - parcelaDepois
   const benefit = `${d.headlineValue}${d.headlineSuffix ? ` ${d.headlineSuffix}` : ''}`
+  const economiaMensal = parcelaAntes - parcelaDepois > 0 ? Math.round(parcelaAntes - parcelaDepois) : 0
 
   const handleGoContratacao = () => {
     navigate('/dados-bancarios', {
@@ -228,17 +231,15 @@ export default function Portabilidade() {
           --line:#DDE8F6;
         }
         .port-root{max-width:1400px;margin:0 auto;padding:26px 24px 48px}
-        .main-layout{display:grid;grid-template-columns:260px minmax(0,1fr) 380px;gap:28px}
+        .main-layout{display:grid;grid-template-columns:260px minmax(0,1fr) 320px;gap:28px}
         .port-guide-col{}
         .card{border:1px solid var(--line);border-radius:28px;background:#fff;box-shadow:0 16px 38px rgba(3,36,111,.075)}
         .flow{padding:22px;border-radius:34px;position:relative;overflow:hidden;background:#fff;box-shadow:0 18px 42px rgba(3,36,111,.09)}
         .flow:before{content:'';position:absolute;inset:0 0 auto 0;height:5px;background:linear-gradient(90deg,var(--blue-main),var(--blue-interactive),var(--green-strong))}
         .flow > *{position:relative;z-index:1}
         .tabs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-        .tab{min-height:88px;padding:18px;border-radius:21px;border:1px solid var(--line);background:radial-gradient(circle at 92% 8%,rgba(4,59,139,.06),transparent 34%),linear-gradient(180deg,#fff,#f8fbff);text-align:center;display:grid;place-items:center;gap:5px;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 12px 32px rgba(3,36,111,.05)}
-        .tab:before{content:'';position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--blue-main),var(--blue-interactive),var(--green-strong));opacity:.55}
-        .tab.active{}
-        .tab.active:before{opacity:1;background:linear-gradient(90deg,var(--blue-main),var(--blue-interactive),var(--green-strong))}
+        .tab{min-height:88px;padding:18px;border-radius:21px;border:1px solid var(--line);background:#fff;text-align:center;display:grid;place-items:center;gap:5px;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 12px 32px rgba(3,36,111,.05)}
+        .tab:before{display:none}
         .tab strong{font-size:16px;font-weight:900;color:var(--blue-dark)}
         .tab span{font-size:12px;color:var(--muted)}
         .strategy-icon{display:inline-flex;align-items:flex-end;justify-content:center;gap:4px;min-height:16px}
@@ -338,7 +339,22 @@ export default function Portabilidade() {
         .process-step-num{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--blue-main);color:#fff;display:grid;place-items:center;font-size:10px;font-weight:900}
         .process-step-body{color:var(--muted);font-weight:600;line-height:1.35}
         .process-step-body strong{display:block;color:var(--blue-dark);font-weight:800;margin-bottom:1px}
-        @media (max-width:1200px){.main-layout{grid-template-columns:minmax(0,1fr) 360px}.port-guide-col{display:none}}
+        .no-credit-line{margin-top:12px;padding:10px 14px;border-radius:13px;background:rgba(0,122,82,.07);border:1px solid var(--green-line);color:var(--green);font-size:12px;font-weight:750;line-height:1.4;text-align:center}
+        .port-hero{margin-bottom:20px;padding:24px 22px;border-radius:21px;background:radial-gradient(circle at 90% 8%,rgba(0,122,82,.11),transparent 40%),linear-gradient(145deg,#f0fff8 0%,#fff 100%);border:1px solid var(--green-line);position:relative;overflow:hidden;text-align:center}
+        .port-hero::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--green),var(--green-strong),var(--blue-interactive))}
+        .port-hero-kicker{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin-bottom:14px;justify-content:center}
+        .port-hero-dot{width:7px;height:7px;border-radius:50%;background:var(--green-strong);box-shadow:0 0 9px rgba(0,168,107,.8);flex-shrink:0;animation:heroGlow 2s ease-in-out infinite}
+        @keyframes heroGlow{0%,100%{box-shadow:0 0 9px rgba(0,168,107,.8)}50%{box-shadow:0 0 16px rgba(0,168,107,1)}}
+        .port-hero-num{display:flex;align-items:baseline;gap:8px;justify-content:center;flex-wrap:wrap;line-height:1}
+        .port-hero-prefix{font-size:17px;font-weight:800;color:var(--blue-dark)}
+        .port-hero-num strong{font-size:56px;font-weight:900;letter-spacing:-.08em;color:var(--green);line-height:.95}
+        .port-hero-suffix{font-size:20px;font-weight:800;color:var(--green-strong);align-self:flex-end;padding-bottom:5px}
+        .port-hero-monthly{margin-top:10px;font-size:14px;font-weight:800;color:var(--green-strong);letter-spacing:-.01em}
+        .port-hero-sub{margin-top:6px;font-size:11px;font-weight:700;color:var(--muted)}
+        .port-mode-label{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);text-align:center;margin-bottom:14px}
+        .port-eco-badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;background:linear-gradient(135deg,var(--green-soft),#e6fff3);border:1px solid var(--green-line);color:var(--green);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+        .port-review-note{margin-top:10px;text-align:center;font-size:12px;font-weight:800;color:var(--blue-main)}
+        @media (max-width:1200px){.main-layout{grid-template-columns:minmax(0,1fr) 320px}.port-guide-col{display:none}}
         @media (max-width:1100px){.main-layout{grid-template-columns:1fr}.port-guide-col{display:none}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:16px}.side-card + .side-card{margin-top:0}}
         @media (max-width:900px){.port-root{padding:16px}.tabs,.compare,.benefits,.salary,.sidebar{grid-template-columns:1fr}.arrow{transform:rotate(90deg);justify-self:center}.compare-head,.compare-line{grid-template-columns:1fr;gap:6px}.compare-head span:first-child{display:none}.contracts-bottom{flex-direction:column;align-items:stretch}.details-btn{width:100%}.details-panel{max-height:min(420px,62vh)}}
       `}</style>
@@ -348,7 +364,7 @@ export default function Portabilidade() {
           <DesktopPageHeader
             clientName={clientName}
             pageTitle="Portabilidade"
-            pageDescription="Compare sua condição atual com uma nova proposta."
+            pageDescription="Pague menos pelo mesmo contrato — compare e decida antes de confirmar."
             onLogoClick={() => navigate('/ofertas')}
             actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }, { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') }]}
           />
@@ -356,8 +372,8 @@ export default function Portabilidade() {
           <MobilePageHeader
             clientName={clientName}
             chipLabel="Portabilidade"
-            title="Faça portabilidade com equilíbrio para Economizar"
-            subtitle="Compare sua parcela atual com uma proposta mais leve e transparente."
+            title="Pague menos pelo mesmo contrato"
+            subtitle="Compare e decida com calma. Você não está pegando novo crédito."
             onLogoClick={() => navigate('/ofertas')}
             actions={[{ label: 'Ofertas', onClick: () => navigate('/ofertas') }, { label: 'Configurações', onClick: () => navigate('/configuracoes') }, { label: 'Acompanhamento', onClick: () => navigate('/acompanhamento') }]}
           />
@@ -370,6 +386,24 @@ export default function Portabilidade() {
             </div>
             <section>
               <section className="card flow">
+                <div className="port-hero">
+                  <div className="port-hero-kicker">
+                    <span className="port-hero-dot" />
+                    Proposta calculada para você
+                  </div>
+                  <div className="port-hero-num">
+                    <span className="port-hero-prefix">{d.headlinePrefix}</span>
+                    <strong>{d.headlineValue}</strong>
+                    {d.headlineSuffix && <span className="port-hero-suffix">{d.headlineSuffix}</span>}
+                  </div>
+                  {mode === 'eco' && economiaMensal > 0 && (
+                    <div className="port-hero-monthly">R$ {economiaMensal} estimados a mais no seu bolso por mês</div>
+                  )}
+                  <div className="port-hero-sub">{d.subhead}</div>
+                </div>
+
+                <p className="port-mode-label">Escolha sua estratégia</p>
+
                 <div className="tabs">
                   <button
                     className={`tab ${mode === 'eco' ? 'active' : ''}`}
@@ -379,11 +413,12 @@ export default function Portabilidade() {
                     style={getSelectableCardStyle({
                       selected: mode === 'eco',
                       hovered: hoveredMode === 'eco',
-                      baseBackground: 'radial-gradient(circle at 92% 8%,rgba(4,59,139,.06),transparent 34%),linear-gradient(180deg,#fff,#f8fbff)',
+                      baseBackground: '#fff',
                     })}
                   >
+                    <div className="port-eco-badge">Maior Economia</div>
                     <div className="strategy-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-                    <strong>Quero Economizar</strong><span>Diminuir minha dívida</span>
+                    <strong>Quero Economizar</strong><span>Economizar no custo total</span>
                   </button>
                   <button
                     className={`tab ${mode === 'parc' ? 'active' : ''}`}
@@ -393,7 +428,7 @@ export default function Portabilidade() {
                     style={getSelectableCardStyle({
                       selected: mode === 'parc',
                       hovered: hoveredMode === 'parc',
-                      baseBackground: 'radial-gradient(circle at 92% 8%,rgba(4,59,139,.06),transparent 34%),linear-gradient(180deg,#fff,#f8fbff)',
+                      baseBackground: '#fff',
                     })}
                   >
                     <div className="strategy-icon flat" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
@@ -408,25 +443,40 @@ export default function Portabilidade() {
                     <div className="pbox new"><small>Parcela nova</small><strong>{d.newInstallment}</strong></div>
                   </section>
 
-                  <section className={`highlight ${mode === 'eco' ? 'highlight-total' : 'highlight-monthly'}`}><small>{d.eyebrow}</small><strong>{benefit}</strong><span>{d.subhead}</span></section>
+                  <div className="no-credit-line">
+                    Você não está pegando novo crédito — só pagando menos pelo mesmo contrato.
+                  </div>
 
                   <section className="benefits">
                     <div className="benefit"><small>Margem livre depois</small><strong>até {d.margin}</strong></div>
-                    <div className="benefit"><small>Crédito futuro disponível</small><strong>até {d.credit}</strong></div>
+                    <div className="benefit"><small>Crédito disponível após portabilidade</small><strong>até {d.credit}</strong></div>
                   </section>
 
-                  <div className="contracts-row">
-                    <small>Contratos incluídos</small>
-                    <div className="contracts-bottom">
-                      <div className="contracts-tags">
-                        {RECEIPT_DATA[mode].rows.map(([code, bankRoute]) => {
-                          const origin = bankRoute.split('→')[0].trim()
-                          return <span key={code} className="contracts-tag">{origin}</span>
-                        })}
-                      </div>
-                      <button className="details-btn consigai-cta-animated" onClick={() => setDetailsOpen(v => !v)}>Ver detalhes da oferta</button>
-                    </div>
-                  </div>
+                  {/* Details toggle */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      const currentScrollY = window.scrollY
+                      setDetailsOpen((prev) => !prev)
+                      requestAnimationFrame(() => { window.scrollTo({ top: currentScrollY, behavior: 'auto' }) })
+                    }}
+                    onMouseEnter={() => setDetailsHover(true)}
+                    onMouseLeave={() => setDetailsHover(false)}
+                    style={{
+                      ...btnToggleShape,
+                      width: '100%',
+                      marginTop: 20,
+                      marginBottom: detailsOpen ? 10 : 14,
+                      ...getSelectableCardStyle({
+                        selected: detailsOpen,
+                        hovered: detailsHover,
+                        baseBackground: 'radial-gradient(circle at 92% 8%, rgba(4,59,139,.08), transparent 34%), linear-gradient(180deg, #F4FBFF 0%, #FFFFFF 100%)',
+                      }),
+                    }}
+                  >
+                    {detailsOpen ? 'Fechar detalhes' : mode === 'eco' ? 'Ver economia por contrato' : 'Ver alívio por contrato'}
+                  </button>
 
                   {detailsOpen ? (
                     <div className="receipt-wrap details-panel">
@@ -477,7 +527,7 @@ export default function Portabilidade() {
                   ) : null}
 
                   <div className="actions">
-                    <button className="cta consigai-cta-animated" onClick={handleGoContratacao}>Continuar com esta oferta</button>
+                    <button className="cta consigai-cta-animated" onClick={handleGoContratacao}>{mode === 'eco' ? 'Quero economizar com esta proposta' : 'Quero reduzir minha parcela'}</button>
                     <button className="secondary consigai-cta-animated" onClick={() => setShowReceipt(v => !v)}>Gerar recibo da simulação</button>
                     {showReceipt ? (
                       <div style={{ marginTop: 4, borderRadius: 16, border: '1px solid #DDE8F6', background: '#f7f9fe', padding: 10, display: 'flex', justifyContent: 'center' }}>
@@ -519,6 +569,7 @@ export default function Portabilidade() {
                         Baixar recibo da simulação
                       </button>
                     ) : null}
+                    <p className="port-review-note">Você ainda vai revisar tudo antes de confirmar</p>
                     <p className="safe">Valores estimados. Sujeitos à análise e aprovação de crédito.</p>
                     <button className="back-btn consigai-cta-animated" onClick={() => navigate('/ofertas')}>Voltar para ofertas</button>
                   </div>
@@ -536,7 +587,7 @@ export default function Portabilidade() {
                   { label: 'Parcela nova total', value: d.newInstallment },
                   { label: 'Benefício estimado', value: benefit },
                   { label: 'Margem livre', value: `até ${d.margin}` },
-                  { label: 'Crédito futuro', value: `até ${d.credit}` },
+                  { label: 'Crédito disponível após portabilidade', value: `até ${d.credit}` },
                 ]}
               />
               <ImpactoCard
@@ -545,8 +596,10 @@ export default function Portabilidade() {
                 novaParcela={d.newInstallment}
                 novaParcelaLabel="Nova parcela total"
               />
-              <ControleCard />
             </aside>
+          </div>
+          <div style={{ marginTop: 20 }}>
+            <ControleCard horizontal />
           </div>
         </main>
       </div>

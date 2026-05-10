@@ -146,7 +146,7 @@ export function buildTurboCard(cfg, offer, idx, usuario, selectedThirdSubOffer) 
     <div class="turbo-module-header">
       <div class="turbo-module-title">
         <img class="turbo-module-logo" src="/ConsigIA_logo_only_no_background.svg" alt="" aria-hidden="true" />
-        <div><strong>Turbo Economia</strong><span>Foco em pagar menos</span></div>
+        <div><strong>Turbo Economia</strong><span>Foco em pagar menos — sem novo crédito</span></div>
       </div>
     </div>
     <div class="consigai-card-body turbo-body">
@@ -156,8 +156,8 @@ export function buildTurboCard(cfg, offer, idx, usuario, selectedThirdSubOffer) 
         ${opt('contract', 'Nos contratos', economiaContrato, 'estimada')}
         ${opt('installment', 'Nova parcela', novaParcelaTurbo, 'estimada')}
       </div>
-      <div class="consigai-offer-note turbo-note"><span class="note-icon" aria-hidden="true">✓</span><p>Boa opção para reduzir o custo do contrato sem contratar novo crédito.</p></div>
-      ${cardDetailsBtn('turbo')}
+      <div class="consigai-offer-note turbo-note"><span class="note-icon" aria-hidden="true">✓</span><p>Você reduz o custo. Sem precisar contratar novo crédito.</p></div>
+      ${cardDetailsBtn('turbo', 'Ver minha economia')}
     </div>
   `)
 }
@@ -166,7 +166,7 @@ export function buildEquilibrioCard(offer, idx, usuario) {
   const valorNaConta = fmt(offer.creditoReceber ?? 0)
   const economiaNosContratos = fmt(offer.economiaTotal ?? (getEcoMensal(offer, usuario.parcelaAtual) * 12))
   return cardShell('equilibrio', idx, `
-    ${cardHeader('equilibrio', svgEquilibrio(idx), 'Melhor equilíbrio', 'Mais equilíbrio para decidir')}
+    ${cardHeader('equilibrio', svgEquilibrio(idx), 'Melhor equilíbrio', 'Dinheiro na conta + economia no contrato')}
     <div class="consigai-card-body equilibrio-body">
       <h2 class="consigai-card-heading equilibrio-heading">Receba dinheiro e <span>Economize</span></h2>
       <p class="consigai-card-intro equilibrio-intro">Boa opção para combinar dinheiro na conta com economia no contrato.</p>
@@ -182,8 +182,8 @@ export function buildEquilibrioCard(offer, idx, usuario) {
           <small class="consigai-estimada-text">estimada</small>
         </div>
       </div>
-      ${cardNote('equilibrio', '✓', 'Recomendado por equilibrar dinheiro na conta, economia e prazo mantido.')}
-      ${cardDetailsBtn('equilibrio')}
+      ${cardNote('equilibrio', '✓', 'Dinheiro disponível e custo menor. Equilíbrio antes de decidir.')}
+      ${cardDetailsBtn('equilibrio', 'Ver meu equilíbrio')}
     </div>
   `)
 }
@@ -192,7 +192,7 @@ export function buildFolgaCard(offer, idx, usuario) {
   const valorNaConta = fmt(offer.creditoReceber ?? 0)
   const parcelaNova = getParcelaNova(offer, usuario.parcelaAtual)
   return cardShell('folga', idx, `
-    ${cardHeader('folga', svgFolga(idx), 'Mais folga por mês', 'Mais espaço no orçamento')}
+    ${cardHeader('folga', svgFolga(idx), 'Mais folga por mês', 'Parcela menor + dinheiro na conta')}
     <div class="consigai-card-body folga-body">
       <h2 class="consigai-card-heading folga-heading">Receba dinheiro e <span>Reduza a Parcela</span></h2>
       <p class="consigai-card-intro folga-intro">Boa opção para ganhar fôlego mensal com parcela menor e dinheiro na conta.</p>
@@ -208,8 +208,8 @@ export function buildFolgaCard(offer, idx, usuario) {
           <span class="consigai-estimada-text">estimada</span>
         </div>
       </div>
-      ${cardNote('folga', '✓', 'Indicada para aliviar o orçamento mensal, com dinheiro na conta e parcela reduzida.')}
-      ${cardDetailsBtn('folga')}
+      ${cardNote('folga', '✓', 'Foco em aliviar o peso mensal. Menos saindo do bolso todo mês.')}
+      ${cardDetailsBtn('folga', 'Ver minha folga mensal')}
     </div>
   `)
 }
@@ -226,8 +226,8 @@ export function buildNovoCard(offer, idx) {
         <strong>${valorEstimado}</strong>
         <span class="consigai-estimada-text">estimada</span>
       </div>
-      ${cardNote('new-contract', 'i', 'Usa margem livre. Taxa, custo total, prazo e parcela aparecem antes da confirmação.')}
-      ${cardDetailsBtn('new-contract')}
+      ${cardNote('new-contract', 'i', 'Taxa, parcela, prazo e custo total aparecem antes de confirmar. Sem surpresa.')}
+      ${cardDetailsBtn('new-contract', 'Ver condições do crédito')}
     </div>
   `)
 }
@@ -237,15 +237,15 @@ export function buildRefinCard(offer, idx) {
   return cardShell('refin', idx, `
     ${cardHeader('refin', svgRefin(idx), 'Refinanciamento', 'Ajuste o contrato atual')}
     <div class="consigai-card-body refin-body">
-      <h2 class="consigai-card-heading refin-heading"><span>Dinheiro ajustando seus </span><span class="refin-heading-light">Contratos</span></h2>
-      <p class="consigai-card-intro card-plain-intro refin-intro">Use os contratos existentes para liberar valor com condicoes claras antes de continuar</p>
+      <h2 class="consigai-card-heading refin-heading"><span>Use seus contratos para </span><span class="refin-heading-light">Receber Valor</span></h2>
+      <p class="consigai-card-intro card-plain-intro refin-intro">Libere valor com seus contratos existentes. Condições claras antes de continuar.</p>
       <div class="consigai-card-highlight refin-highlight">
         <small>Valor estimado disponível</small>
         <strong>${valorEstimado}</strong>
         <span class="consigai-estimada-text">estimada</span>
       </div>
-      ${cardNote('refin', 'i', 'Altera seus contratos ativos. Você verá taxa, parcelas e condições antes de confirmar.')}
-      ${cardDetailsBtn('refin')}
+      ${cardNote('refin', 'i', 'Você vê taxa, parcelas e condições antes de avançar. Nada muda sem sua confirmação.')}
+      ${cardDetailsBtn('refin', 'Ver condições do refinanciamento')}
     </div>
   `)
 }

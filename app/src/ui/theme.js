@@ -35,9 +35,9 @@ const semanticColors = {
   errorSoft: '#FFF1F1',
   errorBorder: '#F1C2C2',
 
-  selectedBorder: '#00E7FF',
-  selectedSoft: '#F4FBFF',
-  selectedHover: '#E6FAFF',
+  selectedBorder: '#2454D6',
+  selectedSoft: '#EEF4FF',
+  selectedHover: '#E8EEFF',
 }
 
 function cssVarsBlock(tokenMap) {

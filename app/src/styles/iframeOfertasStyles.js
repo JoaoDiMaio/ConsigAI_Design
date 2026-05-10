@@ -573,8 +573,8 @@ export const RESPONSIVE_STYLES_CSS = `
   .consigai-trust-item:last-child { border-right: 0; padding-right: 0; }
   .consigai-trust-icon {
     width: 42px; height: 42px; border-radius: 50%;
-    background: #f1fcf6; border: 1px solid #c9f0d9;
-    color: #007A52; display: inline-flex; align-items: center; justify-content: center;
+    background: #F4F9FF; border: 1px solid #BFD4F6;
+    color: #043B8B; display: inline-flex; align-items: center; justify-content: center;
   }
   .consigai-trust-icon svg {
     width: 21px; height: 21px; stroke: currentColor; fill: none;
@@ -1454,6 +1454,30 @@ export const OFFER_CARD_REDESIGN_CSS = `
     text-overflow: ellipsis;
     min-height: calc(2 * 1.25em);
   }
+  .offer-card.turbo-offer .turbo-sugestao-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(4,59,139,.07);
+    border: 1px solid rgba(4,59,139,.18);
+    color: #002D6E;
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    line-height: 1;
+  }
+  .offer-card.turbo-offer .turbo-sugestao-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #2454D6;
+    flex-shrink: 0;
+  }
   .offer-card.turbo-offer .turbo-body {
     display: flex;
     flex-direction: column;
@@ -1744,8 +1768,8 @@ export const OFFER_CARD_REDESIGN_CSS = `
     margin-top: 12px;
     padding: 10px 12px;
     border-radius: 14px;
-    border: 1px solid #DDE8F6;
-    background: #F4F8FF;
+    border: 1px solid #BDECD7;
+    background: #F0FFF8;
     color: #007A52;
     font-size: 10px;
     line-height: 1.35;
@@ -2036,8 +2060,8 @@ export const OFFER_CARD_REDESIGN_CSS = `
     margin-top: 12px;
     padding: 10px 12px;
     border-radius: 14px;
-    background: #F4F8FF;
-    border: 1px solid #DDE8F6;
+    background: #F0FFF8;
+    border: 1px solid #BDECD7;
     color: #007A52;
     font-size: 10px;
     line-height: 1.35;
