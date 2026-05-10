@@ -41,7 +41,7 @@ const CARD_THEMES = [
     badgeStyle: { background: '#F0FFF8', border: '1px solid #BDECD7', color: '#007A52' },
     baseBackground: 'radial-gradient(circle at 92% 8%, rgba(0,168,107,.10), transparent 34%), linear-gradient(180deg, #F4FFF9 0%, #FFFFFF 100%)',
     valueColor: '#007A52',
-    chipLabel: (s) => `Mais margem e parcela menor`,
+    chipLabel: () => `Mais margem e parcela menor`,
     chipStyle: { background: '#F0FFF8', border: '1px solid #BDECD7', color: '#007A52' },
   },
   {
@@ -49,7 +49,7 @@ const CARD_THEMES = [
     badgeStyle: { background: '#F0F5FF', border: '1px solid #BFD4F6', color: '#2454D6' },
     baseBackground: 'radial-gradient(circle at 92% 8%, rgba(36,84,214,.12), transparent 34%), linear-gradient(180deg, #EEF4FF 0%, #FFFFFF 100%)',
     valueColor: '#2454D6',
-    chipLabel: (s) => `Menor impacto mensal`,
+    chipLabel: () => `Menor impacto mensal`,
     chipStyle: { background: '#F4F8FF', border: '1px solid #BFD4F6', color: '#2454D6' },
   },
 ]

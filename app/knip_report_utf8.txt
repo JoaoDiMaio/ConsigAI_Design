@@ -1,0 +1,34 @@
+﻿Unused files (3)
+screenshot.js                        
+src/components/OperationPageIntro.jsx
+src/mocks/mockProposalApi.js         
+Unused exports (29)
+API_BASE_PATH                   src/api/endpoints.js:1:14                   
+BRAND_AI_COLOR                  src/components/BrandName.jsx:3:14           
+PageHero              function  src/components/SimulationSideCards.jsx:17:17
+SCENARIO_ICONS                  src/data/refinanciamentoData.js:76:14       
+cardShell             function  src/lib/iframeCardBuilders.js:22:17         
+cardHeader            function  src/lib/iframeCardBuilders.js:31:17         
+cardNote              function  src/lib/iframeCardBuilders.js:40:17         
+cardDetailsBtn        function  src/lib/iframeCardBuilders.js:44:17         
+cardSimNote           function  src/lib/iframeCardBuilders.js:50:17         
+svgEquilibrio         function  src/lib/iframeCardBuilders.js:57:17         
+svgFolga              function  src/lib/iframeCardBuilders.js:71:17         
+svgNovo               function  src/lib/iframeCardBuilders.js:95:17         
+svgRefin              function  src/lib/iframeCardBuilders.js:103:17        
+buildTurboCard        function  src/lib/iframeCardBuilders.js:133:17        
+buildEquilibrioCard   function  src/lib/iframeCardBuilders.js:165:17        
+buildFolgaCard        function  src/lib/iframeCardBuilders.js:191:17        
+buildNovoCard         function  src/lib/iframeCardBuilders.js:217:17        
+buildRefinCard        function  src/lib/iframeCardBuilders.js:235:17        
+buildGenericCard      function  src/lib/iframeCardBuilders.js:253:17        
+maskCPF               function  src/lib/masks.js:1:17                       
+formatFileSize        function  src/lib/masks.js:28:17                      
+PROFILE_STORAGE_KEY             src/lib/profileStorage.js:3:14              
+ALLOWED_UPLOAD_MIMES            src/lib/validators.js:17:14                 
+defaultProfileData              src/mocks/mockProfile.js:1:14               
+semanticColors                  src/ui/theme.js:5:14                        
+colorDocumentation              src/ui/theme.js:43:14                       
+cssVarsBlock          function  src/ui/theme.js:60:17                       
+colorTokenMap                   src/ui/theme.js:66:14                       
+onboardingAliasVars             src/ui/theme.js:99:14                       

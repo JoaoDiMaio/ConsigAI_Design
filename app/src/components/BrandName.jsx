@@ -1,6 +1,6 @@
 import { createElement } from 'react'
 
-export const BRAND_AI_COLOR = '#1DA1EB'
+const BRAND_AI_COLOR = '#1DA1EB'
 
 export function BrandName({ as, className, style, ...props }) {
   const Component = as || 'span'

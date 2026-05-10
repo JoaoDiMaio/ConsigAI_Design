@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useRef, useEffect } from 'react'
 import OnboardingBrandHeader from '../components/onboarding/OnboardingBrandHeader'
-import { FontSizeToggleFloating } from '../components/FontSizeToggle'
 import { appFontFamily, onboardingAliasVarsCss } from '../ui/theme'
 
 const BENEFICIOS = [
@@ -165,8 +164,7 @@ ${onboardingAliasVarsCss}
 
         .register-shell {
           width: min(1040px, 100%);
-          min-height: 800px;
-          max-height: calc(100dvh - 48px);
+          height: 800px;
           display: grid;
           grid-template-columns: 1.05fr 0.95fr;
           border-radius: 34px;
@@ -422,6 +420,7 @@ ${onboardingAliasVarsCss}
 
         .form-panel {
           padding: 42px;
+          position: relative;
           display: flex;
           flex-direction: column;
           min-height: 0;
@@ -1014,7 +1013,6 @@ ${onboardingAliasVarsCss}
         }
       `}</style>
 
-      <FontSizeToggleFloating />
       <main className="register-page">
         <section className="register-shell" aria-label="Cadastro ConsigAI">
           <aside className="side-panel">

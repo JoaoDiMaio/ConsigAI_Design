@@ -2,7 +2,7 @@ export const appFontFamily = "'Plus Jakarta Sans', system-ui, sans-serif"
 
 // Canonical color decisions for the ConsigAI product.
 // Keep this file as the single source of truth when unifying colors.
-export const semanticColors = {
+const semanticColors = {
   brandPrimary: '#043B8B',
   brandDark: '#002D6E',
   brandInteractive: '#2454D6',
@@ -40,30 +40,13 @@ export const semanticColors = {
   selectedHover: '#E6FAFF',
 }
 
-export const colorDocumentation = [
-  { token: '--color-brand-primary', hex: semanticColors.brandPrimary, role: 'CTA principal, marca, links e seleção principal.' },
-  { token: '--color-brand-dark', hex: semanticColors.brandDark, role: 'Títulos, números financeiros principais e header institucional.' },
-  { token: '--color-brand-interactive', hex: semanticColors.brandInteractive, role: 'Hover, foco, borda selecionada e ícones interativos.' },
-  { token: '--color-brand-soft', hex: semanticColors.brandSoft, role: 'Fundos suaves, cards neutros e áreas de simulação.' },
-  { token: '--color-success', hex: semanticColors.success, role: 'Economia, ganho, redução de custo e benefício financeiro.' },
-  { token: '--color-success-dark', hex: semanticColors.successDark, role: 'Texto positivo e títulos curtos de economia.' },
-  { token: '--color-success-soft', hex: semanticColors.successSoft, role: 'Blocos positivos e estado visual de ganho.' },
-  { token: '--color-success-border', hex: semanticColors.successBorder, role: 'Borda de cards positivos e comparações favoráveis.' },
-  { token: '--color-text-primary', hex: semanticColors.textPrimary, role: 'Texto principal e labels de alta importância.' },
-  { token: '--color-text-secondary', hex: semanticColors.textSecondary, role: 'Texto auxiliar, descrições e microcopy.' },
-  { token: '--color-border', hex: semanticColors.border, role: 'Bordas neutras, divisores e inputs padrão.' },
-  { token: '--color-surface', hex: semanticColors.brandSurface, role: 'Cards, painéis e superfícies principais.' },
-  { token: '--color-warning', hex: semanticColors.warning, role: 'Estimado, sujeito à análise e atenção leve.' },
-  { token: '--color-error', hex: semanticColors.error, role: 'Erro real, validação e falha operacional.' },
-]
-
-export function cssVarsBlock(tokenMap) {
+function cssVarsBlock(tokenMap) {
   return Object.entries(tokenMap)
     .map(([token, value]) => `  ${token}: ${value};`)
     .join('\n')
 }
 
-export const colorTokenMap = {
+const colorTokenMap = {
   '--color-brand-primary': semanticColors.brandPrimary,
   '--color-brand-dark': semanticColors.brandDark,
   '--color-brand-interactive': semanticColors.brandInteractive,
@@ -96,7 +79,7 @@ export const colorTokenMap = {
 }
 
 // Bridge for pages that still use local aliases such as --blue-dark / --green.
-export const onboardingAliasVars = {
+const onboardingAliasVars = {
   ...colorTokenMap,
   '--blue-dark': 'var(--color-brand-dark)',
   '--blue-deep': '#06184E',

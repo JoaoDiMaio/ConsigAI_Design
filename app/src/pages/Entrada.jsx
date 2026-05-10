@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom'
 import OnboardingBrandHeader from '../components/onboarding/OnboardingBrandHeader'
-import { FontSizeToggleFloating } from '../components/FontSizeToggle'
 import { appFontFamily, onboardingAliasVarsCss } from '../ui/theme'
 
 export default function Entrada() {
@@ -356,16 +355,8 @@ ${onboardingAliasVarsCss}
           margin: 0 auto;
         }
 
-        .login-kicker {
-          color: var(--blue-main);
-          font-size: 11px;
-          font-weight: 950;
-          letter-spacing: 0.13em;
-          text-transform: uppercase;
-        }
-
         .login-title {
-          margin-top: 8px;
+          margin-top: 0;
           color: var(--blue-dark);
           font-size: 34px;
           line-height: 1;
@@ -728,7 +719,6 @@ ${onboardingAliasVarsCss}
         }
       `}</style>
 
-      <FontSizeToggleFloating />
       <main className="entry-page">
         <section className="entry-card" aria-label="Tela de entrada ConsigAI">
           <aside className="visual-panel">
@@ -823,25 +813,12 @@ ${onboardingAliasVarsCss}
           </aside>
 
           <section className="form-panel">
-            <OnboardingBrandHeader />
+            <OnboardingBrandHeader
+              showStepBadge
+              stepLabel="Consulta gratuita"
+              pillVariant="green"
+            />
               <div className="login-box">
-                <div style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  padding: '8px 12px',
-                  borderRadius: 999,
-                  background: 'rgba(0, 168, 107, 0.10)',
-                  border: '1px solid rgba(0, 168, 107, 0.18)',
-                  color: '#007A52',
-                  fontSize: 11,
-                  fontWeight: 950,
-                  letterSpacing: '.08em',
-                  textTransform: 'uppercase',
-                }}>
-                  Consulta gratuita
-                </div>
-                <div className="login-kicker">Bem-vindo à ConsigAI</div>
                 <h2 className="login-title">Entre para ver sua <span>Economia</span></h2>
                 <p className="login-copy">
                   Acesse sua simulação e compare opções para pagar menos ou melhorar sua parcela com segurança.

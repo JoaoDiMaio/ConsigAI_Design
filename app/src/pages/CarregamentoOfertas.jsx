@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FontSizeToggleFloating } from '../components/FontSizeToggle'
 import OnboardingBrandHeader from '../components/onboarding/OnboardingBrandHeader'
 import { appFontFamily, onboardingAliasVarsCss } from '../ui/theme'
 
@@ -384,44 +383,8 @@ ${onboardingAliasVarsCss}
           margin: 0 auto;
         }
 
-        .right-panel > .obh .obh-logo {
-          position: relative;
-          isolation: isolate;
-        }
-
-        .right-panel > .obh .obh-logo::before,
-        .right-panel > .obh .obh-logo::after {
-          content: "";
-          position: absolute;
-          border-radius: 50%;
-          pointer-events: none;
-        }
-
-        .right-panel > .obh .obh-logo::before {
-          inset: -10px;
-          border: 3px solid rgba(29, 161, 235, 0.14);
-          border-top-color: var(--cyan);
-          border-right-color: var(--logo-blue);
-          animation: spin 1.2s linear infinite;
-        }
-
-        .right-panel > .obh .obh-logo::after {
-          inset: -4px;
-          background: radial-gradient(circle, rgba(0, 231, 255, .10), transparent 72%);
-          z-index: -1;
-          animation: pulse 1.8s ease-in-out infinite;
-        }
-
-        .right-kicker {
-          color: var(--blue-main);
-          font-size: 11px;
-          font-weight: 950;
-          letter-spacing: .13em;
-          text-transform: uppercase;
-        }
-
         .right-title {
-          margin-top: 8px;
+          margin-top: 0;
           color: var(--blue-dark);
           font-size: 34px;
           line-height: 1;
@@ -672,7 +635,6 @@ ${onboardingAliasVarsCss}
         }
       `}</style>
 
-      <FontSizeToggleFloating />
       <div className={`offers-loading-root${isLeaving ? ' is-leaving' : ''}`}>
         <main className="loading-page">
           <section className="loading-shell" aria-label="Tela de carregamento ConsigAI">
@@ -706,11 +668,9 @@ ${onboardingAliasVarsCss}
               <OnboardingBrandHeader
                 showStepBadge
                 stepLabel="Análise em andamento"
-                stepProgress={progress}
               />
               <div className="analysis-box">
 
-                <div className="right-kicker">Recomendação ConsigAI</div>
                 <h2 className="right-title">
                   Analisando sua <span>Economia</span>
                 </h2>

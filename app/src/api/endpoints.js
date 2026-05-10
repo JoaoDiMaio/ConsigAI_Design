@@ -1,4 +1,4 @@
-export const API_BASE_PATH = '/api'
+const API_BASE_PATH = '/api'
 
 export const ENDPOINTS = {
   ofertas: `${API_BASE_PATH}/ofertas`,
