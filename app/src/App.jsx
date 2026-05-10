@@ -12,6 +12,7 @@ import AndamentoPropostas from './pages/AndamentoPropostas'
 import Entrada from './pages/Entrada'
 import UploadExtrato from './pages/UploadExtrato'
 import CarregamentoOfertas from './pages/CarregamentoOfertas'
+import CardsPreview from './pages/CardsPreview'
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/novo-economia" element={<EstrategiaCombinada variant="novo" />} />
         <Route path="/refin-portabilidade" element={<EstrategiaCombinada variant="refin" />} />
         <Route path="/refin-economia" element={<EstrategiaCombinada variant="refin" />} />
+        <Route path="/preview" element={<CardsPreview />} />
       </Routes>
     </BrowserRouter>
   )

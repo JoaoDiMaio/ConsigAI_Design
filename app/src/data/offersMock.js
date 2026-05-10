@@ -9,12 +9,15 @@ const parseEnvFlag = (value, fallback = false) => {
 
 export const USE_MOCK_OFFERS = parseEnvFlag(import.meta.env?.VITE_USE_MOCK_OFFERS, true)
 
+export const TURBO_LABEL_INSTALLMENT = 'Na parcela'
+export const TURBO_LABEL_CONTRACT = 'No contrato'
+
 export const OFFER_CARD_CONFIG = [
   {
     id: 'equilibrio',
     kind: 'equilibrio',
-    ctaName: 'Melhor Equilibrio',
-    pill: 'Melhor Equilibrio',
+    ctaName: 'Melhor equilíbrio',
+    pill: 'Melhor equilíbrio',
     route: '/estrategia-combinada',
     state: { strategyType: 'novo contrato + economia' },
     note: 'Boa opcao para quem quer dinheiro na conta, parcela menor e prazo mantido.',
@@ -22,8 +25,8 @@ export const OFFER_CARD_CONFIG = [
   {
     id: 'folga',
     kind: 'folga',
-    ctaName: 'Mais Folga por Mes',
-    pill: 'Mais Folga por Mes',
+    ctaName: 'Mais folga por mês',
+    pill: 'Mais folga por mês',
     route: '/estrategia-combinada',
     state: { strategyType: 'refin + economia' },
     note: 'Boa opcao para quem quer aliviar o orcamento mensal sem receber um valor alto.',
@@ -74,7 +77,7 @@ export const OFFER_CARD_CONFIG = [
 export const MAX_API_CARDS = 3
 
 // IDs exibidos quando o mock de ofertas estiver ativo.
-export const DEFAULT_MOCK_OFFER_IDS = ['apenas_novo', 'apenas_refin', 'turbo']
+export const DEFAULT_MOCK_OFFER_IDS = ['apenas_novo', 'equilibrio', 'folga']
 
 export const THIRD_CARD_SUB_OFFERS = {
   contract: { label: 'No contrato', route: '/portabilidade' },

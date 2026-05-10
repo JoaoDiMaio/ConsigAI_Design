@@ -2,12 +2,12 @@ export const CARD_SELECTION = {
   transition: 'transform .18s ease, border-color .18s ease, box-shadow .18s ease',
   baseBorder: '#dbe6f7',
   hoverBorder: '#b8cef5',
-  selectedBorder: '#2454D6',
+  selectedBorder: 'rgba(0,231,255,.65)',
   baseShadow: 'none',
   hoverShadow: '0 12px 30px rgba(3,36,111,.09)',
-  selectedShadow: '0 12px 32px rgba(36,84,214,.14), 0 0 0 2px rgba(36,84,214,.12)',
-  hoverBackground: 'radial-gradient(circle at 92% 8%, rgba(36,84,214,.06), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)',
-  selectedBackground: 'radial-gradient(circle at 92% 8%, rgba(36,84,214,.10), transparent 34%), linear-gradient(180deg, #F4F9FF 0%, #FFFFFF 100%)',
+  selectedShadow: '0 0 0 3px rgba(0,231,255,.10)',
+  hoverBackground: 'radial-gradient(circle at 92% 8%, rgba(0,231,255,.06), transparent 34%), linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)',
+  selectedBackground: 'radial-gradient(circle at 92% 8%, rgba(0,231,255,.10), transparent 34%), linear-gradient(180deg, #F4FBFF 0%, #FFFFFF 100%)',
 }
 
 export function getSelectableCardStyle({ selected, hovered, baseBackground, hoverBackground, selectedBackground }) {

@@ -35,9 +35,9 @@ export const semanticColors = {
   errorSoft: '#FFF1F1',
   errorBorder: '#F1C2C2',
 
-  selectedBorder: '#2454D6',
-  selectedSoft: '#F4F9FF',
-  selectedHover: '#EAF4FF',
+  selectedBorder: '#00E7FF',
+  selectedSoft: '#F4FBFF',
+  selectedHover: '#E6FAFF',
 }
 
 export const colorDocumentation = [
@@ -247,7 +247,7 @@ export const shadow = {
   xxl: '0 20px 56px rgba(5,94,206,.13)',
   card: '0 8px 28px rgba(0,24,81,.09)',
   cardHover: '0 16px 48px rgba(3,36,111,.11)',
-  cardSelected: '0 20px 56px rgba(36,84,214,.14), 0 0 0 2px rgba(36,84,214,.12)',
+  cardSelected: '0 0 0 3px rgba(0,231,255,.10)',
   header: '0 8px 28px rgba(3,36,111,.22)',
   bottomBar: '0 -12px 36px rgba(3,36,111,.11)',
   green: '0 16px 40px rgba(0,122,82,.10)',

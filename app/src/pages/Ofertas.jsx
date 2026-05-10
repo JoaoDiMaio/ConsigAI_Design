@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DesktopPageHeader, MobilePageHeader } from '../components/AppHeader'
 import { useOffersData } from '../hooks/useOffersData.js'
-import { THIRD_CARD_SUB_OFFERS } from '../data/offersMock.js'
+import { THIRD_CARD_SUB_OFFERS, TURBO_LABEL_INSTALLMENT, TURBO_LABEL_CONTRACT } from '../data/offersMock.js'
 import { useMediaQuery } from '../hooks/useMediaQuery.js'
 import { loadProfileData } from '../lib/profileStorage.js'
 import { appPageStyle } from '../ui/theme.js'
@@ -17,8 +17,11 @@ import {
 import {
   RESPONSIVE_STYLES_CSS,
   OFFER_CARD_REDESIGN_CSS,
+  OFFER_CARD_BALANCED_LAYOUT_CSS,
+  WIDE_LAYOUT_CSS,
 } from '../styles/iframeOfertasStyles.js'
 import { brandNameHtml } from '../lib/brandNameHtml.js'
+import { buildOfferCardHtml } from '../lib/iframeCardBuilders.js'
 
 // ---------------------------------------------------------------------------
 // DOM cache helpers — necessários enquanto o HTML da oferta for um iframe externo
@@ -88,33 +91,16 @@ function normalizeTextNodesInDocument(doc) {
 // ---------------------------------------------------------------------------
 // Injeção de estilos no iframe
 // ---------------------------------------------------------------------------
-function applyResponsiveStyles(doc) {
-  if (!doc || doc.body?.dataset?.consigaiResponsiveStyleApplied) return
-  const styleEl = doc.createElement('style')
-  styleEl.textContent = RESPONSIVE_STYLES_CSS
-  doc.head?.appendChild(styleEl)
-  doc.body.dataset.consigaiResponsiveStyleApplied = '1'
+const TRANSPARENT_BG_CSS = `html, body, .main { background: transparent !important; }`
+
+function injectStyleOnce(doc, dataKey, css) {
+  if (!doc?.body || doc.body.dataset[dataKey]) return
+  const el = doc.createElement('style')
+  el.textContent = css
+  doc.head?.appendChild(el)
+  doc.body.dataset[dataKey] = '1'
 }
 
-function applyOfferCardRedesignStyles(doc) {
-  if (doc.body?.dataset?.consigaiOfferRedesignStyleApplied) return
-  const styleEl = doc.createElement('style')
-  styleEl.textContent = OFFER_CARD_REDESIGN_CSS
-  doc.head?.appendChild(styleEl)
-  doc.body.dataset.consigaiOfferRedesignStyleApplied = '1'
-}
-
-function applyIframeTransparentBackground(doc) {
-  if (doc.body?.dataset?.consigaiTransparentBgApplied) return
-  const styleEl = doc.createElement('style')
-  styleEl.textContent = `
-    html, body, .main {
-      background: transparent !important;
-    }
-  `
-  doc.head?.appendChild(styleEl)
-  doc.body.dataset.consigaiTransparentBgApplied = '1'
-}
 
 function buildContractState(entry, usuario, selectedThirdSubOffer) {
   if (!entry?.config || !entry?.data || !usuario) return null
@@ -167,10 +153,10 @@ function getTurboSubOfferSnapshot(entry, selectedThirdSubOffer, usuario) {
   const rawValue = benefitValue || (variantKey === 'installment' ? fallbackInstallment : fallbackContract)
   const displayValue = fmt(rawValue)
   const displayValueMonthly = variantKey === 'installment' ? `${displayValue}/mês` : displayValue
-  const ctaLabel = variant.ctaName || `Turbo Economia - ${variant.label || (variantKey === 'installment' ? 'Na parcela' : 'No contrato')}`
+  const ctaLabel = variant.ctaName || `Turbo Economia - ${variant.label || (variantKey === 'installment' ? TURBO_LABEL_INSTALLMENT : TURBO_LABEL_CONTRACT)}`
 
   return {
-    label: variant.label || (variantKey === 'installment' ? 'Na parcela' : 'No contrato'),
+    label: variant.label || (variantKey === 'installment' ? TURBO_LABEL_INSTALLMENT : TURBO_LABEL_CONTRACT),
     ctaLabel,
     benefitLabel: variant.benefitLabel || (variantKey === 'installment' ? 'Alívio mensal' : 'Economia no contrato'),
     benefitValue: rawValue,
@@ -211,8 +197,8 @@ function buildSelectedOfferSummary(entry, usuario, selectedThirdSubOffer) {
       : null
 
   if (config.id === 'turbo' && turboSnapshot) {
-    primaryLabel = turboSnapshot.label === 'Na parcela' ? 'Alívio mensal' : 'Economia no contrato'
-    primaryValue = turboSnapshot.label === 'Na parcela'
+    primaryLabel = turboSnapshot.label === TURBO_LABEL_INSTALLMENT ? 'Alívio mensal' : 'Economia no contrato'
+    primaryValue = turboSnapshot.label === TURBO_LABEL_INSTALLMENT
       ? turboSnapshot.benefitDisplayMonthly
       : turboSnapshot.benefitDisplay
   } else if (config.id === 'equilibrio' || config.id === 'folga' || config.id === 'apenas_novo' || config.id === 'apenas_refin') {
@@ -225,7 +211,7 @@ function buildSelectedOfferSummary(entry, usuario, selectedThirdSubOffer) {
   if (config.id === 'equilibrio') operationType = 'Combinação entre dinheiro na conta e economia'
   if (config.id === 'folga') operationType = 'Operação com foco em reduzir a parcela mensal'
   if (config.id === 'turbo') {
-    operationType = turboSnapshot?.label === 'Na parcela'
+    operationType = turboSnapshot?.label === TURBO_LABEL_INSTALLMENT
       ? 'Estratégia focada em aliviar a parcela mensal'
       : 'Estratégia focada em economizar no contrato'
   }
@@ -291,7 +277,7 @@ function calcImpactValues(selectedEntry, usuario, impacto, selectedThirdSubOffer
 }
 
 function applyTurboLabels(baSection, baPill, ctaSavingLabel, turboSnapshot) {
-  const isParc = turboSnapshot.label === 'Na parcela'
+  const isParc = turboSnapshot.label === TURBO_LABEL_INSTALLMENT
   const gainPrimary = baSection.querySelector('[data-label="gainPrimary"]')
   const gainSecondary = baSection.querySelector('[data-label="gainSecondary"]')
   if (gainPrimary) gainPrimary.textContent = isParc ? 'Alívio mensal' : 'Economia no contrato'
@@ -585,17 +571,17 @@ function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario, selected
   if (turboSnapshot) {
     const turboValue = turboSnapshot.benefitDisplay
     if (heroEco) heroEco.textContent = turboValue
-    if (heroEco) heroEco.dataset.benefitKind = turboSnapshot.label === 'Na parcela' ? 'monthly' : 'total'
-    if (heroEcoLabel) heroEcoLabel.textContent = turboSnapshot.label === 'Na parcela'
+    if (heroEco) heroEco.dataset.benefitKind = turboSnapshot.label === TURBO_LABEL_INSTALLMENT ? 'monthly' : 'total'
+    if (heroEcoLabel) heroEcoLabel.textContent = turboSnapshot.label === TURBO_LABEL_INSTALLMENT
       ? 'Economia mensal'
       : 'Economia total'
     if (ctaSaving) ctaSaving.textContent = `+${turboValue}`
-    if (ctaSaving) ctaSaving.dataset.benefitKind = turboSnapshot.label === 'Na parcela' ? 'monthly' : 'total'
-    if (ctaSavingLabel) ctaSavingLabel.textContent = turboSnapshot.label === 'Na parcela'
+    if (ctaSaving) ctaSaving.dataset.benefitKind = turboSnapshot.label === TURBO_LABEL_INSTALLMENT ? 'monthly' : 'total'
+    if (ctaSavingLabel) ctaSavingLabel.textContent = turboSnapshot.label === TURBO_LABEL_INSTALLMENT
       ? 'de economia mensal'
       : 'de economia no contrato'
     if (heroSub) {
-      heroSub.textContent = turboSnapshot.label === 'Na parcela'
+      heroSub.textContent = turboSnapshot.label === TURBO_LABEL_INSTALLMENT
         ? 'Turbo Economia focado em aliviar sua parcela.'
         : 'Turbo Economia focado em economizar no contrato.'
     }
@@ -604,321 +590,6 @@ function applyUnifiedParcelaHoje(cacheRef, doc, selectedEntry, usuario, selected
 
   const todayDeduct = getCachedNode(cacheRef, doc, 'todayDeduct', '.ba-col.today .ba-row-val.deduct')
   if (todayDeduct) todayDeduct.textContent = parcelaHoje
-
-  const oldValuesInCards = getCachedNodeList(cacheRef, doc, 'oldValuesInCards', '.offers-grid .offer-val-num.old')
-  oldValuesInCards.forEach((el) => { el.textContent = parcelaHoje })
-
-  // Esconder marcadores de seta entre valor antigo e novo nos cards
-  const arrowSpans = getCachedNodeList(cacheRef, doc, 'arrowSpans', '.offers-grid .offer-val-block span')
-  arrowSpans.forEach((el) => {
-    const raw = (el.textContent || '').trim()
-    // Setas legadas do HTML do iframe — sem classe CSS disponível para override
-    if (raw === '?' || raw === '→' || raw === '->') el.style.display = 'none'
-  })
-}
-
-// ---------------------------------------------------------------------------
-// Renderização dos cards de oferta no grid do iframe
-// ---------------------------------------------------------------------------
-
-// -- Shell helpers --
-
-function cardShell(type, idx, inner, extraClass = '') {
-  return `<div class="offer-card ${type}-offer${extraClass ? ` ${extraClass}` : ''}" id="oc${idx}" role="button" tabindex="0" aria-selected="false">
-    <div class="consigai-offer-card ${type}-shell">
-      <span class="consigai-hidden-state-badge badge pick" id="badge${idx}">Escolher</span>
-      ${inner}
-    </div>
-  </div>`
-}
-
-function recommendationBadge(label = 'Recomendado') {
-  return `<span class="consigai-offer-badge-rec consigai-offer-badge-rec--recommended">${label}</span>`
-}
-
-function cardHeader(type, iconHtml, title, subtitle, badge = '') {
-  return `<div class="${type}-header">
-    <div class="${type}-title">
-      <div class="${type}-icon" aria-hidden="true">${iconHtml}</div>
-      <div><strong>${title}</strong><span>${subtitle}</span></div>
-    </div>
-    ${badge}
-  </div>`
-}
-
-function cardNote(type, icon, text) {
-  return `<div class="${type}-note"><span class="${type}-note-icon">${icon}</span><p>${text}</p></div>`
-}
-
-function cardDetailsBtn(type, label = 'Ver condições') {
-  return `<div class="consigai-offer-actions ${type}-actions">
-    <button type="button" class="consigai-offer-details-btn ${type}-details-button">${label}</button>
-  </div>`
-}
-
-function cardSimNote() {
-  return '<span class="consigai-offer-sim-note">Simulação sem compromisso</span>'
-}
-
-// -- SVG icons --
-
-function svgEquilibrio(idx) {
-  const g = `blueGradient-${idx}`
-  const grad = `<linearGradient id="${g}" x1="34" y1="20" x2="94" y2="108" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#00E7FF"/><stop offset="0.42" stop-color="#1DA1EB"/><stop offset="0.72" stop-color="#1878DE"/><stop offset="1" stop-color="#055ECE"/></linearGradient>`
-  const paths = [
-    ['M64 24V91', 12, 8], ['M34 42H94', 12, 8], ['M46 96H82', 12, 8],
-    ['M45 42L31 72', 10, 6], ['M45 42L59 72', 10, 6], ['M28 72H62', 10, 6],
-    ['M83 42L69 72', 10, 6], ['M83 42L97 72', 10, 6], ['M66 72H100', 10, 6],
-  ].map(([d, sw, sw2]) =>
-    `<path d="${d}" stroke="#000" stroke-width="${sw}" stroke-linecap="round"/>` +
-    `<path d="${d}" stroke="url(#${g})" stroke-width="${sw2}" stroke-linecap="round"/>`
-  ).join('')
-  return `<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg"><defs>${grad}</defs>${paths}</svg>`
-}
-
-function svgFolga(idx) {
-  const b = `folgaBlue-${idx}`
-  const gr = `folgaGreen-${idx}`
-  return `<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="${b}" x1="28" y1="20" x2="100" y2="104" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#00E7FF"/><stop offset="0.42" stop-color="#1DA1EB"/><stop offset="1" stop-color="#055ECE"/></linearGradient>
-      <linearGradient id="${gr}" x1="46" y1="88" x2="82" y2="56" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#007A52"/><stop offset="1" stop-color="#22C987"/></linearGradient>
-    </defs>
-    <rect x="25" y="30" width="78" height="78" rx="20" fill="#F8FBFF" stroke="#000" stroke-width="6"/>
-    <path d="M25 52V46C25 37.2 32.2 30 41 30H87C95.8 30 103 37.2 103 46V52H25Z" fill="url(#${b})" stroke="#000" stroke-width="6" stroke-linejoin="round"/>
-    <path d="M47 21V38" stroke="#000" stroke-width="11" stroke-linecap="round"/>
-    <path d="M81 21V38" stroke="#000" stroke-width="11" stroke-linecap="round"/>
-    <path d="M47 21V38" stroke="url(#${b})" stroke-width="6" stroke-linecap="round"/>
-    <path d="M81 21V38" stroke="url(#${b})" stroke-width="6" stroke-linecap="round"/>
-    <path d="M40 64H88" stroke="#DDE8F6" stroke-width="4" stroke-linecap="round"/>
-    <circle cx="45" cy="76" r="3.8" fill="#DDE8F6"/><circle cx="64" cy="76" r="3.8" fill="#DDE8F6"/><circle cx="83" cy="76" r="3.8" fill="#DDE8F6"/>
-    <circle cx="45" cy="92" r="3.8" fill="#DDE8F6"/><circle cx="83" cy="92" r="3.8" fill="#DDE8F6"/>
-    <path d="M64 58V92" stroke="#000" stroke-width="12" stroke-linecap="round"/>
-    <path d="M64 58V92" stroke="url(#${gr})" stroke-width="8" stroke-linecap="round"/>
-    <path d="M49 77L64 93L79 77" stroke="#000" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M49 77L64 93L79 77" stroke="url(#${gr})" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>`
-}
-
-function svgNovo() {
-  return `<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs><linearGradient id="consigaiGradient" x1="30" y1="18" x2="96" y2="112" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#00E7FF"/><stop offset="0.38" stop-color="#1DA1EB"/><stop offset="0.72" stop-color="#1878DE"/><stop offset="1" stop-color="#055ECE"/></linearGradient></defs>
-    <path d="M64 12C68.1 12 71.4 15.3 71.4 19.4V108.6C71.4 112.7 68.1 116 64 116C59.9 116 56.6 112.7 56.6 108.6V19.4C56.6 15.3 59.9 12 64 12Z" fill="url(#consigaiGradient)" stroke="#000" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M92.6 30.4C84.7 23.4 74.1 19.6 62.5 19.6C42.6 19.6 28.6 30.1 28.6 45.5C28.6 61.9 41.3 68.1 60.3 71.8L72.3 74.1C82.4 76.1 87.4 79.4 87.4 85.5C87.4 93.1 79.4 98.2 66.7 98.2C53.4 98.2 42.1 93.7 33.7 86.1C30.6 83.3 25.9 83.6 23.1 86.7C20.3 89.8 20.6 94.5 23.7 97.3C35.2 107.7 50.3 113.2 66.7 113.2C87.7 113.2 102.7 102.3 102.7 85.1C102.7 68.5 91.1 61.2 74.6 58L62.2 55.6C50.2 53.3 43.9 50.2 43.9 44.7C43.9 38.1 51.3 33.9 62.5 33.9C70.6 33.9 77.5 36.3 82.6 40.8C85.7 43.6 90.4 43.3 93.2 40.2C96 37.1 95.7 33.1 92.6 30.4Z" fill="url(#consigaiGradient)" stroke="#000" stroke-width="3" stroke-linejoin="round"/>
-  </svg>`
-}
-
-function svgRefin(idx) {
-  const b = `refinBlue-${idx}`
-  const d = `refinDark-${idx}`
-  return `<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="${b}" x1="22" y1="18" x2="106" y2="112" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#00E7FF"/><stop offset="0.42" stop-color="#1DA1EB"/><stop offset="0.72" stop-color="#1878DE"/><stop offset="1" stop-color="#055ECE"/></linearGradient>
-      <linearGradient id="${d}" x1="30" y1="108" x2="98" y2="18" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#03246F"/><stop offset="0.48" stop-color="#055ECE"/><stop offset="1" stop-color="#00E7FF"/></linearGradient>
-    </defs>
-    <circle cx="64" cy="64" r="54" fill="#FFFFFF"/>
-    <path d="M95.6 38.4C87.8 28.9 76.1 23 63.2 23C42.7 23 25.8 37.8 22.4 57.2" stroke="#000" stroke-width="13" stroke-linecap="round"/>
-    <path d="M95.6 38.4C87.8 28.9 76.1 23 63.2 23C42.7 23 25.8 37.8 22.4 57.2" stroke="url(#${b})" stroke-width="9" stroke-linecap="round"/>
-    <path d="M93.8 24.8L98.4 39.8L82.9 41.9" stroke="#000" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M93.8 24.8L98.4 39.8L82.9 41.9" stroke="url(#${b})" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M32.4 89.6C40.2 99.1 51.9 105 64.8 105C85.3 105 102.2 90.2 105.6 70.8" stroke="#000" stroke-width="13" stroke-linecap="round"/>
-    <path d="M32.4 89.6C40.2 99.1 51.9 105 64.8 105C85.3 105 102.2 90.2 105.6 70.8" stroke="url(#${d})" stroke-width="9" stroke-linecap="round"/>
-    <path d="M34.2 103.2L29.6 88.2L45.1 86.1" stroke="#000" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M34.2 103.2L29.6 88.2L45.1 86.1" stroke="url(#${d})" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-    <rect x="42" y="34" width="44" height="60" rx="10" fill="#F4F8FF" stroke="#000" stroke-width="3"/>
-    <path d="M54 50H74" stroke="#000" stroke-width="6" stroke-linecap="round"/>
-    <path d="M54 50H74" stroke="#055ECE" stroke-width="4" stroke-linecap="round"/>
-    <path d="M54 62H72" stroke="#000" stroke-width="6" stroke-linecap="round" opacity="0.9"/>
-    <path d="M54 62H72" stroke="#1878DE" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
-    <path d="M54 74H66" stroke="#000" stroke-width="6" stroke-linecap="round" opacity="0.9"/>
-    <path d="M54 74H66" stroke="#1DA1EB" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
-  </svg>`
-}
-
-// -- Card builders --
-
-function buildTurboCard(cfg, offer, idx, usuario, selectedThirdSubOffer) {
-  const economiaContrato = `<span class="turbo-value turbo-value-total">${fmt(offer.economiaContrato ?? offer.economiaTotal ?? 0)}</span>`
-  const economiaParcela = `${fmt(offer.economiaParcela ?? getEcoMensal(offer, usuario.parcelaAtual))}<span class="turbo-suffix">/mês</span>`
-  const sel = selectedThirdSubOffer === 'installment' ? 'installment' : 'contract'
-  const opt = (key, label, val, sub) => {
-    const active = sel === key
-    return `<button type="button" class="consigai-offer-mini-card turbo-option option${active ? ' active is-selected' : ''}" data-suboffer="${key}" role="button" tabindex="0" aria-pressed="${active}">
-      <span class="option-label">${label}</span>
-      <strong>${val}</strong>
-      <small>${sub}</small>
-    </button>`
-  }
-  return cardShell('turbo', idx, `
-    <div class="turbo-module-header">
-      <div class="turbo-module-title">
-        <img class="turbo-module-logo" src="/ConsigIA_logo_only_no_background.svg" alt="" aria-hidden="true" />
-        <div><strong>${cfg.ctaName || cfg.pill || 'Turbo Economia'}</strong><span>${cfg.subtitle || 'Foco em pagar menos'}</span></div>
-      </div>
-    </div>
-    <div class="turbo-body">
-      <h2 class="turbo-heading"><span class="turbo-heading-blue">Escolha onde quer</span><span class="turbo-heading-green">Economizar</span></h2>
-      <p class="turbo-intro">A ${brandNameHtml()} mostra dois caminhos para reduzir o custo do seu consignado com clareza.</p>
-      <div class="turbo-options">
-        ${opt('contract', 'No contrato', economiaContrato, 'Economia total estimada')}
-        ${opt('installment', 'Na parcela', economiaParcela, 'Redução mensal estimada')}
-      </div>
-      <div class="consigai-offer-note turbo-note"><span class="note-icon" aria-hidden="true">✓</span><p>Boa opção para reduzir o custo do contrato sem contratar novo crédito.</p></div>
-      ${cardDetailsBtn('turbo')}
-    </div>
-  `)
-}
-
-function buildEquilibrioCard(offer, idx, usuario, isRecommended) {
-  const valorNaConta = fmt(offer.creditoReceber ?? 0)
-  const economiaNosContratos = fmt(offer.economiaTotal ?? (getEcoMensal(offer, usuario.parcelaAtual) * 12))
-  const badge = isRecommended ? '<div class="equilibrio-status">★ Recomendado</div>' : ''
-  return cardShell('equilibrio', idx, `
-    ${cardHeader('equilibrio', svgEquilibrio(idx), 'Melhor equilíbrio', 'Mais equilíbrio para decidir', badge)}
-    <div class="equilibrio-body">
-      <h2 class="equilibrio-heading">Receba dinheiro e <span>Economize</span></h2>
-      <p class="equilibrio-intro">Boa opção para combinar dinheiro na conta com economia no contrato.</p>
-      <div class="equilibrio-benefit-grid">
-        <div class="equilibrio-benefit money">
-          <span class="equilibrio-benefit-label">Na conta</span>
-          <strong>${valorNaConta}</strong>
-          ${cardSimNote()}
-          <small>valor estimado liberado</small>
-        </div>
-        <div class="equilibrio-benefit economy">
-          <span class="equilibrio-benefit-label">Nos contratos</span>
-          <strong>${economiaNosContratos}</strong>
-          ${cardSimNote()}
-          <small>economia estimada</small>
-        </div>
-      </div>
-      ${cardNote('equilibrio', '✓', 'Recomendado por equilibrar dinheiro na conta, economia e prazo mantido.')}
-      ${cardDetailsBtn('equilibrio')}
-    </div>
-  `)
-}
-
-function buildFolgaCard(offer, idx, usuario) {
-  const valorNaConta = fmt(offer.creditoReceber ?? 0)
-  const parcelaNova = getParcelaNova(offer, usuario.parcelaAtual)
-  return cardShell('folga', idx, `
-    ${cardHeader('folga', svgFolga(idx), 'Mais folga por mês', 'Mais espaço no orçamento')}
-    <div class="folga-body">
-      <h2 class="folga-heading">Receba dinheiro e <span>Reduza a Parcela</span></h2>
-      <p class="folga-intro">Boa opção para ganhar fôlego mensal com parcela menor e dinheiro na conta.</p>
-      <div class="folga-highlight-grid">
-        <div class="folga-highlight money">
-          <small>Na conta</small>
-          <strong>${valorNaConta}</strong>
-          ${cardSimNote()}
-          <span>valor estimado liberado</span>
-        </div>
-        <div class="folga-highlight installment">
-          <small>Nova parcela estimada</small>
-          <strong>${parcelaNova}</strong>
-          ${cardSimNote()}
-          <span>menor impacto mensal</span>
-        </div>
-      </div>
-      ${cardNote('folga', '✓', 'Indicada para aliviar o orçamento mensal, com dinheiro na conta e parcela reduzida.')}
-      ${cardDetailsBtn('folga')}
-    </div>
-  `)
-}
-
-function buildNovoCard(offer, idx, isRecommended) {
-  const valorEstimado = fmt(offer.creditoReceber ?? 0)
-  return cardShell('new-contract', idx, `
-    ${cardHeader('new-contract', svgNovo(), 'Novo Contrato', 'Crédito novo com clareza', isRecommended ? recommendationBadge() : '')}
-    <div class="new-contract-body">
-      <h2 class="new-contract-heading">Receba dinheiro <span>na sua conta</span></h2>
-      <p class="card-plain-intro">Oferta focada em liberar valor novo, com parcela clara e condições visíveis antes de continuar.</p>
-      <div class="new-contract-highlight">
-        <small>Valor estimado disponível</small>
-        <strong>${valorEstimado}</strong>
-        <span>Simulação sem compromisso</span>
-      </div>
-      ${cardNote('new-contract', 'i', 'Usa margem livre. Taxa, custo total, prazo e parcela aparecem antes da confirmação.')}
-      ${cardDetailsBtn('new-contract')}
-    </div>
-  `, isRecommended ? 'recommended' : '')
-}
-
-function buildRefinCard(offer, idx) {
-  const valorEstimado = fmt(offer.creditoReceber ?? 0)
-  return cardShell('refin', idx, `
-    ${cardHeader('refin', svgRefin(idx), 'Refinanciamento', 'Ajuste o contrato atual')}
-    <div class="refin-body">
-      <h2 class="refin-heading"><span>Dinheiro ajustando seu</span><span class="refin-heading-light">contrato</span></h2>
-      <p class="card-plain-intro">Use um contrato existente para liberar valor com comparação clara de prazo, parcela e custo total.</p>
-      <div class="refin-highlight">
-        <small>Valor estimado disponível</small>
-        <strong>${valorEstimado}</strong>
-        <span>Simulação sem compromisso</span>
-      </div>
-      ${cardNote('refin', 'i', 'Altera seus contratos ativos. Você verá taxa, parcelas e condições antes de confirmar.')}
-      ${cardDetailsBtn('refin')}
-    </div>
-  `)
-}
-
-function buildGenericCard(cfg, offer, idx, usuario, isRecommended) {
-  const moneyValue = fmt(offer.creditoReceber ?? 0)
-  const isSimple = cfg.kind === 'simples'
-
-  let totalLabel = 'Parcela estimada em'
-  let totalValue = getParcelaNova(offer, usuario.parcelaAtual)
-  let metricLabel = 'Economia de'
-  let metricValue = `${fmt(getEcoMensal(offer, usuario.parcelaAtual))}/mês`
-
-  if (cfg.id === 'alto imp') {
-    totalLabel = 'Economize nos Contratos'
-    totalValue = fmt(offer.economiaTotal ?? (getEcoMensal(offer, usuario.parcelaAtual) * 12))
-    metricLabel = 'Parcela nova'
-    metricValue = getParcelaNova(offer, usuario.parcelaAtual)
-  } else if (isSimple) {
-    metricLabel = 'Parcela'
-    metricValue = getParcelaNova(offer, usuario.parcelaAtual)
-  }
-
-  const isSimpleContract = cfg.id === 'apenas_novo' || cfg.id === 'apenas_refin'
-  const miniLabelSecond = isSimpleContract ? 'Qtd Parcelas' : metricLabel
-  const miniValueSecond = isSimpleContract ? String(offer.qtdParcelas ?? '—') : metricValue
-
-  return `
-    <div class="offer-card${isSimple ? ' simple-offer' : ''}" id="oc${idx}" role="button" tabindex="0" aria-selected="false">
-      <div class="consigai-offer-card">
-        <span class="consigai-hidden-state-badge badge pick" id="badge${idx}">Escolher</span>
-        ${isRecommended
-          ? `<div class="consigai-offer-title-row"><span class="consigai-offer-pill">${cfg.pill}</span><div class="consigai-offer-head-badges"><span class="consigai-offer-badge-rec">Recomendada</span></div></div>`
-          : `<div class="consigai-offer-head"></div><span class="consigai-offer-pill">${cfg.pill}</span>`}
-        <div class="consigai-offer-lines">
-          <div class="consigai-offer-line">
-            <span class="consigai-offer-line-main blue">Receba ${moneyValue}</span>
-            <span class="consigai-offer-line-helper">na sua conta</span>
-          </div>
-          ${!isSimple ? `<div class="consigai-offer-line"><span class="consigai-offer-line-main consigai-offer-total-stack"><span class="consigai-offer-total-label"><span class="consigai-offer-word-orange">${totalLabel}</span></span><span class="consigai-offer-value-green">${totalValue}</span></span></div>` : ''}
-        </div>
-        ${isSimple ? `<div class="consigai-offer-mini-grid"><div class="consigai-offer-mini-card"><span class="consigai-offer-mini-label">${metricLabel}</span><span class="consigai-offer-mini-value">${metricValue}${cardSimNote()}</span></div><div class="consigai-offer-mini-card"><span class="consigai-offer-mini-label">${miniLabelSecond}</span><span class="consigai-offer-mini-value">${miniValueSecond}${cardSimNote()}</span></div></div>` : ''}
-        ${!isSimple ? cardSimNote() : ''}
-        <div class="consigai-offer-note"><span class="consigai-offer-note-text"><span class="consigai-offer-note-sub">${cfg.note}</span></span></div>
-        <div class="consigai-offer-actions generic-actions">
-          <button type="button" class="consigai-offer-details-btn generic-details-button">Ver condições</button>
-          <p style="margin: 4px 0 0; font-size: 11px; color: #64748B; text-align: center; font-weight: 600;">Simulação sem compromisso</p>
-        </div>
-      </div>
-    </div>
-  `
-}
-
-function buildOfferCardHtml(entry, idx, usuario, selectedThirdSubOffer) {
-  const { config: cfg, data: offer, isRecommended } = entry
-  if (cfg.id === 'turbo')      return buildTurboCard(cfg, offer, idx, usuario, selectedThirdSubOffer)
-  if (cfg.id === 'equilibrio') return buildEquilibrioCard(offer, idx, usuario, isRecommended)
-  if (cfg.id === 'folga')      return buildFolgaCard(offer, idx, usuario)
-  if (cfg.id === 'apenas_novo') return buildNovoCard(offer, idx, isRecommended)
-  if (cfg.id === 'apenas_refin') return buildRefinCard(offer, idx)
-  return buildGenericCard(cfg, offer, idx, usuario, isRecommended)
 }
 
 function upsertOfferCardsRedesign(cacheRef, doc, activeOffers, selectedOfferIndexRef, usuario, selectedThirdSubOffer) {
@@ -955,10 +626,7 @@ function upsertOfferCardsRedesign(cacheRef, doc, activeOffers, selectedOfferInde
   }
 
   const cardsHtml = activeOffers
-    .map((entry, idx) => buildOfferCardHtml({
-      ...entry,
-      isRecommended: entry.isRecommended || (!activeOffers.some((item) => item.isRecommended) && idx === 0),
-    }, idx, usuario, selectedThirdSubOffer))
+    .map((entry, idx) => buildOfferCardHtml(entry, idx, usuario, selectedThirdSubOffer))
     .join('')
 
   if (offersGrid.innerHTML !== cardsHtml) {
@@ -1071,235 +739,10 @@ const OFFER_UX_MAP = {
                  warning: 'Pode alterar prazo e custo total. Você verá as condições antes de confirmar.' },
 }
 
-const WIDE_LAYOUT_CSS = `
-  .offers-desktop-layout {
-    width: min(1680px, calc(100% - 48px));
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 250px minmax(0, 1fr) 250px;
-    gap: 22px;
-    align-items: start;
-  }
-  .offers-center-content { min-width: 0; }
-  .offers-left-rail, .offers-right-rail {
-    position: sticky;
-    top: 96px;
-    display: grid;
-    gap: 16px;
-  }
-  .side-blue-card {
-    padding: 22px; border-radius: 28px; color: white;
-    background:
-      radial-gradient(circle at 88% 10%, rgba(0,231,255,0.20), transparent 34%),
-      linear-gradient(145deg, #06184E 0%, #03246F 54%, #055ECE 100%);
-    border: 1px solid rgba(0,231,255,0.20);
-    box-shadow: 0 24px 68px rgba(3,36,111,0.14);
-    overflow: hidden; position: relative;
-  }
-  .decision-guide-card {
-    min-height: 756px;
-    height: 756px;
-    display: flex;
-    flex-direction: column;
-  }
-  .decision-guide-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: rgba(0, 168, 107, .12);
-    border: 1px solid rgba(0, 168, 107, .18);
-    color: #A8FFF0;
-    font-size: 10px;
-    font-weight: 950;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-  }
-  .side-blue-card::after {
-    content: ""; position: absolute;
-    width: 240px; height: 240px; right: -130px; bottom: -130px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(0,231,255,0.20), transparent 64%);
-  }
-  .side-blue-card > * { position: relative; z-index: 1; }
-  .side-kicker {
-    display: inline-flex; align-items: center; gap: 7px;
-    padding: 7px 10px; border-radius: 999px;
-    background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.16);
-    color: #DDE8F6; font-size: 10px; font-weight: 950;
-    text-transform: uppercase; letter-spacing: .08em;
-  }
-  .side-kicker::before {
-    content: ""; width: 7px; height: 7px; border-radius: 50%;
-    background: #00E7FF; box-shadow: 0 0 10px rgba(0,231,255,.9);
-  }
-  .side-blue-card h2 {
-    margin-top: 18px; color: white;
-    font-size: 27px; line-height: .98; font-weight: 950; letter-spacing: -0.06em;
-  }
-  .side-blue-card h2 span { color: #00A86B; }
-  .side-blue-card p {
-    margin-top: 12px; color: rgba(255,255,255,.76);
-    font-size: 12.5px; line-height: 1.45; font-weight: 650;
-  }
-  .choose-list { display: grid; gap: 10px; margin-top: 18px; }
-  .decision-guide-card .choose-list {
-    flex: 1;
-    align-content: start;
-  }
-  .choose-row {
-    display: flex; gap: 10px; padding: 11px; border-radius: 16px;
-    background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.14);
-  }
-  .choose-icon {
-    width: 28px; height: 28px; flex: 0 0 auto;
-    display: grid; place-items: center;
-  }
-  .choose-label {
-    display: block; margin-bottom: 2px;
-    color: rgba(255,255,255,.50); font-size: 9px; font-weight: 950;
-    text-transform: uppercase; letter-spacing: .08em;
-  }
-  .choose-row strong { display: block; color: white; font-size: 12px; font-weight: 950; }
-  .choose-row span {
-    display: block; margin-top: 3px; color: rgba(255,255,255,.70);
-    font-size: 10.5px; line-height: 1.25; font-weight: 650;
-  }
-  .guide-footer {
-    margin-top: 16px; padding: 12px 14px; border-radius: 16px;
-    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
-  }
-  .decision-guide-card .guide-footer {
-    margin-top: auto;
-  }
-  .guide-footer strong {
-    display: block; color: white; font-size: 11.5px; font-weight: 950;
-  }
-  .guide-footer span {
-    display: block; margin-top: 3px; color: rgba(255,255,255,.65);
-    font-size: 10.5px; line-height: 1.3; font-weight: 650;
-  }
-  .side-white-card, .sticky-summary {
-    padding: 20px; border-radius: 26px;
-    background:
-      radial-gradient(circle at 92% 8%, rgba(0,231,255,0.09), transparent 34%),
-      linear-gradient(180deg, rgba(255,255,255,.98) 0%, #FFFFFF 100%);
-    border: 1px solid #DDE8F6; box-shadow: 0 16px 38px rgba(3,36,111,0.09);
-  }
-  .sticky-summary {
-    min-height: 520px;
-    height: 520px;
-    display: flex;
-    flex-direction: column;
-  }
-  .side-white-card h3, .sticky-summary h3 {
-    color: #03246F; font-size: 15px; font-weight: 950;
-    text-transform: uppercase; letter-spacing: .02em;
-  }
-  .side-white-card > p, .sticky-summary > p {
-    margin-top: 6px; color: #64748B; font-size: 12px; line-height: 1.35; font-weight: 650;
-  }
-  .trust-mini-list { display: grid; gap: 10px; margin-top: 14px; }
-  .trust-mini {
-    display: flex; gap: 9px; align-items: flex-start; padding: 10px;
-    border-radius: 15px; background: #F4F8FF; border: 1px solid #DDE8F6;
-  }
-  .trust-mini b {
-    width: 20px; height: 20px; flex: 0 0 auto; border-radius: 50%;
-    display: grid; place-items: center;
-    background: #E9F8F1; border: 1px solid #BDECD7; color: #007A52; font-size: 11px;
-  }
-  .trust-mini strong { display: block; color: #03246F; font-size: 11.5px; font-weight: 950; }
-  .trust-mini span {
-    display: block; margin-top: 2px; color: #64748B;
-    font-size: 10.5px; line-height: 1.25; font-weight: 650;
-  }
-  .consigai-offer-sim-note {
-    display: block;
-    margin-top: 4px;
-    color: #64748B;
-    font-size: 10px;
-    line-height: 1.2;
-    font-weight: 800;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-  }
-  .summary-highlight {
-    margin-top: 14px; padding: 16px; border-radius: 20px;
-    background:
-      radial-gradient(circle at 92% 8%, rgba(0,231,255,0.12), transparent 34%),
-      linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%);
-    border: 1px solid rgba(0,231,255,.32);
-    display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
-    min-height: 72px;
-  }
-  .summary-highlight small {
-    color: #055ECE; font-size: 10px; font-weight: 950;
-    letter-spacing: .08em; text-transform: uppercase;
-  }
-  .summary-highlight strong {
-    display: block; margin-top: 6px; color: #03246F;
-    font-size: 17px; font-weight: 950; line-height: 1.1;
-  }
-  .summary-list {
-    display: grid;
-    grid-template-rows: 46px 46px 46px 78px 112px;
-    margin-top: 12px;
-    flex: 1;
-    align-content: start;
-  }
-  .summary-row {
-    display: flex; justify-content: space-between; gap: 12px;
-    padding: 8px 0; border-bottom: 1px solid #DDE8F6;
-    color: #64748B; font-size: 12px; font-weight: 800;
-    min-height: 0;
-    align-items: center;
-  }
-  .summary-row-stack {
-    display: grid;
-    gap: 4px;
-    align-content: start;
-    padding-top: 10px;
-  }
-  .summary-row:last-child { border-bottom: 0; }
-  .summary-row strong { color: #03246F; font-weight: 950; text-align: right; }
-  .summary-row-stack strong { text-align: left; line-height: 1.35; }
-  .summary-row.green strong { color: #007A52; }
-  .summary-cta {
-    width: 100%; min-height: 52px; margin-top: 16px; border: 0; border-radius: 17px;
-    background: linear-gradient(145deg, #055ECE, #03246F); color: white;
-    font-weight: 950; font-size: 14px; font-family: inherit; cursor: pointer;
-    box-shadow: 0 18px 38px rgba(5,94,206,.22);
-  }
-  .summary-warning {
-    margin-top: 12px; padding: 11px 12px; border-radius: 14px;
-    background: #F4F8FF; border: 1px solid #DDE8F6;
-    color: #64748B; font-size: 11px; line-height: 1.35; font-weight: 650;
-  }
-  .side-blue-card.compact { padding: 20px; }
-  .side-blue-card.compact h2 { font-size: 24px; }
-  .summary-secondary {
-    width: 100%; min-height: 48px; margin-top: 10px; border-radius: 16px;
-    border: 1px solid #BFD4F6; background: #FFFFFF; color: #055ECE;
-    font-weight: 950; font-size: 14px; font-family: inherit; cursor: pointer;
-  }
-  @media (max-width: 1500px) {
-    .offers-desktop-layout { grid-template-columns: minmax(0, 1fr) 250px; }
-    .offers-left-rail { display: none; }
-  }
-  @media (max-width: 1100px) {
-    .offers-desktop-layout { display: block; width: 100%; }
-    .offers-left-rail, .offers-right-rail { display: none; }
-  }
-`
-
 function DecisionGuideCard() {
   return (
     <section className="side-blue-card decision-guide-card">
       <div className="side-kicker">Guia ConsigAI</div>
-      <span className="decision-guide-badge">Consulta gratuita</span>
       <h2>Como escolher sua <span>oferta</span></h2>
       <p>Em três passos simples, compare prioridade, impacto no bolso e condições antes de avançar.</p>
       <div className="choose-list">
@@ -1484,6 +927,13 @@ export default function Ofertas() {
   const usuarioRef = useRef(usuario)
   const impactoRef = useRef(impacto)
 
+  const handleContractNavigation = useCallback(() => {
+    const selected = activeOffersRef.current[selectedOfferIndexRef.current]
+    if (!selected) return
+    const contractState = buildContractState(selected, usuarioRef.current, selectedThirdSubOfferRef.current)
+    navigate('/contratacao', contractState ? { state: contractState } : undefined)
+  }, [navigate])
+
   useEffect(() => {
     const iframe = iframeRef.current
     if (!iframe) return
@@ -1584,9 +1034,9 @@ export default function Ofertas() {
       if (!frameDoc) return
       if (!getCachedNode(docQueryCacheRef, frameDoc, 'offersGrid', '.offers-grid')) return
 
-      applyResponsiveStyles(frameDoc)
-      applyOfferCardRedesignStyles(frameDoc)
-      applyIframeTransparentBackground(frameDoc)
+      injectStyleOnce(frameDoc, 'consigaiResponsiveStyleApplied', RESPONSIVE_STYLES_CSS)
+      injectStyleOnce(frameDoc, 'consigaiOfferRedesignStyleApplied', OFFER_CARD_REDESIGN_CSS)
+      injectStyleOnce(frameDoc, 'consigaiTransparentBgApplied', TRANSPARENT_BG_CSS)
       applyAllBridgeUpdates(frameDoc, activeOffersRef.current, getSelectedEntry())
 
       if (!frameDoc.body?.dataset?.consigaiCurrencyObserverAttached) {
@@ -1608,6 +1058,8 @@ export default function Ofertas() {
         frameDoc.body.style.boxSizing = 'border-box'
         frameDoc.body.dataset.consigaiIframeHeaderOffsetApplied = '1'
       }
+
+      injectStyleOnce(frameDoc, 'consigaiOfferBalancedLayoutStyleApplied', OFFER_CARD_BALANCED_LAYOUT_CSS)
 
       if (!frameDoc.body?.dataset?.consigaiLegacyLogoApplied) {
         const logoEl = frameDoc.querySelector('.topbar .logo')
@@ -1645,7 +1097,7 @@ export default function Ofertas() {
       if (!frameDoc.body?.dataset?.consigaiLogoTextApplied) {
         const afterTag = frameDoc.querySelector('.ba-col.after .ba-col-tag')
         if (afterTag) {
-          afterTag.innerHTML = ` <span class="brand-name">Consig<span class="brand-ai">AI</span></span>`
+          afterTag.innerHTML = ` <span class="brand-name">ConsigAI</span>`
           frameDoc.body.dataset.consigaiLogoTextApplied = '1'
         }
       }
@@ -1657,13 +1109,6 @@ export default function Ofertas() {
         if (mobileSelectionCleanup) {
           mobileSelectionCleanup()
           mobileSelectionCleanup = null
-        }
-
-        const navigateToContract = () => {
-          const selected = activeOffersRef.current[selectedOfferIndexRef.current]
-          if (!selected) return
-          const contractState = buildContractState(selected, usuarioRef.current, selectedThirdSubOfferRef.current)
-          navigate('/contratacao', contractState ? { state: contractState } : undefined)
         }
 
         clickHandlerRef.current = (event) => {
@@ -1736,7 +1181,7 @@ export default function Ofertas() {
           const cta = target.closest('.btn-cta')
           if (cta) {
             event.preventDefault()
-            navigateToContract()
+            handleContractNavigation()
           }
         }
 
@@ -1790,7 +1235,7 @@ export default function Ofertas() {
       if (mobileSelectionCleanup) mobileSelectionCleanup()
       docQueryCacheRef.current = makeDomCache()
     }
-  }, [navigate, isDesktop])
+  }, [navigate, isDesktop, handleContractNavigation])
 
   if (error) {
     return (
@@ -1867,10 +1312,8 @@ export default function Ofertas() {
         <div style={{
           position: 'fixed',
           bottom: 0,
-          left: isDesktop ? '50%' : 0,
-          right: isDesktop ? 'auto' : 0,
-          width: isDesktop ? '100vw' : 'auto',
-          transform: isDesktop ? 'translateX(-50%)' : 'none',
+          left: 0,
+          right: 0,
           zIndex: 50,
           background: 'rgba(255,255,255,.97)',
           backdropFilter: 'blur(10px)',
@@ -1954,12 +1397,7 @@ export default function Ofertas() {
             <button
               type="button"
               className="cta-btn-float"
-              onClick={() => {
-                const selected = activeOffers[selectedOfferIndexRef.current]
-                if (!selected) return
-                const contractState = buildContractState(selected, usuario, selectedThirdSubOfferRef.current)
-                navigate('/contratacao', contractState ? { state: contractState } : undefined)
-              }}
+              onClick={handleContractNavigation}
               style={{
                 background: 'linear-gradient(145deg, #055ECE, #03246F)',
                 color: '#fff', border: 0, borderRadius: 21,

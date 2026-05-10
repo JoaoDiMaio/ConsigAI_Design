@@ -30,7 +30,7 @@ function normalizeApiResponse(payload) {
  *
  * Shape retornado:
  *   {
- *     activeOffers: Array<{ config, data, isRecommended }>,
+ *     activeOffers: Array<{ config, data }>,
  *     usuario: { salarioBruto, parcelaAtual },
  *     impacto: { pocketToday, pocketAfter, creditToday, creditAfter },
  *     loading: boolean,
@@ -53,7 +53,7 @@ export function useOffersData() {
         const config = OFFER_CARD_CONFIG.find((c) => c.id === item.id)
         const data = ofertasMap.get(item.id)
         if (!config || !data) return null
-        return { config, data, isRecommended: item.isRecommended }
+        return { config, data }
       })
       .filter(Boolean)
       .slice(0, MAX_API_CARDS)
