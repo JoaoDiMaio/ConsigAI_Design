@@ -612,6 +612,13 @@ ${onboardingAliasVarsCss}
                   Voltar
                 </button>
               </div>
+              <p style={{ marginTop: 14, textAlign: 'center', fontSize: 11, color: '#64748B', lineHeight: 1.5, fontWeight: 650 }}>
+                Seus documentos são usados exclusivamente para análise, conforme nossa{' '}
+                <button type="button" onClick={() => navigate('/privacidade')} style={{ background: 'none', border: 'none', color: '#043B8B', fontWeight: 800, fontSize: 11, cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
+                  Política de Privacidade
+                </button>
+                .
+              </p>
             </div>
           </section>
         </section>

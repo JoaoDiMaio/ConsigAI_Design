@@ -1408,20 +1408,13 @@ export default function Ofertas() {
               className="cta-btn-float"
               onClick={handleContractNavigation}
               style={{
-                background: 'linear-gradient(145deg, #055ECE, #03246F)',
-                color: '#fff', border: 0, borderRadius: 13,
-                padding: '0 28px', fontSize: 15, fontWeight: 900, lineHeight: 1.2,
-                cursor: 'pointer', whiteSpace: 'nowrap',
-                boxShadow: '0 8px 20px rgba(30,60,180,.3)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 gridColumn: isDesktop ? undefined : '1 / -1',
                 width: isDesktop ? 320 : '100%',
                 minWidth: isDesktop ? 320 : undefined,
                 maxWidth: isDesktop ? 320 : undefined,
-                minHeight: 52,
               }}
             >
-              Continuar — você ainda pode revisar tudo
+              Continuar e revisar condições
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
           </div>

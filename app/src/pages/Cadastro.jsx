@@ -1177,9 +1177,6 @@ ${onboardingAliasVarsCss}
                       onChange={e => handleChange('cpf', e.target.value, maskCPF(e.target.value))}
                       onBlur={() => handleBlur('cpf')}
                     />
-                    <small style={{ display: 'block', marginTop: 6, color: '#64748B', fontSize: 11, lineHeight: 1.35, fontWeight: 650 }}>
-                      Apenas para localizar seus contratos. Não compartilhamos.
-                    </small>
                     {errors.cpf && touched.cpf && <span className="field-error">{errors.cpf}</span>}
                   </div>
 
@@ -1228,6 +1225,17 @@ ${onboardingAliasVarsCss}
 
               <p className="login-note">
                 Já tem conta? <button type="button" onClick={() => navigate('/entrada')}>Entrar</button>
+              </p>
+              <p style={{ marginTop: 14, textAlign: 'center', fontSize: 11, color: '#64748B', lineHeight: 1.5, fontWeight: 650 }}>
+                Ao continuar, você concorda com nossos{' '}
+                <button type="button" onClick={() => navigate('/termos')} style={{ background: 'none', border: 'none', color: '#043B8B', fontWeight: 800, fontSize: 11, cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
+                  Termos de Uso
+                </button>
+                {' '}e{' '}
+                <button type="button" onClick={() => navigate('/privacidade')} style={{ background: 'none', border: 'none', color: '#043B8B', fontWeight: 800, fontSize: 11, cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
+                  Política de Privacidade
+                </button>
+                .
               </p>
             </div>
           </section>

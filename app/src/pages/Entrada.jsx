@@ -835,10 +835,6 @@ ${onboardingAliasVarsCss}
                 <button className="secondary-cta consigai-cta-animated" type="button" onClick={() => navigate('/cadastro')}>Descobrir minha economia</button>
               </form>
 
-              <p style={{ marginTop: 14, color: '#64748B', fontSize: 11.5, lineHeight: 1.45, fontWeight: 650 }}>
-                A ConsigAI nunca liga pedindo senha ou código.
-              </p>
-
               <div className="forgot-row">
                 <span>Esqueceu sua senha?</span>
                 <a href="#" onClick={(e) => e.preventDefault()}>Recuperar acesso</a>

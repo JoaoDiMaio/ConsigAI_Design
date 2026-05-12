@@ -231,7 +231,7 @@ export default function Refinanciamento() {
   const downloadReceiptPdf = () => {
     printSimulationReceipt({
       title: 'SIMULAÇÃO DE REFINANCIAMENTO - CONSIGAI',
-      highlightLabel: 'VOCÊ PODE RECEBER HOJE',
+      highlightLabel: 'VALOR ESTIMADO PARA RECEBER',
       highlightValue: scenario.cash,
       rows: [
         { label: 'Cenário', value: scenario.title },
@@ -402,7 +402,7 @@ export default function Refinanciamento() {
               <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, color: '#444' }}>SIMULAÇÃO DE REFINANCIAMENTO - CONSIGAI</div>
               <div style={{ fontSize: 10, marginTop: 4, textAlign: 'center', color: '#808080' }}>{new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
               <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-              <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>VOCÊ PODE RECEBER HOJE</div>
+              <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#4a4a4a' }}>VALOR ESTIMADO PARA RECEBER</div>
               <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323', lineHeight: 1 }}>{scenario.cash}</div>
               <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
               <div style={{ display: 'grid', gap: 6, fontSize: 10 }}>

@@ -40,7 +40,7 @@ function Receipt({ offer }) {
         <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, color: '#444' }}>SIMULAÇÃO DE NOVO CONTRATO - CONSIGAI</div>
         <div style={{ fontSize: 10, marginTop: 4, textAlign: 'center', color: '#808080' }}>{today}</div>
         <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
-        <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800 }}>VOCÊ PODE RECEBER HOJE</div>
+        <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 800 }}>VALOR ESTIMADO PARA RECEBER</div>
         <div style={{ textAlign: 'center', marginTop: 2, fontSize: 22, fontWeight: 900, color: '#232323' }}>{fmt(offer.valor)}</div>
         <div style={{ borderTop: '1px dashed #cfcfcf', margin: '10px 0' }} />
         <div style={{ display: 'grid', gap: 6, fontSize: 10 }}>
@@ -90,7 +90,7 @@ export default function NovoContrato() {
     const total = offer.parcela * offer.prazo
     printSimulationReceipt({
       title: 'SIMULAÇÃO DE NOVO CONTRATO - CONSIGAI',
-      highlightLabel: 'VOCÊ PODE RECEBER HOJE',
+      highlightLabel: 'VALOR ESTIMADO PARA RECEBER',
       highlightValue: fmt(offer.valor),
       rows: [
         { label: 'Prazo', value: `${offer.prazo} meses` },

@@ -13,6 +13,8 @@ import Entrada from './pages/Entrada'
 import UploadExtrato from './pages/UploadExtrato'
 import CarregamentoOfertas from './pages/CarregamentoOfertas'
 import CardsPreview from './pages/CardsPreview'
+import Privacidade from './pages/Privacidade'
+import Termos from './pages/Termos'
 
 export default function App() {
   return (
@@ -36,6 +38,8 @@ export default function App() {
         <Route path="/refin-portabilidade" element={<EstrategiaCombinada variant="refin" />} />
         <Route path="/refin-economia" element={<EstrategiaCombinada variant="refin" />} />
         <Route path="/preview" element={<CardsPreview />} />
+        <Route path="/privacidade" element={<Privacidade />} />
+        <Route path="/termos" element={<Termos />} />
       </Routes>
     </BrowserRouter>
   )

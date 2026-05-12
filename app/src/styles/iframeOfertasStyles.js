@@ -1611,28 +1611,13 @@ export const OFFER_CARD_REDESIGN_CSS = `
   .offer-card.turbo-offer .turbo-option:hover,
   .offer-card.turbo-offer .consigai-offer-mini-card:hover {
     transform: translateY(-1px) !important;
-    border-color: #007A52 !important;
-    box-shadow: 0 8px 18px rgba(0, 122, 82, 0.16) !important;
-    background:
-      radial-gradient(circle at 88% 10%, rgba(0, 122, 82, 0.12), transparent 35%),
-      linear-gradient(180deg, #E8FFF3 0%, #FFFFFF 100%) !important;
   }
   .offer-card.turbo-offer .turbo-option.active,
   .offer-card.turbo-offer .turbo-option.is-selected {
-    background:
-      radial-gradient(circle at 88% 10%, rgba(0, 122, 82, 0.12), transparent 35%),
-      linear-gradient(180deg, #F3FFF9 0%, #FFFFFF 100%);
-    border-color: #BDECD7;
-    box-shadow: none;
     transform: none;
   }
   .offer-card.turbo-offer:not(.selected):not(.active) .turbo-option.active,
   .offer-card.turbo-offer:not(.selected):not(.active) .turbo-option.is-selected {
-    background:
-      radial-gradient(circle at 88% 10%, rgba(0, 122, 82, 0.12), transparent 35%),
-      linear-gradient(180deg, #F3FFF9 0%, #FFFFFF 100%);
-    border-color: #BDECD7;
-    box-shadow: none;
     transform: none;
   }
   .offer-card.turbo-offer:not(.selected):not(.active) .turbo-option.active:hover,
@@ -1704,30 +1689,61 @@ export const OFFER_CARD_REDESIGN_CSS = `
     letter-spacing: -.03em;
     vertical-align: baseline;
   }
+  /* contract = Menos custo total → VERDE */
   .offer-card.turbo-offer .turbo-option[data-suboffer="contract"] {
-    border-color: #BFD4F6;
+    border-color: #BDECD7;
     background:
-      radial-gradient(circle at 88% 10%, rgba(36, 84, 214, 0.10), transparent 35%),
-      linear-gradient(180deg, #F4F8FF 0%, #FFFFFF 100%);
+      radial-gradient(circle at 88% 10%, rgba(0, 122, 82, 0.12), transparent 35%),
+      linear-gradient(180deg, #F3FFF9 0%, #FFFFFF 100%);
   }
   .offer-card.turbo-offer .turbo-option[data-suboffer="contract"]:hover {
     border-color: #007A52 !important;
     box-shadow: 0 8px 18px rgba(0, 122, 82, 0.16) !important;
     background:
-      radial-gradient(circle at 88% 10%, rgba(0, 122, 82, 0.12), transparent 35%),
+      radial-gradient(circle at 88% 10%, rgba(0, 122, 82, 0.16), transparent 35%),
       linear-gradient(180deg, #E8FFF3 0%, #FFFFFF 100%) !important;
   }
-  .offer-card.turbo-offer .turbo-option[data-suboffer="contract"] strong {
-    color: #007A52;
+  .offer-card.turbo-offer .turbo-option[data-suboffer="contract"] .option-label {
+    color: #007A52 !important;
   }
-  .offer-card.turbo-offer .turbo-option[data-suboffer="installment"] {
-    border-color: #BDECD7;
+  .offer-card.turbo-offer .turbo-option[data-suboffer="contract"] strong {
+    color: #007A52 !important;
+  }
+  .offer-card.turbo-offer .turbo-option[data-suboffer="contract"].active,
+  .offer-card.turbo-offer .turbo-option[data-suboffer="contract"].is-selected {
+    border-color: #00A86B;
+    box-shadow: 0 0 0 3px rgba(0, 168, 107, 0.13);
     background:
-      radial-gradient(circle at 88% 10%, rgba(0, 168, 107, 0.12), transparent 35%),
-      linear-gradient(180deg, #F3FFF9 0%, #FFFFFF 100%);
+      radial-gradient(circle at 88% 10%, rgba(0, 122, 82, 0.14), transparent 35%),
+      linear-gradient(180deg, #EDFFF5 0%, #FFFFFF 100%);
+  }
+  /* installment = Parcela Menor → AZUL */
+  .offer-card.turbo-offer .turbo-option[data-suboffer="installment"] {
+    border-color: #BFD4F6;
+    background:
+      radial-gradient(circle at 88% 10%, rgba(36, 84, 214, 0.10), transparent 35%),
+      linear-gradient(180deg, #F4F8FF 0%, #FFFFFF 100%);
+  }
+  .offer-card.turbo-offer .turbo-option[data-suboffer="installment"]:hover {
+    border-color: #2454D6 !important;
+    box-shadow: 0 8px 18px rgba(36, 84, 214, 0.16) !important;
+    background:
+      radial-gradient(circle at 88% 10%, rgba(36, 84, 214, 0.14), transparent 35%),
+      linear-gradient(180deg, #EEF4FF 0%, #FFFFFF 100%) !important;
+  }
+  .offer-card.turbo-offer .turbo-option[data-suboffer="installment"] .option-label {
+    color: #2454D6 !important;
   }
   .offer-card.turbo-offer .turbo-option[data-suboffer="installment"] strong {
-    color: #007A52;
+    color: #2454D6 !important;
+  }
+  .offer-card.turbo-offer .turbo-option[data-suboffer="installment"].active,
+  .offer-card.turbo-offer .turbo-option[data-suboffer="installment"].is-selected {
+    border-color: #2454D6;
+    box-shadow: 0 0 0 3px rgba(36, 84, 214, 0.13);
+    background:
+      radial-gradient(circle at 88% 10%, rgba(36, 84, 214, 0.12), transparent 35%),
+      linear-gradient(180deg, #EEF4FF 0%, #FFFFFF 100%);
   }
   .hc-saving-value[data-benefit-kind="monthly"],
   #ctaSaving[data-benefit-kind="monthly"] {
@@ -2205,6 +2221,40 @@ export const OFFER_CARD_REDESIGN_CSS = `
   }
   .offer-card.turbo-offer.selected .consigai-offer-mini-card.is-selected .consigai-offer-mini-value {
     color: #007A52 !important;
+  }
+  /* contract = Menos custo total → VERDE (reforço com !important) */
+  .offer-card.turbo-offer .consigai-offer-mini-card[data-suboffer="contract"],
+  .offer-card.turbo-offer.selected .consigai-offer-mini-card[data-suboffer="contract"] {
+    border-color: #BDECD7 !important;
+    background:
+      radial-gradient(circle at 88% 10%, rgba(0, 122, 82, 0.12), transparent 35%),
+      linear-gradient(180deg, #F3FFF9 0%, #FFFFFF 100%) !important;
+  }
+  .offer-card.turbo-offer.selected .consigai-offer-mini-card[data-suboffer="contract"].is-selected,
+  .offer-card.turbo-offer.selected .turbo-option[data-suboffer="contract"].is-selected,
+  .offer-card.turbo-offer.selected .turbo-option[data-suboffer="contract"].active {
+    border: 1px solid #00A86B !important;
+    background:
+      radial-gradient(circle at 88% 10%, rgba(0, 122, 82, 0.14), transparent 35%),
+      linear-gradient(180deg, #EDFFF5 0%, #FFFFFF 100%) !important;
+    box-shadow: 0 0 0 3px rgba(0, 168, 107, 0.13) !important;
+  }
+  /* installment = Parcela Menor → AZUL */
+  .offer-card.turbo-offer .consigai-offer-mini-card[data-suboffer="installment"],
+  .offer-card.turbo-offer.selected .consigai-offer-mini-card[data-suboffer="installment"] {
+    border-color: #BFD4F6 !important;
+    background:
+      radial-gradient(circle at 88% 10%, rgba(36, 84, 214, 0.10), transparent 35%),
+      linear-gradient(180deg, #F4F8FF 0%, #FFFFFF 100%) !important;
+  }
+  .offer-card.turbo-offer.selected .consigai-offer-mini-card[data-suboffer="installment"].is-selected,
+  .offer-card.turbo-offer.selected .turbo-option[data-suboffer="installment"].is-selected,
+  .offer-card.turbo-offer.selected .turbo-option[data-suboffer="installment"].active {
+    border: 1px solid #2454D6 !important;
+    background:
+      radial-gradient(circle at 88% 10%, rgba(36, 84, 214, 0.12), transparent 35%),
+      linear-gradient(180deg, #EEF4FF 0%, #FFFFFF 100%) !important;
+    box-shadow: 0 0 0 3px rgba(36, 84, 214, 0.13) !important;
   }
   .offer-card.new-contract-offer {
     border: 1px solid var(--line) !important;
@@ -3705,11 +3755,15 @@ export const OFFER_CARD_BALANCED_LAYOUT_CSS = `
 
   .offer-card .equilibrio-benefit.economy strong,
   .offer-card .folga-highlight.installment strong,
-  .offer-card .turbo-option[data-suboffer="contract"] strong,
-  .offer-card .turbo-option[data-suboffer="installment"] strong,
   .offer-card .turbo-option strong,
   .offer-card .consigai-offer-mini-value {
     color: #007A52 !important;
+  }
+  .offer-card .turbo-option[data-suboffer="contract"] strong {
+    color: #007A52 !important;
+  }
+  .offer-card .turbo-option[data-suboffer="installment"] strong {
+    color: #2454D6 !important;
   }
 
   .offer-card .consigai-offer-line-main.blue,
@@ -4140,5 +4194,43 @@ export const WIDE_LAYOUT_CSS = `
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
+  }
+
+  /* CTA principal fixo — design system ConsigAI */
+  .cta-btn-float {
+    background: linear-gradient(145deg, #043B8B, #002D6E) !important;
+    color: #fff !important;
+    border: 0 !important;
+    border-radius: 13px !important;
+    padding: 0 28px !important;
+    font-size: 16px !important;
+    font-weight: 900 !important;
+    line-height: 1.2 !important;
+    min-height: 52px !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    box-shadow: 0 14px 32px rgba(4,59,139,.22) !important;
+    transition: transform .16s ease, box-shadow .16s ease, filter .16s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+    letter-spacing: -.01em !important;
+  }
+  .cta-btn-float:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 18px 36px rgba(4,59,139,.30) !important;
+    filter: brightness(1.06) !important;
+  }
+  .cta-btn-float:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 8px 20px rgba(4,59,139,.22) !important;
+    filter: none !important;
+  }
+  .cta-btn-float:focus-visible {
+    outline: 3px solid rgba(36,84,214,.55) !important;
+    outline-offset: 3px !important;
   }
 `

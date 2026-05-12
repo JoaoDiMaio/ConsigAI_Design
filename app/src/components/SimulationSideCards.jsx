@@ -77,6 +77,7 @@ const S = {
   row: {
     display: 'flex',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
     gap: 16,
     padding: '14px 0',
     borderBottom: '1px solid #F1F5F9',
@@ -84,7 +85,13 @@ const S = {
     fontWeight: 600,
     color: '#64748B',
   },
-  rowValue: { color: '#002D6E', fontWeight: 900 },
+  rowValue: {
+    color: '#002D6E',
+    fontWeight: 900,
+    whiteSpace: 'nowrap',
+    flexShrink: 0,
+    textAlign: 'right',
+  },
   highlight: {
     marginTop: 18,
     padding: '18px 20px',
