@@ -356,7 +356,7 @@ export default function Portabilidade() {
         .pbox{padding:14px;border-radius:13px;border:1px solid #E2E8F0;background:rgba(248,250,252,.9)}
         .pbox small{display:block;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
         .pbox strong{display:block;margin-top:6px;font-size:24px;font-weight:800;letter-spacing:-.06em}
-        .old strong{color:#94A3B8;text-decoration:line-through;text-decoration-color:#CBD5E1;text-decoration-thickness:2px}
+        .old strong{color:#C00000;text-decoration:line-through;text-decoration-color:#C00000;text-decoration-thickness:2px}
         .new{background:linear-gradient(135deg,var(--green-soft),#e8fff4);border-color:var(--green-line)}
         .new strong{color:var(--green-strong)}
         .arrow{width:38px;height:38px;border-radius:999px;display:grid;place-items:center;background:var(--blue-interactive);color:#fff;font-size:18px;font-weight:900;box-shadow:0 10px 22px rgba(4,59,139,.22)}
