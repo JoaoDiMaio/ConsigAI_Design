@@ -173,7 +173,8 @@ export function ImpactoCard({
 /**
  * "Você está no controle" sidebar card.
  */
-export function ControleCard({ horizontal = false }) {
+export function ControleCard({ horizontal = false, items }) {
+  const list = items || TRUST_ITEMS
   if (horizontal) {
     return (
       <div style={{ ...S.card, padding: '20px 28px' }}>
@@ -184,8 +185,8 @@ export function ControleCard({ horizontal = false }) {
               Antes de avançar, confira as condições principais com calma e clareza.
             </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-            {TRUST_ITEMS.map(([title, text]) => (
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${list.length}, 1fr)`, gap: 12 }}>
+            {list.map(([title, text]) => (
               <div key={title} style={{ ...S.trustItem, flexDirection: 'column', gap: 6, padding: '12px 14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={S.trustIcon}>✓</span>
@@ -204,7 +205,7 @@ export function ControleCard({ horizontal = false }) {
       <h3 style={S.cardTitle}>Você está no controle</h3>
       <p style={S.cardSubtitle}>Antes de avançar, a ConsigAI mostra as condições principais para você decidir com calma e clareza.</p>
       <div style={{ display: 'grid', gap: 10, marginTop: 14 }}>
-        {TRUST_ITEMS.map(([title, text]) => (
+        {list.map(([title, text]) => (
           <div key={title} style={S.trustItem}>
             <span style={S.trustIcon}>✓</span>
             <div>
