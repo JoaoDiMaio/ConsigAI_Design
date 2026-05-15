@@ -18,7 +18,7 @@ describe('useOffersData — modo mock (VITE_USE_MOCK_OFFERS ativo)', () => {
     await waitFor(() => expect(result.current.loading).toBe(false))
     expect(result.current.activeOffers).toHaveLength(3)
     const ids = result.current.activeOffers.map((o) => o.config.id)
-    expect(ids).toEqual(['apenas_novo', 'apenas_refin', 'turbo'])
+    expect(ids).toEqual(['equilibrio', 'folga', 'turbo'])
   })
 
   it('cada oferta tem config e data', async () => {

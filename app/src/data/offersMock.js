@@ -77,7 +77,7 @@ export const OFFER_CARD_CONFIG = [
 export const MAX_API_CARDS = 3
 
 // IDs exibidos quando o mock de ofertas estiver ativo.
-export const DEFAULT_MOCK_OFFER_IDS = ['apenas_novo', 'apenas_refin', 'turbo']
+export const DEFAULT_MOCK_OFFER_IDS = ['equilibrio', 'folga', 'turbo']
 
 export const THIRD_CARD_SUB_OFFERS = {
   contract: { label: 'No contrato', route: '/portabilidade' },
