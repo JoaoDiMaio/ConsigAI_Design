@@ -6,7 +6,8 @@ import NovoContrato from './pages/NovoContrato'
 import Portabilidade from './pages/Portabilidade'
 import Refinanciamento from './pages/Refinanciamento'
 import Ofertas from './pages/Ofertas'
-import EstrategiaCombinada from './pages/EstrategiaCombinada'
+import RefinPort from './pages/RefinPort'
+import DinheiroEconomia from './pages/DinheiroEconomia'
 import Configuracoes from './pages/Configuracoes'
 import AndamentoPropostas from './pages/AndamentoPropostas'
 import Entrada from './pages/Entrada'
@@ -33,10 +34,12 @@ export default function App() {
         <Route path="/ofertas" element={<Ofertas />} />
         <Route path="/configuracoes" element={<Configuracoes />} />
         <Route path="/acompanhamento" element={<AndamentoPropostas />} />
-        <Route path="/estrategia-combinada" element={<EstrategiaCombinada />} />
-        <Route path="/novo-economia" element={<EstrategiaCombinada variant="novo" />} />
-        <Route path="/refin-portabilidade" element={<EstrategiaCombinada variant="refin" />} />
-        <Route path="/refin-economia" element={<EstrategiaCombinada variant="refin" />} />
+        <Route path="/estrategia-combinada" element={<RefinPort />} />
+        <Route path="/refinport" element={<RefinPort />} />
+        <Route path="/refin-portabilidade" element={<RefinPort />} />
+        <Route path="/refin-economia" element={<RefinPort />} />
+        <Route path="/dinheiro-economia" element={<DinheiroEconomia />} />
+        <Route path="/novo-economia" element={<DinheiroEconomia />} />
         <Route path="/preview" element={<CardsPreview />} />
         <Route path="/privacidade" element={<Privacidade />} />
         <Route path="/termos" element={<Termos />} />
