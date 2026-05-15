@@ -42,36 +42,36 @@ const COMBINED_GUIDE = {
   badge: 'Guia ConsigAI',
   title: 'Como funciona a estratégia combinada',
   subtitle:
-    'Primeiro buscamos uma condição melhor para seu contrato. Depois mostramos se vale refinanciar para gerar dinheiro, economia ou alívio mensal.',
+    'Primeiro melhoramos a condição do seu contrato. Depois avaliamos se ela permite liberar dinheiro e economia para você.',
   steps: [
     {
-      label: 'Passo 1 — Portabilidade',
-      title: 'Buscamos taxa menor',
-      body: 'Comparamos seu contrato atual com bancos que oferecem taxa menor para o mesmo saldo.',
+      label: 'Etapa 1 — Portabilidade',
+      title: 'Melhoramos a condição',
+      body: 'Comparamos seu contrato com bancos de taxa menor. Mesma dívida, condição mais vantajosa.',
     },
     {
-      label: 'Passo 2 — Nova condição',
-      title: 'Ver taxa, parcela e economia',
-      body: 'Você vê taxa, parcela, prazo e economia estimada antes de decidir qualquer coisa.',
+      label: 'Etapa 1 — Resultado',
+      title: 'Calculamos a economia',
+      body: 'Você vê quanto pode reduzir no custo total estimado — taxa, prazo e parcela — antes de decidir.',
     },
     {
-      label: 'Passo 3 — Refinanciamento',
-      title: 'Avaliar dinheiro disponível',
-      body: 'Depois avaliamos se a nova condição permite liberar dinheiro ou reduzir ainda mais a parcela.',
+      label: 'Etapa 2 — Refinanciamento',
+      title: 'Avaliamos dinheiro disponível',
+      body: 'Com a nova condição, simulamos valor estimado para liberar na conta. Você vê tudo antes de avançar.',
     },
     {
-      label: 'Passo 4 — Revisão',
+      label: 'Etapa 2 — Revisão final',
       title: 'Você confirma por último',
-      body: 'Você confirma apenas depois de ver todas as condições. Nenhuma etapa avança sem sua autorização.',
+      body: 'Taxa, parcela, prazo e dinheiro estimado aparecem antes de qualquer confirmação. Nada avança sem você.',
     },
   ],
   finalTitle: 'Você decide no final',
   finalText:
     'Nenhuma etapa avança sem sua confirmação. Simulação não é aprovação final. Portabilidade é direito garantido por lei.',
   badges: [
+    'Dinheiro + economia na mesma análise',
     'Simulação sem compromisso',
-    'Duas etapas com clareza',
-    'Nada automático',
+    'Nada contratado sem você confirmar',
   ],
 }
 
@@ -82,16 +82,16 @@ const STRATEGIES = [
   {
     key: 'balance',
     badge: 'Recomendado',
-    title: 'Melhor equilíbrio',
-    strong: 'Economia + dinheiro',
-    description: 'Reduz custo primeiro e depois avalia valor disponível com mais controle.',
+    title: 'Dinheiro + Economia',
+    strong: 'Valor na conta e custo menor',
+    description: 'Recebe valor estimado na conta e reduz o custo total do contrato. A combinação mais completa.',
   },
   {
     key: 'relief',
     badge: 'Mais folga no mês',
-    title: 'Mais folga no mês',
-    strong: 'Parcela mais leve',
-    description: 'Prioriza aliviar o orçamento mensal depois da etapa de economia.',
+    title: 'Dinheiro + Parcela menor',
+    strong: 'Valor na conta e menos desconto',
+    description: 'Recebe valor estimado e reduz o desconto mensal. Mais dinheiro sobrando todo mês.',
   },
 ]
 
@@ -280,18 +280,18 @@ export default function EstrategiaCombinada() {
           position: relative;
           overflow: hidden;
           background:
-            radial-gradient(ellipse at 5% 0%, rgba(0,122,82,.07), transparent 40%),
-            radial-gradient(ellipse at 92% 8%, rgba(0,168,107,.10), transparent 36%),
-            linear-gradient(160deg, #f0fff8 0%, #fff 65%);
+            radial-gradient(ellipse at 8% 0%, rgba(4,59,139,.09), transparent 42%),
+            radial-gradient(ellipse at 90% 85%, rgba(0,168,107,.10), transparent 38%),
+            linear-gradient(160deg, #EEF5FF 0%, #fff 55%, #f2fff9 100%);
           box-shadow: 0 22px 52px rgba(3,36,111,.11);
-          border: 1px solid var(--ec-green-line);
+          border: 1px solid var(--ec-blue-line);
         }
         .ec-flow::before {
           content: '';
           position: absolute;
           inset: 0 0 auto 0;
           height: 5px;
-          background: linear-gradient(90deg, var(--ec-green), var(--ec-green-s), var(--ec-blue-int), var(--ec-blue-main));
+          background: linear-gradient(90deg, var(--ec-blue-main), var(--ec-blue-int), var(--ec-green-s));
         }
         .ec-flow > * { position: relative; z-index: 1; }
 
@@ -309,6 +309,11 @@ export default function EstrategiaCombinada() {
           background: var(--ec-green-soft);
           box-shadow: 0 16px 36px rgba(0,168,107,.10);
         }
+        .ec-stat.money {
+          border-color: var(--ec-blue-line);
+          background: var(--ec-blue-soft);
+          box-shadow: 0 16px 36px rgba(4,59,139,.09);
+        }
         .ec-stat-label {
           display: block;
           color: var(--ec-blue-main);
@@ -316,6 +321,7 @@ export default function EstrategiaCombinada() {
           letter-spacing: .08em; text-transform: uppercase;
         }
         .ec-stat.success .ec-stat-label { color: var(--ec-green); }
+        .ec-stat.money .ec-stat-label { color: var(--ec-blue-int); }
         .ec-stat-value {
           display: block;
           margin-top: 8px;
@@ -325,6 +331,7 @@ export default function EstrategiaCombinada() {
           letter-spacing: -.075em;
         }
         .ec-stat.success .ec-stat-value { color: var(--ec-green); }
+        .ec-stat.money .ec-stat-value { color: var(--ec-blue-int); }
         .ec-stat-caption {
           display: block;
           margin-top: 7px;
@@ -397,7 +404,7 @@ export default function EstrategiaCombinada() {
         }
         .ec-strategy-badge.active { border-color: var(--ec-green-line); background: var(--ec-green-soft); color: var(--ec-green); }
         .ec-strategy-title { margin: 16px 0 0; color: #001851; font-size: 22px; line-height: 1; font-weight: 950; letter-spacing: -.05em; }
-        .ec-strategy-strong { display: block; margin-top: 8px; color: var(--ec-muted); font-size: 14px; font-weight: 950; }
+        .ec-strategy-strong { display: block; margin-top: 8px; color: #001851; font-size: 14px; font-weight: 950; }
         .ec-strategy-strong.active { color: var(--ec-green); }
         .ec-strategy-desc { margin: 8px 0 0; color: var(--ec-muted); font-size: 12px; line-height: 1.4; font-weight: 650; }
         .ec-radio {
@@ -540,54 +547,105 @@ export default function EstrategiaCombinada() {
           {/* ── Coluna central ─────────────────────────────────────────── */}
           <div style={{ display: 'grid', gap: 16 }}>
 
-            {/* Hero — .ec-flow (padrão .flow de Portabilidade, mas verde/economia) */}
+            {/* Hero — .ec-flow (azul→verde: combinação portabilidade + refinanciamento) */}
             <section className="ec-flow">
               <div style={{ display: 'grid', gap: 18, textAlign: 'center' }}>
 
-                {/* Kicker */}
-                <div style={{
-                  display: 'inline-flex', width: 'fit-content', alignItems: 'center', gap: 8,
-                  color: '#043B8B', fontSize: 11, lineHeight: 1, fontWeight: 950,
-                  textTransform: 'uppercase', letterSpacing: '.11em',
-                }}>
-                  <span aria-hidden="true" style={{
-                    width: 7, height: 7, borderRadius: '50%',
-                    background: '#00A86B', boxShadow: '0 0 10px rgba(0,168,107,.75)',
-                  }} />
-                  Economia + Dinheiro
+                {/* Kicker — azul institucional: processo começa aqui */}
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <div style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 8,
+                    padding: '7px 14px', borderRadius: 999,
+                    background: 'linear-gradient(135deg, #EEF4FF, #F4F9FF)',
+                    border: '1px solid var(--ec-blue-line)',
+                    color: '#043B8B', fontSize: 11, lineHeight: 1, fontWeight: 950,
+                    textTransform: 'uppercase', letterSpacing: '.10em',
+                  }}>
+                    <span aria-hidden="true" style={{
+                      width: 7, height: 7, borderRadius: '50%',
+                      background: '#2454D6', boxShadow: '0 0 10px rgba(36,84,214,.70)',
+                      flexShrink: 0,
+                    }} />
+                    Estratégia encontrada para você
+                  </div>
                 </div>
 
-                {/* Headline */}
+                {/* Headline — forte, comercial, sem exagero */}
                 <div>
                   <h1 style={{
-                    margin: '18px auto 0', maxWidth: 780,
+                    margin: '4px auto 0', maxWidth: 820,
                     color: '#001851',
-                    fontSize: 'clamp(34px, 3.4vw, 48px)',
+                    fontSize: 'clamp(32px, 3.4vw, 48px)',
                     lineHeight: 1.02, fontWeight: 950, letterSpacing: '-.075em',
                   }}>
-                    Primeiro reduzimos o custo.{' '}
-                    <span style={{ color: '#007A52' }}>Depois vemos dinheiro para você.</span>
+                    Dinheiro na conta{' '}
+                    <span style={{
+                      background: 'linear-gradient(90deg, #2454D6, #007A52)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}>+ economia no contrato.</span>
                   </h1>
                   <p style={{
-                    maxWidth: 720, margin: '12px auto 0',
-                    color: '#64748B', fontSize: 14, lineHeight: 1.5, fontWeight: 650,
+                    maxWidth: 680, margin: '14px auto 0',
+                    color: '#64748B', fontSize: 14, lineHeight: 1.55, fontWeight: 650,
                   }}>
-                    Portar primeiro melhora a base — o refinanciamento fica mais vantajoso depois.
-                    A ConsigAI compara bancos, melhora seu contrato e só então calcula se existe
-                    valor estimado para liberar, com parcela, prazo, taxa e custo total sempre visíveis.
+                    Encontramos uma combinação que merece sua atenção.
+                    Primeiro melhoramos a condição do seu contrato. Depois simulamos valor estimado
+                    para liberar na conta — com taxa, parcela e custo total visíveis antes de qualquer confirmação.
                   </p>
                 </div>
 
-                {/* StatCards — economia protagonista (verde, maior), dinheiro depois (azul) */}
+                {/* Indicador das duas etapas */}
+                <div style={{
+                  display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0,
+                  maxWidth: 520, margin: '0 auto', width: '100%',
+                }}>
+                  <div style={{
+                    flex: 1, padding: '10px 14px', borderRadius: '12px 0 0 12px',
+                    background: 'linear-gradient(135deg, #EEF4FF, #F4F9FF)',
+                    border: '1.5px solid var(--ec-blue-line)',
+                    borderRight: 'none',
+                    textAlign: 'center',
+                  }}>
+                    <div style={{ fontSize: 10, fontWeight: 950, color: '#2454D6', textTransform: 'uppercase', letterSpacing: '.08em' }}>Etapa 1</div>
+                    <div style={{ fontSize: 13, fontWeight: 950, color: '#001851', marginTop: 3 }}>Portabilidade</div>
+                    <div style={{ fontSize: 11, color: '#64748B', fontWeight: 650, marginTop: 2 }}>taxa menor</div>
+                  </div>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #2454D6, #007A52)',
+                    display: 'grid', placeItems: 'center',
+                    zIndex: 1, flexShrink: 0,
+                    boxShadow: '0 4px 14px rgba(4,59,139,.22)',
+                  }}>
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                  <div style={{
+                    flex: 1, padding: '10px 14px', borderRadius: '0 12px 12px 0',
+                    background: 'linear-gradient(135deg, #F0FFF8, #F6FFFB)',
+                    border: '1.5px solid var(--ec-green-line)',
+                    borderLeft: 'none',
+                    textAlign: 'center',
+                  }}>
+                    <div style={{ fontSize: 10, fontWeight: 950, color: '#007A52', textTransform: 'uppercase', letterSpacing: '.08em' }}>Etapa 2</div>
+                    <div style={{ fontSize: 13, fontWeight: 950, color: '#001851', marginTop: 3 }}>Refinanciamento</div>
+                    <div style={{ fontSize: 11, color: '#64748B', fontWeight: 650, marginTop: 2 }}>dinheiro + economia</div>
+                  </div>
+                </div>
+
+                {/* StatCards — economia verde protagonista, dinheiro azul */}
                 <div style={{ width: 'min(820px, 100%)', margin: '0 auto' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? '1.1fr .9fr' : '1fr', gap: 12 }}>
                     <div className="ec-stat success">
-                      <small className="ec-stat-label">Economia estimada primeiro</small>
+                      <small className="ec-stat-label">Economia estimada no contrato</small>
                       <strong className="ec-stat-value">{data.economyValue}</strong>
-                      <span className="ec-stat-caption">estimativa no custo total do contrato atual</span>
+                      <span className="ec-stat-caption">redução estimada no custo total · mesmo prazo</span>
                     </div>
-                    <div className="ec-stat">
-                      <small className="ec-stat-label">Dinheiro estimado depois</small>
+                    <div className="ec-stat money">
+                      <small className="ec-stat-label">Dinheiro estimado para receber</small>
                       <strong className="ec-stat-value">{data.futureValue}</strong>
                       <span className="ec-stat-caption">valor possível após a etapa de economia</span>
                     </div>
@@ -596,18 +654,30 @@ export default function EstrategiaCombinada() {
 
                 {/* Trust chips */}
                 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 10 }}>
-                  <span className="ec-chip green">Economia primeiro</span>
-                  <span className="ec-chip blue">Dinheiro depois</span>
-                  <span className="ec-chip blue">Você revisa tudo antes de confirmar</span>
+                  <span className="ec-chip green">Economia no custo total</span>
+                  <span className="ec-chip blue">Dinheiro estimado na conta</span>
+                  <span className="ec-chip blue">Você revisa antes de confirmar</span>
                 </div>
+
+                {/* Microcopy de segurança */}
+                <p style={{
+                  margin: '0 auto', maxWidth: 560,
+                  color: '#64748B', fontSize: 11.5, lineHeight: 1.45, fontWeight: 700,
+                  padding: '10px 16px', borderRadius: 12,
+                  background: 'rgba(221,232,246,.35)',
+                  border: '1px solid var(--ec-blue-line)',
+                }}>
+                  Simulação sem compromisso. Você revisa taxa, prazo, parcela e custo total antes de confirmar.
+                  Nada é contratado automaticamente.
+                </p>
               </div>
             </section>
 
             {/* Estratégias — escolha de perfil */}
             <section className="ec-card" style={{ padding: 22 }}>
               <div className="ec-section-head">
-                <h2 className="ec-section-title">Economia + Dinheiro — escolha seu perfil</h2>
-                <p className="ec-section-sub">As opções abaixo são ajustes da mesma análise, não ofertas competindo.</p>
+                <h2 className="ec-section-title">Escolha como quer combinar dinheiro e economia</h2>
+                <p className="ec-section-sub">Duas variações da mesma análise. Você compara e decide qual faz mais sentido para o seu momento.</p>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? 'repeat(2, minmax(0, 1fr))' : '1fr', gap: 12 }}>
                 {STRATEGIES.map((option, index) => (
@@ -628,7 +698,7 @@ export default function EstrategiaCombinada() {
             <section className="ec-card" style={{ padding: 22 }}>
               <div className="ec-section-head">
                 <h2 className="ec-section-title">Condições da simulação</h2>
-                <p className="ec-section-sub">Valores estimados. Você revisa tudo antes de confirmar.</p>
+                <p className="ec-section-sub">Valores estimados. Taxa, prazo e parcela aparecem antes de qualquer confirmação.</p>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? 'repeat(auto-fit, minmax(140px, 1fr))' : '1fr', gap: 12 }}>
                 {CONDITIONS.map((item) => (
@@ -666,10 +736,11 @@ export default function EstrategiaCombinada() {
             />
 
             {/* ActionCard — CTAs no padrão Portabilidade */}
-            <div className="ec-card" style={{ padding: 22 }}>
+            <div className="ec-card" style={{ padding: 22, borderTop: '4px solid transparent', borderImage: 'linear-gradient(90deg, #043B8B, #2454D6, #00A86B) 1', borderRadius: 28 }}>
               <p className="ec-card-title">Próximo passo</p>
               <p className="ec-card-sub" style={{ marginBottom: 0 }}>
-                Se a simulação fizer sentido, você avança para revisar as condições reais antes de qualquer confirmação.
+                Avance para ver taxa, prazo, parcela e dinheiro estimado antes de qualquer confirmação.
+                Nada é contratado nesta etapa.
               </p>
 
               <div className="ec-actions">
@@ -703,8 +774,8 @@ export default function EstrategiaCombinada() {
               </div>
 
               <p className="ec-safe">
-                Nenhuma contratação sem sua confirmação.<br />
-                Simulação não é aprovação final.
+                Simulação sem compromisso. Nenhuma contratação<br />
+                sem sua confirmação expressa.
               </p>
             </div>
           </aside>
@@ -752,11 +823,11 @@ export default function EstrategiaCombinada() {
 
             {/* Economia em destaque */}
             <div style={{ minWidth: isDesktop ? 180 : 132 }}>
-              <div style={{ fontSize: 22, fontWeight: 900, color: '#007A52', letterSpacing: '-.02em', lineHeight: '25px', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
+              <div style={{ fontSize: 22, fontWeight: 900, color: '#00A86B', letterSpacing: '-.02em', lineHeight: '25px', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
                 {data.economyValue}
               </div>
               <div style={{ fontSize: 11, fontWeight: 600, color: '#64748B', lineHeight: '13px', whiteSpace: 'nowrap' }}>
-                economia estimada
+                economia estimada no contrato
               </div>
             </div>
 
